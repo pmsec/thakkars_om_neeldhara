@@ -1,0 +1,33 @@
+{
+  "name": "full-floor-residence-portal",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Architect-grade project portal for the Full-Floor Residence merge (DWG A-101, Rev 4). One geometry source drives the 2D plan, the 3D model, the schedules and the exports.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b --noEmit && vite build",
+    "build:nocheck": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify": "vitest run && tsc -b --noEmit",
+    "integrity": "vitest run src/tests/integrity.test.ts --reporter=verbose"
+  },
+  "dependencies": {
+    "polygon-clipping": "^0.15.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.169.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vite-plugin-singlefile": "^2.0.3",
+    "vitest": "^2.1.4"
+  }
+}

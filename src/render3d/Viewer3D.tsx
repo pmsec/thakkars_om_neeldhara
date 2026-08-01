@@ -18,6 +18,7 @@ import { fixtures } from '../data/fixtures'
 import { bezierAt } from '../geometry/bezier'
 import { pointInPolygon, type Poly } from '../geometry/vec'
 import { prismGeometry, S } from './prism'
+import { PRESETS, presetCamera } from './cameras'
 import { formatLength } from '../geometry/units'
 import { useStore } from '../ui/store'
 import { hourLabel, solarPosition, sunVector } from './sun'
@@ -95,74 +96,6 @@ function prismMaterial(p: Prism): THREE.Material {
       return MAT.lintel
     default:
       return MAT.plaster
-  }
-}
-
-/**
- * Preset cameras are DERIVED from the rooms, not hand-placed. Hand-placed ones silently
- * went stale the moment the plan-to-scene mapping was corrected, because they had been
- * dialled in against mirrored geometry.
- */
-interface Preset {
-  id: string
-  label: string
-  room?: string
-  /** Which side to stand on: +1 looks from the lobby side, -1 from the deck side. */
-  from?: 1 | -1
-}
-
-const PRESETS: Preset[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'great', label: 'Great room', room: 'R-GREAT' },
-  { id: 'deck', label: 'Deck', room: 'R-DECK', from: -1 },
-  { id: 'podP', label: "Parents' pod", room: 'R-P-HALL' },
-  { id: 'podK', label: "Karan's pod", room: 'R-K-HALL' },
-  { id: 'service', label: 'Service wing', room: 'R-KITCHEN' },
-  { id: 'suiteP', label: "Parents' suite", room: 'R-P-SUITE' },
-  { id: 'suiteK', label: "Karan's suite", room: 'R-K-SUITE' },
-]
-
-/** Camera position and target, in scene metres, for a preset. */
-function presetCamera(p: Preset): { pos: THREE.Vector3; look: THREE.Vector3 } {
-  const env = model.envelopeBBox
-  if (!p.room) {
-    const cx = ((env.minX + env.maxX) / 2) * S
-    const cy = ((env.minY + env.maxY) / 2) * S
-    const span = (env.maxX - env.minX) * S
-    return {
-      pos: new THREE.Vector3(cx, span * 0.78, cy + span * 1.02),
-      look: new THREE.Vector3(cx, 0.6, cy),
-    }
-  }
-  const room = model.roomById.get(p.room)!
-  const cx = room.centroid.x * S
-  const cy = room.centroid.y * S
-  const span = Math.max(room.width, room.depth) * S
-  const depth = room.depth * S
-  const side = p.from ?? 1
-  const ceiling = model.data.levels.ceiling * S
-  const targetY = 0.3
-
-  // How steeply the camera has to look down to see over the room's own near wall. The
-  // sight line drops from the camera to the target, and at the near wall — half a room
-  // depth short of the target — it must still be above the ceiling. Shallow-angle views
-  // of a small service room are simply impossible, hence the derivation rather than a
-  // fixed elevation. Looking in from the deck side is unobstructed, so it stays low.
-  const slope =
-    side < 0 ? 0.85 : Math.max(1.0, (ceiling - targetY + 0.6) / Math.max(0.6, depth / 2))
-
-  // How far back the room has to be to fit across the frame. A 52 degree vertical field
-  // on a wide viewport is roughly 62 degrees horizontally, so half the span has to sit
-  // within tan(31 degrees) of the view distance. Without this the deck — 15 m wide and
-  // only 2.4 m deep — is framed from its own depth and overflows the screen.
-  const distance = Math.max(4, span * 0.95)
-  const back = distance / Math.sqrt(1 + slope * slope)
-  // Aim slightly past the room, away from the camera. That tilts the view up a touch and
-  // pushes the rooms you are looking over out of the bottom of the frame.
-  const lookZ = cy - side * depth * 0.3
-  return {
-    pos: new THREE.Vector3(cx, targetY + slope * back, cy + side * back),
-    look: new THREE.Vector3(cx, 1.0, lookZ),
   }
 }
 

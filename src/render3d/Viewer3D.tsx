@@ -154,13 +154,20 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     const sun = new THREE.DirectionalLight(0xfff2dc, 3.0)
     sun.castShadow = true
     sun.shadow.mapSize.set(4096, 4096)
-    sun.shadow.bias = -0.0006
-    sun.shadow.normalBias = 0.02
+    // Thin 110-150 mm partitions viewed at a grazing angle self-shadow into stripes
+    // unless the depth comparison is offset along the surface normal. normalBias is the
+    // one that fixes acne on vertical faces; a larger constant bias just detaches the
+    // contact shadows instead.
+    sun.shadow.bias = -0.0002
+    sun.shadow.normalBias = 0.06
     const cam = sun.shadow.camera
-    cam.left = -22
-    cam.right = 22
-    cam.top = 22
-    cam.bottom = -22
+    // Fit the frustum to the building rather than a round number, so the 4096 map spends
+    // its texels on the plan instead of on empty ground.
+    const half = Math.max(model.envelopeBBox.maxX - model.envelopeBBox.minX, model.envelopeBBox.maxY - model.envelopeBBox.minY) * S * 0.62
+    cam.left = -half
+    cam.right = half
+    cam.top = half
+    cam.bottom = -half
     cam.near = 1
     cam.far = 120
     scene.add(sun)

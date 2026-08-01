@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Plan2D } from './render2d/Plan2D'
 import { Viewer3D } from './render3d/Viewer3D'
 import { IntegrityView } from './ui/IntegrityView'
@@ -36,6 +36,26 @@ export function App(): React.ReactElement {
   const integrity = useMemo(() => runIntegrity(), [])
   const showsPlan = state.view === 'plan' || state.view === 'split'
   const shows3d = state.view === 'model' || state.view === 'split'
+  const hasPanels = showsPlan || shows3d
+
+  const togglePanel = useCallback(
+    (side: 'left' | 'right') =>
+      setState((s) => ({ ...s, panels: { ...s.panels, [side]: !s.panels[side] } })),
+    [],
+  )
+
+  // [ and ] collapse the sidebars, which is the fastest way to hand the drawing the whole
+  // window. Ignored while typing, so the markup author field still works.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      const el = e.target as HTMLElement | null
+      if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return
+      if (e.key === '[') togglePanel('left')
+      if (e.key === ']') togglePanel('right')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [togglePanel])
 
   return (
     <StoreContext.Provider value={store}>
@@ -67,6 +87,25 @@ export function App(): React.ReactElement {
               : `Model reconciles · ${integrity.passed}/${integrity.checks.length} checks`}
           </div>
 
+          {hasPanels && (
+            <div className="unitgroup" role="group" aria-label="Sidebars">
+              <button
+                aria-pressed={state.panels.left}
+                onClick={() => togglePanel('left')}
+                title="Show or hide the tools and cutaway sidebar  [  "
+              >
+                ◧ Tools
+              </button>
+              <button
+                aria-pressed={state.panels.right}
+                onClick={() => togglePanel('right')}
+                title="Show or hide the room inspector sidebar  ]  "
+              >
+                Inspector ◨
+              </button>
+            </div>
+          )}
+
           <div className="unitgroup">
             {(
               [
@@ -91,7 +130,7 @@ export function App(): React.ReactElement {
         </header>
 
         <div className="body">
-          {(showsPlan || shows3d) && (
+          {hasPanels && state.panels.left && (
             <aside className="side no-print">
               {showsPlan && (
                 <>
@@ -106,6 +145,26 @@ export function App(): React.ReactElement {
           )}
 
           <main className="main">
+            {hasPanels && !state.panels.left && (
+              <button
+                className="edge-tab left no-print"
+                onClick={() => togglePanel('left')}
+                title="Show the tools and cutaway sidebar  [  "
+                aria-label="Show the tools sidebar"
+              >
+                ›
+              </button>
+            )}
+            {hasPanels && !state.panels.right && (
+              <button
+                className="edge-tab right no-print"
+                onClick={() => togglePanel('right')}
+                title="Show the room inspector sidebar  ]  "
+                aria-label="Show the room inspector sidebar"
+              >
+                ‹
+              </button>
+            )}
             {state.view === 'plan' && <Plan2D />}
             {state.view === 'model' && <Viewer3D />}
             {state.view === 'split' && (
@@ -119,7 +178,7 @@ export function App(): React.ReactElement {
             {state.view === 'brief' && <BriefView />}
           </main>
 
-          {(showsPlan || shows3d) && (
+          {hasPanels && state.panels.right && (
             <aside className="side right no-print">
               <RoomInspector />
               <MarkupPanel />

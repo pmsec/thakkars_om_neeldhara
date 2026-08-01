@@ -113,6 +113,8 @@ export interface PortalState {
    * They disagree and the brief does not settle it, so it is exposed rather than fixed.
    */
   northAzimuth: number
+  /** Sidebar visibility. Both start open; hiding them gives the drawing the full width. */
+  panels: { left: boolean; right: boolean }
   /** Set when a view asks the other to fly to a room. */
   flyTo: { room: string; nonce: number } | null
   author: string
@@ -151,6 +153,7 @@ export const initialState: PortalState = {
   show3d: { glassRoofs: true, furniture: true, podParents: true, podKaran: true },
   sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
+  panels: { left: true, right: true },
   flyTo: null,
   author: 'Architect',
 }

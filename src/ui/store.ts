@@ -149,7 +149,7 @@ export const initialState: PortalState = {
   cutaway: 3050,
   section: { axis: null, at: 12240 },
   show3d: { glassRoofs: true, furniture: true, podParents: true, podKaran: true },
-  sun: { day: 172, hour: 14, mode: 'day', shadows: true },
+  sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
   flyTo: null,
   author: 'Architect',

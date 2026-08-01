@@ -13,21 +13,25 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { getModel } from '../geometry/model'
 import { buildSolids, type Prism } from '../geometry/solid'
 import { building } from '../data/building'
-import { furniture } from '../data/furniture'
+import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
 import { bezierAt } from '../geometry/bezier'
 import { pointInPolygon, type Poly } from '../geometry/vec'
+import { prismGeometry, S } from './prism'
 import { formatLength } from '../geometry/units'
 import { useStore } from '../ui/store'
 import { hourLabel, solarPosition, sunVector } from './sun'
 
 const model = getModel()
 const solids = buildSolids(model)
-const S = 0.001 // mm -> m
+const CENTRE = {
+  x: ((model.envelopeBBox.minX + model.envelopeBBox.maxX) / 2) * 0.001,
+  y: ((model.envelopeBBox.minY + model.envelopeBBox.maxY) / 2) * 0.001,
+}
 
 const MAT = {
-  plaster: new THREE.MeshStandardMaterial({ color: 0xefeae1, roughness: 0.95, metalness: 0 }),
-  exterior: new THREE.MeshStandardMaterial({ color: 0xe4ded2, roughness: 0.95 }),
+  plaster: new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.95, metalness: 0 }),
+  exterior: new THREE.MeshStandardMaterial({ color: 0xded7c9, roughness: 0.95 }),
   partition: new THREE.MeshStandardMaterial({ color: 0xf2eee7, roughness: 0.95 }),
   lintel: new THREE.MeshStandardMaterial({ color: 0xe8e2d7, roughness: 0.95 }),
   // Enough tint to read as the signature curved glass wall rather than vanishing.
@@ -49,14 +53,17 @@ const MAT = {
     opacity: 0.42,
     side: THREE.DoubleSide,
   }),
-  mullion: new THREE.MeshStandardMaterial({ color: 0x3f7a8c, roughness: 0.5, metalness: 0.3 }),
-  wood: new THREE.MeshStandardMaterial({ color: 0xd8c39c, roughness: 0.72 }),
-  stone: new THREE.MeshStandardMaterial({ color: 0xcfd4cf, roughness: 0.55 }),
-  deck: new THREE.MeshStandardMaterial({ color: 0xc4b79f, roughness: 0.85 }),
-  vinyl: new THREE.MeshStandardMaterial({ color: 0xdcd6c9, roughness: 0.8 }),
-  furniture: new THREE.MeshStandardMaterial({ color: 0xf3efe6, roughness: 0.85 }),
-  soft: new THREE.MeshStandardMaterial({ color: 0xe3d9c6, roughness: 0.95 }),
-  green: new THREE.MeshStandardMaterial({ color: 0x8fae8a, roughness: 0.9 }),
+  mullion: new THREE.MeshStandardMaterial({ color: 0x6f97a4, roughness: 0.45, metalness: 0.25 }),
+  wood: new THREE.MeshStandardMaterial({ color: 0xd2b184, roughness: 0.68 }),
+  stone: new THREE.MeshStandardMaterial({ color: 0xc8d0c9, roughness: 0.5 }),
+  deck: new THREE.MeshStandardMaterial({ color: 0xb99f7c, roughness: 0.82 }),
+  vinyl: new THREE.MeshStandardMaterial({ color: 0xcdc7b9, roughness: 0.8 }),
+  furniture: new THREE.MeshStandardMaterial({ color: 0xe6dccc, roughness: 0.85 }),
+  soft: new THREE.MeshStandardMaterial({ color: 0xded3bf, roughness: 0.96 }),
+  linen: new THREE.MeshStandardMaterial({ color: 0xf6f2ea, roughness: 0.98 }),
+  rug: new THREE.MeshStandardMaterial({ color: 0xc9b99e, roughness: 1 }),
+  pot: new THREE.MeshStandardMaterial({ color: 0xb08968, roughness: 0.9 }),
+  green: new THREE.MeshStandardMaterial({ color: 0x7d9c78, roughness: 0.9 }),
 }
 
 function floorMaterial(finish: string): THREE.Material {
@@ -66,19 +73,9 @@ function floorMaterial(finish: string): THREE.Material {
   return MAT.wood
 }
 
-function shapeFrom(poly: Poly, holes: Poly[] = []): THREE.Shape {
-  const s = new THREE.Shape(poly.map((p) => new THREE.Vector2(p.x * S, p.y * S)))
-  for (const h of holes) s.holes.push(new THREE.Path(h.map((p) => new THREE.Vector2(p.x * S, p.y * S))))
-  return s
-}
-
-/** Extrude a plan polygon upward between two heights. */
+/** Extrude a plan polygon upward between two heights. See `prism.ts` for the mapping. */
 function prismMesh(poly: Poly, base: number, top: number, mat: THREE.Material): THREE.Mesh {
-  const geo = new THREE.ExtrudeGeometry(shapeFrom(poly), { depth: (top - base) * S, bevelEnabled: false })
-  // The shape lives in XY and extrudes along +Z; rotate so it stands up in Y.
-  geo.rotateX(-Math.PI / 2)
-  geo.translate(0, top * S, 0)
-  const m = new THREE.Mesh(geo, mat)
+  const m = new THREE.Mesh(prismGeometry(poly, base, top), mat)
   m.castShadow = true
   m.receiveShadow = true
   return m
@@ -101,16 +98,73 @@ function prismMaterial(p: Prism): THREE.Material {
   }
 }
 
-const PRESETS: Array<{ id: string; label: string; room?: string; pos: [number, number, number]; look: [number, number, number] }> = [
-  { id: 'overview', label: 'Overview', pos: [12.24, 17, 21], look: [12.24, 0, 5.4] },
-  { id: 'great', label: 'Great room', room: 'R-GREAT', pos: [12.24, 6, 14], look: [12.24, 1.2, 5.5] },
-  { id: 'deck', label: 'Deck', room: 'R-DECK', pos: [12.24, 5, -8], look: [12.24, 1.4, 1.3] },
-  { id: 'podP', label: "Parents' pod", room: 'R-P-HALL', pos: [2.5, 7.5, 13], look: [5.8, 1.2, 6.0] },
-  { id: 'podK', label: "Karan's pod", room: 'R-K-HALL', pos: [22, 7.5, 13], look: [18.0, 1.2, 6.0] },
-  { id: 'service', label: 'Service wing', room: 'R-KITCHEN', pos: [10.5, 8, 18], look: [10.5, 1.2, 9.6] },
-  { id: 'suiteP', label: "Parents' suite", room: 'R-P-SUITE', pos: [-5, 6, 8], look: [1.6, 1.2, 4.0] },
-  { id: 'suiteK', label: "Karan's suite", room: 'R-K-SUITE', pos: [30, 6, 8], look: [22.9, 1.2, 4.0] },
+/**
+ * Preset cameras are DERIVED from the rooms, not hand-placed. Hand-placed ones silently
+ * went stale the moment the plan-to-scene mapping was corrected, because they had been
+ * dialled in against mirrored geometry.
+ */
+interface Preset {
+  id: string
+  label: string
+  room?: string
+  /** Which side to stand on: +1 looks from the lobby side, -1 from the deck side. */
+  from?: 1 | -1
+}
+
+const PRESETS: Preset[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'great', label: 'Great room', room: 'R-GREAT' },
+  { id: 'deck', label: 'Deck', room: 'R-DECK', from: -1 },
+  { id: 'podP', label: "Parents' pod", room: 'R-P-HALL' },
+  { id: 'podK', label: "Karan's pod", room: 'R-K-HALL' },
+  { id: 'service', label: 'Service wing', room: 'R-KITCHEN' },
+  { id: 'suiteP', label: "Parents' suite", room: 'R-P-SUITE' },
+  { id: 'suiteK', label: "Karan's suite", room: 'R-K-SUITE' },
 ]
+
+/** Camera position and target, in scene metres, for a preset. */
+function presetCamera(p: Preset): { pos: THREE.Vector3; look: THREE.Vector3 } {
+  const env = model.envelopeBBox
+  if (!p.room) {
+    const cx = ((env.minX + env.maxX) / 2) * S
+    const cy = ((env.minY + env.maxY) / 2) * S
+    const span = (env.maxX - env.minX) * S
+    return {
+      pos: new THREE.Vector3(cx, span * 0.78, cy + span * 1.02),
+      look: new THREE.Vector3(cx, 0.6, cy),
+    }
+  }
+  const room = model.roomById.get(p.room)!
+  const cx = room.centroid.x * S
+  const cy = room.centroid.y * S
+  const span = Math.max(room.width, room.depth) * S
+  const depth = room.depth * S
+  const side = p.from ?? 1
+  const ceiling = model.data.levels.ceiling * S
+  const targetY = 0.3
+
+  // How steeply the camera has to look down to see over the room's own near wall. The
+  // sight line drops from the camera to the target, and at the near wall — half a room
+  // depth short of the target — it must still be above the ceiling. Shallow-angle views
+  // of a small service room are simply impossible, hence the derivation rather than a
+  // fixed elevation. Looking in from the deck side is unobstructed, so it stays low.
+  const slope =
+    side < 0 ? 0.85 : Math.max(1.0, (ceiling - targetY + 0.6) / Math.max(0.6, depth / 2))
+
+  // How far back the room has to be to fit across the frame. A 52 degree vertical field
+  // on a wide viewport is roughly 62 degrees horizontally, so half the span has to sit
+  // within tan(31 degrees) of the view distance. Without this the deck — 15 m wide and
+  // only 2.4 m deep — is framed from its own depth and overflows the screen.
+  const distance = Math.max(4, span * 0.95)
+  const back = distance / Math.sqrt(1 + slope * slope)
+  // Aim slightly past the room, away from the camera. That tilts the view up a touch and
+  // pushes the rooms you are looking over out of the bottom of the frame.
+  const lookZ = cy - side * depth * 0.3
+  return {
+    pos: new THREE.Vector3(cx, targetY + slope * back, cy + side * back),
+    look: new THREE.Vector3(cx, 1.0, lookZ),
+  }
+}
 
 export function Viewer3D({ compact = false }: { compact?: boolean }): React.ReactElement {
   const { state, set } = useStore()
@@ -144,28 +198,31 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.localClippingEnabled = true
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.05
+    renderer.toneMappingExposure = 1.0
     el.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xdfe6ea)
+    scene.background = new THREE.Color(0xb6c2c9)
 
     const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 500)
-    camera.position.set(12.24, 17, 21)
+    const home = presetCamera(PRESETS[0])
+    camera.position.copy(home.pos)
 
     const orbit = new OrbitControls(camera, renderer.domElement)
-    orbit.target.set(12.24, 0, 5.4)
+    orbit.target.copy(home.look)
     orbit.enableDamping = true
     orbit.maxPolarAngle = Math.PI * 0.495
 
     const lock = new PointerLockControls(camera, renderer.domElement)
     scene.add(lock.object)
 
-    const hemi = new THREE.HemisphereLight(0xdfeaf0, 0x9e9484, 1.1)
+    const hemi = new THREE.HemisphereLight(0xdce8f0, 0x9c9484, 0.68)
     scene.add(hemi)
-    const sun = new THREE.DirectionalLight(0xfff3e0, 2.2)
+    const sun = new THREE.DirectionalLight(0xfff2dc, 3.0)
     sun.castShadow = true
-    sun.shadow.mapSize.set(2048, 2048)
+    sun.shadow.mapSize.set(4096, 4096)
+    sun.shadow.bias = -0.0006
+    sun.shadow.normalBias = 0.02
     const cam = sun.shadow.camera
     cam.left = -22
     cam.right = 22
@@ -175,14 +232,19 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     cam.far = 120
     scene.add(sun)
     scene.add(sun.target)
+    // A weak fill from the opposite side so north-facing surfaces are not dead black.
+    const fill = new THREE.DirectionalLight(0xd8e6ef, 0.25)
+    fill.position.set(-18, 22, -14)
+    scene.add(fill)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.14))
 
     // Ground plane so the building reads as sitting on something.
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(200, 200),
-      new THREE.MeshStandardMaterial({ color: 0xcdc7bb, roughness: 1 }),
+      new THREE.MeshStandardMaterial({ color: 0xa39e91, roughness: 1 }),
     )
     ground.rotation.x = -Math.PI / 2
-    ground.position.set(12.24, -0.16, 5.4)
+    ground.position.set(CENTRE.x, -0.35, CENTRE.y)
     ground.receiveShadow = true
     scene.add(ground)
 
@@ -204,11 +266,8 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
 
     // ---- floor slabs
     for (const slab of solids.slabs) {
-      const geo = new THREE.ExtrudeGeometry(shapeFrom(slab.polygon, slab.holes), {
-        depth: slab.thickness * S,
-        bevelEnabled: false,
-      })
-      geo.rotateX(-Math.PI / 2)
+      // Slab sits just under the finished floor, so the top face is at level 0.
+      const geo = prismGeometry(slab.polygon, -slab.thickness, 0, slab.holes)
       const mat = (floorMaterial(slab.finish) as THREE.MeshStandardMaterial).clone()
       mat.clippingPlanes = clip
       const m = new THREE.Mesh(geo, mat)
@@ -218,11 +277,19 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     }
 
     // ---- walls, glazing, screens
+    // Each prism also gets a thin outline. Without it, adjacent off-white masses merge
+    // into one another and the model reads as a heap of blocks rather than as rooms.
+    const edgeMat = new THREE.LineBasicMaterial({ color: 0x8b8478, transparent: true, opacity: 0.32 })
+    edgeMat.clippingPlanes = clip
     for (const p of solids.prisms) {
       const mat = (prismMaterial(p) as THREE.MeshStandardMaterial).clone()
       mat.clippingPlanes = clip
       const mesh = prismMesh(p.polygon, p.base, p.top, mat)
       mesh.userData.wallId = p.wallId
+      if (!p.transparent) {
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), edgeMat)
+        mesh.add(edges)
+      }
       const zone = podOf(p)
       if (zone === 'parents') groups.podParents.add(mesh)
       else if (zone === 'karan') groups.podKaran.add(mesh)
@@ -234,7 +301,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     for (const [id, pts] of model.curves) {
       const portal = building.portals.find((q) => q.wall === id)
       const wall = building.walls.find((w) => w.id === id)
-      for (let i = 0; i < pts.length; i += 8) {
+      for (let i = 0; i < pts.length; i += 16) {
         const p = pts[i]
         if (portal && wall?.curve) {
           const a = bezierAt(wall.curve, portal.t[0])
@@ -243,7 +310,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
           const hi = Math.max(a.y, b.y)
           if (p.y > lo && p.y < hi) continue
         }
-        const geo = new THREE.BoxGeometry(0.05, solids.ceiling * S, 0.05)
+        const geo = new THREE.BoxGeometry(0.035, solids.ceiling * S, 0.035)
         const mat = MAT.mullion.clone()
         mat.clippingPlanes = clip
         const m = new THREE.Mesh(geo, mat)
@@ -264,45 +331,69 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
         groups.glassRoof.add(m)
         continue
       }
-      // Barrel vault: loft the section curve along x, and add ribs every 1500 mm.
+      // Barrel vault. A canopy is a SURFACE, not a solid: extruding the section as a
+      // THREE.Shape makes it close back to its own chord and the vault comes out as a
+      // solid glass lens lying across the deck. Loft it as a ribbon instead.
       const [x0, y0, x1, y1] = roof.extent
       const sec = roof.section!
-      const N = 40
+      const N = 48
+      const M = Math.max(2, Math.round((x1 - x0) / 500))
       const profile: THREE.Vector2[] = []
       for (let i = 0; i <= N; i++) {
         const q = bezierAt(sec, i / N)
+        // q.x is the distance across the deck from y0; q.y is height above the floor.
         profile.push(new THREE.Vector2(y0 + q.x, q.y))
       }
-      // The section lives in the (model y, height) plane and is extruded along model x.
-      // rotateY(+90°) maps geometry (x, y, z) to (z, y, -x), so the section's x is
-      // negated first — otherwise the vault lands on the wrong side of the deck edge.
-      const shape = new THREE.Shape(profile.map((p) => new THREE.Vector2(-p.x * S, p.y * S)))
-      const geo = new THREE.ExtrudeGeometry(shape, { depth: (x1 - x0) * S, bevelEnabled: false })
-      geo.rotateY(Math.PI / 2)
-      geo.translate(x0 * S, 0, 0)
+
+      const pos: number[] = []
+      for (let j = 0; j <= M; j++) {
+        const x = x0 + ((x1 - x0) * j) / M
+        for (const q of profile) pos.push(x * S, q.y * S, q.x * S)
+      }
+      const idx: number[] = []
+      for (let j = 0; j < M; j++) {
+        for (let i = 0; i < N; i++) {
+          const a = j * (N + 1) + i
+          const b = a + (N + 1)
+          idx.push(a, b, a + 1, b, b + 1, a + 1)
+        }
+      }
+      const geo = new THREE.BufferGeometry()
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+      geo.setIndex(idx)
+      geo.computeVertexNormals()
       const vault = new THREE.Mesh(geo, MAT.roofGlass)
+      vault.receiveShadow = true
       groups.glassRoof.add(vault)
+
+      // Ribs roughly every 1500 mm, as the brief specifies.
       for (let x = x0; x <= x1 + 1; x += 1500) {
         const curve = new THREE.CatmullRomCurve3(
           profile.map((p) => new THREE.Vector3(x * S, p.y * S, p.x * S)),
         )
-        const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.035, 6, false), MAT.mullion)
+        const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.032, 6, false), MAT.mullion)
+        tube.castShadow = true
         groups.glassRoof.add(tube)
+      }
+      // Purlins running the length, so the vault reads as glazing rather than a film.
+      for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+        const q = bezierAt(sec, t)
+        const rail = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.022, 0.022, (x1 - x0) * S, 6),
+          MAT.mullion,
+        )
+        rail.rotation.z = Math.PI / 2
+        rail.position.set(((x0 + x1) / 2) * S, q.y * S, (y0 + q.x) * S)
+        groups.glassRoof.add(rail)
       }
       void y1
     }
 
-    // ---- furniture, as simple massed volumes
+    // ---- furniture
     for (const f of furniture) {
       if (f.height <= 0) continue
-      const geo = new THREE.BoxGeometry(f.w * S, f.height * S, f.d * S)
-      const mat = ((f.kind === 'plant' ? MAT.green : f.kind === 'rug' ? MAT.soft : MAT.furniture) as THREE.MeshStandardMaterial).clone()
-      mat.clippingPlanes = clip
-      const m = new THREE.Mesh(geo, mat)
-      m.position.set((f.x + f.w / 2) * S, (f.height * S) / 2, (f.y + f.d / 2) * S)
-      m.castShadow = f.kind !== 'rug'
-      m.receiveShadow = true
-      groups.furniture.add(m)
+      const obj = furnitureObject(f, clip)
+      if (obj) groups.furniture.add(obj)
     }
     for (const f of fixtures) {
       const h = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900 : 800
@@ -422,15 +513,15 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     const pos = solarPosition(state.sun.day, state.sun.hour)
     const v = sunVector(pos, state.northAzimuth)
     const dist = 46
-    a.sun.position.set(12.24 + v.x * dist, Math.max(0.6, v.y * dist), 5.4 + v.z * dist)
-    a.sun.target.position.set(12.24, 0, 5.4)
+    a.sun.position.set(CENTRE.x + v.x * dist, Math.max(0.6, v.y * dist), CENTRE.y + v.z * dist)
+    a.sun.target.position.set(CENTRE.x, 0, CENTRE.y)
     a.sun.target.updateMatrixWorld()
     const up = pos.altitude > 0
-    a.sun.intensity = state.sun.mode === 'dusk' ? 0.7 : up ? 2.2 : 0.05
+    a.sun.intensity = state.sun.mode === 'dusk' ? 1.4 : up ? 3.0 : 0.05
     a.sun.color.set(state.sun.mode === 'dusk' ? 0xffb37a : 0xfff3e0)
     a.sun.castShadow = state.sun.shadows && up
-    a.hemi.intensity = state.sun.mode === 'dusk' ? 0.5 : up ? 1.1 : 0.35
-    a.scene.background = new THREE.Color(state.sun.mode === 'dusk' ? 0x5d6a7a : up ? 0xdfe6ea : 0x2c3440)
+    a.hemi.intensity = state.sun.mode === 'dusk' ? 0.45 : up ? 0.68 : 0.4
+    a.scene.background = new THREE.Color(state.sun.mode === 'dusk' ? 0x5f6b7e : up ? 0xb6c2c9 : 0x333b46)
   }, [state.sun, state.northAzimuth])
 
   const flyToRoom = useCallback((roomId: string) => {
@@ -529,8 +620,9 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
               onClick={() => {
                 const a = api.current
                 if (!a) return
-                a.camera.position.set(...p.pos)
-                a.orbit.target.set(...p.look)
+                const c = presetCamera(p)
+                a.camera.position.copy(c.pos)
+                a.orbit.target.copy(c.look)
                 a.orbit.update()
                 if (p.room) set({ selectedRoom: p.room })
               }}
@@ -571,6 +663,131 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       </div>
     </div>
   )
+}
+
+/**
+ * Furniture as recognisable massing rather than one box per item. Still schematic — this
+ * is a layout study, not a visualisation — but a bed reads as a bed and a sofa has a back,
+ * which is what stops the interior looking like a warehouse of packing crates.
+ */
+function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Object3D | null {
+  const g = new THREE.Group()
+  const box = (w: number, h: number, d: number, mat: THREE.MeshStandardMaterial, dx = 0, dy = 0, dz = 0): void => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w * S, h * S, d * S), withClip(mat, clip))
+    m.position.set(dx * S, dy * S, dz * S)
+    m.castShadow = true
+    m.receiveShadow = true
+    g.add(m)
+  }
+  const cyl = (r: number, h: number, mat: THREE.MeshStandardMaterial, dx = 0, dy = 0, dz = 0, seg = 16): void => {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, h * S, seg), withClip(mat, clip))
+    m.position.set(dx * S, dy * S, dz * S)
+    m.castShadow = true
+    m.receiveShadow = true
+    g.add(m)
+  }
+
+  const { w, d } = f
+  const back = 170
+  switch (f.kind) {
+    case 'rug':
+      box(w, 10, d, MAT.rug, 0, 5, 0)
+      break
+    case 'plant':
+      cyl(w * 0.3, 300, MAT.pot, 0, 150, 0, 12)
+      cyl(w * 0.44, 60, MAT.green, 0, 330, 0, 12)
+      g.add(sphere(w * 0.44, MAT.green, 0, 560, 0, clip))
+      break
+    case 'bed': {
+      const headAlongX = f.face === 'E' || f.face === 'W'
+      box(w, 380, d, MAT.soft, 0, 190, 0)
+      box(w * 0.96, 90, d * 0.96, MAT.linen, 0, 425, 0)
+      if (headAlongX) box(120, 900, d, MAT.furniture, (f.face === 'E' ? 1 : -1) * (w / 2 - 60), 450, 0)
+      else box(w, 900, 120, MAT.furniture, 0, 450, (f.face === 'S' ? 1 : -1) * (d / 2 - 60))
+      break
+    }
+    case 'daybed':
+      box(w, 380, d, MAT.soft, 0, 190, 0)
+      box(w, 700, 120, MAT.furniture, 0, 350, -(d / 2 - 60))
+      break
+    case 'sofa': {
+      box(w, 380, d, MAT.soft, 0, 190, 0)
+      const alongX = f.face === 'N' || f.face === 'S'
+      if (alongX) box(w, 720, back, MAT.furniture, 0, 360, (f.face === 'N' ? 1 : -1) * (d / 2 - back / 2))
+      else box(back, 720, d, MAT.furniture, (f.face === 'E' ? -1 : 1) * (w / 2 - back / 2), 360, 0)
+      break
+    }
+    case 'armchair':
+      box(w, 360, d, MAT.soft, 0, 180, 0)
+      box(w, 700, back, MAT.furniture, 0, 350, d / 2 - back / 2)
+      break
+    case 'dining':
+      box(w, 60, d, MAT.wood, 0, f.height - 30, 0)
+      for (const sx of [-1, 1]) {
+        for (const sz of [-1, 1]) {
+          cyl(35, f.height - 60, MAT.furniture, sx * (w / 2 - 120), (f.height - 60) / 2, sz * (d / 2 - 120), 8)
+        }
+      }
+      break
+    case 'table':
+    case 'console':
+    case 'bench':
+      box(w, 60, d, MAT.wood, 0, f.height - 30, 0)
+      box(w * 0.86, f.height - 60, d * 0.86, MAT.furniture, 0, (f.height - 60) / 2, 0)
+      break
+    case 'stool':
+      cyl(Math.min(w, d) / 2, 60, MAT.wood, 0, f.height - 30, 0, 12)
+      cyl(50, f.height - 60, MAT.furniture, 0, (f.height - 60) / 2, 0, 8)
+      break
+    case 'lounger':
+      box(w, 320, d, MAT.soft, 0, 160, 0)
+      box(w, 420, d * 0.34, MAT.furniture, 0, 480, -(d / 2 - d * 0.17))
+      break
+    case 'shelves':
+    case 'wardrobe':
+      box(w, f.height, d, MAT.furniture, 0, f.height / 2, 0)
+      break
+    case 'drumkit':
+      cyl(Math.min(w, d) * 0.28, 500, MAT.furniture, 0, 250, d * 0.1, 20)
+      cyl(190, 300, MAT.furniture, -w * 0.26, 620, -d * 0.1, 16)
+      cyl(190, 300, MAT.furniture, w * 0.02, 640, -d * 0.2, 16)
+      cyl(240, 40, MAT.mullion, -w * 0.34, 980, d * 0.16, 16)
+      cyl(260, 40, MAT.mullion, w * 0.32, 1020, -d * 0.26, 16)
+      break
+    case 'guitar':
+      cyl(30, 950, MAT.furniture, 0, 475, 0, 8)
+      g.add(sphere(190, MAT.wood, 0, 340, 0, clip))
+      break
+    case 'stair': {
+      const n = 6
+      for (let i = 0; i < n; i++) {
+        box(w, 170, d / n, MAT.stone, 0, 85 + i * 170 * 0, (i + 0.5) * (d / n) - d / 2)
+      }
+      break
+    }
+    default:
+      box(w, f.height, d, MAT.furniture, 0, f.height / 2, 0)
+  }
+
+  g.position.set((f.x + w / 2) * S, 0, (f.y + d / 2) * S)
+  return g
+}
+
+function sphere(r: number, mat: THREE.MeshStandardMaterial, dx: number, dy: number, dz: number, clip: THREE.Plane[]): THREE.Mesh {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r * S, 14, 10), withClip(mat, clip))
+  m.position.set(dx * S, dy * S, dz * S)
+  m.castShadow = true
+  return m
+}
+
+const clipCache = new WeakMap<THREE.Material, THREE.MeshStandardMaterial>()
+function withClip(mat: THREE.MeshStandardMaterial, clip: THREE.Plane[]): THREE.MeshStandardMaterial {
+  const hit = clipCache.get(mat)
+  if (hit) return hit
+  const c = mat.clone()
+  c.clippingPlanes = clip
+  clipCache.set(mat, c)
+  return c
 }
 
 function podOf(p: Prism): 'parents' | 'karan' | null {

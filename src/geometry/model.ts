@@ -324,6 +324,28 @@ function buildExteriorRuns(data: BuildingData): { runs: WallDef[]; centreline: P
     pushSolid(cursor, L)
   }
 
+  // Where a glazed span runs right up to an envelope corner and the next edge starts
+  // glazed too, the jog off the centreline and the jog back onto it are exact reverses:
+  // a degenerate spike at the corner, and two boundaries lying on the same line. Cancel
+  // the pair so the glass simply turns the corner. The list is circular, because the
+  // north edge is walked first and the west edge last.
+  const isJog = (r: WallDef): boolean => r.id.startsWith('EXT-J')
+  const drop = new Set<number>()
+  for (let i = 0; i < runs.length; i++) {
+    const j = (i + 1) % runs.length
+    if (drop.has(i) || drop.has(j) || i === j) continue
+    const a = runs[i]
+    const b = runs[j]
+    if (!isJog(a) || !isJog(b)) continue
+    if (dist(a.points![0], b.points![1]) < 1 && dist(a.points![1], b.points![0]) < 1) {
+      drop.add(i)
+      drop.add(j)
+    }
+  }
+  const kept = runs.filter((_, i) => !drop.has(i))
+  runs.length = 0
+  runs.push(...kept)
+
   // The boundary loop the interior walls get clipped against, following the jogs.
   const centreline: Poly = runs.map((r) => r.points![0])
 

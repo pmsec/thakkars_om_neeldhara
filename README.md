@@ -243,8 +243,9 @@ Recorded here and on the **Brief & constraints** page rather than buried.
   client's instruction that stretch is now floor-to-canopy structural glazing on the
   building line, continuous with the barrel vault. The deck's derived carpet area moved
   from 338.4 to 377.2 sq ft, against Rev 4's published 378, which only reconciles with the
-  wall gone. **The two private terraces still carry the same condition** and have been left
-  as drawn, because no instruction covers them.
+  wall gone. **The two private terraces have had the same treatment**, on both exposed
+  edges since each is a corner; their carpet went from 25.0 to 35.3 sq ft each. They are not
+  under the vault, so their glass runs floor to ceiling and they stay open to the sky.
 
 ## Two things in Rev 4 worth a second look
 

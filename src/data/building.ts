@@ -105,6 +105,38 @@ export const building: BuildingData = {
   // outline, including in front of the deck; that is what put a blank 3050 mm wall
   // between the deck and the view. Confirmed removed by the client.
   envelopeGlazing: [
+    // Each private terrace is a corner, so BOTH its exposed edges are glazed. Leaving one
+    // side walled would be the same blank wall the deck had, just turned ninety degrees.
+    // Unlike the deck these are not under the barrel vault, so the glass runs floor to
+    // ceiling and the terrace stays open to the sky.
+    {
+      id: 'EG-P-TERRACE-N',
+      p1: { x: 0, y: 0 },
+      p2: { x: 3200, y: 0 },
+      label: "Parents' terrace — glazed edge",
+      notes: 'Replaces the external wall. Open to the sky; no canopy over.',
+    },
+    {
+      id: 'EG-P-TERRACE-W',
+      p1: { x: 0, y: 1100 },
+      p2: { x: 0, y: 0 },
+      label: "Parents' terrace — glazed edge, west",
+      notes: 'Replaces the external wall on the terrace\u2019s second exposed side.',
+    },
+    {
+      id: 'EG-K-TERRACE-N',
+      p1: { x: 21280, y: 0 },
+      p2: { x: 24480, y: 0 },
+      label: "Karan's terrace — glazed edge",
+      notes: 'Replaces the external wall. Open to the sky; no canopy over.',
+    },
+    {
+      id: 'EG-K-TERRACE-E',
+      p1: { x: 24480, y: 0 },
+      p2: { x: 24480, y: 1100 },
+      label: "Karan's terrace — glazed edge, east",
+      notes: 'Replaces the external wall on the terrace\u2019s second exposed side.',
+    },
     {
       id: 'EG-DECK',
       p1: { x: 4730, y: 0 },

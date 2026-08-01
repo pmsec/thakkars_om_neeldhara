@@ -16,6 +16,7 @@ export function BriefView(): React.ReactElement {
   const w = greatRoomWidths()
   const great = model.roomById.get('R-GREAT')!
   const deck = model.roomById.get('R-DECK')!
+  const pTerrace = model.roomById.get('R-P-TERRACE')!
   const roof = building.glassRoofs.find((r) => r.id === 'ROOF-DECK')!
 
   return (
@@ -198,8 +199,13 @@ export function BriefView(): React.ReactElement {
         that wall, which no habitable balcony would be built without.
         <br />
         <br />
-        <b>Still to confirm:</b> the same condition applies to the two private terraces at
-        either end, which keep their wall in this model because no instruction covers them.
+        <b>The two private terraces have had the same treatment.</b> Each is a corner, so
+        both exposed edges are glazed — leaving one side walled would be the same blank wall
+        turned ninety degrees. They are not under the barrel vault, so their glass runs floor
+        to ceiling and the terraces stay open to the sky. Each gains{' '}
+        {(sqFt(pTerrace.area) - 25.0).toFixed(0)} sq ft, from 25.0 to{' '}
+        {sqFt(pTerrace.area).toFixed(1)} sq ft, and now measures 3200 mm across against the
+        Rev 4 note's 3120.
       </div>
 
       <h2>Two things in Rev 4 worth a second look</h2>

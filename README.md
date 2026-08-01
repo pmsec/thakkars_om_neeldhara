@@ -228,9 +228,13 @@ Recorded here and on the **Brief & constraints** page rather than buried.
 - **Stack positions are Rev 4 derived, not surveyed.** They make the wet-area check a real
   regression guard, but confirm risers against the sanctioned plumbing drawings before
   demolition.
-- **Glazed screens to the deck are zero-thickness in plan.** Frame depth is a glazing
-  contractor's dimension and has not been invented. They get a nominal 20 mm pane in 3D
-  for visibility only, and take no part in any area.
+- **There is no upright glass between the deck and the interior.** Those screens are
+  deleted — the curved canopy is the exterior enclosure, so a straight glass wall inside it
+  was a second skin. The family room, den and great room all open onto the deck; the line
+  survives only as a floor-finish change so the rooms still measure separately. Note this
+  removes the thermal and acoustic break between the conditioned rooms and the deck.
+- **All three glass roofs land at 3050**, the top of the walls, so the canopy and the two
+  flat pod roofs meet edge to edge instead of floating at 3400 and 3070.
 - **Shaft edges are zero-thickness boundaries.** The sanctioned plan shows no wall on
   those four lines, so none was added.
 - **Carpet is measured inside the wall faces**; Rev 4's published figures are measured to

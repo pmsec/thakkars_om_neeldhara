@@ -141,10 +141,11 @@ export const building: BuildingData = {
       id: 'EG-DECK',
       p1: { x: 4730, y: 0 },
       p2: { x: 19750, y: 0 },
-      label: 'Structural glazing to the deck — no wall',
+      pane: false,
+      label: 'Deck edge — the curved canopy springs from here',
       notes:
-        'Floor-to-canopy glass on the building line, continuous with the retractable ' +
-        'barrel vault above. Replaces the external wall for the full 15 020 mm of deck.',
+        'No upright pane and no wall: the barrel vault itself comes down to floor level on ' +
+        'this line and is the exterior enclosure for the full 15 020 mm of deck.',
     },
   ],
 
@@ -407,21 +408,25 @@ export const building: BuildingData = {
     // ---------------------------------------------------------------- glazing to the deck
     // Modelled at zero thickness: these are frameless full-height glazed screens. Frame
     // depth is a glazing-contractor dimension and is deliberately not invented here.
+    // The upright glass screens that used to stand here are DELETED. The deck is enclosed
+    // by the curved canopy, so a straight glass wall on this line was a second skin inside
+    // the first. The family room and the den now open onto the deck exactly as the great
+    // room does; the line survives only as a floor-finish change.
     {
       id: 'G-FAMILY-DECK',
       points: [{ x: 4730, y: 2620 }, { x: 8395, y: 2620 }],
       thickness: 0,
-      kind: 'glazing',
-      label: 'Full-height glazing, family room to deck',
-      openings: [{ id: 'GZ-01', type: 'window', at: [0, 3665], sill: 0, head: 3050, nonCirculating: true }],
+      kind: 'threshold',
+      label: 'Family room open to the deck — no wall',
+      openings: [{ id: 'GZ-01', type: 'threshold', at: [0, 3665], head: 3050 }],
     },
     {
       id: 'G-DEN-DECK',
       points: [{ x: 16085, y: 2620 }, { x: 19750, y: 2620 }],
       thickness: 0,
-      kind: 'glazing',
-      label: 'Full-height glazing, den to deck',
-      openings: [{ id: 'GZ-02', type: 'window', at: [0, 3665], sill: 0, head: 3050, nonCirculating: true }],
+      kind: 'threshold',
+      label: 'Den open to the deck — no wall',
+      openings: [{ id: 'GZ-02', type: 'threshold', at: [0, 3665], head: 3050 }],
     },
     {
       id: 'TH-GREAT-DECK',
@@ -540,8 +545,9 @@ export const building: BuildingData = {
       extent: [4730, -700, 19750, 2620],
       // Section in ABSOLUTE (model y, height). It springs from floor level ON the building
       // line, bulges roughly 690 mm beyond it at about 3.2 m, peaks near 4.45 m, and lands
-      // on the building face at 3400 — just above the 3050 ceiling.
-      section: { p0: { x: 0, y: 0 }, p1: { x: -2200, y: 6600 }, p2: { x: 2620, y: 3400 } },
+      // on the building face at 3050 — flush with the top of the walls, so the canopy and
+      // the flat pod roofs meet edge to edge instead of the canopy floating above them.
+      section: { p0: { x: 0, y: 0 }, p1: { x: -2200, y: 6600 }, p2: { x: 2620, y: 3050 } },
       retractable: true,
       glazing: 'Laminated acoustic glass',
       notes: 'HIGHEST-RISK ELEMENT. Now also the deck\u2019s enclosing wall, not just its roof: it runs to floor level where the external wall used to be. Covers an open balcony, so it needs society NOC and most likely BMC permission. Single glazing will not stop road noise — laminated acoustic glass is required, not optional.',
@@ -551,7 +557,7 @@ export const building: BuildingData = {
       name: 'Flat glass roof over the family room',
       kind: 'flat',
       extent: [4730, 2620, 8395, 4900],
-      height: 3070,
+      height: 3050,
       glazing: 'Laminated glass',
     },
     {
@@ -559,7 +565,7 @@ export const building: BuildingData = {
       name: 'Flat glass roof over the music + work den',
       kind: 'flat',
       extent: [16085, 2620, 19750, 4900],
-      height: 3070,
+      height: 3050,
       glazing: 'Laminated glass',
     },
   ],

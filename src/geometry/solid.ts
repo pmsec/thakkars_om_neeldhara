@@ -190,7 +190,9 @@ export function buildSolids(model: BuiltModel): SolidModel {
     // exception: they are real glass, so they get a nominal 20 mm pane purely so the 3D
     // view shows them. That 20 mm is a rendering allowance, not a specified dimension,
     // and it is excluded from every area calculation.
-    const solidThickness = w.thickness > 0 ? w.thickness : kind === 'glazing' ? 20 : 0
+    const wantsPane = w.def.renderPane !== false
+    const solidThickness =
+      w.thickness > 0 ? w.thickness : kind === 'glazing' && wantsPane ? 20 : 0
     if (solidThickness === 0) continue
 
     // A glazed line has no authored thickness, so the pane is a rendering allowance. Set

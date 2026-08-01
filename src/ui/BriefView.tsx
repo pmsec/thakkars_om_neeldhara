@@ -165,9 +165,16 @@ export function BriefView(): React.ReactElement {
           they are not a substitute for the sanctioned plumbing drawings.
         </li>
         <li>
-          <b>Glazed screens to the deck are modelled at zero thickness in plan.</b> Frame
-          depth is a glazing-contractor dimension and has not been invented. They are given a
-          nominal 20 mm pane in the 3D view for visibility only, and take no part in any area.
+          <b>There is no longer any upright glass between the deck and the interior.</b> The
+          screens that stood on that line are deleted: the curved canopy is the exterior
+          enclosure, so a straight glass wall inside it was a second skin. The family room,
+          the den and the great room all now open onto the deck. The line survives only as a
+          floor-finish change, which is why the rooms still measure separately.
+          <br />
+          <b>Worth a decision:</b> that removes the thermal and acoustic break between
+          conditioned rooms and the deck. It is the right move if the deck is a winter
+          garden on the same air as the house; it is the wrong one if the deck is meant to
+          run unconditioned.
         </li>
         <li>
           <b>Shaft edges are zero-thickness boundaries.</b> The sanctioned plan shows no wall
@@ -206,6 +213,14 @@ export function BriefView(): React.ReactElement {
         {(sqFt(pTerrace.area) - 25.0).toFixed(0)} sq ft, from 25.0 to{' '}
         {sqFt(pTerrace.area).toFixed(1)} sq ft, and now measures 3200 mm across against the
         Rev 4 note's 3120.
+      </div>
+
+      <div className="callout">
+        <b>The glass roofs now land on the top of the walls.</b> The canopy previously met
+        the building at 3400 mm, floating above the 3050 mm wall head, and the two flat pod
+        roofs sat at 3070. All three are now at 3050, so the canopy and the flat roofs meet
+        edge to edge on the wall line and read as one continuous glazed surface rather than
+        three pieces at three levels.
       </div>
 
       <h2>Two things in Rev 4 worth a second look</h2>

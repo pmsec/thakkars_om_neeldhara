@@ -48,6 +48,8 @@ export interface WallDef {
   thickness: number
   kind: WallKind
   openings?: OpeningDef[]
+  /** Zero-thickness glazing only: false suppresses the 3D pane. */
+  renderPane?: boolean
   label?: string
   notes?: string
 }
@@ -122,6 +124,11 @@ export interface EnvelopeGlazingDef {
   p1: Pt
   p2: Pt
   label: string
+  /**
+   * Draw a vertical pane in 3D. False where a curved canopy already springs from this
+   * line and IS the enclosure — a separate upright pane there is just doubled glass.
+   */
+  pane?: boolean
   notes?: string
 }
 

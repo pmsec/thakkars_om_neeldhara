@@ -11,13 +11,14 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { getModel } from '../geometry/model'
-import { buildSolids, type Prism } from '../geometry/solid'
+import { barrelProfile, buildSolids, type Prism } from '../geometry/solid'
 import { building } from '../data/building'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
 import { bezierAt } from '../geometry/bezier'
 import { pointInPolygon, type Poly } from '../geometry/vec'
 import { prismGeometry, S } from './prism'
+import { gableGeometry, gableJamb, vaultGeometry } from './canopy'
 import { PRESETS, presetCamera } from './cameras'
 import { formatLength } from '../geometry/units'
 import { useStore } from '../ui/store'
@@ -275,45 +276,20 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
         groups.glassRoof.add(m)
         continue
       }
-      // Barrel vault. A canopy is a SURFACE, not a solid: extruding the section as a
-      // THREE.Shape makes it close back to its own chord and the vault comes out as a
-      // solid glass lens lying across the deck. Loft it as a ribbon instead.
-      const [x0, y0, x1, y1] = roof.extent
-      const sec = roof.section!
-      const N = 48
-      const M = Math.max(2, Math.round((x1 - x0) / 500))
-      const profile: THREE.Vector2[] = []
-      for (let i = 0; i <= N; i++) {
-        const q = bezierAt(sec, i / N)
-        // q.x is the distance across the deck from y0; q.y is height above the floor.
-        profile.push(new THREE.Vector2(y0 + q.x, q.y))
-      }
+      // Barrel vault. The mesh construction lives in `canopy.ts`, where the test suite
+      // can measure it — the canopy is enclosure now, not decoration, and the abstract
+      // solid model holds no roof surfaces to check it against.
+      const [x0, , x1] = roof.extent
+      const profile = barrelProfile(roof.section!, 48)
 
-      const pos: number[] = []
-      for (let j = 0; j <= M; j++) {
-        const x = x0 + ((x1 - x0) * j) / M
-        for (const q of profile) pos.push(x * S, q.y * S, q.x * S)
-      }
-      const idx: number[] = []
-      for (let j = 0; j < M; j++) {
-        for (let i = 0; i < N; i++) {
-          const a = j * (N + 1) + i
-          const b = a + (N + 1)
-          idx.push(a, b, a + 1, b, b + 1, a + 1)
-        }
-      }
-      const geo = new THREE.BufferGeometry()
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
-      geo.setIndex(idx)
-      geo.computeVertexNormals()
-      const vault = new THREE.Mesh(geo, MAT.roofGlass)
+      const vault = new THREE.Mesh(vaultGeometry(roof), MAT.roofGlass)
       vault.receiveShadow = true
       groups.glassRoof.add(vault)
 
       // Ribs roughly every 1500 mm, as the brief specifies.
       for (let x = x0; x <= x1 + 1; x += 1500) {
         const curve = new THREE.CatmullRomCurve3(
-          profile.map((p) => new THREE.Vector3(x * S, p.y * S, p.x * S)),
+          profile.map((q) => new THREE.Vector3(x * S, q.y * S, q.x * S)),
         )
         const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.032, 6, false), MAT.mullion)
         tube.castShadow = true
@@ -321,16 +297,30 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       }
       // Purlins running the length, so the vault reads as glazing rather than a film.
       for (const t of [0, 0.25, 0.5, 0.75, 1]) {
-        const q = bezierAt(sec, t)
+        const q = bezierAt(roof.section!, t)
         const rail = new THREE.Mesh(
           new THREE.CylinderGeometry(0.022, 0.022, (x1 - x0) * S, 6),
           MAT.mullion,
         )
         rail.rotation.z = Math.PI / 2
-        rail.position.set(((x0 + x1) / 2) * S, q.y * S, (y0 + q.x) * S)
+        rail.position.set(((x0 + x1) / 2) * S, q.y * S, q.x * S)
         groups.glassRoof.add(rail)
       }
-      void y1
+
+      // Gable ends. Where the vault stops against the building's own face rather than
+      // against an open shaft, the end is closed with a glazed panel cut to the section —
+      // curved along the vault, straight down the wall line. That is what encloses the
+      // terraces' returns now that the upright panes are gone.
+      for (const end of roof.gableEnds) {
+        groups.glassRoof.add(new THREE.Mesh(gableGeometry(roof, end), MAT.roofGlass))
+        const j = gableJamb(roof, end)
+        const jamb = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.032, 0.032, j.height, 6),
+          MAT.mullion,
+        )
+        jamb.position.set(j.x, j.height / 2, j.z)
+        groups.glassRoof.add(jamb)
+      }
     }
 
     // ---- furniture

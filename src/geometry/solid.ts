@@ -74,6 +74,8 @@ export interface RoofSurface {
   /** Barrel: a lofted strip set. Flat: a single quad at `height`. */
   extent: [number, number, number, number]
   section?: QuadBezier
+  /** Barrel: ends closed with a glazed gable cut to the section. */
+  gableEnds: Array<'x0' | 'x1'>
   height?: number
   retractable: boolean
   glazing: string
@@ -86,6 +88,34 @@ export interface SolidModel {
   /** Plan bounds of every solid, which must equal the 2D envelope bounds. */
   bounds: BBox
   ceiling: number
+}
+
+// ------------------------------------------------------------------ canopy sections
+
+/**
+ * Sampled section of a barrel canopy, in (model y, height). The section is ABSOLUTE, so
+ * the y values are model coordinates and may fall outside the building line where the
+ * glass bulges out. Framework-free on purpose: the renderer and the integrity suite both
+ * read the canopy from here rather than each deriving it.
+ */
+export function barrelProfile(section: QuadBezier, segments = 48): Pt[] {
+  const out: Pt[] = []
+  for (let i = 0; i <= segments; i++) out.push(bezierAt(section, i / segments))
+  return out
+}
+
+/**
+ * Closed outline of the glazed gable that shuts one end of a barrel canopy, in
+ * (model y, height): up the section, straight down to the floor, back along it. This is
+ * what encloses a terrace's return now that the upright pane there is gone.
+ */
+export function gableOutline(section: QuadBezier, segments = 48): Poly {
+  const prof = barrelProfile(section, segments)
+  const last = prof[prof.length - 1]
+  const ring: Poly = [...prof]
+  if (last.y > 1e-6) ring.push({ x: last.x, y: 0 })
+  if (prof[0].y > 1e-6) ring.push({ x: prof[0].x, y: 0 })
+  return ring
 }
 
 // --------------------------------------------------------------------------- helpers
@@ -317,6 +347,7 @@ export function buildSolids(model: BuiltModel): SolidModel {
     kind: r.kind,
     extent: r.extent,
     section: r.section,
+    gableEnds: r.gableEnds ?? [],
     height: r.height,
     retractable: !!r.retractable,
     glazing: r.glazing,

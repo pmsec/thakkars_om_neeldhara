@@ -12,7 +12,7 @@ import { fixtures } from '../data/fixtures'
 import { building } from '../data/building'
 import { reachableFrom, serviceBreaches, serviceRoomIds } from './graph'
 import { buildModel, getModel, type BuiltModel } from './model'
-import { buildSolids } from './solid'
+import { barrelProfile, buildSolids } from './solid'
 import { isMonotonicInY, flattenError } from './bezier'
 import { formatFeetInches, parseFeetInches, sqFt, sqM } from './units'
 import { area, dist, pointInPolygon, segIntersect, signedArea, type Poly, type Pt } from './vec'
@@ -530,6 +530,95 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       requirement: 'Positive finite area, non-degenerate winding, at least three vertices.',
       pass: positive && wound && model.rooms.every((r) => r.polygon.length >= 3),
       actual: `${model.rooms.length} polygons, smallest ${mm2ToBoth(Math.min(...model.rooms.map((r) => r.area)))}, great room ${mm2ToBoth(great.area)}`,
+      severity: 'fail',
+    })
+  }
+
+  // ------------------------------- 14. every wall we deleted is enclosed by something
+  {
+    // Deleting a stretch of external wall and glazing it is only safe if something
+    // actually closes the hole. A run with `pane: false` has no upright glass, so the
+    // canopy has to do it: either the vault springs from that line at floor level, or a
+    // gable end of the vault stands on it. This check is what stops "remove that wall"
+    // from quietly leaving the building open to the weather.
+    const problems: string[] = []
+    const rows: string[] = []
+    const barrels = building.glassRoofs.filter((r) => r.kind === 'barrel' && r.section)
+    const ceiling = building.levels.ceiling
+    const TOL = 1
+
+    /** Plan y range the canopy actually covers, from the same profile the renderer uses. */
+    const profileOf = (r: (typeof barrels)[number]) => {
+      const sec = r.section!
+      const prof = barrelProfile(sec, 400)
+      return {
+        lo: Math.min(...prof.map((q) => q.x)),
+        hi: Math.max(...prof.map((q) => q.x)),
+        springsAt: sec.p0.x,
+        springHeight: sec.p0.y,
+        lands: sec.p2.y,
+      }
+    }
+
+    for (const g of building.envelopeGlazing ?? []) {
+      const horizontal = Math.abs(g.p1.y - g.p2.y) < TOL
+      const a = horizontal ? Math.min(g.p1.x, g.p2.x) : Math.min(g.p1.y, g.p2.y)
+      const b = horizontal ? Math.max(g.p1.x, g.p2.x) : Math.max(g.p1.y, g.p2.y)
+      if (g.pane !== false) {
+        rows.push(`${g.id}: upright glazed pane, floor to ${ceiling} mm`)
+        continue
+      }
+      let by = ''
+      for (const r of barrels) {
+        const pr = profileOf(r)
+        const [x0, , x1] = r.extent
+        if (
+          horizontal &&
+          Math.abs(pr.springsAt - g.p1.y) < TOL &&
+          pr.springHeight < TOL &&
+          x0 - TOL <= a &&
+          x1 + TOL >= b
+        ) {
+          by = `${r.id} springs from this line at floor level and lands at ${pr.lands} mm`
+          break
+        }
+        const gables = r.gableEnds ?? []
+        const atGable =
+          (gables.includes('x0') && Math.abs(x0 - g.p1.x) < TOL) ||
+          (gables.includes('x1') && Math.abs(x1 - g.p1.x) < TOL)
+        if (!horizontal && atGable && pr.lo - TOL <= a && pr.hi + TOL >= b) {
+          by = `${r.id} closes this return with a glazed gable spanning y ${pr.lo.toFixed(0)}–${pr.hi.toFixed(0)}`
+          break
+        }
+      }
+      if (by) rows.push(`${g.id}: ${by}`)
+      else problems.push(`${g.id} has no upright pane and no canopy over it — the envelope is open here`)
+    }
+
+    // A canopy that is also the wall has to meet the wall head, or there is a slot of
+    // daylight where the two are supposed to merge.
+    const landings: string[] = []
+    for (const r of barrels) {
+      const lands = r.section!.p2.y
+      landings.push(`${r.id} lands at ${lands} mm (wall head ${ceiling} mm)`)
+      if (Math.abs(lands - ceiling) > TOL) {
+        problems.push(`${r.id} lands at ${lands} mm, ${(lands - ceiling).toFixed(0)} mm off the wall head`)
+      }
+    }
+
+    add({
+      id: 'envelope-enclosed',
+      title: 'Every deleted stretch of external wall is enclosed by glass',
+      requirement:
+        'Each glazed envelope run either carries an upright pane, or has a canopy that ' +
+        'springs from it at floor level or closes it with a gable; every canopy meets the wall head.',
+      pass: problems.length === 0,
+      actual:
+        `${(building.envelopeGlazing ?? []).length} glazed runs, ` +
+        `${(building.envelopeGlazing ?? []).filter((g) => g.pane === false).length} with no upright pane, ` +
+        `${barrels.length} canopies, ${problems.length} problems`,
+      tolerance: '1 mm',
+      detail: [...rows, ...landings, ...problems],
       severity: 'fail',
     })
   }

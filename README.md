@@ -233,8 +233,10 @@ Recorded here and on the **Brief & constraints** page rather than buried.
   was a second skin. The family room, den and great room all open onto the deck; the line
   survives only as a floor-finish change so the rooms still measure separately. Note this
   removes the thermal and acoustic break between the conditioned rooms and the deck.
-- **All three glass roofs land at 3050**, the top of the walls, so the canopy and the two
-  flat pod roofs meet edge to edge instead of floating at 3400 and 3070.
+- **All five glass roofs land at 3050**, the top of the walls, so the deck vault, the two
+  terrace canopies and the two flat pod roofs meet edge to edge instead of floating at 3400
+  and 3070. `envelope-enclosed` in the integrity suite checks that landing height, and
+  checks that every stretch of external wall that has been deleted has glass standing on it.
 - **Shaft edges are zero-thickness boundaries.** The sanctioned plan shows no wall on
   those four lines, so none was added.
 - **Carpet is measured inside the wall faces**; Rev 4's published figures are measured to
@@ -247,9 +249,12 @@ Recorded here and on the **Brief & constraints** page rather than buried.
   client's instruction that stretch is now floor-to-canopy structural glazing on the
   building line, continuous with the barrel vault. The deck's derived carpet area moved
   from 338.4 to 377.2 sq ft, against Rev 4's published 378, which only reconciles with the
-  wall gone. **The two private terraces have had the same treatment**, on both exposed
-  edges since each is a corner; their carpet went from 25.0 to 35.3 sq ft each. They are not
-  under the vault, so their glass runs floor to ceiling and they stay open to the sky.
+  wall gone. **The two private terraces have had the same treatment, canopy included**, on
+  both exposed edges since each is a corner; their carpet went from 25.0 to 35.3 sq ft each.
+  Neither carries an upright pane: each has a curved glass canopy of its own — the deck
+  vault's section scaled to the 1100 mm span — springing from floor level on the north
+  building line and landing on the terrace wall head at 3050. The return onto the west
+  (east) face is closed by a gable cut to that same curve, not by a flat wall of glass.
 
 ## Two things in Rev 4 worth a second look
 
@@ -264,7 +269,12 @@ Neither is a modelling error; both are in the drawing as issued.
 
 - The **retractable glass roof over the deck** needs society NOC and most likely BMC
   permission. It is the highest-risk element in the design — resolve it early.
-- Specify **laminated acoustic glass** for it. Single glazing will not stop road noise.
+- **The two terrace canopies raise the same question.** Each covers what is drawn as an
+  open balcony and encloses it in glass. Whether that makes the terraces countable area
+  is a question for the liaison architect, not one this model can answer: they are still
+  modelled as outdoor, non-carpet, exactly as before.
+- Specify **laminated acoustic glass** for all three canopies. Single glazing will not stop
+  road noise.
 - **Verify the structural columns** at the merged-wall junctions on site before anything
   is demolished.
 - Two ex-toilets become walk-in wardrobes with **plumbing capped, not removed**, so the

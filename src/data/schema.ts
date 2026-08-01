@@ -148,6 +148,12 @@ export interface GlassRoofDef {
   extent: [number, number, number, number]
   /** Barrel only: section curve in (model y, height). Absolute, so it may oversail. */
   section?: QuadBezier
+  /**
+   * Barrel only: which ends of the extrusion are closed with a glazed gable cut to the
+   * section profile. 'x0' is the low-x end, 'x1' the high-x end. An end left out is open —
+   * on the deck both ends face open building shafts, so neither is closed.
+   */
+  gableEnds?: Array<'x0' | 'x1'>
   height?: number
   retractable?: boolean
   glazing: string

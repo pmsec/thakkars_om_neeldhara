@@ -105,37 +105,47 @@ export const building: BuildingData = {
   // outline, including in front of the deck; that is what put a blank 3050 mm wall
   // between the deck and the view. Confirmed removed by the client.
   envelopeGlazing: [
-    // Each private terrace is a corner, so BOTH its exposed edges are glazed. Leaving one
-    // side walled would be the same blank wall the deck had, just turned ninety degrees.
-    // Unlike the deck these are not under the barrel vault, so the glass runs floor to
-    // ceiling and the terrace stays open to the sky.
+    // Each private terrace is a corner, so BOTH its exposed edges are glazed. They now
+    // carry the SAME condition as the deck: no upright pane on either edge, because a
+    // curved canopy of their own comes down to floor level on the north line and closes
+    // the return with a gable cut to that same curve.
     {
       id: 'EG-P-TERRACE-N',
       p1: { x: 0, y: 0 },
       p2: { x: 3200, y: 0 },
-      label: "Parents' terrace — glazed edge",
-      notes: 'Replaces the external wall. Open to the sky; no canopy over.',
+      pane: false,
+      label: "Parents' terrace — the curved canopy springs from here",
+      notes:
+        'No upright pane and no wall: ROOF-P-TERRACE springs from floor level on this ' +
+        'line and is the terrace\u2019s enclosure, exactly as the barrel vault is the deck\u2019s.',
     },
     {
       id: 'EG-P-TERRACE-W',
       p1: { x: 0, y: 1100 },
       p2: { x: 0, y: 0 },
-      label: "Parents' terrace — glazed edge, west",
-      notes: 'Replaces the external wall on the terrace\u2019s second exposed side.',
+      pane: false,
+      label: "Parents' terrace — west return, closed by the canopy gable",
+      notes:
+        'Enclosed by the glazed gable at the x0 end of ROOF-P-TERRACE, cut to the vault ' +
+        'section rather than standing as a full-height rectangular pane.',
     },
     {
       id: 'EG-K-TERRACE-N',
       p1: { x: 21280, y: 0 },
       p2: { x: 24480, y: 0 },
-      label: "Karan's terrace — glazed edge",
-      notes: 'Replaces the external wall. Open to the sky; no canopy over.',
+      pane: false,
+      label: "Karan's terrace — the curved canopy springs from here",
+      notes:
+        'No upright pane and no wall: ROOF-K-TERRACE springs from floor level on this ' +
+        'line and is the terrace\u2019s enclosure.',
     },
     {
       id: 'EG-K-TERRACE-E',
       p1: { x: 24480, y: 0 },
       p2: { x: 24480, y: 1100 },
-      label: "Karan's terrace — glazed edge, east",
-      notes: 'Replaces the external wall on the terrace\u2019s second exposed side.',
+      pane: false,
+      label: "Karan's terrace — east return, closed by the canopy gable",
+      notes: 'Enclosed by the glazed gable at the x1 end of ROOF-K-TERRACE.',
     },
     {
       id: 'EG-DECK',
@@ -477,9 +487,9 @@ export const building: BuildingData = {
 
   rooms: [
     // ---- outdoor
-    { id: 'R-P-TERRACE', name: "Parents' private terrace", anchor: { x: 1600, y: 600 }, category: 'outdoor', zone: 'outdoor', carpet: false, finish: 'Timber deck boards', notes: '3120 × 1100 nominal.' },
+    { id: 'R-P-TERRACE', name: "Parents' private terrace", anchor: { x: 1600, y: 600 }, category: 'outdoor', zone: 'outdoor', carpet: false, finish: 'Timber deck boards', notes: '3120 × 1100 nominal. Under its own curved glass canopy, which is also its enclosure on both exposed edges.' },
     { id: 'R-DECK', name: 'All-weather deck', anchor: { x: 12240, y: 500 }, category: 'outdoor', zone: 'outdoor', carpet: false, publishedSqFt: 378, finish: 'Timber deck boards', ceiling: 3400, notes: 'Under the retractable curved acoustic glass roof. Merged into the great room, not a separate balcony.' },
-    { id: 'R-K-TERRACE', name: "Karan's private terrace", anchor: { x: 22880, y: 600 }, category: 'outdoor', zone: 'outdoor', carpet: false, finish: 'Timber deck boards', notes: '3120 × 1100 nominal.' },
+    { id: 'R-K-TERRACE', name: "Karan's private terrace", anchor: { x: 22880, y: 600 }, category: 'outdoor', zone: 'outdoor', carpet: false, finish: 'Timber deck boards', notes: '3120 × 1100 nominal. Under its own curved glass canopy, which is also its enclosure on both exposed edges.' },
 
     // ---- voids
     { id: 'R-SHAFT-W', name: 'Void / shaft (west)', anchor: { x: 3965, y: 1300 }, category: 'void', zone: 'core', carpet: false, finish: 'Open shaft', notes: 'Open building shaft, 1530 × 2620. Not usable floor and NOT a planter — corrected in Rev 4.' },
@@ -551,6 +561,37 @@ export const building: BuildingData = {
       retractable: true,
       glazing: 'Laminated acoustic glass',
       notes: 'HIGHEST-RISK ELEMENT. Now also the deck\u2019s enclosing wall, not just its roof: it runs to floor level where the external wall used to be. Covers an open balcony, so it needs society NOC and most likely BMC permission. Single glazing will not stop road noise — laminated acoustic glass is required, not optional.',
+    },
+    {
+      id: 'ROOF-P-TERRACE',
+      name: "Curved glass canopy over the parents' private terrace",
+      kind: 'barrel',
+      // Same family as the deck vault, scaled to an 1100 mm span instead of 2620. y0 is
+      // negative because the glass oversails the building line as it bulges out.
+      extent: [0, -300, 3200, 1100],
+      // Absolute (model y, height). Springs from FLOOR LEVEL on the building line at
+      // y = 0, bulges 292 mm beyond it at about 1.4 m, peaks at 3597, and lands on the
+      // terrace wall head at y = 1100, height 3050 — flush with the top of the walls.
+      section: { p0: { x: 0, y: 0 }, p1: { x: -930, y: 5000 }, p2: { x: 1100, y: 3050 } },
+      // The west return is the building's own face, so it is closed by a gable cut to the
+      // section. The east end faces the open building shaft and is deliberately left open.
+      gableEnds: ['x0'],
+      glazing: 'Laminated acoustic glass',
+      notes:
+        'Replaces the upright glass walls on both exposed edges of the terrace. Like the ' +
+        'deck vault it is enclosure as well as roof, so the same consents apply: it covers ' +
+        'an open balcony and needs society NOC and most likely BMC permission.',
+    },
+    {
+      id: 'ROOF-K-TERRACE',
+      name: "Curved glass canopy over Karan's private terrace",
+      kind: 'barrel',
+      extent: [21280, -300, 24480, 1100],
+      section: { p0: { x: 0, y: 0 }, p1: { x: -930, y: 5000 }, p2: { x: 1100, y: 3050 } },
+      // Mirror of the parents' canopy about x = 12240, so the closed end is the east one.
+      gableEnds: ['x1'],
+      glazing: 'Laminated acoustic glass',
+      notes: 'Mirror of ROOF-P-TERRACE about x = 12 240. Same consents apply.',
     },
     {
       id: 'ROOF-FAMILY',

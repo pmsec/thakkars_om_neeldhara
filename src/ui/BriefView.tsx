@@ -123,6 +123,14 @@ export function BriefView(): React.ReactElement {
         great room&rsquo;s relationship to it changes.
       </div>
 
+      <div className="callout risk">
+        <b>The two terrace canopies raise the same question, on a smaller scale.</b> Each one
+        covers what the sanctioned plan draws as an open balcony and encloses it in glass, so
+        the same consents apply. Whether enclosing them makes the terraces countable area is a
+        question for the liaison architect; this model still counts them as outdoor and
+        non-carpet, exactly as it did when they were open.
+      </div>
+
       <div className="callout">
         <b>Specify laminated acoustic glass for that roof.</b> The point of it is road noise.
         Single glazing will not stop road noise, and substituting it during value engineering
@@ -206,10 +214,13 @@ export function BriefView(): React.ReactElement {
         that wall, which no habitable balcony would be built without.
         <br />
         <br />
-        <b>The two private terraces have had the same treatment.</b> Each is a corner, so
-        both exposed edges are glazed — leaving one side walled would be the same blank wall
-        turned ninety degrees. They are not under the barrel vault, so their glass runs floor
-        to ceiling and the terraces stay open to the sky. Each gains{' '}
+        <b>The two private terraces have had the same treatment, canopy included.</b> Each
+        is a corner, so both exposed edges are enclosed. Neither carries an upright pane any
+        more: each terrace has a curved glass canopy of its own, the same family as the deck
+        vault scaled to the 1100 mm span, springing from floor level on the north building
+        line and landing on the terrace wall head at 3050 mm. The return onto the west (and
+        east) face is closed by a gable cut to that same curve rather than by a flat wall of
+        glass. Each terrace gains{' '}
         {(sqFt(pTerrace.area) - 25.0).toFixed(0)} sq ft, from 25.0 to{' '}
         {sqFt(pTerrace.area).toFixed(1)} sq ft, and now measures 3200 mm across against the
         Rev 4 note's 3120.
@@ -218,9 +229,11 @@ export function BriefView(): React.ReactElement {
       <div className="callout">
         <b>The glass roofs now land on the top of the walls.</b> The canopy previously met
         the building at 3400 mm, floating above the 3050 mm wall head, and the two flat pod
-        roofs sat at 3070. All three are now at 3050, so the canopy and the flat roofs meet
-        edge to edge on the wall line and read as one continuous glazed surface rather than
-        three pieces at three levels.
+        roofs sat at 3070. All five surfaces &mdash; the deck vault, the two terrace canopies
+        and the two flat pod roofs &mdash; are now at 3050, so they meet edge to edge on the
+        wall line and read as one continuous glazed surface rather than pieces at three
+        levels. The integrity suite checks that landing height, and checks that every stretch
+        of external wall that has been deleted has glass standing on it.
       </div>
 
       <h2>Two things in Rev 4 worth a second look</h2>

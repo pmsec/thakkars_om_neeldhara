@@ -178,17 +178,28 @@ export function buildSolids(model: BuiltModel): SolidModel {
       const dEnd = distAtBezierT(w.points, acc, curve, tEnd)
       pushRun(prisms, w, acc, 0, dStart, 0, ceiling, kind, solidThickness, transparent)
       pushRun(prisms, w, acc, dEnd, total, 0, ceiling, kind, solidThickness, transparent)
-      const head = slice(w.points, acc, dStart, dEnd)
-      prisms.push({
-        id: `${w.id}:arch`,
-        kind: 'lintel',
-        polygon: band(head, solidThickness),
-        base: portal.springing,
-        top: ceiling,
-        archProfile: { springing: portal.springing, rise: portal.rise },
-        wallId: w.id,
-        transparent: false,
-      })
+      // The arch head: slice the span and give each slice its own springing height, so
+      // the underside reads as a real arch rather than a flat lintel.
+      const SLICES = 20
+      for (let i = 0; i < SLICES; i++) {
+        const u0 = i / SLICES
+        const u1 = (i + 1) / SLICES
+        const uMid = (u0 + u1) / 2
+        const base = portal.springing + portal.rise * Math.sin(Math.PI * uMid)
+        const seg = slice(w.points, acc, dStart + (dEnd - dStart) * u0, dStart + (dEnd - dStart) * u1)
+        const poly = band(seg, solidThickness)
+        if (poly.length < 3 || ceiling - base < 1e-6) continue
+        prisms.push({
+          id: `${w.id}:arch:${i}`,
+          kind: 'lintel',
+          polygon: poly,
+          base,
+          top: ceiling,
+          archProfile: { springing: portal.springing, rise: portal.rise },
+          wallId: w.id,
+          transparent: false,
+        })
+      }
       continue
     }
 

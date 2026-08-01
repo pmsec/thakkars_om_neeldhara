@@ -1,0 +1,559 @@
+/* Palette carried over from the Rev 4 sheet so the portal and the drawing read as one
+   document. Light only, and print-safe: this gets printed at true scale. */
+:root {
+  --paper: #f5f3ee;
+  --paper-2: #ffffff;
+  --ink: #232120;
+  --txt: #2a2724;
+  --txt2: #7b756b;
+  --faint: #9c968c;
+  --line: #d8d3c8;
+  --line-2: #ebe6dc;
+  --accent: #2c5c61;
+  --accent-soft: #e3ecec;
+  --glass: #3f7a8c;
+  --ochre: #a07a38;
+  --ochre-soft: #f6efdd;
+  --green: #6c8b6a;
+  --red: #a2432f;
+  --red-soft: #f6e5e0;
+  --wood: #e5d8c2;
+  --stone: #dbdfdb;
+  --serv: #ebe6dc;
+  --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--txt);
+  background: var(--paper);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- app shell */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 16px;
+  height: 52px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-2);
+  flex: none;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.brand b {
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+.brand span {
+  font-size: 10.5px;
+  color: var(--txt2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+.tabs button {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 6px 12px;
+  color: var(--txt2);
+  letter-spacing: 0.02em;
+}
+.tabs button:hover {
+  background: var(--line-2);
+}
+.tabs button[aria-current='true'] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.unitgroup {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.unitgroup button {
+  background: var(--paper-2);
+  border: none;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  color: var(--txt2);
+}
+.unitgroup button[aria-pressed='true'] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.side {
+  width: 288px;
+  flex: none;
+  border-right: 1px solid var(--line);
+  background: var(--paper-2);
+  overflow-y: auto;
+  padding-bottom: 32px;
+}
+.side.right {
+  border-right: none;
+  border-left: 1px solid var(--line);
+  width: 330px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.split {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.split > * {
+  flex: 1;
+  min-width: 0;
+}
+.split > * + * {
+  border-left: 1px solid var(--line);
+}
+
+/* ---------------------------------------------------------------- panels */
+.panel {
+  border-bottom: 1px solid var(--line-2);
+  padding: 12px 14px;
+}
+.panel h3 {
+  margin: 0 0 9px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--txt2);
+  font-weight: 600;
+}
+.panel h4 {
+  margin: 12px 0 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2.5px 0;
+}
+.row.wrap {
+  flex-wrap: wrap;
+}
+.row label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  flex: 1;
+}
+.row .val {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt2);
+  white-space: nowrap;
+}
+
+.btn {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+}
+.btn:hover {
+  background: var(--line-2);
+}
+.btn[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn.wide {
+  width: 100%;
+  margin-top: 4px;
+}
+.btn.tiny {
+  padding: 3px 7px;
+  font-size: 10.5px;
+}
+
+.btnrow {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+input[type='text'],
+input[type='number'],
+textarea,
+select {
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper-2);
+  width: 100%;
+}
+textarea {
+  resize: vertical;
+  min-height: 54px;
+}
+
+.muted {
+  color: var(--txt2);
+}
+.tiny {
+  font-size: 10.5px;
+}
+.mono {
+  font-family: var(--mono);
+}
+
+/* ---------------------------------------------------------------- 2D canvas */
+.planwrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--paper);
+}
+.planwrap svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.hud {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.hud > * {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 5px 9px;
+}
+
+.toolbar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px;
+}
+
+.scalebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.scalebar .bar {
+  height: 7px;
+  border: 1px solid var(--ink);
+  background: linear-gradient(
+    to right,
+    var(--ink) 0 25%,
+    #fff 25% 50%,
+    var(--ink) 50% 75%,
+    #fff 75% 100%
+  );
+}
+
+/* ---------------------------------------------------------------- documents */
+.doc {
+  overflow-y: auto;
+  padding: 30px 44px 90px;
+  max-width: 1080px;
+  line-height: 1.62;
+}
+.doc h1 {
+  font-size: 25px;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.doc h2 {
+  font-size: 15.5px;
+  margin: 30px 0 9px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--line);
+}
+.doc h3 {
+  font-size: 13px;
+  margin: 20px 0 5px;
+}
+.doc p,
+.doc li {
+  color: var(--txt);
+  max-width: 78ch;
+}
+.doc .lede {
+  color: var(--txt2);
+  font-size: 13.5px;
+  margin-bottom: 18px;
+}
+.doc ul {
+  padding-left: 20px;
+}
+.doc li {
+  margin: 4px 0;
+}
+
+table.sched {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 11.5px;
+  margin-top: 10px;
+}
+table.sched th,
+table.sched td {
+  border: 1px solid var(--line);
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+table.sched th {
+  background: var(--line-2);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+table.sched td.num {
+  text-align: right;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+table.sched tbody tr:hover {
+  background: var(--accent-soft);
+}
+table.sched tbody tr.sel {
+  background: var(--accent-soft);
+  outline: 1px solid var(--accent);
+}
+
+/* ---------------------------------------------------------------- integrity */
+.check {
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+  border-radius: 5px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--paper-2);
+}
+.check.pass {
+  border-left-color: var(--green);
+}
+.check.fail {
+  border-left-color: var(--red);
+  background: var(--red-soft);
+}
+.check.warn {
+  border-left-color: var(--ochre);
+  background: var(--ochre-soft);
+}
+.check .hd {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+.check .tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex: none;
+}
+.check.pass .tag {
+  background: var(--green);
+  color: #fff;
+}
+.check.fail .tag {
+  background: var(--red);
+  color: #fff;
+}
+.check.warn .tag {
+  background: var(--ochre);
+  color: #fff;
+}
+.check b {
+  font-size: 12.5px;
+}
+.check .req {
+  color: var(--txt2);
+  font-size: 11.5px;
+  margin: 4px 0 6px;
+}
+.check .actual {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--line-2);
+  padding: 4px 7px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.check ul {
+  margin: 7px 0 0;
+  padding-left: 17px;
+  font-size: 11px;
+  color: var(--txt2);
+  font-family: var(--mono);
+}
+
+.callout {
+  border: 1px solid var(--ochre);
+  background: var(--ochre-soft);
+  border-radius: 6px;
+  padding: 12px 15px;
+  margin: 12px 0;
+}
+.callout.risk {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+.callout b {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.stat {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 14px;
+  background: var(--paper-2);
+  min-width: 118px;
+}
+.stat .k {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--txt2);
+}
+.stat .v {
+  font-size: 17px;
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+
+.markup-item {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: var(--paper-2);
+}
+
+/* ---------------------------------------------------------------- print */
+@media print {
+  @page {
+    size: A1 landscape;
+    margin: 12mm;
+  }
+  .topbar,
+  .side,
+  .toolbar,
+  .hud,
+  .no-print {
+    display: none !important;
+  }
+  .app,
+  .body,
+  .main,
+  .planwrap {
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+  .planwrap svg {
+    /* True scale is set by the print stylesheet in Plan2D via width/height in mm. */
+    width: auto;
+    height: auto;
+  }
+  body {
+    background: #fff;
+  }
+}

@@ -1,0 +1,170 @@
+/**
+ * Shared portal state. Small enough not to need a state library, and deliberately
+ * framework-local — nothing in `src/geometry` imports any of this.
+ */
+
+import { createContext, useContext } from 'react'
+import type { UnitSystem } from '../geometry/units'
+import type { Pt } from '../geometry/vec'
+
+export type LayerId =
+  | 'walls'
+  | 'openings'
+  | 'glazing'
+  | 'curvedGlass'
+  | 'fixtures'
+  | 'furniture'
+  | 'dimensions'
+  | 'labels'
+  | 'serviceTint'
+  | 'glassRoof'
+  | 'shafts'
+  | 'grid'
+  | 'underlay'
+
+export const LAYER_LABELS: Array<[LayerId, string]> = [
+  ['walls', 'Walls'],
+  ['openings', 'Openings & door swings'],
+  ['glazing', 'Glazing'],
+  ['curvedGlass', 'Curved glass'],
+  ['fixtures', 'Sanitaryware & fitted'],
+  ['furniture', 'Furniture'],
+  ['dimensions', 'Dimension chains'],
+  ['labels', 'Room labels'],
+  ['serviceTint', 'Service-zone tint'],
+  ['glassRoof', 'Glass-roof overlay'],
+  ['shafts', 'Shafts & cores'],
+  ['grid', 'Grid'],
+  ['underlay', "Builder's original plan"],
+]
+
+export type Tool = 'select' | 'measure' | 'area' | 'markup' | 'calibrate'
+
+export type ViewId = 'plan' | 'model' | 'split' | 'schedules' | 'integrity' | 'brief'
+
+export interface MeasureChain {
+  id: string
+  points: Pt[]
+  /** Persisted ad-hoc dimensions survive tool changes; live ones do not. */
+  committed: boolean
+}
+
+export interface AreaPoly {
+  id: string
+  points: Pt[]
+  committed: boolean
+}
+
+export interface Markup {
+  id: string
+  at: Pt
+  text: string
+  author: string
+  date: string
+}
+
+/** Two-point georeference of the builder's original plan (brief §5.9). */
+export interface UnderlayTransform {
+  /** Scale, rotation (radians) and translation derived from two matched points. */
+  scale: number
+  rotation: number
+  tx: number
+  ty: number
+}
+
+export interface CalibrationState {
+  /** Points picked on the underlay image, in image pixel space. */
+  imagePoints: Pt[]
+  /** Corresponding points picked on the model, in mm. */
+  modelPoints: Pt[]
+}
+
+export interface Sun {
+  /** Day of the year, 1–365. */
+  day: number
+  /** Hour of the day, local Mumbai time (UTC+5:30). */
+  hour: number
+  mode: 'day' | 'dusk'
+  shadows: boolean
+}
+
+export interface PortalState {
+  view: ViewId
+  units: UnitSystem
+  /** Round feet-inches to the nearest whole inch, as the Rev 4 sheet does. */
+  roundToInch: boolean
+  layers: Record<LayerId, boolean>
+  tool: Tool
+  selectedRoom: string | null
+  hoveredRoom: string | null
+  measures: MeasureChain[]
+  areas: AreaPoly[]
+  markups: Markup[]
+  underlay: { opacity: number; transform: UnderlayTransform | null }
+  calibration: CalibrationState
+  snap: boolean
+  cutaway: number
+  section: { axis: 'x' | 'y' | 'z' | null; at: number }
+  show3d: { glassRoofs: boolean; furniture: boolean; podParents: boolean; podKaran: boolean }
+  sun: Sun
+  /**
+   * Compass bearing, in degrees, of the model's +x axis. The Rev 4 sheet's north arrow
+   * points along +x (so 0), but the Python source's header says north is -y (so 90).
+   * They disagree and the brief does not settle it, so it is exposed rather than fixed.
+   */
+  northAzimuth: number
+  /** Set when a view asks the other to fly to a room. */
+  flyTo: { room: string; nonce: number } | null
+  author: string
+}
+
+export const initialState: PortalState = {
+  view: 'plan',
+  units: 'mm',
+  roundToInch: false,
+  layers: {
+    walls: true,
+    openings: true,
+    glazing: true,
+    curvedGlass: true,
+    fixtures: true,
+    furniture: true,
+    dimensions: true,
+    labels: true,
+    serviceTint: true,
+    glassRoof: true,
+    shafts: true,
+    grid: false,
+    underlay: false,
+  },
+  tool: 'select',
+  selectedRoom: null,
+  hoveredRoom: null,
+  measures: [],
+  areas: [],
+  markups: [],
+  underlay: { opacity: 0.45, transform: null },
+  calibration: { imagePoints: [], modelPoints: [] },
+  snap: true,
+  cutaway: 3050,
+  section: { axis: null, at: 12240 },
+  show3d: { glassRoofs: true, furniture: true, podParents: true, podKaran: true },
+  sun: { day: 172, hour: 14, mode: 'day', shadows: true },
+  northAzimuth: 0,
+  flyTo: null,
+  author: 'Architect',
+}
+
+export interface Store {
+  state: PortalState
+  set: (patch: Partial<PortalState>) => void
+  update: (fn: (s: PortalState) => PortalState) => void
+}
+
+export const StoreContext = createContext<Store | null>(null)
+
+export function useStore(): Store {
+  const s = useContext(StoreContext)
+  if (!s) throw new Error('useStore outside provider')
+  return s
+}

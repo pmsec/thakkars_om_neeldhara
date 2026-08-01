@@ -25,6 +25,7 @@ export type FurnitureKind =
   | 'lounger'
   | 'rug'
   | 'plant'
+  | 'tree'
   | 'shelves'
   | 'dining'
   | 'drumkit'
@@ -63,6 +64,25 @@ const F = (
 ): FurnitureItem => ({ id, kind, x, y, w, d, room, label, height, ...extra })
 
 export const furniture: FurnitureItem[] = [
+  // --------------------------------------------------------- trees in the edge cages
+  // These stand OUTSIDE the envelope, in the metal cages that project past the slab and
+  // carry the foot of the canopy glass. They are planting, not fabric, so they live here
+  // with the rest of the loose items and switch off with them. `room` records which space
+  // each one fronts; it is not a claim that the tree is inside that room.
+  //
+  // Heights are checked against the canopy in `canopy.test.ts` — a tree that would grow
+  // into the glass fails the build rather than being discovered on site.
+  // 1300 wide inside a 1500 cage, so the crown clears the glass on both sides.
+  ...[5300, 7800, 10300, 12800, 15300, 17800].map((cx, i) =>
+    F(`FN-TREE-D${i + 1}`, 'tree', cx - 650, -1400, 1300, 1300, 'R-DECK', 'Tree in the deck-edge cage', 3400),
+  ),
+  ...[900, 2300].map((cx, i) =>
+    F(`FN-TREE-P${i + 1}`, 'tree', cx - 600, -1350, 1200, 1200, 'R-P-TERRACE', 'Tree in the terrace cage', 2800),
+  ),
+  ...[22180, 23580].map((cx, i) =>
+    F(`FN-TREE-K${i + 1}`, 'tree', cx - 600, -1350, 1200, 1200, 'R-K-TERRACE', 'Tree in the terrace cage', 2800),
+  ),
+
   // ------------------------------------------------------------------ all-weather deck
   F('FN-DECK-RUG', 'rug', 5250, 1000, 2650, 1450, 'R-DECK', 'Outdoor rug', 12),
   F('FN-DECK-SOFA', 'sofa', 5450, 1150, 2250, 780, 'R-DECK', 'Deck sofa', 750, { face: 'S' }),

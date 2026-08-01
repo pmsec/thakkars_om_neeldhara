@@ -19,6 +19,8 @@ import { bezierAt } from '../geometry/bezier'
 import { pointInPolygon, type Poly } from '../geometry/vec'
 import { prismGeometry, S } from './prism'
 import { gableGeometry, gableJamb, vaultGeometry } from './canopy'
+import { cageGroup } from './cage'
+import { treeMasses } from './tree'
 import { PRESETS, presetCamera } from './cameras'
 import { formatLength } from '../geometry/units'
 import { useStore } from '../ui/store'
@@ -66,6 +68,10 @@ const MAT = {
   rug: new THREE.MeshStandardMaterial({ color: 0xc9b99e, roughness: 1 }),
   pot: new THREE.MeshStandardMaterial({ color: 0xb08968, roughness: 0.9 }),
   green: new THREE.MeshStandardMaterial({ color: 0x7d9c78, roughness: 0.9 }),
+  trunk: new THREE.MeshStandardMaterial({ color: 0x7a6247, roughness: 0.95 }),
+  foliage: new THREE.MeshStandardMaterial({ color: 0x6f8f66, roughness: 0.95 }),
+  cage: new THREE.MeshStandardMaterial({ color: 0x5d6b66, roughness: 0.5, metalness: 0.55 }),
+  soil: new THREE.MeshStandardMaterial({ color: 0x4f4438, roughness: 1 }),
 }
 
 function floorMaterial(finish: string): THREE.Material {
@@ -202,6 +208,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       furniture: new THREE.Group(),
       podParents: new THREE.Group(),
       podKaran: new THREE.Group(),
+      cages: new THREE.Group(),
       slabs: new THREE.Group(),
     }
     Object.values(groups).forEach((g) => scene.add(g))
@@ -321,6 +328,12 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
         jamb.position.set(j.x, j.height / 2, j.z)
         groups.glassRoof.add(jamb)
       }
+    }
+
+    // ---- tree cages at the north edge. Outside the envelope by design: they carry the
+    // soil, the trees and the foot of the canopy glass.
+    for (const cage of solids.cages) {
+      groups.cages.add(cageGroup(cage, { metal: MAT.cage, soil: MAT.soil }))
     }
 
     // ---- furniture
@@ -446,6 +459,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     a.groups.furniture.visible = state.show3d.furniture
     a.groups.podParents.visible = state.show3d.podParents
     a.groups.podKaran.visible = state.show3d.podKaran
+    a.groups.cages.visible = state.show3d.cages
   }, [state.show3d])
 
   useEffect(() => {
@@ -638,6 +652,14 @@ function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Object3D 
       cyl(w * 0.3, 300, MAT.pot, 0, 150, 0, 12)
       cyl(w * 0.44, 60, MAT.green, 0, 330, 0, 12)
       g.add(sphere(w * 0.44, MAT.green, 0, 560, 0, clip))
+      break
+    case 'tree':
+      // Massing from `tree.ts`, which keeps the crown inside the authored footprint so it
+      // cannot spread through the canopy glass coming down beside it.
+      for (const m of treeMasses(w, d, f.height)) {
+        if (m.kind === 'trunk') cyl(m.r, m.h!, MAT.trunk, m.dx, m.dy, m.dz, 10)
+        else g.add(sphere(m.r, MAT.foliage, m.dx, m.dy, m.dz, clip))
+      }
       break
     case 'bed': {
       const headAlongX = f.face === 'E' || f.face === 'W'

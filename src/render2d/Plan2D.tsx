@@ -348,6 +348,32 @@ export function Plan2D({ compact = false }: { compact?: boolean }): React.ReactE
                 strokeDasharray={g.kind === 'barrel' ? undefined : '260 180'}
               />
             ))}
+            {/* Tree cages: real structure, projecting past the slab edge, drawn solid so
+                they are not mistaken for the glass extent they sit inside. */}
+            {building.cages.map((c) => (
+              <g key={c.id}>
+                <rect
+                  x={c.from}
+                  y={c.at - c.projection}
+                  width={c.to - c.from}
+                  height={c.projection}
+                  fill="#CBD8CE"
+                  opacity={0.55}
+                  stroke="var(--ink)"
+                  strokeWidth={45}
+                />
+                <text
+                  x={(c.from + c.to) / 2}
+                  y={c.at - c.projection * 0.22}
+                  textAnchor="middle"
+                  fontSize={185}
+                  fill="var(--ink)"
+                  opacity={0.7}
+                >
+                  TREE CAGE {c.projection}
+                </text>
+              </g>
+            ))}
           </g>
         )}
 

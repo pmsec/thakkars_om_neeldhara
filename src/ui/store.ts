@@ -105,7 +105,13 @@ export interface PortalState {
   snap: boolean
   cutaway: number
   section: { axis: 'x' | 'y' | 'z' | null; at: number }
-  show3d: { glassRoofs: boolean; furniture: boolean; podParents: boolean; podKaran: boolean }
+  show3d: {
+    glassRoofs: boolean
+    cages: boolean
+    furniture: boolean
+    podParents: boolean
+    podKaran: boolean
+  }
   sun: Sun
   /**
    * Compass bearing, in degrees, of the model's +x axis. The Rev 4 sheet's north arrow
@@ -150,7 +156,7 @@ export const initialState: PortalState = {
   snap: true,
   cutaway: 3050,
   section: { axis: null, at: 12240 },
-  show3d: { glassRoofs: true, furniture: true, podParents: true, podKaran: true },
+  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true },
   sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
   panels: { left: true, right: true },

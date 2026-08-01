@@ -15,8 +15,11 @@ import { describe, expect, it } from 'vitest'
 import * as THREE from 'three'
 import { building } from '../data/building'
 import { getModel } from '../geometry/model'
-import { barrelProfile, buildSolids, gableOutline } from '../geometry/solid'
+import { barrelProfile, buildSolids, canopyHeightAt, gableOutline } from '../geometry/solid'
+import { furniture } from '../data/furniture'
 import { gableGeometry, gableJamb, vaultGeometry } from '../render3d/canopy'
+import { cageGroup, cageOuterY } from '../render3d/cage'
+import { treeEnvelope } from '../render3d/tree'
 import { S } from '../render3d/prism'
 
 const mm = (v: number): number => v / S
@@ -123,6 +126,69 @@ describe('curved glass canopies', () => {
       const hi = Math.max(...ring.map((q) => q.x))
       expect(lo).toBeLessThanOrEqual(Math.min(g.p1.y, g.p2.y))
       expect(hi).toBeGreaterThanOrEqual(Math.max(g.p1.y, g.p2.y))
+    }
+  })
+
+  it('comes down exactly on the outer face of its tree cage', () => {
+    // The cage is the canopy's footing. If the two drift apart the glass lands on nothing
+    // and the trees are no longer inside it.
+    for (const roof of barrels) {
+      const cage = building.cages.find(
+        (c) => c.from <= roof.extent[0] && c.to >= roof.extent[2],
+      )
+      expect(cage, `${roof.id} has no cage under it`).toBeDefined()
+      expect(roof.section!.p0.x).toBe(cageOuterY(cage!))
+      expect(roof.section!.p0.y).toBe(0)
+    }
+  })
+
+  it('builds each cage between the slab edge and the glass foot', () => {
+    const mats = {
+      metal: new THREE.MeshBasicMaterial(),
+      soil: new THREE.MeshBasicMaterial(),
+    }
+    for (const cage of building.cages) {
+      const g = cageGroup(cage, mats)
+      const box = new THREE.Box3().setFromObject(g)
+      // Tolerances are half a bar: the frame members are centred on the cage's faces.
+      expect(mm(box.min.z)).toBeGreaterThan(cageOuterY(cage) - 20)
+      expect(mm(box.max.z)).toBeLessThan(cage.at + 20)
+      expect(mm(box.min.y)).toBeGreaterThanOrEqual(-20)
+      expect(mm(box.max.y)).toBeLessThan(cage.height + 20)
+      expect(mm(box.min.x)).toBeGreaterThan(cage.from - 20)
+      expect(mm(box.max.x)).toBeLessThan(cage.to + 20)
+    }
+  })
+
+  it('leaves every tree room to grow under the glass', () => {
+    // A tree that would grow into the canopy fails the build rather than being discovered
+    // on site. Furniture takes no part in the integrity REPORT (brief §4), so this lives
+    // in the suite instead.
+    const trees = furniture.filter((f) => f.kind === 'tree')
+    expect(trees.length).toBeGreaterThan(0)
+
+    for (const t of trees) {
+      const cx = t.x + t.w / 2
+      const cy = t.y + t.d / 2
+
+      const cage = building.cages.find((c) => c.from <= cx && c.to >= cx)
+      expect(cage, `${t.id} is not over any cage`).toBeDefined()
+      expect(t.y).toBeGreaterThanOrEqual(cageOuterY(cage!))
+      expect(t.y + t.d).toBeLessThanOrEqual(cage!.at)
+
+      // The crown must stay inside the authored footprint, or it spreads through the
+      // glass coming down beside it rather than growing up into the clear space.
+      const env = treeEnvelope(t.w, t.d, t.height)
+      expect(env.dx).toBeLessThanOrEqual(t.w / 2 + 1e-6)
+      expect(env.dz).toBeLessThanOrEqual(t.d / 2 + 1e-6)
+      expect(env.top).toBeCloseTo(t.height, 6)
+
+      const roof = barrels.find((r) => r.extent[0] <= cx && r.extent[2] >= cx)
+      expect(roof, `${t.id} is not under any canopy`).toBeDefined()
+      // Take the worst point of the crown, not just its centre.
+      const heights = [t.y, cy, t.y + t.d].map((y) => canopyHeightAt(roof!.section!, y))
+      for (const h of heights) expect(h, `no glass over ${t.id}`).not.toBeNull()
+      expect(Math.min(...(heights as number[]))).toBeGreaterThan(t.height + 300)
     }
   })
 

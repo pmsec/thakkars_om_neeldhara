@@ -538,9 +538,13 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   {
     // Deleting a stretch of external wall and glazing it is only safe if something
     // actually closes the hole. A run with `pane: false` has no upright glass, so the
-    // canopy has to do it: either the vault springs from that line at floor level, or a
-    // gable end of the vault stands on it. This check is what stops "remove that wall"
-    // from quietly leaving the building open to the weather.
+    // canopy has to do it: either it passes over that line and comes down to floor level
+    // outboard of it, or a gable end of it stands on the line. This check is what stops
+    // "remove that wall" from quietly leaving the building open to the weather.
+    //
+    // Note the enclosure line is no longer the building line. The canopies come down on
+    // the outer face of the tree cages, so the glazed runs sit UNDER the glass rather
+    // than beneath its springing, and the cage-to-canopy agreement is checked too.
     const problems: string[] = []
     const rows: string[] = []
     const barrels = building.glassRoofs.filter((r) => r.kind === 'barrel' && r.section)
@@ -574,12 +578,16 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
         const [x0, , x1] = r.extent
         if (
           horizontal &&
-          Math.abs(pr.springsAt - g.p1.y) < TOL &&
           pr.springHeight < TOL &&
+          pr.springsAt <= g.p1.y + TOL &&
+          pr.hi >= g.p1.y - TOL &&
           x0 - TOL <= a &&
           x1 + TOL >= b
         ) {
-          by = `${r.id} springs from this line at floor level and lands at ${pr.lands} mm`
+          const out = g.p1.y - pr.springsAt
+          by =
+            `${r.id} passes over this line and comes down to floor level ` +
+            `${out.toFixed(0)} mm outboard of it, landing at ${pr.lands} mm`
           break
         }
         const gables = r.gableEnds ?? []
@@ -596,7 +604,8 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
     }
 
     // A canopy that is also the wall has to meet the wall head, or there is a slot of
-    // daylight where the two are supposed to merge.
+    // daylight where the two are supposed to merge. And it has to come down ON its cage:
+    // the cage is the footing, so if the two drift the glass lands on nothing.
     const landings: string[] = []
     for (const r of barrels) {
       const lands = r.section!.p2.y
@@ -604,19 +613,39 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       if (Math.abs(lands - ceiling) > TOL) {
         problems.push(`${r.id} lands at ${lands} mm, ${(lands - ceiling).toFixed(0)} mm off the wall head`)
       }
+
+      const foot = r.section!.p0.x
+      const cage = building.cages.find(
+        (c) => c.from <= r.extent[0] + TOL && c.to >= r.extent[2] - TOL,
+      )
+      if (!cage) {
+        problems.push(`${r.id} has no tree cage under its full length to come down on`)
+      } else {
+        const outer = cage.at - cage.projection
+        landings.push(
+          `${r.id} comes down at y ${foot} on ${cage.id}, whose outer face is at ${outer}`,
+        )
+        if (Math.abs(outer - foot) > TOL) {
+          problems.push(
+            `${r.id} comes down at y ${foot} but ${cage.id}'s outer face is at ${outer} — ` +
+              `${Math.abs(outer - foot).toFixed(0)} mm apart`,
+          )
+        }
+      }
     }
 
     add({
       id: 'envelope-enclosed',
       title: 'Every deleted stretch of external wall is enclosed by glass',
       requirement:
-        'Each glazed envelope run either carries an upright pane, or has a canopy that ' +
-        'springs from it at floor level or closes it with a gable; every canopy meets the wall head.',
+        'Each glazed envelope run either carries an upright pane, or is covered by a canopy ' +
+        'that comes down to floor level outboard of it, or is closed by that canopy\u2019s gable. ' +
+        'Every canopy meets the wall head, and comes down exactly on its tree cage.',
       pass: problems.length === 0,
       actual:
         `${(building.envelopeGlazing ?? []).length} glazed runs, ` +
         `${(building.envelopeGlazing ?? []).filter((g) => g.pane === false).length} with no upright pane, ` +
-        `${barrels.length} canopies, ${problems.length} problems`,
+        `${barrels.length} canopies, ${building.cages.length} cages, ${problems.length} problems`,
       tolerance: '1 mm',
       detail: [...rows, ...landings, ...problems],
       severity: 'fail',

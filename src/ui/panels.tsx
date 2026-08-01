@@ -289,6 +289,7 @@ export function View3DPanel(): React.ReactElement {
         {(
           [
             ['glassRoofs', 'Glass roofs'],
+            ['cages', 'Tree cages'],
             ['furniture', 'Furniture'],
             ['podParents', "Parents' pod"],
             ['podKaran', "Karan's pod"],

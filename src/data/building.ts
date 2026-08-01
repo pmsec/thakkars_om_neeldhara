@@ -31,6 +31,18 @@ export const POD_KARAN = {
   p2: { x: 17480, y: 8400 },
 }
 
+/**
+ * The tree cages, and therefore the canopies.
+ *
+ * AUTHORED, NOT FROM THE SOURCE. Rev 4 has no cage and no dimension for one. These two
+ * numbers are the whole design: every canopy section below starts at -CAGE_PROJECTION,
+ * so moving the cage moves where the glass comes down, and the trees always stand
+ * between the slab edge and the glass foot. Change these and rebuild; the suite checks
+ * that the glass still clears the trees and that nothing is left unenclosed.
+ */
+export const CAGE_PROJECTION = 1500
+export const CAGE_HEIGHT = 700
+
 /** Mirror axis for the two wings. Used by the test suite to prove the plan is symmetric. */
 export const MIRROR_X = 12240
 
@@ -100,24 +112,27 @@ export const building: BuildingData = {
     },
   ],
 
-  // The external wall along the deck edge is DELETED and replaced by the glass canopy,
-  // which now runs to floor level. Rev 4 drew a continuous 240 mm wall right around the
-  // outline, including in front of the deck; that is what put a blank 3050 mm wall
-  // between the deck and the view. Confirmed removed by the client.
+  // The external wall along the deck edge is DELETED and replaced by the glass canopy.
+  // Rev 4 drew a continuous 240 mm wall right around the outline, including in front of
+  // the deck; that is what put a blank 3050 mm wall between the deck and the view.
+  // Confirmed removed by the client. The canopy no longer stands ON these lines either —
+  // it comes down on the tree cage, CAGE_PROJECTION further out, so what stands on the
+  // building line is nothing at all and the trees are inside the glass.
   envelopeGlazing: [
-    // Each private terrace is a corner, so BOTH its exposed edges are glazed. They now
-    // carry the SAME condition as the deck: no upright pane on either edge, because a
-    // curved canopy of their own comes down to floor level on the north line and closes
-    // the return with a gable cut to that same curve.
+    // Each private terrace is a corner, so BOTH its exposed edges are enclosed by glass.
+    // They carry the SAME condition as the deck: no upright pane on either edge. The
+    // canopy passes overhead and comes down outboard, on the tree cage, and the return is
+    // closed by a gable cut to that same curve.
     {
       id: 'EG-P-TERRACE-N',
       p1: { x: 0, y: 0 },
       p2: { x: 3200, y: 0 },
       pane: false,
-      label: "Parents' terrace — the curved canopy springs from here",
+      label: "Parents' terrace — open to the canopy, no wall on this line",
       notes:
-        'No upright pane and no wall: ROOF-P-TERRACE springs from floor level on this ' +
-        'line and is the terrace\u2019s enclosure, exactly as the barrel vault is the deck\u2019s.',
+        'No upright pane and no wall. ROOF-P-TERRACE passes overhead and comes down to ' +
+        'floor datum 1500 mm further out, on the tree cage, so the enclosure line is the ' +
+        'cage\u2019s outer face and this line is only where the floor stops.',
     },
     {
       id: 'EG-P-TERRACE-W',
@@ -134,10 +149,10 @@ export const building: BuildingData = {
       p1: { x: 21280, y: 0 },
       p2: { x: 24480, y: 0 },
       pane: false,
-      label: "Karan's terrace — the curved canopy springs from here",
+      label: "Karan's terrace — open to the canopy, no wall on this line",
       notes:
-        'No upright pane and no wall: ROOF-K-TERRACE springs from floor level on this ' +
-        'line and is the terrace\u2019s enclosure.',
+        'No upright pane and no wall. ROOF-K-TERRACE passes overhead and comes down on ' +
+        'the tree cage 1500 mm further out.',
     },
     {
       id: 'EG-K-TERRACE-E',
@@ -152,10 +167,11 @@ export const building: BuildingData = {
       p1: { x: 4730, y: 0 },
       p2: { x: 19750, y: 0 },
       pane: false,
-      label: 'Deck edge — the curved canopy springs from here',
+      label: 'Deck edge — open to the canopy, no wall on this line',
       notes:
-        'No upright pane and no wall: the barrel vault itself comes down to floor level on ' +
-        'this line and is the exterior enclosure for the full 15 020 mm of deck.',
+        'No upright pane and no wall for the full 15 020 mm. The barrel vault passes ' +
+        'overhead and comes down to floor datum on the tree cage, 1500 mm beyond this ' +
+        'line, so the deck reads out through the trees to the glass.',
     },
   ],
 
@@ -485,6 +501,44 @@ export const building: BuildingData = {
     },
   ],
 
+  // Metal growing cages, projecting CAGE_PROJECTION beyond the north slab edge. They hold
+  // the soil for the trees and they are the canopy's footing: the glass comes down on the
+  // cage's outer face, so the trees stand between the floor edge and the glass. At 700 mm
+  // the cage is also the edge protection where the floor now stops short of the glass.
+  cages: [
+    {
+      id: 'CAGE-DECK',
+      name: 'Tree cage — deck edge',
+      from: 4730,
+      to: 19750,
+      at: 0,
+      projection: CAGE_PROJECTION,
+      height: CAGE_HEIGHT,
+      notes:
+        'Cantilevers past the building line for its full 15 020 mm. STRUCTURAL: it carries ' +
+        'soil, trees and the foot of the canopy, none of which the sanctioned slab was ' +
+        'designed for. Needs an engineer before it is drawn any further.',
+    },
+    {
+      id: 'CAGE-P-TERRACE',
+      name: "Tree cage — parents' terrace",
+      from: 0,
+      to: 3200,
+      at: 0,
+      projection: CAGE_PROJECTION,
+      height: CAGE_HEIGHT,
+    },
+    {
+      id: 'CAGE-K-TERRACE',
+      name: "Tree cage — Karan's terrace",
+      from: 21280,
+      to: 24480,
+      at: 0,
+      projection: CAGE_PROJECTION,
+      height: CAGE_HEIGHT,
+    },
+  ],
+
   rooms: [
     // ---- outdoor
     { id: 'R-P-TERRACE', name: "Parents' private terrace", anchor: { x: 1600, y: 600 }, category: 'outdoor', zone: 'outdoor', carpet: false, finish: 'Timber deck boards', notes: '3120 × 1100 nominal. Under its own curved glass canopy, which is also its enclosure on both exposed edges.' },
@@ -551,28 +605,37 @@ export const building: BuildingData = {
       id: 'ROOF-DECK',
       name: 'Retractable barrel vault over the deck',
       kind: 'barrel',
-      // y0 is negative because the glass oversails the building line as it bulges out.
-      extent: [4730, -700, 19750, 2620],
-      // Section in ABSOLUTE (model y, height). It springs from floor level ON the building
-      // line, bulges roughly 690 mm beyond it at about 3.2 m, peaks near 4.45 m, and lands
-      // on the building face at 3050 — flush with the top of the walls, so the canopy and
-      // the flat pod roofs meet edge to edge instead of the canopy floating above them.
-      section: { p0: { x: 0, y: 0 }, p1: { x: -2200, y: 6600 }, p2: { x: 2620, y: 3050 } },
+      // y0 is negative because the glass comes down outboard of the building line and
+      // bulges further out again on the way up.
+      extent: [4730, -2200, 19750, 2620],
+      // Section in ABSOLUTE (model y, height). It comes down to floor datum on the OUTER
+      // face of the tree cage, 1500 mm clear of the building line, bulges to 2146 mm at
+      // about 3.4 m, peaks at 4942, and lands on the building face at 3050 — flush with
+      // the top of the walls, so the canopy and the flat pod roofs meet edge to edge.
+      section: {
+        p0: { x: -CAGE_PROJECTION, y: 0 },
+        p1: { x: -3900, y: 8000 },
+        p2: { x: 2620, y: 3050 },
+      },
       retractable: true,
       glazing: 'Laminated acoustic glass',
-      notes: 'HIGHEST-RISK ELEMENT. Now also the deck\u2019s enclosing wall, not just its roof: it runs to floor level where the external wall used to be. Covers an open balcony, so it needs society NOC and most likely BMC permission. Single glazing will not stop road noise — laminated acoustic glass is required, not optional.',
+      notes: 'HIGHEST-RISK ELEMENT. Not just the deck\u2019s roof: it is its enclosing wall too, and it now comes down outside the building line, on the tree cage, rather than on the slab edge. Covers an open balcony and projects beyond the facade, so it needs society NOC and most likely BMC permission. Single glazing will not stop road noise — laminated acoustic glass is required, not optional.',
     },
     {
       id: 'ROOF-P-TERRACE',
       name: "Curved glass canopy over the parents' private terrace",
       kind: 'barrel',
-      // Same family as the deck vault, scaled to an 1100 mm span instead of 2620. y0 is
-      // negative because the glass oversails the building line as it bulges out.
-      extent: [0, -300, 3200, 1100],
-      // Absolute (model y, height). Springs from FLOOR LEVEL on the building line at
-      // y = 0, bulges 292 mm beyond it at about 1.4 m, peaks at 3597, and lands on the
-      // terrace wall head at y = 1100, height 3050 — flush with the top of the walls.
-      section: { p0: { x: 0, y: 0 }, p1: { x: -930, y: 5000 }, p2: { x: 1100, y: 3050 } },
+      // Same family as the deck vault, landing on the terrace wall at 1100 instead of on
+      // the pod line at 2620. It comes down on the same cage line, so all three canopies
+      // meet the ground along one continuous line across the north face.
+      extent: [0, -1950, 3200, 1100],
+      // Absolute (model y, height). Down to floor datum on the cage's outer face at
+      // y = -1500, bulging to 1902, peaking at 4292, landing on the terrace wall head.
+      section: {
+        p0: { x: -CAGE_PROJECTION, y: 0 },
+        p1: { x: -3000, y: 6600 },
+        p2: { x: 1100, y: 3050 },
+      },
       // The west return is the building's own face, so it is closed by a gable cut to the
       // section. The east end faces the open building shaft and is deliberately left open.
       gableEnds: ['x0'],
@@ -586,8 +649,12 @@ export const building: BuildingData = {
       id: 'ROOF-K-TERRACE',
       name: "Curved glass canopy over Karan's private terrace",
       kind: 'barrel',
-      extent: [21280, -300, 24480, 1100],
-      section: { p0: { x: 0, y: 0 }, p1: { x: -930, y: 5000 }, p2: { x: 1100, y: 3050 } },
+      extent: [21280, -1950, 24480, 1100],
+      section: {
+        p0: { x: -CAGE_PROJECTION, y: 0 },
+        p1: { x: -3000, y: 6600 },
+        p2: { x: 1100, y: 3050 },
+      },
       // Mirror of the parents' canopy about x = 12240, so the closed end is the east one.
       gableEnds: ['x1'],
       glazing: 'Laminated acoustic glass',

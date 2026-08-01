@@ -233,6 +233,14 @@ Recorded here and on the **Brief & constraints** page rather than buried.
   was a second skin. The family room, den and great room all open onto the deck; the line
   survives only as a floor-finish change so the rooms still measure separately. Note this
   removes the thermal and acoustic break between the conditioned rooms and the deck.
+- **The canopies come down on a tree cage, not on the building line.** A metal growing
+  cage projects 1500 mm past the north slab edge along the deck and both terraces, holds
+  the soil for a row of trees, and its outer face is where the glass reaches floor level.
+  The 1500 mm projection and the cage's 700 mm height are **authored, not from Rev 4**,
+  which has no cage in it: they are `CAGE_PROJECTION` and `CAGE_HEIGHT` in `building.ts`,
+  and every canopy section starts at minus the projection, so moving the cage moves the
+  glass. `canopy.test.ts` then rechecks that every tree still clears the glass by 300 mm.
+  The trees themselves are furniture, so they switch off with the rest of it.
 - **All five glass roofs land at 3050**, the top of the walls, so the deck vault, the two
   terrace canopies and the two flat pod roofs meet edge to edge instead of floating at 3400
   and 3070. `envelope-enclosed` in the integrity suite checks that landing height, and
@@ -273,6 +281,10 @@ Neither is a modelling error; both are in the drawing as issued.
   open balcony and encloses it in glass. Whether that makes the terraces countable area
   is a question for the liaison architect, not one this model can answer: they are still
   modelled as outdoor, non-carpet, exactly as before.
+- **The tree cages need an engineer before they need a draughtsman.** They cantilever
+  1500 mm past the facade for the full width of the building and carry soil, trees and the
+  foot of the canopy, none of which the sanctioned slab was designed for. A projection past
+  the building line is also the kind of thing a society objects to on sight.
 - Specify **laminated acoustic glass** for all three canopies. Single glazing will not stop
   road noise.
 - **Verify the structural columns** at the merged-wall junctions on site before anything

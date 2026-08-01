@@ -132,6 +132,25 @@ export interface EnvelopeGlazingDef {
   notes?: string
 }
 
+/**
+ * A metal growing cage projecting beyond the slab edge, holding soil for trees. It is
+ * also where the canopy glass comes down: the glass foot and the cage's outer face are
+ * the same plane, so the trees stand between the floor edge and the glass.
+ */
+export interface CageDef {
+  id: string
+  name: string
+  /** Along the building. */
+  from: number
+  to: number
+  /** The building line it projects from, and how far out (toward -y). */
+  at: number
+  projection: number
+  /** Height of the cage above floor level. It doubles as the edge protection. */
+  height: number
+  notes?: string
+}
+
 export interface CoreDef {
   id: string
   name: string
@@ -196,6 +215,8 @@ export interface BuildingData {
   envelopeGlazing?: EnvelopeGlazingDef[]
   walls: WallDef[]
   cores: CoreDef[]
+  /** Tree cages projecting beyond the slab edge, where the canopy glass lands. */
+  cages: CageDef[]
   rooms: RoomDef[]
   stacks: StackDef[]
   glassRoofs: GlassRoofDef[]

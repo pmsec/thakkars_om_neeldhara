@@ -7,7 +7,7 @@
 import React from 'react'
 import { getModel } from '../geometry/model'
 import { greatRoomWidths } from '../geometry/dimensions'
-import { building } from '../data/building'
+import { building, CAGE_HEIGHT, CAGE_PROJECTION } from '../data/building'
 import { formatFeetInches, sqFt, sqM } from '../geometry/units'
 
 const model = getModel()
@@ -129,6 +129,13 @@ export function BriefView(): React.ReactElement {
         the same consents apply. Whether enclosing them makes the terraces countable area is a
         question for the liaison architect; this model still counts them as outdoor and
         non-carpet, exactly as it did when they were open.
+        <br />
+        <br />
+        <b>The tree cages sharpen both questions.</b> They project {CAGE_PROJECTION} mm
+        beyond the facade for the full width of the building, and they carry soil, trees and
+        the foot of the glass — none of which the sanctioned slab was designed for. That is
+        an engineer&rsquo;s question before it is a drawing question, and a projection past
+        the building line is the kind of thing a society objects to on sight.
       </div>
 
       <div className="callout">
@@ -198,6 +205,26 @@ export function BriefView(): React.ReactElement {
           makes carpet + walls + shafts reconcile exactly to the gross envelope.
         </li>
       </ul>
+
+      <div className="callout">
+        <b>The glass comes down on a tree cage, not on the building line.</b> A metal
+        growing cage is cantilevered {CAGE_PROJECTION} mm past the north slab edge for the
+        whole of the deck and both terraces. It holds the soil for a row of trees, and its
+        outer face is where the canopy comes down to floor level — so you look out of the
+        deck through the trees, and the trees are inside the glass. At {CAGE_HEIGHT} mm the
+        cage is also the edge protection where the floor now stops short of the glass.
+        <br />
+        <br />
+        <b>Both numbers are authored, not from Rev 4</b>, which has no cage in it. They are
+        two constants in <code>building.ts</code>: every canopy section starts at minus the
+        projection, so changing them moves the glass with the cage. The suite then rechecks
+        that the trees still fit and that nothing is left unenclosed.
+        <br />
+        <br />
+        The canopy is correspondingly deeper. The deck vault now comes down at y −1500,
+        bulges to −2146 on the way up, and peaks at 4942 mm before landing on the wall head
+        at 3050 — against a peak of 4291 and no projection at all in the last revision.
+      </div>
 
       <div className="callout">
         <b>The wall along the deck edge has been removed.</b>

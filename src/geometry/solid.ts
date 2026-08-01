@@ -11,6 +11,7 @@
 
 import polygonClipping from 'polygon-clipping'
 import type { BuiltModel, WallRun } from './model'
+import type { CageDef } from '../data/schema'
 import { bezierAt, type QuadBezier } from './bezier'
 import {
   add,
@@ -85,6 +86,8 @@ export interface SolidModel {
   prisms: Prism[]
   slabs: Slab[]
   roofs: RoofSurface[]
+  /** Tree cages. Outside the envelope by design, so they take no part in `bounds`. */
+  cages: CageDef[]
   /** Plan bounds of every solid, which must equal the 2D envelope bounds. */
   bounds: BBox
   ceiling: number
@@ -116,6 +119,28 @@ export function gableOutline(section: QuadBezier, segments = 48): Poly {
   if (last.y > 1e-6) ring.push({ x: last.x, y: 0 })
   if (prof[0].y > 1e-6) ring.push({ x: prof[0].x, y: 0 })
   return ring
+}
+
+/**
+ * Height of a barrel canopy directly above a plan y, or null if the glass does not pass
+ * over that line. Used to prove the trees in the cage fit under the glass.
+ *
+ * The section doubles back on itself where it bulges, so a y outboard of the springing
+ * line has two heights. The enclosing surface is the higher one, which is what matters
+ * for clearance.
+ */
+export function canopyHeightAt(section: QuadBezier, y: number, segments = 400): number | null {
+  const prof = barrelProfile(section, segments)
+  let best: number | null = null
+  for (let i = 0; i < prof.length - 1; i++) {
+    const a = prof[i]
+    const b = prof[i + 1]
+    if ((a.x - y) * (b.x - y) > 0) continue
+    const t = Math.abs(b.x - a.x) < 1e-9 ? 0 : (y - a.x) / (b.x - a.x)
+    const h = a.y + (b.y - a.y) * t
+    if (best === null || h > best) best = h
+  }
+  return best
 }
 
 // --------------------------------------------------------------------------- helpers
@@ -357,7 +382,7 @@ export function buildSolids(model: BuiltModel): SolidModel {
   for (const p of prisms) allPts.push(...p.polygon)
   for (const s of slabs) allPts.push(...s.polygon)
 
-  return { prisms, slabs, roofs, bounds: bbox(allPts), ceiling }
+  return { prisms, slabs, roofs, cages: model.data.cages, bounds: bbox(allPts), ceiling }
 }
 
 function pushRun(

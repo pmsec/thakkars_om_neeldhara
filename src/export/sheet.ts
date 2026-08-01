@@ -130,6 +130,25 @@ export function buildSheet(
     })
   }
 
+  // ---- tree cages, which project past the slab edge and carry the foot of the glass
+  for (const c of building.cages) {
+    p.push({
+      t: 'poly',
+      layer: 'CAGES',
+      rings: [
+        [
+          { x: c.from, y: c.at - c.projection },
+          { x: c.to, y: c.at - c.projection },
+          { x: c.to, y: c.at },
+          { x: c.from, y: c.at },
+        ],
+      ],
+      closed: true,
+      stroke: '#3A4740',
+      width: 45,
+    })
+  }
+
   // ---- furniture and fixtures
   if (o.fixtures && !o.fabricOnly) {
     for (const f of fixtures) {

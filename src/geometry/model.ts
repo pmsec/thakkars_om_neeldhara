@@ -27,6 +27,8 @@ import {
   centroid,
   dedupePoly,
   dist,
+  distToSegment,
+  dot,
   norm,
   perimeter,
   pointInPolygon,
@@ -251,15 +253,79 @@ function buildExteriorRuns(data: BuildingData): { runs: WallDef[]; centreline: P
     from: outer[i],
     to: outer[(i + 1) % outer.length],
   }))
-  const centreline = offsetRing(outer, refs, true)
+  const inset = offsetRing(outer, refs, true)
 
-  const runs: WallDef[] = centreline.map((p, i) => ({
-    id: `EXT-${i + 1}`,
-    points: [p, centreline[(i + 1) % centreline.length]],
-    thickness: t,
-    kind: 'exterior' as const,
-    openings: [],
-  }))
+  // Walk the envelope edge by edge, dropping out any stretch that is glazed rather than
+  // built. Where the wall exists the boundary follows its centreline; where the glass
+  // replaces it the boundary follows the building line itself, at zero thickness, so the
+  // floor runs right out to the glass. Short zero-thickness jogs join the two, and those
+  // jogs are the exposed end faces of the wall where it stops.
+  const glazing = data.envelopeGlazing ?? []
+  const runs: WallDef[] = []
+  let solidCount = 0
+  let jogCount = 0
+
+  for (let i = 0; i < outer.length; i++) {
+    const a = outer[i]
+    const b = outer[(i + 1) % outer.length]
+    const ca = inset[i]
+    const cb = inset[(i + 1) % inset.length]
+    const L = dist(a, b)
+    if (L < 1) continue
+    const u = norm(sub(b, a))
+    const nIn = { x: -u.y, y: u.x } // envelope is positively wound, so left is inward
+
+    // Centreline point at a distance along the OUTER edge. The mitred corners are the
+    // true ends, so those are used verbatim rather than projected.
+    const centreAt = (d: number): Pt =>
+      d <= 1 ? ca : d >= L - 1 ? cb : add(add(a, scale(u, d)), scale(nIn, t / 2))
+    const outerAt = (d: number): Pt => add(a, scale(u, d))
+
+    const spans = glazing
+      .filter((g) => distToSegment(g.p1, a, b) < 1 && distToSegment(g.p2, a, b) < 1)
+      .map((g) => {
+        const s = dot(sub(g.p1, a), u)
+        const e = dot(sub(g.p2, a), u)
+        return { def: g, s: Math.min(s, e), e: Math.max(s, e) }
+      })
+      .sort((p, q) => p.s - q.s)
+
+    const pushSolid = (from: number, to: number): void => {
+      if (to - from < 1) return
+      runs.push({
+        id: `EXT-${++solidCount}`,
+        points: [centreAt(from), centreAt(to)],
+        thickness: t,
+        kind: 'exterior',
+        openings: [],
+      })
+    }
+    const pushJog = (p: Pt, q: Pt): void => {
+      if (dist(p, q) < 1) return
+      runs.push({ id: `EXT-J${++jogCount}`, points: [p, q], thickness: 0, kind: 'exterior', openings: [] })
+    }
+
+    let cursor = 0
+    for (const sp of spans) {
+      pushSolid(cursor, sp.s)
+      pushJog(centreAt(sp.s), outerAt(sp.s))
+      runs.push({
+        id: sp.def.id,
+        points: [outerAt(sp.s), outerAt(sp.e)],
+        thickness: 0,
+        kind: 'glazing',
+        openings: [],
+        label: sp.def.label,
+        notes: sp.def.notes,
+      })
+      pushJog(outerAt(sp.e), centreAt(sp.e))
+      cursor = sp.e
+    }
+    pushSolid(cursor, L)
+  }
+
+  // The boundary loop the interior walls get clipped against, following the jogs.
+  const centreline: Poly = runs.map((r) => r.points![0])
 
   // Attach each exterior opening to the run it belongs to. Openings are authored on the
   // OUTER face; the centreline is a pure perpendicular translation for axis-aligned
@@ -427,16 +493,37 @@ export function buildModel(data: BuildingData = building): BuiltModel {
   // the convention that makes carpet + walls + voids reconcile to the gross envelope.
   const bands: PcPolygon[] = []
 
-  // External wall: the ring between the outer face and the inner face.
-  const innerRefs: FaceEdgeRef[] = centreline.map((_, i) => ({
+  // External wall: the ring between the outer face and the inner face, with any glazed
+  // stretch cut out of it. Derived from the outer polygon rather than the centreline,
+  // because the centreline now jogs around those glazed stretches.
+  const outerRefs: FaceEdgeRef[] = data.envelope.map((_, i) => ({
     boundaryId: 'EXT',
     kind: 'exterior',
-    thickness: data.thickness.exterior,
-    from: centreline[i],
-    to: centreline[(i + 1) % centreline.length],
+    thickness: data.thickness.exterior * 2, // offsetRing halves it, so this insets a full wall
+    from: data.envelope[i],
+    to: data.envelope[(i + 1) % data.envelope.length],
   }))
-  const innerFace = offsetRing(centreline, innerRefs, true)
-  bands.push([closeRing(data.envelope), closeRing(innerFace)])
+  const innerFace = offsetRing(data.envelope, outerRefs, true)
+  let extBand = [[closeRing(data.envelope), closeRing(innerFace)]] as unknown as polygonClipping.Geom
+  for (const g of data.envelopeGlazing ?? []) {
+    // Cut back the full wall depth wherever the glass replaces it.
+    const seg = { x: g.p2.x - g.p1.x, y: g.p2.y - g.p1.y }
+    const len = Math.hypot(seg.x, seg.y)
+    const u = { x: seg.x / len, y: seg.y / len }
+    // Inward normal: whichever side of the line the building is on.
+    let nIn = { x: -u.y, y: u.x }
+    const probe = { x: (g.p1.x + g.p2.x) / 2 + nIn.x * 50, y: (g.p1.y + g.p2.y) / 2 + nIn.y * 50 }
+    if (!pointInPolygon(probe, data.envelope)) nIn = { x: -nIn.x, y: -nIn.y }
+    const d = data.thickness.exterior + 2
+    const cut: Poly = [
+      { x: g.p1.x - u.x, y: g.p1.y - u.y },
+      { x: g.p2.x + u.x, y: g.p2.y + u.y },
+      { x: g.p2.x + u.x + nIn.x * d, y: g.p2.y + u.y + nIn.y * d },
+      { x: g.p1.x - u.x + nIn.x * d, y: g.p1.y - u.y + nIn.y * d },
+    ]
+    extBand = pc.difference(extBand, [closeRing(cut)])
+  }
+  for (const poly of extBand) bands.push(poly as unknown as PcPolygon)
 
   for (const w of walls) {
     if (w.isExterior || w.thickness === 0) continue

@@ -24,7 +24,7 @@ export interface Preset {
 export const PRESETS: Preset[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'great', label: 'Great room', room: 'R-GREAT' },
-  { id: 'deck', label: 'Deck', room: 'R-DECK' },
+  { id: 'deck', label: 'Deck', room: 'R-DECK', from: -1 },
   { id: 'podP', label: "Parents' pod", room: 'R-P-HALL' },
   { id: 'podK', label: "Karan's pod", room: 'R-K-HALL' },
   { id: 'service', label: 'Service wing', room: 'R-KITCHEN' },
@@ -65,12 +65,10 @@ export function presetCamera(p: Preset): CameraShot {
   // still has to be above the ceiling. Shallow views into a small service room are simply
   // not possible, which is why this is derived rather than a fixed elevation.
   //
-  // The deck is the reason there is no "view it from outside" case: Rev 4 draws a solid
-  // 240 mm external wall along the whole north face, INCLUDING in front of the deck, with
-  // no opening in it. A 3050 mm wall 1.2 m from the deck's centre cannot be seen over
-  // from the north at any angle, so the deck is viewed from the great room side, which is
-  // open to it. See the note in the brief page — that wall is worth querying.
-  const slope = Math.max(1.0, (ceiling - targetY + 0.6) / Math.max(0.6, depth / 2))
+  // Standing on the deck side is a special case: that edge is now glazed floor to canopy
+  // rather than walled, so there is nothing opaque to see over and the view can stay low.
+  const slope =
+    side < 0 ? 0.75 : Math.max(1.0, (ceiling - targetY + 0.6) / Math.max(0.6, depth / 2))
 
   // Framing: a 52 degree vertical field on a wide viewport is roughly 62 degrees across,
   // so half the span must sit within tan(31 degrees) of the view distance.

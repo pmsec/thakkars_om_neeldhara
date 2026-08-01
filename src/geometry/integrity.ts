@@ -358,7 +358,12 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
         `3D (${b3.minX.toFixed(2)}, ${b3.minY.toFixed(2)}) – (${b3.maxX.toFixed(2)}, ${b3.maxY.toFixed(2)}) ` +
         `vs 2D (${b2.minX}, ${b2.minY}) – (${b2.maxX}, ${b2.maxY}); worst ${worst.toFixed(4)} mm`,
       tolerance: '1 mm',
-      detail: [`${solids.prisms.length} prisms, ${solids.slabs.length} slabs, ${solids.roofs.length} roof surfaces`],
+      detail: [
+        `${solids.prisms.length} prisms, ${solids.slabs.length} slabs, ${solids.roofs.length} roof surfaces`,
+        'Covers the built fabric — walls, glazing and floors. The deck canopy deliberately',
+        'oversails the building line by about 690 mm as it bulges out, so roof surfaces are',
+        'excluded from this comparison rather than being made to fit it.',
+      ],
       severity: 'fail',
     })
   }

@@ -115,6 +115,16 @@ export interface FixtureDef {
   label?: string
 }
 
+/** A stretch of the external wall replaced by structural glazing, floor to canopy. */
+export interface EnvelopeGlazingDef {
+  id: string
+  /** Endpoints on the OUTER envelope polygon. The glass sits on that line. */
+  p1: Pt
+  p2: Pt
+  label: string
+  notes?: string
+}
+
 export interface CoreDef {
   id: string
   name: string
@@ -129,7 +139,7 @@ export interface GlassRoofDef {
   kind: 'barrel' | 'flat'
   /** Plan extent [x0, y0, x1, y1]. */
   extent: [number, number, number, number]
-  /** Barrel only: section curve in (distance across Y, height) — brief §3.7. */
+  /** Barrel only: section curve in (model y, height). Absolute, so it may oversail. */
   section?: QuadBezier
   height?: number
   retractable?: boolean
@@ -169,6 +179,8 @@ export interface BuildingData {
   thickness: { exterior: number; interior: number; partition: number }
   levels: { ceiling: number; doorHead: number; windowSill: number; windowHead: number }
   exteriorOpenings: OpeningDef[]
+  /** Where the external wall is omitted and glazed instead. */
+  envelopeGlazing?: EnvelopeGlazingDef[]
   walls: WallDef[]
   cores: CoreDef[]
   rooms: RoomDef[]

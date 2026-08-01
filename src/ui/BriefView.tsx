@@ -184,16 +184,22 @@ export function BriefView(): React.ReactElement {
       </ul>
 
       <div className="callout">
-        <b>Is there really a solid wall along the deck edge?</b>
-        Rev 4 draws the external wall as a continuous 240 mm run around the whole outline,
-        including the full length of the north face in front of the deck, and gives it no
-        opening. Modelled literally — which is what this portal does — that puts a solid
-        3050 mm wall between the deck and the view. It is almost certainly meant to be a
-        parapet or a glass balustrade: a deck you sit on under the stars does not have a
-        blank wall along its outer edge, and the two private terraces have the same
-        condition. No height has been invented for it here, because none is given. Confirm
-        the intent and the height, and the 3D will follow. It came to light because the 3D
-        view could not find any angle from which the deck was visible from outside.
+        <b>The wall along the deck edge has been removed.</b>
+        Rev 4 drew the external wall as a continuous 240 mm run right around the outline,
+        including the full north face in front of the deck. Taken literally that put a blank
+        3050 mm wall between the deck and the view. It is now deleted for the whole
+        15 020 mm of deck and replaced by floor-to-canopy structural glazing on the building
+        line, continuous with the barrel vault above.
+        <br />
+        <br />
+        Two things corroborate that the wall was never intended. The deck's derived carpet
+        area is now {sqFt(deck.area).toFixed(1)} sq ft against Rev 4's published 378 — it
+        only reconciles with the wall gone. And nothing in the drawing puts an opening in
+        that wall, which no habitable balcony would be built without.
+        <br />
+        <br />
+        <b>Still to confirm:</b> the same condition applies to the two private terraces at
+        either end, which keep their wall in this model because no instruction covers them.
       </div>
 
       <h2>Two things in Rev 4 worth a second look</h2>

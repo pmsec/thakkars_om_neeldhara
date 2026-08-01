@@ -100,6 +100,22 @@ export const building: BuildingData = {
     },
   ],
 
+  // The external wall along the deck edge is DELETED and replaced by the glass canopy,
+  // which now runs to floor level. Rev 4 drew a continuous 240 mm wall right around the
+  // outline, including in front of the deck; that is what put a blank 3050 mm wall
+  // between the deck and the view. Confirmed removed by the client.
+  envelopeGlazing: [
+    {
+      id: 'EG-DECK',
+      p1: { x: 4730, y: 0 },
+      p2: { x: 19750, y: 0 },
+      label: 'Structural glazing to the deck — no wall',
+      notes:
+        'Floor-to-canopy glass on the building line, continuous with the retractable ' +
+        'barrel vault above. Replaces the external wall for the full 15 020 mm of deck.',
+    },
+  ],
+
   walls: [
     // ---------------------------------------------------------------- parents' wing
     {
@@ -488,12 +504,15 @@ export const building: BuildingData = {
       id: 'ROOF-DECK',
       name: 'Retractable barrel vault over the deck',
       kind: 'barrel',
-      extent: [4730, 0, 19750, 2620],
-      // Section in (distance across Y from the deck edge, height above finished floor).
-      section: { p0: { x: 0, y: 2750 }, p1: { x: 1310, y: 5000 }, p2: { x: 2620, y: 3400 } },
+      // y0 is negative because the glass oversails the building line as it bulges out.
+      extent: [4730, -700, 19750, 2620],
+      // Section in ABSOLUTE (model y, height). It springs from floor level ON the building
+      // line, bulges roughly 690 mm beyond it at about 3.2 m, peaks near 4.45 m, and lands
+      // on the building face at 3400 — just above the 3050 ceiling.
+      section: { p0: { x: 0, y: 0 }, p1: { x: -2200, y: 6600 }, p2: { x: 2620, y: 3400 } },
       retractable: true,
       glazing: 'Laminated acoustic glass',
-      notes: 'HIGHEST-RISK ELEMENT. Covers an open balcony, so it needs society NOC and most likely BMC permission. Single glazing will not stop road noise — laminated acoustic glass is required, not optional.',
+      notes: 'HIGHEST-RISK ELEMENT. Now also the deck\u2019s enclosing wall, not just its roof: it runs to floor level where the external wall used to be. Covers an open balcony, so it needs society NOC and most likely BMC permission. Single glazing will not stop road noise — laminated acoustic glass is required, not optional.',
     },
     {
       id: 'ROOF-FAMILY',

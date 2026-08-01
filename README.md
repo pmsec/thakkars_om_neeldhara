@@ -237,13 +237,14 @@ Recorded here and on the **Brief & constraints** page rather than buried.
   zone extents, so they read higher. Both are shown side by side.
 - **Doorway thresholds count as wall footprint** — the convention that makes the
   reconciliation exact.
-- **The deck's outer edge is modelled as a solid wall, because that is what Rev 4 draws.**
-  The external wall runs continuously around the outline, including the full north face in
-  front of the deck, with no opening in it. Taken literally that is a blank 3050 mm wall
-  between the deck and the view, which cannot be what is meant for a deck you sit on under
-  the stars — and the two private terraces have the same condition. No parapet height has
-  been invented, because none is given. This surfaced because the 3D viewer could not find
-  any angle from which the deck was visible from outside.
+- **The deck's outer wall has been deleted and glazed instead.** Rev 4 drew the external
+  wall continuously around the outline, including the full north face in front of the deck,
+  with no opening in it — a blank 3050 mm wall between the deck and the view. On the
+  client's instruction that stretch is now floor-to-canopy structural glazing on the
+  building line, continuous with the barrel vault. The deck's derived carpet area moved
+  from 338.4 to 377.2 sq ft, against Rev 4's published 378, which only reconciles with the
+  wall gone. **The two private terraces still carry the same condition** and have been left
+  as drawn, because no instruction covers them.
 
 ## Two things in Rev 4 worth a second look
 

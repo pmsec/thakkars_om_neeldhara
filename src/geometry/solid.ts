@@ -131,6 +131,32 @@ export function band(points: Pt[], thickness: number): Poly {
   return [...left, ...right.reverse()]
 }
 
+/**
+ * Shift a zero-thickness boundary toward whichever side has a room on it. Used to set
+ * glazing panes behind the structural line they are drawn on.
+ */
+function shiftInward(points: Pt[], by: number, model: BuiltModel): Pt[] {
+  if (points.length < 2) return points
+  // Probe from the MIDDLE of the middle segment. A vertex — and for a two-point run,
+  // points[length/2] is the end vertex — sits exactly on a room boundary, where
+  // point-in-polygon is a coin toss and the shift silently does nothing.
+  const i = Math.max(0, Math.floor((points.length - 1) / 2))
+  const a = points[i]
+  const b = points[i + 1]
+  const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+  const d = norm(sub(b, a))
+  const n = { x: -d.y, y: d.x }
+  const hasRoom = (sign: number): boolean => {
+    const probe = add(mid, scale(n, sign * 60))
+    return model.rooms.some(
+      (r) => r.def.category !== 'void' && pointInPolygon(probe, r.polygon),
+    )
+  }
+  const sign = hasRoom(1) ? 1 : hasRoom(-1) ? -1 : 0
+  if (sign === 0) return points
+  return points.map((p) => add(p, scale(n, sign * by)))
+}
+
 // --------------------------------------------------------------------------- build
 
 export function buildSolids(model: BuiltModel): SolidModel {
@@ -158,6 +184,7 @@ export function buildSolids(model: BuiltModel): SolidModel {
     const transparent = kind === 'wall-curved-glass' || kind === 'glazing'
     const acc = cumulative(w.points)
     const total = acc[acc.length - 1]
+    void acc
 
     // Zero-thickness boundaries carry no solid. The glazed screens to the deck are the
     // exception: they are real glass, so they get a nominal 20 mm pane purely so the 3D
@@ -165,6 +192,13 @@ export function buildSolids(model: BuiltModel): SolidModel {
     // and it is excluded from every area calculation.
     const solidThickness = w.thickness > 0 ? w.thickness : kind === 'glazing' ? 20 : 0
     if (solidThickness === 0) continue
+
+    // A glazed line has no authored thickness, so the pane is a rendering allowance. Set
+    // it INSIDE the line rather than centred on it: glass is fixed behind the structural
+    // face, and a centred pane would put 10 mm of the building outside its own envelope.
+    const runPoints =
+      w.thickness === 0 ? shiftInward(w.points, solidThickness / 2, model) : w.points
+    const accPts = cumulative(runPoints)
 
     const portal = model.data.portals.find((p) => p.wall === w.def.id)
     const curve = w.def.curve as QuadBezier | undefined
@@ -174,10 +208,10 @@ export function buildSolids(model: BuiltModel): SolidModel {
       // spandrel above the arched head across it.
       const tStart = portal.t[0]
       const tEnd = portal.t[1]
-      const dStart = distAtBezierT(w.points, acc, curve, tStart)
-      const dEnd = distAtBezierT(w.points, acc, curve, tEnd)
-      pushRun(prisms, w, acc, 0, dStart, 0, ceiling, kind, solidThickness, transparent)
-      pushRun(prisms, w, acc, dEnd, total, 0, ceiling, kind, solidThickness, transparent)
+      const dStart = distAtBezierT(runPoints, accPts, curve, tStart)
+      const dEnd = distAtBezierT(runPoints, accPts, curve, tEnd)
+      pushRun(prisms, w, runPoints, accPts, 0, dStart, 0, ceiling, kind, solidThickness, transparent)
+      pushRun(prisms, w, runPoints, accPts, dEnd, total, 0, ceiling, kind, solidThickness, transparent)
       // The arch head: slice the span and give each slice its own springing height, so
       // the underside reads as a real arch rather than a flat lintel.
       const SLICES = 20
@@ -186,7 +220,7 @@ export function buildSolids(model: BuiltModel): SolidModel {
         const u1 = (i + 1) / SLICES
         const uMid = (u0 + u1) / 2
         const base = portal.springing + portal.rise * Math.sin(Math.PI * uMid)
-        const seg = slice(w.points, acc, dStart + (dEnd - dStart) * u0, dStart + (dEnd - dStart) * u1)
+        const seg = slice(runPoints, accPts, dStart + (dEnd - dStart) * u0, dStart + (dEnd - dStart) * u1)
         const poly = band(seg, solidThickness)
         if (poly.length < 3 || ceiling - base < 1e-6) continue
         prisms.push({
@@ -210,20 +244,20 @@ export function buildSolids(model: BuiltModel): SolidModel {
       const from = Math.max(0, Math.min(total, op.from))
       const to = Math.max(0, Math.min(total, op.to))
       if (from > cursor + 1e-6) {
-        pushRun(prisms, w, acc, cursor, from, 0, ceiling, kind, solidThickness, transparent)
+        pushRun(prisms, w, runPoints, accPts, cursor, from, 0, ceiling, kind, solidThickness, transparent)
       }
       const sill = op.sill ?? 0
       const head = op.head ?? model.data.levels.doorHead
       if (sill > 0) {
-        pushRun(prisms, w, acc, from, to, 0, sill, kind, solidThickness, transparent, ':sill')
+        pushRun(prisms, w, runPoints, accPts, from, to, 0, sill, kind, solidThickness, transparent, ':sill')
       }
       if (head < ceiling) {
-        pushRun(prisms, w, acc, from, to, head, ceiling, 'lintel', solidThickness, false, ':lintel')
+        pushRun(prisms, w, runPoints, accPts, from, to, head, ceiling, 'lintel', solidThickness, false, ':lintel')
       }
       cursor = Math.max(cursor, to)
     }
     if (cursor < total - 1e-6) {
-      pushRun(prisms, w, acc, cursor, total, 0, ceiling, kind, solidThickness, transparent)
+      pushRun(prisms, w, runPoints, accPts, cursor, total, 0, ceiling, kind, solidThickness, transparent)
     }
   }
 
@@ -296,6 +330,7 @@ export function buildSolids(model: BuiltModel): SolidModel {
 function pushRun(
   out: Prism[],
   w: WallRun,
+  points: Pt[],
   acc: number[],
   from: number,
   to: number,
@@ -307,7 +342,7 @@ function pushRun(
   suffix = '',
 ): void {
   if (to - from < 1e-6 || top - base < 1e-6) return
-  const poly = band(slice(w.points, acc, from, to), thickness)
+  const poly = band(slice(points, acc, from, to), thickness)
   if (poly.length < 3) return
   out.push({
     id: `${w.id}${suffix}@${from.toFixed(0)}`,

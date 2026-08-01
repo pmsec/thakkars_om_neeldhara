@@ -137,7 +137,11 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0xb6c2c9)
 
-    const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 500)
+    // near/far ratio drives depth precision. 0.1 to 500 is 5000:1, which leaves too few
+    // bits at building distance and stipples every place two wall prisms abut — walls are
+    // split at each opening, so those coincident faces are everywhere. 0.35 still clears
+    // the 1.6 m walkthrough eye height.
+    const camera = new THREE.PerspectiveCamera(52, 1, 0.35, 220)
     const home = presetCamera(PRESETS[0])
     camera.position.copy(home.pos)
 
@@ -335,16 +339,23 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       const obj = furnitureObject(f, clip)
       if (obj) groups.furniture.add(obj)
     }
-    for (const f of fixtures) {
-      const h = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900 : 800
+    fixtures.forEach((f, i) => {
+      // Some fitted items genuinely overlap in plan — the serving-hatch counter sits
+      // within the north counter run, and the hob within the south one. In 2D that just
+      // draws on top; in 3D it gives two boxes identical top faces at 900 mm, and no
+      // amount of depth precision can break that tie, so it stipples. A couple of
+      // millimetres of stagger resolves it and is far below any dimension that matters.
+      const base = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900 : 800
+      const h = base + (i % 5) * 2
       const geo = new THREE.BoxGeometry(f.size[0] * S, h * S, f.size[1] * S)
       const mat = MAT.furniture.clone()
       mat.clippingPlanes = clip
       const m = new THREE.Mesh(geo, mat)
       m.position.set(f.at.x * S, (h * S) / 2, f.at.y * S)
       m.castShadow = true
+      m.receiveShadow = true
       groups.fabric.add(m)
-    }
+    })
 
     api.current = {
       renderer,

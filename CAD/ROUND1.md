@@ -171,12 +171,12 @@ asking it to match the column. Finish it in wood if you want the same effect.
 
 | | m² | sq ft |
 |---|---|---|
-| GREAT ROOM | 45.1 | 485 |
+| GREAT ROOM | 43.4 | 468 |
 | ALL-WEATHER DECK (net of the two voids) | 35.8 | 385 |
 | MASTER SUITE — parents | 35.0 | 377 |
 | MASTER SUITE — karan | 35.0 | 377 |
-| FAMILY ROOM | 19.4 | 209 |
-| MUSIC + WORK DEN | 19.4 | 209 |
+| FAMILY ROOM | 20.2 | 218 |
+| MUSIC + WORK DEN | 20.2 | 218 |
 | KITCHEN (one room with the utility) | 10.9 | 118 |
 | ENTRY GALLERY | 6.7 | 72 |
 | HELP'S ROOM | 5.5 | 60 |
@@ -187,8 +187,35 @@ asking it to match the column. Finish it in wood if you want the same effect.
 | STORE | 1.8 | 19 |
 | **total of named rooms** | **233.7** | **2516** |
 
-The great room is 485 sq ft against A-101's 474, and 7840 across the removed
-party wall rather than 7690.
+The great room is 468 sq ft against A-101's 474, and reads 6250 across the
+removed party wall at the deck, 8220 at the waist and 7280 at the pods — the
+pod glazing is a cubic now, not an arc.
+
+---
+
+## The pod glazing is an S
+
+The tinted glass between the great room and each pod used to be a single bow.
+A single bow can only go one way: every millimetre of width the great room
+gained came out of the pod at exactly the depth the dining table wants. Pushed
+far enough to be worth having, it shoved the table 3.4 m off the serving hatch,
+which stops it being a serving hatch.
+
+A cubic decouples the two ends. Control points, west side — the east is the
+mirror:
+
+```
+(9115, 2620)  (6800, 4600)  (9400, 6400)  (8600, 8400)
+```
+
+It waists **into** the pod to X 8130 at Y 4500, where the pod has nothing but
+circulation, and swells back to X 8758 at Y 7600, where the table sits. The
+great room gets its width in the middle and the pod keeps its width at the
+hatch.
+
+Great room 39.9 → **43.4 m² (429 → 468 sq ft)** with the table still at the
+hatch: centre (7180, 6950), 2895–3053 clear for the 2900 circle, 812 from the
+table edge to the hatch counter.
 
 ---
 

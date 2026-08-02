@@ -120,7 +120,7 @@ NEW_WALLS = [
     # --- service bay, north wall: great room / pods above, service bay below.
     #     Broken either side of the 1050 door into the entry gallery.  The
     #     kitchen door, the serving hatch and help's room door are gaps in it.
-    (6900, 8462.5, 11715, 8462.5, 125, [(400, 1300), (1700, 2900)]),
+    (6900, 8462.5, 11715, 8462.5, 125, [(0, 1100), (3550, 4450)]),
     (12765, 8462.5, 17580, 8462.5, 125, [(1935, 2835)]),
 
     # --- service bay
@@ -258,14 +258,16 @@ _ONCE = [
     # kitchen.
     ('dining',   9600, 6350, 11000, 7750, 'round 1400 dia, seats 6'),
     # ------------------------------------------------------------- kitchen
-    ('counter-re', 7100, 8575, 10350, 9175,
+    ('counter-re', 6900, 8575, 10350, 9175,
      'run B  ·  600 deep, end rounded off for the entry door'),
-    ('sink',     7620, 8700, 8180, 9010, ''),
-    ('shelves',  8600, 8525, 9800, 8725, 'hatch shelf, deepened into the kitchen'),
+    ('sink',     9250, 8700, 9810, 9010, 'sink, east end'),
+    ('shelves',  6900, 8525, 8000, 8725,
+     'serving hatch, 1100 — opens into the parents pod'),
     # --- the window run: hob only, integrated dishwasher under it
-    ('counter',  7800, 10375, 9000, 10975, 'hob counter at the window  ·  600 deep'),
-    ('under',    8080, 10455, 8820, 10895, 'integrated dishwasher, under the hob'),
-    ('hob',      8150, 10525, 8750, 10825, ''),
+    ('counter',  8200, 10375, 9400, 10975,
+     'hob counter  ·  centred on the window, 400 clear each side'),
+    ('under',    8430, 10455, 9170, 10895, 'integrated dishwasher, under the hob'),
+    ('hob',      8500, 10525, 9100, 10825, ''),
     # --- the fridge, west of the hob run, flush with the wall.  It sits clear
     #     of the window, which starts at 7800, so nothing stands in front of it.
     ('appliance', 7000, 10275, 7800, 10975, 'fridge  ·  flush with the wall'),

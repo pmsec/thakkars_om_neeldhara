@@ -165,10 +165,15 @@ GALLERY = (GAL_CX, GAL_CY, GAL_RO - T_SCREEN / 2, T_SCREEN,
             (250.5, 289.5)])    # 1050 at the apex, on to the great room
 
 # The U's two straight legs, wood, lining the inner face of each column.
-# They run 150 past the springing so they always meet the curve cleanly.
+# The legs run 150 past the springing so they always meet the curve cleanly.
+# The two jambs close the U at the top: the curve is tangent to the great-room
+# wall but its ends stop 130 short of it either side of the door, so these
+# carry it up to the wall and the U is continuous all the way round.
 SCREEN_WALLS = [
     (GAL_W + T_SCREEN / 2, GAL_CY - 150, GAL_W + T_SCREEN / 2, 11050, T_SCREEN, []),
     (GAL_E - T_SCREEN / 2, GAL_CY - 150, GAL_E - T_SCREEN / 2, 11050, T_SCREEN, []),
+    (GAL_DOOR_W, 8462.5, GAL_DOOR_W, 8700, T_SCREEN, []),
+    (GAL_DOOR_E, 8462.5, GAL_DOOR_E, 8700, T_SCREEN, []),
 ]
 
 # --------------------------------------------------------------- pod glazing

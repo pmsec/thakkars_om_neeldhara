@@ -14,7 +14,7 @@ preserved untouched.
 | `PROP-WALL-NEW` | new masonry, solid-hatched |
 | `PROP-KEEP` | shafts, ducts and voids that must stay clear |
 | `PROP-GLAZ` | glazing, sliding glass, the pod portals |
-| `PROP-SCREEN` | the entry gallery drum — 75 wood screen |
+| `PROP-SCREEN` | the entry gallery U — 75 wood screen |
 | `PROP-FURN` | fixed joinery and the layout |
 | `PROP-TEXT` | room names, areas, and the layer-state notes |
 | `PROP-DIM` | the set-out dimensions |
@@ -71,6 +71,11 @@ against this layout. All checks pass:
 * the four columns that A-101 lost off the end of the plan are back inside it
 * five columns are now fully absorbed in masonry; the rest appear as **piers**
   projecting 80–110 mm into a room, which is what they are
+* the shell is only what is genuinely built: `keep_demo()` keeps a builder wall
+  only where it runs **along** a shell edge — the slab line or a side of a
+  shaft — plus 260 for the corner return. Being merely near one is not enough,
+  or a never-built partition that passes the corner of a duct gets drawn as
+  existing fabric
 
 ---
 
@@ -101,33 +106,33 @@ two dry balconies, which is what the builder built them as.
 The entry gallery is re-centred on the home's centreline at X 12240 and sits
 inside the 3220 clear between the lobby columns.
 
-**5. The entry gallery is a wood drum, not a masonry room.** Nothing in an
-entry foyer needs privacy, so the wall is a **75 wood screen** rather than 150
-of masonry, and it stands free — joinery is allowed to. It is the largest
-clean circle the bay takes: **2450 outside, 2300 clear**, tangent to the
-service-bay north wall above and to the entrance wall below.
+**5. The entry gallery is a U in wood, spanning column to column.** A circle
+standing free in the pocket made little sense with the builder's two
+**230 × 1800 columns** in the middle of it. The U uses them: its two legs are
+**75 wood** linings on the inner face of each column, joined across the north
+by a semicircle of R 1610 whose outer face is tangent to the service-bay north
+wall. Two short jambs carry the curve's ends up to that wall either side of
+the door, so the wall is **continuous the whole way round** — entrance wall,
+leg, curve, jamb, great-room wall, and back.
 
-Two openings, both **1050**, and each one lines up with a real door: the front
-door from the lift lobby below, the great-room door above. Nothing else cuts
-it.
+**3070 wide × 2375 deep — 6.3 m² net, 68 sq ft.** Two doors, both 1050 and
+both on the home's centreline: the front door from the lift lobby in the
+entrance wall, and the great-room door at the apex of the curve.
 
-Because the screen is thin and free-standing, **there is no wall between the
-gallery and the rooms either side** — the kitchen runs east up to the drum and
-help's room runs west up to it. That is where the corner space goes:
+Nothing in an entry foyer needs privacy, which is why it is 75 of wood and not
+150 of masonry.
 
-| | before | now |
+The two corners the curve leaves behind it, north of each column, stay open to
+the kitchen and to help's room through the builder's own **800 clear above
+each column** — so they are floor in those rooms, not waste:
+
+| | rectangle | now |
 |---|---|---|
-| KITCHEN | 8.2 m² / 88 sq ft | **10.4 / 112** |
-| HELP'S ROOM | 5.1 / 55 | **7.2 / 78** |
-| ENTRY GALLERY | 6.9 / 74 | 4.2 / 45 clear inside the drum |
+| KITCHEN | 8.2 m² / 88 sq ft | **8.9 / 96** |
+| HELP'S ROOM | 5.1 / 55 | **5.8 / 62** |
 
-The kitchen and help's room each get their own **900 door off the great room**
-in the service-bay north wall, so neither depends on the drum to be reached.
-
-The builder's two **230 × 1800 columns** stay exactly where they are, now
-standing as free piers where the two rooms meet the drum. Behind each is a
-**385 × 1650 niche**, open at its north end — the right size for a tall
-cupboard, and worth using rather than leaving blank.
+Both rooms also have their own **900 door off the great room** in the
+service-bay north wall, so neither depends on the gallery to be reached.
 
 ---
 
@@ -141,16 +146,16 @@ cupboard, and worth using rather than leaving blank.
 | MASTER SUITE — karan | 35.0 | 377 |
 | FAMILY ROOM | 19.4 | 209 |
 | MUSIC + WORK DEN | 19.4 | 209 |
-| KITCHEN | 10.4 | 112 |
-| HELP'S ROOM | 7.2 | 78 |
+| KITCHEN | 8.9 | 96 |
+| ENTRY GALLERY | 6.3 | 68 |
+| HELP'S ROOM | 5.8 | 62 |
 | PARENTS' BATH | 4.4 | 48 |
 | KARAN'S BATH | 4.4 | 48 |
-| ENTRY GALLERY | 4.2 | 45 |
 | TERRACE ×2 | 3.7 each | 40 each |
 | GUEST / SERVICE WC | 2.8 | 30 |
 | UTILITY | 1.9 | 20 |
 | STORE | 1.8 | 19 |
-| **total of named rooms** | **234.2** | **2521** |
+| **total of named rooms** | **233.4** | **2512** |
 
 The great room is 485 sq ft against A-101's 474, and 7840 across the removed
 party wall rather than 7690.
@@ -172,11 +177,6 @@ front door and nothing more. The kitchen now has its own 900 door off the
 great room, so service access does not depend on it. Say the word if you want
 a separate one — it would go in the kitchen's own south wall, on to the lift
 landing.
-
-**Help's room now runs up to the drum**, which is what opening both sides out
-means — but it leaves only a 75 wood screen between a bed and the front door.
-If that bothers you, a light partition on the drum's east tangent puts it back
-to a closed room at 6.6 m² / 71 sq ft, still better than the 5.1 it had.
 
 **There is nothing to demolish.** You took the flats as bare shell, so every
 wall in the layout is new. What is drawn as existing is only the shell — on

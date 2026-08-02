@@ -200,6 +200,29 @@ def arch_haunches():
     return out
 
 
+def arch_doors(leaf=60):
+    """The three doors in the arch, drawn SHUT.
+
+    Each leaf is curved on the same radius as the wall it sits in, so with the
+    doors closed the arch reads as one continuous sweep and the U is whole.
+    A leaf curved to a 2370 radius cannot swing — it has to slide on the face
+    of the arc — so no swing is drawn; the leaf is shown where it lives.
+    """
+    cx, cy, r, t, gaps = D.GALLERY
+    out = []
+    for a0, a1 in gaps:
+        if (a1 - a0) % 360 > 60:          # the big gap below the springings
+            continue
+        ang = np.linspace(a0, a1, 40)
+        inner = [(cx + math.cos(math.radians(a)) * (r - leaf / 2),
+                  cy + math.sin(math.radians(a)) * (r - leaf / 2)) for a in ang]
+        outer = [(cx + math.cos(math.radians(a)) * (r + leaf / 2),
+                  cy + math.sin(math.radians(a)) * (r + leaf / 2))
+                 for a in reversed(ang)]
+        out.append(inner + outer)
+    return out
+
+
 def corner_units():
     """The mandir and the coffee / pantry, as drawing primitives.
 

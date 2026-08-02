@@ -33,6 +33,7 @@ TXT = '#2a2724'
 TXT2 = '#7d7568'
 DIMC = '#6f6a60'
 WOOD = '#8a6440'
+WOODL = '#cbab80'
 
 
 def esc(s):
@@ -282,6 +283,8 @@ def main():
             s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
     for q in R.arch_haunches():          # springer blocks, arch on to leg
         s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
+    for q in R.arch_doors():             # the three doors, shut
+        s.poly(q, fill=WOODL, stroke=WOOD, stroke_width=1.2)
 
     # --------------------------------------------------------------- labels
     def area_of(rects):
@@ -351,7 +354,8 @@ def main():
             (KEEP, 'builder column / beam, and keep-clear shaft, duct or void'),
             (NEWW, 'new masonry — every wall is new, every opening a gap in it'),
             (GLAS, 'glazing / sliding glass'),
-            (WOOD, 'the U of the entry gallery — 230, on the two columns')]):
+            (WOOD, 'the U of the entry gallery — 230, on the two columns'),
+            (WOODL, 'curved doors, drawn shut — they slide on the arc')]):
         s.o.append(f'<rect x="{s.X(lx):.1f}" y="{s.Y(ly) + i * 26 - 13:.0f}" width="34" '
                    f'height="17" fill="{col}" stroke="#888" stroke-width="0.6"/>')
         s.o.append(f'<text x="{s.X(lx) + 46:.1f}" y="{s.Y(ly) + i * 26:.0f}" '

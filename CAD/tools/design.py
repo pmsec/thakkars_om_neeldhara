@@ -39,6 +39,9 @@ What moved, and why
   circulation.  Extending to the lift doors is a one-line change if wanted.
 """
 
+import math
+import math as _m
+
 # --------------------------------------------------------------- shell datums
 END_W, END_E = -600, 25080          # outer faces of the end walls
 DECK_N, DECK_S = -150, 2470         # deck, inner faces
@@ -96,6 +99,49 @@ ROOMS = [
     ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
 ]
 
+# --------------------------------------------------- entry gallery, setting out
+# The setting-out has to come before the walls, because the service-bay north
+# wall is cut by whatever the gallery's end does — so that wall is written in
+# terms of these numbers rather than in numbers that have to be kept in step
+# with them by hand.
+#
+# The two legs sit exactly on the builder's two 230 x 1800 columns.  The end is
+# a TRUE SEMICIRCLE: the sag equals the half-span, which puts the centre on the
+# line of the column tops.  Two things follow, and both are the point of it.
+# The tangent at the springing is vertical, so the arc leaves the column
+# parallel to it — no radial cut against a flat leg top, no notch, nothing to
+# patch.  And the crown lands 925 north of the service bay, so the gallery ends
+# in a proper apse that reads from inside the great room.
+T_GAL = 230                                    # same as the column, so it reads
+GAL_W, GAL_E = 10400, M(10400)                 # OUTER faces of the two columns
+COL_N = 9325                                   # top of the two columns
+GAL_CX = MID
+GAL_DOOR_W, GAL_DOOR_E = 11715, 12765          # the great-room door, on the axis
+
+_HALF = MID - (GAL_W + T_GAL / 2)              # 1725, leg centreline to centre
+_SAG = _HALF                                   # semicircle: springs at COL_N
+GAL_R = (_HALF ** 2 + _SAG ** 2) / (2 * _SAG)  # 1725
+_CROWN = COL_N - _SAG                          # 7600, centreline at the crown
+GAL_CY = _CROWN + GAL_R                        # 9325 — on the column tops
+GAL_RO, GAL_RI = GAL_R + T_GAL / 2, GAL_R - T_GAL / 2
+
+
+def gal_cross(y, r=None):
+    """x where the gallery circle of radius r crosses the line y, west side.
+
+    None when it does not reach that line at all — which is what a shallower
+    arch would do, and the callers fall back rather than break."""
+    r = GAL_RO if r is None else r
+    d = r * r - (y - GAL_CY) ** 2
+    return GAL_CX - _m.sqrt(d) if d > 0 else None
+
+
+# Where the apse breaks through the service-bay north wall.  Taken on the
+# wall's NORTH face, so the wall runs a little way INTO the arch and the two
+# merge, rather than stopping short of it and leaving a hairline.
+_BRK_W = gal_cross(BODY_S) or GAL_DOOR_W
+_BRK_E = M(_BRK_W)
+
 # ------------------------------------------------------------------- new walls
 # (x1, y1, x2, y2, thickness, [(from, to) openings along the wall])
 T_INT, T_THIN = 150, 110
@@ -117,10 +163,13 @@ NEW_WALLS = [
     (M(DUCT_W1 + 75), 6175, M(DUCT_W1 + 75), BODY_S, T_INT, []),
 
     # --- service bay, north wall: great room / pods above, service bay below.
-    #     Broken either side of the 1050 door into the entry gallery.  The
-    #     kitchen door, the serving hatch and help's room door are gaps in it.
-    (6900, 8462.5, 11715, 8462.5, 125, [(0, 1100)]),   # serving hatch only
-    (12765, 8462.5, 17580, 8462.5, 125, [(1935, 2835)]),
+    #     It stops where the gallery apse breaks through it and starts again on
+    #     the far side; between those two points the apse's own curved wall is
+    #     the boundary, so there is nothing for this one to do.  The serving
+    #     hatch and help's room door are gaps in it.
+    (6900, 8462.5, _BRK_W, 8462.5, 125, [(0, 1100)]),   # serving hatch only
+    (_BRK_E, 8462.5, 17580, 8462.5, 125,
+     [(14250 - _BRK_E, 15150 - _BRK_E)]),               # help's room door
 
     # --- service bay
     # (the kitchen / utility wall is gone — the two are one space now)
@@ -135,63 +184,47 @@ NEW_WALLS = [
 
 # The entry gallery: a U on plan, the same 230 as the columns it is built on,
 # so column and wall read as one continuous piece rather than a thin thing
-# stuck beside a thick one.
+# stuck beside a thick one.  The set-out is above, with the walls it cuts.
 #
-# The two legs sit exactly on the two 230 x 1800 columns.  The curve is a
-# SEGMENTAL ARCH springing off the top corner of each column and rising to the
-# great-room wall at the crown.  A semicircle cannot do that: tangent to the
-# legs it must spring half the span below the crown, which is 800 south of
-# where the columns stop, and that leaves a wedge of gap between the column and
-# the curve.  A segmental arch springs where the columns actually end.
-#
-import math as _m
-import math
-
-T_GAL = 230                                    # same as the column, so it reads
-GAL_W, GAL_E = 10400, M(10400)                 # OUTER faces of the two columns
-COL_N = 9325                                   # top of the two columns
-GAL_CX = MID
-GAL_DOOR_W, GAL_DOOR_E = 11715, 12765          # both doors, on the centreline
-
 # The two legs sit exactly on the columns, so the column IS the leg.
 GAL_LEGS = [(GAL_W, COL_N, GAL_W + T_GAL, 11125),
             (GAL_E - T_GAL, COL_N, GAL_E, 11125)]
-
-# The curve is a segmental arch springing off the top corner of each column —
-# no gap, nothing left over — and rising to touch the great-room wall at the
-# crown.  A semicircle cannot do both: tangent to the legs it would have to
-# spring 1610 below the crown, which is 800 south of where the columns end, and
-# that is the gap.  A segmental arch springs where the columns actually stop.
-_HALF = MID - (GAL_W + T_GAL / 2)              # 1725, leg centreline to centre
-# The crown rides 60 up into the great-room wall, so that the arch still
-# meets that wall at the two door jambs instead of stopping 50 short of it.
-_CROWN = BAY_N + T_GAL / 2 - 60                # 8580, centreline at the crown
-_SAG = COL_N - _CROWN                          # 685, rise of the arch
-GAL_R = (_HALF ** 2 + _SAG ** 2) / (2 * _SAG)  # 2514.5
-GAL_CY = _CROWN + GAL_R                        # 11154.5
 
 
 def _ang(x, y):
     return _m.degrees(_m.atan2(y - GAL_CY, x - GAL_CX)) % 360
 
 
-_A0, _A1 = _ang(GAL_W + T_GAL / 2, COL_N), _ang(GAL_E - T_GAL / 2, COL_N)
+# The springings, and the mirror of the west one — taken by symmetry about the
+# crown rather than from atan2, which returns 0 for the east one and would make
+# the sweep read backwards.
+_A0 = _ang(GAL_W + T_GAL / 2, COL_N)             # 180 — due west of the centre
+_A1 = 540 - _A0                                  # 360
 _D0 = _ang(GAL_DOOR_W, GAL_CY - _m.sqrt(GAL_R ** 2 - (GAL_DOOR_W - MID) ** 2))
 _D1 = 540 - _D0
 
+# Where the apse crosses the service-bay north line, on its OUTER face.  This
+# is the corner each of the two flanking rooms runs up to.
+_BN0 = _ang(gal_cross(BAY_N), BAY_N) if gal_cross(BAY_N) else 270
+_BN1 = 540 - _BN0
+
 # centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east).
 # The first gap wraps past 0 and kills everything below the springings.
+#
 # The arch carries all three doors, because it is the only part of the U that
-# is not a column.  It spans 93 degrees — 3864 of arc — and 1050 + 700 + 700
-# of that is opening, so what is left is four piers.  They are set out evenly,
-# 350 each, rather than left to fall where they may.
-_SVC = math.degrees(700 / GAL_R)                 # a 700 service door
-_PIER = ((_A1 - _A0) - (_D1 - _D0) - 2 * _SVC) / 4
+# is not a column.  It spans a full 180 — 5419 of arc.  The two service doors
+# are NOT set out by eye: once the apse pushes north, the only stretch of arch
+# with the kitchen on the other side of it is the 776 between the springing and
+# the service-bay wall.  North of that the arch faces the great room, and a
+# door there would open into the wrong room.  So each service door takes that
+# whole stretch — jambed by the column at one end and by the wall at the other,
+# with no thin pier between them to be nervous about.  That leaves two 1400
+# piers flanking the 1050 door on the axis.
 GALLERY = (GAL_CX, GAL_CY, GAL_R, T_GAL,
            [(_A1 + 0.2, _A0 - 0.2),              # below the two springings
-            (_D0, _D1),                          # 1050 at the crown, great room
-            (_A0 + _PIER, _A0 + _PIER + _SVC),   # 700 service door, to the kitchen
-            (_A1 - _PIER - _SVC, _A1 - _PIER)])  # 700 service door, to help's room
+            (_D0, _D1),                          # 1050 on the axis, great room
+            (_A0 - 0.2, _BN0),                   # 776 service door, to the kitchen
+            (_BN1, _A1 + 0.2)])                  # 776 service door, to help's room
 
 # The U's two straight legs, wood, lining the inner face of each column.
 # The straight legs, 230 on the column footprint: the column IS the leg, so
@@ -263,9 +296,12 @@ _ONCE = [
     # was straightened, which is why that curve changed.
     ('dining',   6480, 6250, 7880, 7650, 'round 1400 dia, seats 6'),
     # ------------------------------------------------------------- kitchen
-    ('counter-re', 6900, 8575, 10350, 9175,
-     'run B  ·  600 deep, end rounded off for the entry door'),
-    ('sink',     9250, 8700, 9810, 9010, 'sink, east end'),
+    # Run B stops 850 short of the gallery: the apse springs vertically off the
+    # column, so the only stretch of gallery wall the kitchen can have a door
+    # in is right beside that column — and this counter used to run into it.
+    ('counter-re', 6900, 8575, 9550, 9175,
+     'run B  ·  600 deep, end rounded off  ·  850 clear to the gallery door'),
+    ('sink',     8930, 8700, 9490, 9010, 'sink, east end'),
     ('shelves',  6900, 8525, 8000, 8725,
      'serving hatch, 1100 — opens into the parents pod'),
     # --- the window run: hob only, integrated dishwasher under it
@@ -290,7 +326,9 @@ _ONCE = [
     ('basket',   5755, 9470, 6255, 9970, 'laundry basket'),
     ('bin',      6305, 9470, 6855, 10020, 'dustbin'),
     # --------------------------------------------------------- help\'s room
-    ('bunk',     14180, 8700, 15080, 10600, 'bunk'),
+    # Against the east wall, not the gallery: the gallery door lands on this
+    # side of the apse and the whole west half of the room is its approach.
+    ('bunk',     15250, 8700, 16150, 10600, 'bunk'),
     # ------------------------------------------------- guest / service WC
     ('shower',   16330, 8575, 17380, 9375, ''),
     ('wc',       16480, 9700, 17100, 10320, ''),

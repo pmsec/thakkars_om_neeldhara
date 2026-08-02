@@ -118,8 +118,21 @@ def pod_polys():
            + [(bez_x(D.POD_W, D.BODY_S), D.BODY_S), (D.DUCT_W1 + 150, D.BODY_S),
               (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
     den = [(2 * D.MID - x, y) for x, y in fam]
-    great = west_curve + list(reversed(east_curve))
+    great = west_curve + gal_apse() + list(reversed(east_curve))
     return fam, den, great
+
+
+def gal_apse():
+    """The gallery's apse, as it bites into the great room's south edge.
+
+    Empty when the arch stays south of the great room, which is what a
+    shallower one would do."""
+    ro = D.GAL_RO
+    if D.GAL_CY - ro >= D.BODY_S:
+        return []
+    x = D.gal_cross(D.BODY_S)
+    a0 = D._ang(x, D.BODY_S)
+    return _gal_arc(ro, a0, 540 - a0)
 
 
 def poly_rooms():
@@ -141,8 +154,9 @@ def poly_rooms():
          (8700, 9500)),
         ("HELP'S ROOM", '', helps, '', (14900, 9500)),
         ('ENTRY GALLERY', '', gallery,
-         'a U on the two columns  ·  3220 wide x 2450 deep  ·  230 throughout',
-         (D.MID, 9750)),
+         'a U on the two columns  ·  3220 wide x 3260 deep  ·  '
+         'semicircular apse, 230 throughout',
+         (D.MID, 9950)),
     ]
 
 
@@ -158,23 +172,24 @@ COL_N = D.COL_N               # top of the two 230 x 1800 gallery columns
 def lobby_polys():
     """Kitchen, help's room and the entry gallery.
 
-    The gallery is a U spanning column to column: two wood legs lining the
-    columns, joined across the north by a semicircular end whose outer face is
-    tangent to the service-bay north wall.  The two corners the curve leaves
-    behind it, north of each column, are open to the kitchen and to help's
-    room through the 800 the builder leaves above each column — so they are
-    floor in those rooms, not waste.
+    The gallery is a U spanning column to column: two legs lining the columns,
+    closed across the north by a semicircular apse springing off the top of
+    each one.  The apse projects past the service-bay line into the great room,
+    so the kitchen and help's room each run up to it along that line and then
+    follow it down to their column — the corners north of each column are
+    floor in those rooms, through the 800 the builder leaves above the column,
+    not waste.
     """
     r, t = D.GAL_R, D.T_GAL
-    ro, ri = r + t / 2, r - t / 2
+    ro, ri = D.GAL_RO, D.GAL_RI
     kw, ke = 6900, 16150                   # far faces of the two rooms
     iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
     # the kitchen now includes the builder's dry balcony — one room, one area
-    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, D._A0)
+    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, D._BN0, D._A0)
                + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
                   (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
-    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, 270, D._A1)
+    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, D._BN1, D._A1)
              + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (ke, D.BAY_S)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
                + [(ie, COL_N), (ie, D.BAY_S)])
@@ -184,11 +199,15 @@ def lobby_polys():
 def arch_haunches():
     """The springer blocks at the two ends of the arch.
 
-    A segmental arch leaves its pier at 47 degrees off vertical, and its end is
-    cut radially — square to the arc, not square to the leg.  So the slanted
-    cut and the flat top of the leg cannot meet: it leaves a notch on the
-    outside and a small overhang on the inside.  These two pieces fill that,
-    which is exactly the springer stone a mason would cut.
+    A segmental arch leaves its pier at an angle, and its end is cut radially —
+    square to the arc, not square to the leg — so the slanted cut and the flat
+    top of the leg cannot meet: a notch outside, an overhang inside.  These two
+    pieces fill that, which is the springer stone a mason would cut.
+
+    A semicircle springs vertically and the radial cut is horizontal, so there
+    is nothing to fill and each piece collapses to a 4-degree patch sitting
+    inside the arch.  Harmless, and it keeps the arch honest if the sag is ever
+    pulled back off the half-span.
     """
     cx, cy, r, t, _g = D.GALLERY
     ro, ri = r + t / 2, r - t / 2
@@ -202,7 +221,11 @@ def arch_haunches():
         outer, inner = ((a, b), (c, b)) if west else ((c, b), (a, b))
         dx = outer[0] - cx                       # where the outer face of the
         dy = -math.sqrt(max(ro * ro - dx * dx, 0))   # arc crosses the leg's face
-        th0 = math.degrees(math.atan2(dy, dx)) % 360
+        th0 = math.degrees(math.atan2(dy, dx))
+        while th - th0 > 180:            # take the short way round to th, or
+            th0 += 360                   # the east springer sweeps 356 degrees
+        while th0 - th > 180:            # and fills the whole drum
+            th0 -= 360
         u = math.radians(th)
         out.append([outer]
                    + _gal_arc(ro, th0, th, 24)

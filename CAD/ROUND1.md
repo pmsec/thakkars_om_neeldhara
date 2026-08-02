@@ -118,6 +118,13 @@ that — tangent to the legs it has to spring half the span below the crown,
 which is 800 south of where the columns stop, and the wedge between column and
 curve is the gap. A segmental arch springs where the columns actually end.
 
+A segmental arch leaves its pier at **47° off vertical**, and its end is cut
+radially — square to the arc, not square to the leg. Those two faces cannot
+meet, which leaves a notch outside and an overhang inside. A **springer block**
+at each end fills it, its outer edge following the arc's own face rather than
+cutting the corner with a chord. That is the piece a mason would cut, and it
+is why the U now reads as one unbroken line.
+
 **3220 wide × 2450 deep — the whole pocket. 6.7 m², 72 sq ft.** Two doors,
 both 1050 and both on the home's centreline: the front door from the lift
 lobby in the entrance wall, and the great-room door at the crown of the arch.

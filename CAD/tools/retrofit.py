@@ -171,6 +171,35 @@ def lobby_polys():
     return kitchen, helps, gallery
 
 
+def arch_haunches():
+    """The springer blocks at the two ends of the arch.
+
+    A segmental arch leaves its pier at 47 degrees off vertical, and its end is
+    cut radially — square to the arc, not square to the leg.  So the slanted
+    cut and the flat top of the leg cannot meet: it leaves a notch on the
+    outside and a small overhang on the inside.  These two pieces fill that,
+    which is exactly the springer stone a mason would cut.
+    """
+    cx, cy, r, t, _g = D.GALLERY
+    ro, ri = r + t / 2, r - t / 2
+    out = []
+    # Each springer reaches 4 degrees INTO the arc, so it always overlaps
+    # whatever the arc's own sampling actually drew and no hairline survives.
+    # Its outer edge follows the arc's outer face rather than cutting the
+    # corner off with a chord — a chord there is a visible nick.
+    for th, (a, b, c, _d) in zip((D._A0 + 4, D._A1 - 4), D.GAL_LEGS):
+        west = a < D.MID
+        outer, inner = ((a, b), (c, b)) if west else ((c, b), (a, b))
+        dx = outer[0] - cx                       # where the outer face of the
+        dy = -math.sqrt(max(ro * ro - dx * dx, 0))   # arc crosses the leg's face
+        th0 = math.degrees(math.atan2(dy, dx)) % 360
+        u = math.radians(th)
+        out.append([outer]
+                   + _gal_arc(ro, th0, th, 24)
+                   + [(cx + ri * math.cos(u), cy + ri * math.sin(u)), inner])
+    return out
+
+
 def corner_units():
     """The mandir and the coffee / pantry, as drawing primitives.
 

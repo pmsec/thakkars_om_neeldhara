@@ -194,12 +194,12 @@ def main():
             h.set_solid_fill(color=32)
         run = []
 
-    for x1, y1, x2, y2, t, ops in D.SCREEN_WALLS:
-        for q in wall_pieces(x1, y1, x2, y2, t, ops):
-            poly(msp, q, 'PROP-SCREEN')
-            h = msp.add_hatch(color=32, dxfattribs={'layer': 'PROP-SCREEN'})
-            h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
-            h.set_solid_fill(color=32)
+    screen = [q for w in D.SCREEN_WALLS for q in wall_pieces(*w)] + R.arch_haunches()
+    for q in screen:
+        poly(msp, q, 'PROP-SCREEN')
+        h = msp.add_hatch(color=32, dxfattribs={'layer': 'PROP-SCREEN'})
+        h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
+        h.set_solid_fill(color=32)
 
     # --------------------------------------------------------------- glazing
     for Pc in (D.POD_W, D.POD_E):

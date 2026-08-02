@@ -280,6 +280,8 @@ def main():
     for x1, y1, x2, y2, t, ops in D.SCREEN_WALLS:
         for q in wall_quads(x1, y1, x2, y2, t, ops):
             s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
+    for q in R.arch_haunches():          # springer blocks, arch on to leg
+        s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
 
     # --------------------------------------------------------------- labels
     def area_of(rects):

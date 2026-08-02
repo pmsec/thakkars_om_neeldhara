@@ -99,9 +99,10 @@ cupboards + dressing + terrace" reads properly. **377 sq ft each**, with a
 2895-long bath off the south end.
 
 **4. The service bay keeps only what physically fits between the two ducts.**
-Kitchen on its existing stack (3350 × 2450), entry hall between the two lobby
-columns, help's room + WC in the mirrored bay. Laundry and store go into the
-two dry balconies, which is what the builder built them as.
+Kitchen on its existing stack, entry hall between the two lobby columns,
+help's room + WC in the mirrored bay. The two dry balconies become the
+kitchen's utility end and the store, which is what the builder built them as —
+and the wall between kitchen and utility comes out, so they are one room.
 
 The entry gallery is re-centred on the home's centreline at X 12240 and sits
 inside the 3220 clear between the lobby columns.
@@ -155,7 +156,7 @@ in those rooms, not waste:
 
 | | rectangle | now |
 |---|---|---|
-| KITCHEN | 8.2 m² / 88 sq ft | **8.7 / 94** |
+| KITCHEN | 8.2 m² / 88 sq ft | **8.7 / 94**, and 10.9 / 118 with the utility |
 | HELP'S ROOM | 5.1 / 55 | **5.5 / 60** |
 
 Both also have their own **900 door off the great room** in the service-bay
@@ -176,14 +177,13 @@ asking it to match the column. Finish it in wood if you want the same effect.
 | MASTER SUITE — karan | 35.0 | 377 |
 | FAMILY ROOM | 19.4 | 209 |
 | MUSIC + WORK DEN | 19.4 | 209 |
-| KITCHEN (with the utility open to it) | 9.1 | 98 |
+| KITCHEN (one room with the utility) | 10.9 | 118 |
 | ENTRY GALLERY | 6.7 | 72 |
 | HELP'S ROOM | 5.5 | 60 |
 | PARENTS' BATH | 4.4 | 48 |
 | KARAN'S BATH | 4.4 | 48 |
 | TERRACE ×2 | 3.7 each | 40 each |
 | GUEST / SERVICE WC | 2.8 | 30 |
-| UTILITY | 1.9 | 20 |
 | STORE | 1.8 | 19 |
 | **total of named rooms** | **233.7** | **2516** |
 
@@ -237,9 +237,23 @@ changed shape, so they are out and will go back in deliberately.
 
 Kept — 31 pieces, the ones that prove the plan works:
 
-* kitchen — run B only: the counter, its sink and the hatch shelf, at 600
-  deep. The peninsula opposite is out, and the hob, chimney and tall fridge
-  went with it — **both the hob and the fridge still need a home**
+* **kitchen — one room with the utility, 10.9 m² / 118 sq ft.** The wall
+  between them is gone, so the builder's dry balcony is simply its utility end.
+  Three runs, all 600 deep, all with their corners eased:
+  * **run B** along the north wall, X 6900–10350, sink at the east end, and a
+    **full bullnose** on that end — you walk straight into it coming through
+    the west arch door
+  * **the hob run**, X 8200–9400, dead centre on the window, hob only with the
+    integrated dishwasher under it, 400 clear to the fridge and 400 to the
+    appliance corner
+  * **the appliance corner**, X 9800–10400, flush with the west gallery
+    column — microwave, air fryer and toaster, coffee and soda maker
+  * the fridge sits between the fridge-side gap and the hob run, X 7000–7800,
+    flush with the wall and clear of the window
+  * the utility end: washer and dryer stacked flush with the outer wall,
+    laundry basket and bin flush with the wall opposite
+* the **serving hatch** is at the west end of run B, X 6900–8000, so it opens
+  into the parents' pod — ready for the dining table to move there
 * utility — stacked washer and dryer
 * both master baths — vanity, basin, WC, curved glass shower
 * guest / service WC — shower, WC, basin
@@ -296,8 +310,6 @@ need. Beside the serving hatch it is also next to the kitchen.
 
 ## Open for the next round
 
-* **the hob and the fridge** — the run they sat on has gone, so both need
-  placing. The hob drops into run B; the fridge needs somewhere of its own
 * the furniture, room by room, added back on purpose rather than inherited
 * the dining table's home. Measured for the parents' pod, which is 2295 clear
   at the kitchen wall: a round 1400 is 600 short and a 1300 square 500 short,

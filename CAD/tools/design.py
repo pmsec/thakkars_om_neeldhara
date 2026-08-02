@@ -204,8 +204,14 @@ SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it
-POD_W = ((9115, BODY_N), (8650, 5030), (8650, BODY_S))
-POD_E = ((M(9115), BODY_N), (M(8650), 5030), (M(8650), BODY_S))
+# A CUBIC, not a quadratic.  A quadratic can only bow one way, so the width
+# the great room wants in the middle and the width the pod needs at the
+# serving hatch fight each other.  A cubic gives both: it waists in towards
+# the pod at mid-depth and swells back out at the bottom, where the dining
+# table sits.  Great room 43.4 m2 against 39.9 for the best quadratic that
+# still takes the table, and the table stays at the hatch.
+POD_W = ((9115, BODY_N), (6800, 4600), (9400, 6400), (8600, BODY_S))
+POD_E = ((M(9115), BODY_N), (M(6800), 4600), (M(9400), 6400), (M(8600), BODY_S))
 POD_PORTAL = (0.42, 0.60)                 # arched opening, as a t-range
 
 # straight glazing runs: (x1, y1, x2, y2, kind)
@@ -255,7 +261,7 @@ _ONCE = [
     # Round 1400, six chairs, at the serving hatch end of the pod.  It needs a
     # 2900 clear circle; the pod's south end only gave 2295 until the glazing
     # was straightened, which is why that curve changed.
-    ('dining',   6500, 6200, 7900, 7600, 'round 1400 dia, seats 6'),
+    ('dining',   6480, 6250, 7880, 7650, 'round 1400 dia, seats 6'),
     # ------------------------------------------------------------- kitchen
     ('counter-re', 6900, 8575, 10350, 9175,
      'run B  ·  600 deep, end rounded off for the entry door'),

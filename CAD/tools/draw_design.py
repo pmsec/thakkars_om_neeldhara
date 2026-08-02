@@ -40,21 +40,7 @@ def esc(s):
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
-def bez(P, t):
-    u = 1 - t
-    return (u * u * P[0][0] + 2 * u * t * P[1][0] + t * t * P[2][0],
-            u * u * P[0][1] + 2 * u * t * P[1][1] + t * t * P[2][1])
-
-
-def bez_x(P, y):
-    lo, hi = 0.0, 1.0
-    for _ in range(50):
-        m = (lo + hi) / 2
-        if bez(P, m)[1] < y:
-            lo = m
-        else:
-            hi = m
-    return bez(P, (lo + hi) / 2)[0]
+bez, bez_x = R.bez, R.bez_x     # one implementation, shared
 
 
 class Sheet:

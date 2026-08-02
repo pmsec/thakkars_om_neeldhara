@@ -86,9 +86,14 @@ def keep_demo():
 
 # ------------------------------------------------------------------ design
 def bez(P, t):
-    u = 1 - t
-    return (u * u * P[0][0] + 2 * u * t * P[1][0] + t * t * P[2][0],
-            u * u * P[0][1] + 2 * u * t * P[1][1] + t * t * P[2][1])
+    """Bezier of any degree, by de Casteljau — the pod glazing is a cubic now,
+    because a quadratic cannot be narrow where the great room wants width and
+    wide where the pod needs it."""
+    pts = list(P)
+    while len(pts) > 1:
+        pts = [((1 - t) * a[0] + t * b[0], (1 - t) * a[1] + t * b[1])
+               for a, b in zip(pts, pts[1:])]
+    return pts[0]
 
 
 def bez_x(P, y):
@@ -129,7 +134,7 @@ def poly_rooms():
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
         ('GREAT ROOM', '', great,
-         'party wall removed  ·  7180 across at the pods, 8480 at the deck',
+         'party wall removed  ·  6250 at the deck, 8220 at the waist, 7280 at the pods',
          (D.MID, 3450)),
         ('KITCHEN', '', kitchen,
          'kitchen and utility as one room  ·  the dry balcony is its utility end',

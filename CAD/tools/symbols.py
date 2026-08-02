@@ -83,6 +83,14 @@ def symbol(kind, a, b, c, d):
                 _rr(a + w * 0.42, b + 35, c, d - 35, 'soft')]
     if kind == 'sidetable':
         return [_rr(a, b, c, d, 'solid')]
+    if kind == 'counter-re':
+        # counter with a rounded end, so nobody turns a sharp corner into it
+        r = h / 2
+        arc = [(c - r + math.cos(math.radians(t)) * r, cy + math.sin(math.radians(t)) * r)
+               for t in range(-90, 91, 5)]
+        return [('poly', [(a, b)] + arc + [(a, d)], 'solid')]
+    if kind == 'under':
+        return [_rr(a, b, c, d, 'dash')]
     if kind in ('counter', 'island', 'joinery', 'appliance', 'shelves', 'console',
                 'bunk', 'mirror'):
         out = [_rr(a, b, c, d, 'solid')]

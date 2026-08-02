@@ -258,9 +258,21 @@ _ONCE = [
     # kitchen.
     ('dining',   9600, 6350, 11000, 7750, 'round 1400 dia, seats 6'),
     # ------------------------------------------------------------- kitchen
-    ('counter',  7100, 8575, 10350, 9175, 'run  ·  600 deep'),
+    ('counter-re', 7100, 8575, 10350, 9175,
+     'run B  ·  600 deep, end rounded off for the entry door'),
     ('sink',     7620, 8700, 8180, 9010, ''),
     ('shelves',  8600, 8525, 9800, 8725, 'hatch shelf, deepened into the kitchen'),
+    # --- the window run: hob only, integrated dishwasher under it
+    ('counter',  7800, 10375, 9000, 10975, 'hob counter at the window  ·  600 deep'),
+    ('under',    8080, 10455, 8820, 10895, 'integrated dishwasher, under the hob'),
+    ('hob',      8150, 10525, 8750, 10825, ''),
+    # --- the fridge, between the two new runs, flush with the wall
+    ('appliance', 9000, 10275, 9800, 10975, 'fridge  ·  flush with the wall'),
+    # --- the appliance corner, flush with the entry gallery column
+    ('counter',  9800, 9700, 10400, 10975, 'appliance corner  ·  600 deep'),
+    ('under',    9860, 9770, 10340, 10190, 'microwave'),
+    ('under',    9860, 10250, 10340, 10600, 'air fryer  ·  toaster'),
+    ('under',    9860, 10660, 10340, 10920, 'coffee  ·  soda maker'),
     # The two pod corner units — mandir and coffee / pantry — are behind the
     # retained deck void, in the corner between its back wall and the pod
     # glazing.  Their shape follows the curve, so they are built in

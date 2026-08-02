@@ -481,11 +481,23 @@
 <rect x="1741.2" y="1333.8" width="62.1" height="62.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="1810.6" y="1213.4" width="62.1" height="62.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="1949.6" y="1213.4" width="62.1" height="62.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="1479.5" y="1570.5" width="438.4" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<polygon points="1479.5,1570.5 1877.4,1570.5 1880.9,1570.7 1884.4,1571.1 1887.9,1571.9 1891.3,1573.0 1894.5,1574.3 1897.7,1575.9 1900.6,1577.8 1903.4,1580.0 1906.0,1582.4 1908.4,1585.0 1910.6,1587.8 1912.5,1590.8 1914.1,1593.9 1915.4,1597.1 1916.5,1600.5 1917.3,1604.0 1917.7,1607.5 1917.9,1611.0 1917.7,1614.5 1917.3,1618.0 1916.5,1621.5 1915.4,1624.8 1914.1,1628.1 1912.5,1631.2 1910.6,1634.2 1908.4,1637.0 1906.0,1639.6 1903.4,1642.0 1900.6,1644.1 1897.7,1646.0 1894.5,1647.7 1891.3,1649.0 1887.9,1650.1 1884.4,1650.8 1880.9,1651.3 1877.4,1651.5 1479.5,1651.5" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="1549.6" y="1587.4" width="75.5" height="41.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <circle cx="1587.4" cy="1608.3" r="15.1" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="1681.8" y="1563.8" width="161.9" height="27.0" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <line x1="1762.8" y1="1563.8" x2="1762.8" y2="1590.8" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="1573.9" y="1813.3" width="161.9" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="1611.7" y="1824.1" width="99.8" height="59.4" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
+<circle cx="1641.3" cy="1843.7" r="14.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="1681.8" cy="1843.7" r="14.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="1641.3" cy="1863.9" r="14.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="1681.8" cy="1863.9" r="14.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="1735.8" y="1799.8" width="107.9" height="94.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="1789.7" cy="1847.1" r="20.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="1843.7" y="1722.3" width="80.9" height="172.0" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="1851.8" y="1731.7" width="64.8" height="56.7" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
+<rect x="1851.8" y="1796.5" width="64.8" height="47.2" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
+<rect x="1851.8" y="1851.8" width="64.8" height="35.1" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
 <rect x="1310.8" y="1722.3" width="94.4" height="94.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <circle cx="1358.1" cy="1769.5" r="20.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="2434.6" y="1587.4" width="121.4" height="256.3" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>

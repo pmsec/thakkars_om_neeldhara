@@ -138,25 +138,38 @@ NEW_WALLS = [
 # screen, and the kitchen and help's room run right up to it.  The builder's two
 # 230 x 1800 columns are left standing as piers, which is what they are.
 
-# The entry gallery: a clean circle in a thin WOOD SCREEN, not masonry.  There
-# is nothing to keep private in an entry foyer, so the wall is 75 rather than
-# 150, and it stands free — a piece of joinery, which is allowed to.  Because
-# it is thin and free-standing, the space either side of it belongs to the
-# kitchen on the west and to help's room on the east.
+# The entry gallery: a U on plan, in a thin WOOD SCREEN, not masonry.  There is
+# nothing to keep private in an entry foyer, so it is 75 rather than 150.
 #
-# It is the largest circle the pocket takes: 2450 outside, tangent to the
-# service-bay north wall at the top and to the entrance wall at the bottom.
-# Two openings only, both 1050 and both lined up with a real door — the front
-# door from the lift lobby below, the great-room door above.
+# A free-standing circle made little sense with the builder's two 230 x 1800
+# columns standing in the middle of the pocket.  The U uses them instead: its
+# two legs are wood linings on the inner face of each column, and they are
+# joined across the north by a semicircular end.  So the wall runs from the
+# entrance wall, up the west leg, round the curve and back down to the entrance
+# wall — one continuous piece, spanning column to column.
 #
-# centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east)
+# The curve's outer face is tangent to the service-bay north wall, so the whole
+# thing sits exactly inside the bay.  Two doors, both 1050 and both on the
+# home's centreline: the front door in the entrance wall below, the great-room
+# door in the service-bay north wall above.
 T_SCREEN = 75
-GAL_CX, GAL_CY = MID, (BAY_N + BAY_S) / 2      # 12240, 9750
-GAL_RO = (BAY_S - BAY_N) / 2                   # 1225 — outer face of the screen
-GAL_DOOR_W, GAL_DOOR_E = 11715, 12765          # both doors, on the home's centre
+GAL_W, GAL_E = 10630, M(10630)                 # the two column faces, 3220 apart
+GAL_CX = MID
+GAL_RO = (GAL_E - GAL_W) / 2                   # 1610 — outer face of the curve
+GAL_CY = BAY_N + GAL_RO                        # 10135 — where the curve springs
+GAL_DOOR_W, GAL_DOOR_E = 11715, 12765          # both doors, on the centreline
+
+# centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east)
 GALLERY = (GAL_CX, GAL_CY, GAL_RO - T_SCREEN / 2, T_SCREEN,
-           [(63.8, 116.2),      # south, 1050 — on to the front door
-            (243.8, 296.2)])    # north, 1050 — on to the great room
+           [(0, 180),           # the whole south half — the U is open there
+            (250.5, 289.5)])    # 1050 at the apex, on to the great room
+
+# The U's two straight legs, wood, lining the inner face of each column.
+# They run 150 past the springing so they always meet the curve cleanly.
+SCREEN_WALLS = [
+    (GAL_W + T_SCREEN / 2, GAL_CY - 150, GAL_W + T_SCREEN / 2, 11050, T_SCREEN, []),
+    (GAL_E - T_SCREEN / 2, GAL_CY - 150, GAL_E - T_SCREEN / 2, 11050, T_SCREEN, []),
+]
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it

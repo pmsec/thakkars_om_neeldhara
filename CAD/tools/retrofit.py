@@ -25,18 +25,41 @@ HOME = (-700, -400, 25200, 11200)
 TOL = 260          # a wall this close to the shell or a shaft is part of it
 
 
-def _near_shell(mx, my, bl_segs, zones):
-    for x1, y1, x2, y2 in bl_segs:
-        if x1 == x2:
-            if abs(mx - x1) < TOL and min(y1, y2) - TOL < my < max(y1, y2) + TOL:
-                return True
-        elif y1 == y2:
-            if abs(my - y1) < TOL and min(x1, x2) - TOL < mx < max(x1, x2) + TOL:
-                return True
+RET = 260          # how far an enclosure may return past the corner of a shaft
+
+
+def _shell_edges(bl_segs, zones):
+    """Every line the shell is actually built along: the slab edge, plus the
+    four sides of each shaft, duct and void."""
+    edges = list(bl_segs)
     for a, b, c, d in zones:
-        if a - TOL < mx < c + TOL and b - TOL < my < d + TOL:
-            return True
-    return False
+        edges += [(a, b, c, b), (a, d, c, d), (a, b, a, d), (c, b, c, d)]
+    return edges
+
+
+def _clip_to_shell(x1, y1, x2, y2, edges):
+    """Keep only the part of a builder wall that runs ALONG a shell edge.
+
+    Being merely *near* one is not enough.  A partition that passes the corner
+    of a duct sits within tolerance of the duct's edge for its whole length,
+    so a plain proximity test kept the lot — and the surplus was drawn as a
+    stray line with no wall to it, which is exactly what it was: a partition
+    that was never built.  Returns the clipped segment, or None.
+    """
+    horiz, vert = abs(y2 - y1) < 1, abs(x2 - x1) < 1
+    best = None
+    for ex1, ey1, ex2, ey2 in edges:
+        if horiz and abs(ey2 - ey1) < 1 and abs(y1 - ey1) < TOL:
+            lo = max(min(x1, x2), min(ex1, ex2) - RET)
+            hi = min(max(x1, x2), max(ex1, ex2) + RET)
+            if hi - lo > 60 and (best is None or hi - lo > best[2] - best[0]):
+                best = (lo, y1, hi, y1)
+        elif vert and abs(ex2 - ex1) < 1 and abs(x1 - ex1) < TOL:
+            lo = max(min(y1, y2), min(ey1, ey2) - RET)
+            hi = min(max(y1, y2), max(ey1, ey2) + RET)
+            if hi - lo > 60 and (best is None or hi - lo > best[3] - best[1]):
+                best = (x1, lo, x1, hi)
+    return best
 
 
 def keep_demo():
@@ -45,7 +68,8 @@ def keep_demo():
     bl = max(lay['DA_BUILDING LINE'], key=len)
     bl_segs = [(bl[i][0], bl[i][1], bl[(i + 1) % len(bl)][0], bl[(i + 1) % len(bl)][1])
                for i in range(len(bl))]
-    zones = [(a, b, c, d) for _, a, b, c, d, _ in C.NAMED]
+    zones = [(a, b, c, d) for _, a, b, c, d, _ in C.NAMED] + list(D.VOID_KEEP)
+    edges = _shell_edges(bl_segs, zones)
 
     segs, _ = frame.load_cad(x0=40000, y0=10000, x1=135000, y1=75000)
     keep, demo = [], []
@@ -55,7 +79,8 @@ def keep_demo():
         mx, my = (x1 + x2) / 2, (y1 + y2) / 2
         if not (HOME[0] < mx < HOME[2] and HOME[1] < my < HOME[3]):
             continue
-        (keep if _near_shell(mx, my, bl_segs, zones) else demo).append((x1, y1, x2, y2))
+        clipped = _clip_to_shell(x1, y1, x2, y2, edges)
+        (keep.append(clipped) if clipped else demo.append((x1, y1, x2, y2)))
     return keep, demo
 
 
@@ -104,11 +129,12 @@ def poly_rooms():
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
         ('GREAT ROOM', '', great, 'party wall removed  ·  7840 across', (D.MID, 3450)),
-        ('KITCHEN', '', kitchen, 'on the builder stack, opened out to the drum',
+        ('KITCHEN', '', kitchen, 'on the builder stack, opened out round the U',
          (8700, 9500)),
         ("HELP'S ROOM", '', helps, '', (14900, 9500)),
-        ('ENTRY GALLERY', '', gallery, '2300 clear  ·  75 wood screen',
-         (D.MID, 9600)),
+        ('ENTRY GALLERY', '', gallery,
+         'a U in 75 wood  ·  3070 wide x 2375 deep  ·  column to column',
+         (D.MID, 9750)),
     ]
 
 
@@ -118,22 +144,29 @@ def _gal_arc(r, a0, a1, n=60):
             for a in np.linspace(a0, a1, n)]
 
 
+COL_N = 9325                  # top of the two 230 x 1800 gallery columns
+
+
 def lobby_polys():
     """Kitchen, help's room and the entry gallery.
 
-    The gallery is a thin wood drum standing free in the service bay, tangent
-    to the bay's north wall and to the entrance wall.  Nothing walls it off
-    from the rooms either side, so the kitchen runs east up to it and help's
-    room runs west up to it, and the two 230 x 1800 columns are left standing
-    as piers.
+    The gallery is a U spanning column to column: two wood legs lining the
+    columns, joined across the north by a semicircular end whose outer face is
+    tangent to the service-bay north wall.  The two corners the curve leaves
+    behind it, north of each column, are open to the kitchen and to help's
+    room through the 800 the builder leaves above each column — so they are
+    floor in those rooms, not waste.
     """
-    ro = D.GAL_RO                          # outer face of the screen
-    ri = ro - D.T_SCREEN                   # clear inside
+    ro, ri = D.GAL_RO, D.GAL_RO - D.T_SCREEN
     kw, ke = 7050, 16150                   # far faces of the two rooms
+    a = math.degrees(math.asin((COL_N - D.GAL_CY) / ro))     # -30.2 deg
 
-    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, 90) + [(kw, D.BAY_S)])
-    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, 270, 450) + [(ke, D.BAY_S)])
-    gallery = _gal_arc(ri, 0, 360, 180)[:-1]
+    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, 180 - a)
+               + [(D.GAL_W - 230, COL_N), (D.GAL_W - 230, D.BAY_S), (kw, D.BAY_S)])
+    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, 270, 360 + a)
+             + [(D.GAL_E + 230, COL_N), (D.GAL_E + 230, D.BAY_S), (ke, D.BAY_S)])
+    gallery = ([(D.GAL_W + D.T_SCREEN, D.BAY_S)] + _gal_arc(ri, 180, 360)
+               + [(D.GAL_E - D.T_SCREEN, D.BAY_S)])
     return kitchen, helps, gallery
 
 
@@ -225,7 +258,7 @@ def design_masks():
     for _n, _s, p, _note, _xy in poly_rooms():
         C.put_poly(fl, p)
 
-    for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
+    for x1, y1, x2, y2, t, ops in list(D.NEW_WALLS) + list(D.SCREEN_WALLS):
         L = math.hypot(x2 - x1, y2 - y1)
         ux, uy = (x2 - x1) / L, (y2 - y1) / L
         cuts = [0.0]

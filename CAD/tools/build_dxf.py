@@ -15,7 +15,7 @@ Layers added
     PROP-REF-CORE     the lift lobby, lifts and fire lift beyond the flat
     PROP-KEEP         shafts, ducts and voids that must stay clear
     PROP-GLAZ         glazing, sliding glass and the pod portals
-    PROP-SCREEN       the entry gallery drum — 75 wood screen
+    PROP-SCREEN       the entry gallery U — 75 wood screen
     PROP-FURN         fixed joinery and layout furniture
     PROP-TEXT         room names and areas
     PROP-DIM          the set-out dimensions
@@ -193,6 +193,13 @@ def main():
             h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
             h.set_solid_fill(color=32)
         run = []
+
+    for x1, y1, x2, y2, t, ops in D.SCREEN_WALLS:
+        for q in wall_pieces(x1, y1, x2, y2, t, ops):
+            poly(msp, q, 'PROP-SCREEN')
+            h = msp.add_hatch(color=32, dxfattribs={'layer': 'PROP-SCREEN'})
+            h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
+            h.set_solid_fill(color=32)
 
     # --------------------------------------------------------------- glazing
     for Pc in (D.POD_W, D.POD_E):

@@ -177,9 +177,9 @@ Kept — 31 pieces, the ones that prove the plan works:
   the parapet planter
 * the dining table, in the great room beside the serving hatch
 * the mandir in each pod
-* the two curved changing screens — glass, so architecture rather than furniture
 
-Removed — 64 pieces: every side table, all the sofas, recliners and armchairs,
+Removed — 65 pieces, including A-101's L-shaped curved-glass changing screen
+in each suite: every side table, all the sofas, recliners and armchairs,
 the rugs, the murphy nook, all the wardrobe, cupboard, hanging-run and
 dressing-console joinery in both suites, the entry gallery's curved console and
 bench and its two joinery runs, the mirrors, the wardrobe at the foot of the

@@ -235,8 +235,6 @@ def main():
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:
         for p in SY.annular(gx, gy, r0, r1, a0, a1, back):
             prim(p)
-    for x_, y0_, yc_, xto_ in D.SCREENS:
-        poly(msp, SY.screen_path(x_, y0_, yc_, xto_), 'PROP-GLAZ', closed=False)
 
     # -------------------------------------------- the lift core, boxed
     box(msp, rx0, ry0, rx1, ry1 - 100, 'PROP-REF-CORE')

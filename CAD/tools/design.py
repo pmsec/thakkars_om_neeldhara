@@ -236,10 +236,6 @@ FURNITURE = (list(_ONCE) + list(_MIRROR)
 # when the joinery is designed properly.
 GALLERY_FURNITURE = []
 
-# Curved tinted-glass changing screens: straight leg then a quarter round.
-# Architecture rather than furniture, so these stay.
-SCREENS = [(2812, 6650, 3550, 2100), (M(2812), 6650, 3550, M(2100))]
-
 # The lift core and landing beyond the entry hall — shown for reference only.
 REFERENCE = (9400, 11125, 16300, 15700)
 

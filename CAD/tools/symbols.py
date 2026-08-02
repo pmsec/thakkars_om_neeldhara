@@ -234,15 +234,3 @@ def annular(cx, cy, r0, r1, a0, a1, back=False, seats=0):
         out.append(('poly', outer + [(cx + math.cos(t) * bt, cy + math.sin(t) * bt)
                                      for t in reversed(th)], 'soft'))
     return out
-
-
-def screen_path(x, y0, ycorner, xto, r=350.0):
-    """L-shaped changing screen: straight leg in y, quarter round, short return."""
-    sgn = 1.0 if xto > x else -1.0
-    pts = [(x, y0)]
-    n = 24
-    for i in range(n + 1):
-        t = math.pi / 2 * i / n
-        pts.append((x + sgn * r * (1 - math.cos(t)), ycorner + r - r * math.sin(t)))
-    pts.append((xto, ycorner))
-    return pts

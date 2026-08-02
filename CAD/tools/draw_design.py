@@ -271,9 +271,6 @@ def main():
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:
         for p in SY.annular(gx, gy, r0, r1, a0, a1, back):
             prim(p)
-    for x_, y0_, yc_, xto_ in D.SCREENS:
-        pts = SY.screen_path(x_, y0_, yc_, xto_)
-        s.path(pts, '#8a6a45', 5.0)
 
     # ---------------------------------------------------- columns and beams
     for r_ in cols:

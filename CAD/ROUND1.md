@@ -11,7 +11,8 @@ preserved untouched.
 | Layer | What's on it |
 |---|---|
 | `PROP-WALL-NEW` | new masonry, solid-hatched |
-| `PROP-WALL-DEMO` | existing partitions to come out, dashed |
+| `PROP-REF` | the builder's indicative partition layout — **layer off** |
+| `PROP-REF-CORE` | the lift lobby, lifts and fire lift beyond the flat |
 | `PROP-KEEP` | shafts, ducts and voids that must stay clear |
 | `PROP-GLAZ` | glazing, sliding glass, the pod screens |
 | `PROP-OPEN` | new openings cut in retained masonry |
@@ -94,9 +95,17 @@ party wall rather than 7690.
 ## Calls I made — overrule any of them
 
 **The lobby is enclosed to Y 11 125**, the line of the building's own outer
-wall, which gives an 8.4 m² entry hall and leaves the lift and fire-lift
-landing beyond it as circulation. Extending to the lift doors would add about
-4.9 m² and is a one-line change — say the word.
+wall, which gives an 8.4 m² entry hall. The lift lobby, the lift and the fire
+lift beyond it are now drawn on the sheet for reference, boxed and labelled as
+common. Extending the flat to the lift doors would add about 4.9 m² and is a
+one-line change — say the word.
+
+**There is nothing to demolish.** You took the flats as bare shell, so every
+wall in the layout is new. What is drawn as existing is only the shell: the
+external walls and the enclosures round the shafts, ducts and voids — which
+have to be there, because those are open holes in the slab. The builder's
+indicative partition layout is on `PROP-REF`, switched off, in case it is ever
+useful for seeing where they intended plumbing.
 
 **The recovered 960 × 275 mm** went to the master suites and the great room
 along the length, and to the service bay in depth.
@@ -109,27 +118,47 @@ piers where they don't. The two end-wall piers in each suite (Y 1950–3150 and
 21 m². I've walled it off and made the resulting face the media wall, with
 dining in the clear northern half and a pair of chairs in the southern half.
 
-**The furniture is indicative**, not resolved — enough to show the plan works.
+**Every piece of furniture from A-101 is now resolved onto the real shell.**
+Where a piece could stay exactly where A-101 draws it, it did. Two had to move
+and both are noted on the drawing:
+
+* the **dining table** — A-101 puts it in the parents' pod at (6420, 6900).
+  That corner is now the service duct, and the pod's remaining lower half is
+  2350 wide against the 2520 the 1400 table and its six chairs need. It has
+  moved into the great room beside the serving hatch, which also puts it next
+  to the kitchen. Say the word if you want it back in the pod at a smaller
+  size, or somewhere else entirely.
+* the **wall TV** — A-101 puts it at X 4790, also inside the duct. It moves on
+  to the new wall that closes the duct, facing the same way into the pod.
+
+One thing I trimmed: A-101 has one hanging run in the dressing strip, but I had
+drawn two facing each other, which left only 330 mm to walk through. It is back
+to one 600-deep run with 930 clear alongside, plus a shelved cupboard.
 
 ---
 
-## For Round 2 — tell me in words
+## Settled in this round
 
-1. Is the entry hall the right size, or do you want the full landing?
-2. The baths are now 1530 wide rather than 2100. Deep enough, or would you
-   rather steal width from the suite?
-3. Dining in the family-room pod, or in the great room near the kitchen hatch?
-   The hatch is 1200 wide at X 8600–9800.
-4. Help's room and WC are in the east service bay, opposite the kitchen. That
-   puts the help's room a long way from the kitchen — swap them?
-5. Anything about the suites: bed position, murphy nook, wardrobe runs.
+* entry hall size — kept as drawn, with the lift lobby now shown for reference
+* baths — left as they are
+* help's room and WC — left where they are
+* all A-101 furniture — resolved, two pieces moved (see above)
+* internal walls — the flats came as bare shell, so there is nothing to
+  demolish and no question about which existing walls are load-bearing. The
+  only fabric that has to stay is the shell, and none of the layout touches it.
 
----
+## Open for the next round
+
+* the dining table's new home, if the great room is not where you want it
+* anything about the suites: bed position, murphy nook, cupboard runs
+* the entry gallery's four openings — north to the great room, south to the
+  entrance, west to the kitchen, east to help's room
 
 ## Still to be confirmed, not by me
 
-* That the builder's `DA_WALL` partitions — the party wall in particular — are
-  infill and not structural. One answer from whoever holds the structural
-  drawings settles it.
-* Deck loading: the spa, the two grass beds, the fountain and the glass roof.
-* How the retractable deck roof and the two terrace roofs are supported.
+* **Deck loading** — the spa, the two grass beds, the fountain and the
+  retractable glass roof, all on a 15 420 × 2620 deck along the building edge.
+* **How the glass roofs land** — the retractable roof over the deck and the
+  high roof over the two terraces.
+
+Neither is a layout question, and neither blocks the next round.

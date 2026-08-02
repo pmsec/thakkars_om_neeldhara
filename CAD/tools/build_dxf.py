@@ -10,7 +10,8 @@ unchanged.
 
 Layers added
     PROP-WALL-NEW     new masonry, hatched solid
-    PROP-WALL-DEMO    existing partitions to come out, dashed
+    PROP-REF          the builder's indicative partition layout (layer off)
+    PROP-REF-CORE     the lift lobby and lifts beyond the flat, for reference
     PROP-KEEP         shafts, ducts and voids that must stay clear
     PROP-GLAZ         glazing, sliding glass and the pod screens
     PROP-OPEN         new openings cut in retained masonry
@@ -32,6 +33,7 @@ from ezdxf.enums import TextEntityAlignment
 import clash as C
 import design as D
 import retrofit as R
+import symbols as SY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, '..', 'source')
@@ -57,7 +59,8 @@ def box(msp, a, b, c, d, layer):
 
 LAYERS = [
     ('PROP-WALL-NEW', 1, 'CONTINUOUS'),      # red
-    ('PROP-WALL-DEMO', 8, 'DASHED'),         # grey
+    ('PROP-REF', 8, 'DASHED'),               # grey — builder partitions, off
+    ('PROP-REF-CORE', 8, 'DASHED'),          # grey — lift core, visible
     ('PROP-KEEP', 6, 'DASHED'),              # magenta
     ('PROP-GLAZ', 4, 'CONTINUOUS'),          # cyan
     ('PROP-OPEN', 30, 'DASHED'),             # orange
@@ -109,10 +112,13 @@ def main():
             doc.layers.remove(name)
         doc.layers.add(name, color=colour, linetype=lt)
 
-    # ------------------------------------------------------------ demolition
-    keep, demo = R.keep_demo()
-    for x1, y1, x2, y2 in demo:
-        msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-WALL-DEMO'})
+    # The flats were handed over as bare shell, so there is nothing to
+    # demolish — every wall in the layout is new.  The builder's indicative
+    # partition layout goes on a frozen reference layer in case it is wanted.
+    keep, indicative = R.keep_demo()
+    for x1, y1, x2, y2 in indicative:
+        msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-REF'})
+    doc.layers.get('PROP-REF').off()
 
     # ------------------------------------------------------- keep-clear zones
     for name, a, b, c, d, kind in C.NAMED:
@@ -186,26 +192,34 @@ def main():
                                      align=TextEntityAlignment.MIDDLE_CENTER)
 
     # -------------------------------------------------------------- furniture
+    def prim(p):
+        lyr = 'PROP-FURN' if p[-1] != 'glass' else 'PROP-GLAZ'
+        if p[0] == 'rect':
+            box(msp, p[1], p[2], p[3], p[4], lyr)
+        elif p[0] == 'circle':
+            msp.add_circle(P(p[1], p[2]), max(p[3], 1), dxfattribs={'layer': lyr})
+        elif p[0] == 'line':
+            msp.add_line(P(p[1], p[2]), P(p[3], p[4]), dxfattribs={'layer': lyr})
+        elif p[0] == 'poly':
+            poly(msp, p[1], lyr)
+
     for kind, a, b, c, d, lab in D.FURNITURE:
-        if kind == 'table':
-            msp.add_circle(P((a + c) / 2, (b + d) / 2), min(c - a, d - b) / 2,
-                           dxfattribs={'layer': 'PROP-FURN'})
-            if 'dining' in lab:
-                rr = min(c - a, d - b) / 2
-                for k in range(6):
-                    ang = math.radians(k * 60)
-                    ccx = (a + c) / 2 + math.cos(ang) * (rr + 430)
-                    ccy = (b + d) / 2 + math.sin(ang) * (rr + 430)
-                    box(msp, ccx - 230, ccy - 230, ccx + 230, ccy + 230, 'PROP-FURN')
-        else:
-            box(msp, a, b, c, d, 'PROP-FURN')
-            if kind == 'bed':
-                box(msp, a, b, c, b + 200, 'PROP-FURN')
-            elif kind == 'bed-w':
-                box(msp, a, b, a + 200, d, 'PROP-FURN')
-            elif kind == 'shower':
-                msp.add_line(P(a, b), P(c, d), dxfattribs={'layer': 'PROP-FURN'})
-                msp.add_line(P(c, b), P(a, d), dxfattribs={'layer': 'PROP-FURN'})
+        for p in SY.symbol(kind, a, b, c, d):
+            prim(p)
+    gx, gy, gr, gt, _g = D.GALLERY
+    for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:
+        for p in SY.annular(gx, gy, r0, r1, a0, a1, back):
+            prim(p)
+    for x_, y0_, yc_, xto_ in D.SCREENS:
+        poly(msp, SY.screen_path(x_, y0_, yc_, xto_), 'PROP-GLAZ', closed=False)
+
+    # ---------------------------------------- the lift core, for reference
+    rx0, ry0, rx1, ry1 = D.REFERENCE
+    box(msp, rx0, ry0, rx1, ry1 - 100, 'PROP-REF-CORE')
+    msp.add_text('LIFT LOBBY, LIFTS AND FIRE LIFT — COMMON, NOT PART OF THE HOME',
+                 height=160, rotation=90, dxfattribs={'layer': 'PROP-REF-CORE'}
+                 ).set_placement(P((rx0 + rx1) / 2, ry1 + 200),
+                                 align=TextEntityAlignment.MIDDLE_CENTER)
 
     # ----------------------------------------------------------------- labels
     fam, den, great = R.pod_polys()
@@ -283,6 +297,9 @@ def main():
     back = ezdxf.readfile(path)
     n = sum(1 for e in back.modelspace() if e.dxf.layer.startswith('PROP-'))
     print(f'read back OK — {n} proposal entities on {len(LAYERS)} PROP-* layers')
+    for lyr in back.layers:
+        if lyr.dxf.name.startswith('PROP-'):
+            print(f'   {lyr.dxf.name:16s} {"off" if not lyr.is_on() else "on"}')
 
 
 if __name__ == '__main__':

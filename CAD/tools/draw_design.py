@@ -17,6 +17,7 @@ import clash as C
 import design as D
 import frame
 import retrofit as R
+import symbols as SY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', 'drawings')
@@ -156,15 +157,32 @@ def main():
     bl = max(lay['DA_BUILDING LINE'], key=len)
     cols = C.rects(lay['DA_COLUMN']) + C.beam_rects()
 
-    s = Sheet(-3200, -2400, 26600, 12600)
+    s = Sheet(-3200, -2400, 26600, 16100)
 
     # ---------------------------------------------------------------- slab
     s.poly(bl, fill=SLAB, stroke='#b9b5ab', stroke_width=1.4)
 
-    # ------------------------------------------------- builder walls kept/out
-    keep, demo = R.keep_demo()
-    for x1, y1, x2, y2 in demo:
-        s.line(x1, y1, x2, y2, '#c4bdb1', 1.1, dash='7 6')
+    # ------------------------------------------------------- keep only: shell
+    keep, _demo = R.keep_demo()
+
+    # ------------------------------- the lift core beyond the entry hall
+    rx0, ry0, rx1, ry1 = D.REFERENCE
+    ref, reft = frame.load_cad(x0=40000, y0=10000, x1=135000, y1=75000)
+    for lay, x1, y1, x2, y2 in ref:
+        if lay not in ('DA_WALL', 'DA_COLUMN', 'DA_STAIRCASE', 'DA_DOOR'):
+            continue
+        if not (rx0 < min(x1, x2) and max(x1, x2) < rx1
+                and ry0 < min(y1, y2) and max(y1, y2) < ry1):
+            continue
+        s.line(x1, y1, x2, y2, '#a49c90' if lay != 'DA_COLUMN' else '#d69a95', 1.8)
+    for lay, tx, ty, txt in reft:
+        if rx0 < tx < rx1 and ry0 < ty < ry1 and txt.strip():
+            s.text(tx, ty, txt.split('\n')[0], 12, '#8b8377')
+    s.rect(rx0, 11125, rx1, ry1 - 100, fill='none',
+           stroke='#b0a89c', stroke_width=2.0, stroke_dasharray='14 9')
+    s.text((rx0 + rx1) / 2, ry1 + 200,
+           'LIFT LOBBY, LIFTS AND FIRE LIFT — COMMON, NOT PART OF THE HOME',
+           17, '#8b8377', weight='bold')
 
     # -------------------------------------------------- keep-clear zones
     for name, a, b, c, d, kind in C.NAMED:
@@ -196,7 +214,12 @@ def main():
         s.path([p for p, t in zip(pts, ts) if a <= t <= b], GLAS, 1.6, dash='9 7')
 
     for x1, y1, x2, y2, kind in D.GLAZING:
-        s.line(x1, y1, x2, y2, GLAS, 4.0 if kind == 'slider' else 3.0)
+        if kind == 'window':
+            nx, ny = (0, 60) if y1 == y2 else (60, 0)
+            for k in (-1, 1):
+                s.line(x1 + nx * k, y1 + ny * k, x2 + nx * k, y2 + ny * k, GLAS, 2.0)
+        else:
+            s.line(x1, y1, x2, y2, GLAS, 4.0)
 
     # ---------------------------------------------------------- new walls
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
@@ -212,38 +235,45 @@ def main():
                stroke_dasharray='7 5')
 
     # ---------------------------------------------------------- furniture
+    STYLE = {'solid': ('#ffffff', FURN, 1.1), 'soft': ('#efe9dd', FURN, 1.0),
+             'light': ('none', FURN, 0.8), 'dash': ('none', '#b9ae9c', 1.0),
+             'glass': ('#dde7ea', GLAS, 1.0), 'green': ('#cdd9c2', '#93a884', 1.0),
+             'water': ('#dfeef2', '#8ab0bd', 1.1)}
+
+    def prim(p):
+        st = p[-1]
+        fill, stroke, lw = STYLE[st]
+        dash = ' stroke-dasharray="9 6"' if st == 'dash' else ''
+        if p[0] == 'rect':
+            _, x0, y0, x1, y1, _ = p
+            s.o.append(f'<rect x="{s.X(x0):.1f}" y="{s.Y(y0):.1f}" '
+                       f'width="{(x1 - x0) * s.sc:.1f}" height="{(y1 - y0) * s.sc:.1f}" '
+                       f'fill="{fill}" stroke="{stroke}" stroke-width="{lw}"{dash}/>')
+        elif p[0] == 'circle':
+            _, ux, uy, r, _ = p
+            s.o.append(f'<circle cx="{s.X(ux):.1f}" cy="{s.Y(uy):.1f}" '
+                       f'r="{max(r * s.sc, 0.6):.1f}" fill="{fill}" stroke="{stroke}" '
+                       f'stroke-width="{lw}"{dash}/>')
+        elif p[0] == 'line':
+            _, x0, y0, x1, y1, _ = p
+            s.o.append(f'<line x1="{s.X(x0):.1f}" y1="{s.Y(y0):.1f}" '
+                       f'x2="{s.X(x1):.1f}" y2="{s.Y(y1):.1f}" stroke="{stroke}" '
+                       f'stroke-width="{lw}"{dash}/>')
+        elif p[0] == 'poly':
+            pts = ' '.join(f'{s.X(ux):.1f},{s.Y(uy):.1f}' for ux, uy in p[1])
+            s.o.append(f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" '
+                       f'stroke-width="{lw}"{dash}/>')
+
     for kind, a, b, c, d, lab in D.FURNITURE:
-        if kind == 'grass':
-            s.rect(a, b, c, d, fill='#cdd9c2', stroke='#9db08c', stroke_width=1.0)
-        elif kind == 'spa':
-            s.rect(a, b, c, d, fill='#dbeaef', stroke='#8ab0bd', stroke_width=1.2, rx=90)
-        elif kind in ('shower',):
-            s.rect(a, b, c, d, fill='#e9f1f3', stroke=FURN, stroke_width=1.0)
-            s.line(a, b, c, d, FURN, 0.8)
-            s.line(c, b, a, d, FURN, 0.8)
-        elif kind == 'wc':
-            s.rect(a, b, c, d, fill='#ffffff', stroke=FURN, stroke_width=1.0, rx=70)
-        elif kind in ('counter', 'joinery', 'appliance'):
-            s.rect(a, b, c, d, fill='#efe9dd', stroke=FURN, stroke_width=1.1)
-        elif kind in ('bed', 'bed-w'):
-            s.rect(a, b, c, d, fill='#ffffff', stroke=FURN, stroke_width=1.1, rx=50)
-            if kind == 'bed':
-                s.rect(a, b, c, b + 200, fill='#efe9dd', stroke=FURN, stroke_width=0.8)
-            else:
-                s.rect(a, b, a + 200, d, fill='#efe9dd', stroke=FURN, stroke_width=0.8)
-        elif kind == 'sofa':
-            s.rect(a, b, c, d, fill='#ffffff', stroke=FURN, stroke_width=1.1, rx=60)
-        elif kind == 'table':
-            rr = min(c - a, d - b) / 2
-            s.o.append(f'<circle cx="{s.X((a + c) / 2):.1f}" cy="{s.Y((b + d) / 2):.1f}" '
-                       f'r="{rr * s.sc:.1f}" fill="#f3ede0" stroke="{FURN}" stroke-width="1.1"/>')
-            if 'dining' in lab:
-                for k in range(6):
-                    ang = math.radians(k * 60)
-                    ccx = (a + c) / 2 + math.cos(ang) * (rr + 430)
-                    ccy = (b + d) / 2 + math.sin(ang) * (rr + 430)
-                    s.rect(ccx - 230, ccy - 230, ccx + 230, ccy + 230, fill='#ffffff',
-                           stroke=FURN, stroke_width=1.0, rx=50)
+        for p in SY.symbol(kind, a, b, c, d):
+            prim(p)
+    gx, gy, gr, gt, _g = D.GALLERY
+    for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:
+        for p in SY.annular(gx, gy, r0, r1, a0, a1, back):
+            prim(p)
+    for x_, y0_, yc_, xto_ in D.SCREENS:
+        pts = SY.screen_path(x_, y0_, yc_, xto_)
+        s.path(pts, '#8a6a45', 5.0)
 
     # ---------------------------------------------------- columns and beams
     for r_ in cols:
@@ -312,9 +342,10 @@ def main():
     s.text(-3000, -1560, 'DIMENSIONS IN MILLIMETRES  ·  CONCEPT DRAWING, NOT FOR '
                          'CONSTRUCTION', 12, '#9a9184', anchor='start')
 
-    lx, ly = -3000, 11500
+    lx, ly = -3000, 14700
     for i, (col, txt) in enumerate([
             (SLAB, 'builder slab'),
+            ('#a49c90', 'lift core and landing beyond the flat — reference only'),
             (KEEP, 'builder column / beam, and keep-clear shaft, duct or void'),
             (NEWW, 'new masonry'),
             (GLAS, 'glazing / sliding glass'),

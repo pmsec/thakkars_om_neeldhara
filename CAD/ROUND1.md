@@ -162,22 +162,35 @@ piers where they don't. The two end-wall piers in each suite (Y 1950–3150 and
 21 m². I've walled it off and made the resulting face the media wall, with
 dining in the clear northern half and a pair of chairs in the southern half.
 
-**Every piece of furniture from A-101 is now resolved onto the real shell.**
-Where a piece could stay exactly where A-101 draws it, it did. Two had to move
-and both are noted on the drawing:
+**The furniture is stripped back to what is fixed, plumbed or built in.** The
+loose pieces inherited from A-101 were landing in odd places once the rooms
+changed shape, so they are out and will go back in deliberately.
 
-* the **dining table** — A-101 puts it in the parents' pod at (6420, 6900).
-  That corner is now the service duct, and the pod's remaining lower half is
-  2350 wide against the 2520 the 1400 table and its six chairs need. It has
-  moved into the great room beside the serving hatch, which also puts it next
-  to the kitchen. Say the word if you want it back in the pod at a smaller
-  size, or somewhere else entirely.
-* the **wall TV** — A-101 puts it at X 4790, also inside the duct. It moves on
-  to the new wall that closes the duct, facing the same way into the pod.
+Kept — 31 pieces, the ones that prove the plan works:
 
-One thing I trimmed: A-101 has one hanging run in the dressing strip, but I had
-drawn two facing each other, which left only 330 mm to walk through. It is back
-to one 600-deep run with 930 clear alongside, plus a shelved cupboard.
+* kitchen — run, sink, hatch shelf, island, hob, chimney over, tall fridge
+* utility — stacked washer and dryer
+* both master baths — vanity, basin, WC, curved glass shower
+* guest / service WC — shower, WC, basin
+* both master beds, and the bunk in help's room
+* deck — the two grass beds, the strength trainer, the spa, the fountain and
+  the parapet planter
+* the dining table, in the great room beside the serving hatch
+* the mandir in each pod
+* the two curved changing screens — glass, so architecture rather than furniture
+
+Removed — 64 pieces: every side table, all the sofas, recliners and armchairs,
+the rugs, the murphy nook, all the wardrobe, cupboard, hanging-run and
+dressing-console joinery in both suites, the entry gallery's curved console and
+bench and its two joinery runs, the mirrors, the wardrobe at the foot of the
+bunk, the utility and store racks, the wall TV, the pantry counter and its two
+appliances in Karan's pod, the drum kit, the terrace chairs, tables, drying
+racks and planters, and the plants.
+
+The dining table's move still stands and is worth keeping in mind: A-101 puts
+it in the parents' pod at (6420, 6900), which is now the service duct, and the
+pod's remaining half is 2350 wide against the 2520 the table and six chairs
+need. Beside the serving hatch it is also next to the kitchen.
 
 ---
 
@@ -193,8 +206,8 @@ to one 600-deep run with 930 clear alongside, plus a shelved cupboard.
 
 ## Open for the next round
 
-* the dining table's new home, if the great room is not where you want it
-* anything about the suites: bed position, murphy nook, cupboard runs
+* the furniture, room by room, added back on purpose rather than inherited
+* the dining table's home, if the great room is not where you want it
 * the entry gallery's four openings — north to the great room, south to the
   entrance, west to the kitchen, east to help's room
 

@@ -89,12 +89,10 @@ ROOMS = [
     ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck"),
     ("ALL-WEATHER DECK", "", [(POD_W0, DECK_N, M(POD_W0), DECK_S)],
      "15 420 long × 2620 deep  ·  net of the two retained voids"),  # voids cut out below
-    ("KITCHEN", "", [(7050, BAY_N, 10400, BAY_S)],
-     "3350 × 2450 on the existing stack"),
+    # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles: the gallery is
+    # the drum itself, and the two rooms either side wrap round it.  They are
+    # built as polygons in retrofit.poly_rooms().
     ("UTILITY", "", [(5705, 9470, 6900, 11025)], "the builder's dry balcony"),
-    ("ENTRY GALLERY", "", [(10630, BAY_N, 13850, 11125)],
-     "2450 dia  ·  in the absorbed lobby, between the two columns"),
-    ("HELP'S ROOM", "", [(14080, BAY_N, 16130, BAY_S)], ""),
     ("GUEST / SERVICE WC", "", [(16280, BAY_N, 17430, BAY_S)], ""),
     ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
 ]
@@ -110,29 +108,51 @@ NEW_WALLS = [
     (M(SUITE_W_E + 62), BATH_N, M(STRIP_W1 + 75), BATH_N, T_INT, [(150, 1050)]),
     (M(SUITE_W_E + 62), BATH_N, M(SUITE_W_E + 62), WING_S, T_INT, []),
 
+    # --- suite <-> pod, the 125 line between the two.  The 1050 slider is a
+    #     gap left in this wall; it is not a hole cut in anything.
+    (STRIP_W1 + 62, 1200, STRIP_W1 + 62, BATH_N, 125, [(3775, 4825)]),
+    (M(STRIP_W1 + 62), 1200, M(STRIP_W1 + 62), BATH_N, 125, [(3775, 4825)]),
+
     # --- family-room / music-den pods: wall off the service duct
     (DUCT_W1 + 75, 6175, DUCT_W1 + 75, BODY_S, T_INT, []),
     (M(DUCT_W1 + 75), 6175, M(DUCT_W1 + 75), BODY_S, T_INT, []),
 
+    # --- service bay, north wall: great room / pods above, service bay below.
+    #     Broken either side of the gallery's north portal.  The 1200 serving
+    #     hatch is a gap in the run, not a cut.
+    (6900, 8462.5, 11790, 8462.5, 125, [(1700, 2900)]),
+    (12690, 8462.5, 17580, 8462.5, 125, []),
+
     # --- service bay
-    (7050 - 75, BAY_N, 7050 - 75, BAY_S, T_INT, []),               # kitchen west
-    (10400 + 75, BAY_N + 800, 10400 + 75, BAY_S, T_INT, []),       # kitchen east
-    (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, []),
-    (M(10400 + 75), BAY_N + 800, M(10400 + 75), BAY_S, T_INT, []),
+    (7050 - 75, BAY_N, 7050 - 75, BAY_S, T_INT, [(1275, 2075)]),   # kitchen west
+    (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, [(1275, 2075)]),
     (16205, BAY_N, 16205, BAY_S, T_THIN, [(1050, 1850)]),          # help's room / WC
 
-    # --- the absorbed lobby: new entrance wall on the building line
-    (10630, 11050, 13850, 11050, 240,
-     [(170, 1070), (1920, 2970)]),                                 # service + main doors
+    # --- the absorbed lobby: new entrance wall on the building line, sitting
+    #     in the 150 between the service bay and the building line.  The main
+    #     door is centred on the home and lands in the gallery; the service
+    #     door is west of it and lands in the kitchen.
+    (10630, 11050, 13850, 11050, T_INT,
+     [(0, 700), (1085, 2135)]),                                    # service + main doors
+
+    # --- jambs where the drum's north and south portals meet the straight
+    #     walls.  The drum is tangent to both, so the arc stops a little short
+    #     of each and these close the reveal.
+    (11790, 8462.5, 11790, 8755, 125, []),
+    (12690, 8462.5, 12690, 8755, 125, []),
+    (11715, 10865, 11715, 11050, 125, []),
+    (12765, 10865, 12765, 11050, 125, []),
 ]
 
 # circular gallery wall: centre, radius, thickness, list of (start, end) gaps in
-# degrees measured with Y downwards, 0 = east, 90 = south
+# degrees measured with Y downwards, 0 = east, 90 = south.  The drum is tangent
+# to the service-bay north line at the top and to the building line at the
+# bottom, so its four openings line up with the gaps in the straight walls.
 GALLERY = (MID, 9825, 1225, T_INT,
-           [(255, 285),      # north, to the great room
-            (75, 105),       # south, to the entrance
-            (165, 195),      # west, service route to the kitchen
-            (-15, 15)])      # east, to help's room
+           [(248, 292),      # north, 900 to the great room
+            (64, 116),       # south, 1050 main entrance
+            (158, 202),      # west, 900 to the kitchen
+            (-19, 19)])      # east, 800 to help's room
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it
@@ -163,18 +183,9 @@ GLAZING = [
     (16350, 11050, 16800, 11050, 'window'),
 ]
 
-# ------------------------------------------------------- openings in old walls
-# Cut through builder masonry that stays.  (x1, y1, x2, y2, label)
-CUT_OPENINGS = [
-    (4405, 4975, 4530, 6025, 'suite -> family room, 1050 slider'),
-    (M(4530), 4975, M(4405), 6025, 'suite -> music den, 1050 slider'),
-    (10400, BAY_N, 10630, 9325, 'gallery -> kitchen, 800'),
-    (13850, BAY_N, 14080, 9325, "gallery -> help's room, 800"),
-    (11105, BODY_S, 13375, BAY_N, 'gallery -> great room, 2270 arched'),
-    (6900, 9800, 7050, 10600, 'kitchen -> utility, 800'),
-    (M(7050), 9800, M(6900), 10600, 'WC -> store, 800'),
-    (8600, BODY_S, 9800, BAY_N, 'kitchen serving hatch, 1200'),
-]
+# There is no such thing as an opening cut in existing masonry here: the flats
+# came as bare shell, so every wall is new and every opening is simply a gap
+# left in the run.  The gaps live with their walls, in NEW_WALLS and GALLERY.
 
 # ------------------------------------------------------------------- furniture
 # Stripped back to what is fixed, plumbed or built in — the pieces that prove
@@ -205,6 +216,12 @@ _ONCE = [
     ('hob',      8180, 10230, 8820, 10570, ''),
     ('chimney',  8000, 10050, 9600, 10750, 'chimney over'),
     ('appliance', 9700, 10075, 10400, 10775, 'tall fridge'),
+    # ------------------------------------------------------------ both pods
+    # Corner units, set out off the two walls that make the corner: the
+    # service-duct wall on one side, the service-bay north wall on the other.
+    # 1200 legs, 600 deep, chamfered front.
+    ('pooja-w',  5705, 7200, 6905, 8400, 'mandir  ·  corner unit'),
+    ('pantry-e', M(6905), 7200, M(5705), 8400, 'coffee + pantry  ·  corner unit'),
     # ------------------------------------------------------------- utility
     ('appliance', 5850, 9700, 6550, 10400, 'washer + dryer, stacked'),
     # --------------------------------------------------------- help\'s room
@@ -223,8 +240,6 @@ _MIRROR = [
     ('basin',    3955, 7350, 4355, 7850, ''),
     ('wc',       2905, 7500, 3505, 8120, ''),
     ('cshower',  3455, 8595, 4405, 9545, 'curved glass shower'),
-    # ----------------------------------------------------------------- pod
-    ('pooja',    7750, 2700, 8850, 3300, 'mandir'),
 ]
 
 _FLIP = {'bed-e': 'bed-w', 'bed-w': 'bed-e', 'bed-n': 'bed-n', 'bed-s': 'bed-s'}

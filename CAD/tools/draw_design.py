@@ -229,11 +229,6 @@ def main():
     for q in arc_quads(cx, cy, r, t, gaps):
         s.poly(q, fill=NEWW, stroke='none')
 
-    # -------------------------------------------------------- new openings
-    for x1, y1, x2, y2, lab in D.CUT_OPENINGS:
-        s.rect(x1, y1, x2, y2, fill='none', stroke='#c07a1e', stroke_width=1.8,
-               stroke_dasharray='7 5')
-
     # ---------------------------------------------------------- furniture
     STYLE = {'solid': ('#ffffff', FURN, 1.1), 'soft': ('#efe9dd', FURN, 1.0),
              'light': ('none', FURN, 0.8), 'dash': ('none', '#b9ae9c', 1.0),
@@ -295,20 +290,17 @@ def main():
         if note:
             s.text(cx_, cy_ + (400 if sub else 300), note, 11, TXT2)
 
-    # pods + great room, measured off the curves
-    fam_p, den_p, great_p = R.pod_polys()
-
-    def parea(p):
-        return abs(sum(p[i][0] * p[(i + 1) % len(p)][1] - p[(i + 1) % len(p)][0] * p[i][1]
-                       for i in range(len(p)))) / 2e6
-    pod, great = parea(fam_p), parea(great_p)
-    for cx_, nm in ((6550, 'FAMILY ROOM'), (D.M(6550), 'MUSIC + WORK DEN')):
-        s.text(cx_, 6250, nm, 19, TXT, weight='bold', letter=1.4)
-        s.text(cx_, 6500, f'{pod:.1f} m²  ·  {pod * 10.7639:.0f} sq ft', 13, TXT2)
-        s.text(cx_, 6730, 'one pod  ·  glass roof over the 3665 × 2280 bay', 11, TXT2)
-    s.text(D.MID, 3450, 'G R E A T   R O O M', 30, TXT, weight='bold')
-    s.text(D.MID, 3780, f'{great:.1f} m²  ·  {great * 10.7639:.0f} sq ft  ·  '
-                        f'party wall removed, 7840 across', 14, TXT2)
+    # the rooms that are not rectangles — pods, great room, and the three
+    # round the entry drum — measured off their own polygons
+    for nm, sub, p, note, (lx_, ly_) in R.poly_rooms():
+        A = R.poly_area(p)
+        big = A > 25
+        s.text(lx_, ly_, ' '.join(nm) if big else nm, 30 if big else 19, TXT,
+               weight='bold', letter=1.4)
+        s.text(lx_, ly_ + (330 if big else 250),
+               f'{A:.1f} m²  ·  {A * 10.7639:.0f} sq ft', 14 if big else 13, TXT2)
+        if note:
+            s.text(lx_, ly_ + (560 if big else 480), note, 11, TXT2)
 
     # ----------------------------------------------------------- dimensions
     for x1, y1, x2, y2, _prefix in D.DIMS:
@@ -345,9 +337,8 @@ def main():
             (SLAB, 'builder slab'),
             ('#a49c90', 'lift core and landing beyond the flat — reference only'),
             (KEEP, 'builder column / beam, and keep-clear shaft, duct or void'),
-            (NEWW, 'new masonry'),
-            (GLAS, 'glazing / sliding glass'),
-            ('#c07a1e', 'new opening cut in existing masonry')]):
+            (NEWW, 'new masonry — every wall is new, every opening a gap in it'),
+            (GLAS, 'glazing / sliding glass')]):
         s.o.append(f'<rect x="{s.X(lx):.1f}" y="{s.Y(ly) + i * 26 - 13:.0f}" width="34" '
                    f'height="17" fill="{col}" stroke="#888" stroke-width="0.6"/>')
         s.o.append(f'<text x="{s.X(lx) + 46:.1f}" y="{s.Y(ly) + i * 26:.0f}" '

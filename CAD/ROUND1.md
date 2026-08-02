@@ -13,8 +13,7 @@ preserved untouched.
 | `PROP-SHELL` | the existing shell — external walls, shaft and duct enclosures, beams, parapets, chajjas |
 | `PROP-WALL-NEW` | new masonry, solid-hatched |
 | `PROP-KEEP` | shafts, ducts and voids that must stay clear |
-| `PROP-GLAZ` | glazing, sliding glass, the pod screens |
-| `PROP-OPEN` | new openings |
+| `PROP-GLAZ` | glazing, sliding glass, the pod portals |
 | `PROP-FURN` | fixed joinery and the layout |
 | `PROP-TEXT` | room names, areas, and the layer-state notes |
 | `PROP-DIM` | the set-out dimensions |
@@ -99,9 +98,21 @@ columns, help's room + WC in the mirrored bay. Laundry and store go into the
 two dry balconies, which is what the builder built them as.
 
 The entry gallery is re-centred on the home's centreline at X 12240 and sits
-inside the 3220 clear between the lobby columns. **The two existing flat doors
-merge into a single 2270 arched opening** into the great room — the builder's
-own structure doing the work.
+inside the 3220 clear between the lobby columns.
+
+**5. The gallery drum keeps only the floor inside it.** A 2600 drum in a
+3220 × 2600 pocket leaves 3.06 m² of dead corner. The drum's own wall is now
+the boundary: the kitchen wraps it on the west, help's room on the east, and
+those corners are floor in those two rooms instead of waste. The kitchen goes
+from 8.2 to **10.1 m² (109 sq ft)**, help's room from 5.0 to **7.0 (75)**, and
+the gallery is stated at what it actually is — the 2300 clear inside the drum,
+4.2 m² (45 sq ft), not the 8.4 the rectangle used to claim.
+
+The drum has four openings: 900 north to the great room, 1050 south for the
+front door, 900 west to the kitchen and 800 east to help's room. It is tangent
+to the service-bay north wall at the top and to the building line at the
+bottom, so the north and south openings line up with gaps in those two straight
+walls, with a jamb closing each reveal.
 
 ---
 
@@ -115,16 +126,16 @@ own structure doing the work.
 | MASTER SUITE — karan | 35.0 | 377 |
 | FAMILY ROOM | 19.4 | 209 |
 | MUSIC + WORK DEN | 19.4 | 209 |
-| ENTRY GALLERY | 8.4 | 90 |
-| KITCHEN | 8.2 | 88 |
-| HELP'S ROOM | 5.0 | 54 |
+| KITCHEN | 10.1 | 109 |
+| HELP'S ROOM | 7.0 | 75 |
 | PARENTS' BATH | 4.4 | 48 |
 | KARAN'S BATH | 4.4 | 48 |
+| ENTRY GALLERY | 4.2 | 45 |
 | TERRACE ×2 | 3.7 each | 40 each |
 | GUEST / SERVICE WC | 2.8 | 30 |
 | UTILITY | 1.9 | 20 |
 | STORE | 1.8 | 19 |
-| **total of named rooms** | **234.1** | **2519** |
+| **total of named rooms** | **233.7** | **2516** |
 
 The great room is 485 sq ft against A-101's 474, and 7840 across the removed
 party wall rather than 7690.
@@ -134,7 +145,8 @@ party wall rather than 7690.
 ## Calls I made — overrule any of them
 
 **The lobby is enclosed to Y 11 125**, the line of the building's own outer
-wall, which gives an 8.4 m² entry hall. The lift lobby, the lift and the fire
+wall, which gives an 8.4 m² pocket — the drum plus the two crescents that now
+belong to the kitchen and help's room. The lift lobby, the lift and the fire
 lift beyond it are now drawn on the sheet for reference, boxed and labelled as
 common. Extending the flat to the lift doors would add about 4.9 m² and is a
 one-line change — say the word.
@@ -173,10 +185,12 @@ Kept — 31 pieces, the ones that prove the plan works:
 * both master baths — vanity, basin, WC, curved glass shower
 * guest / service WC — shower, WC, basin
 * both master beds, and the bunk in help's room
+* the mandir in the parents' pod and the coffee / pantry in Karan's, both as
+  1200 × 1200 corner units, 600 deep with a chamfered front, set out off the
+  service-duct wall and the service-bay north wall
 * deck — the two grass beds, the strength trainer, the spa, the fountain and
   the parapet planter
 * the dining table, in the great room beside the serving hatch
-* the mandir in each pod
 
 Removed — 65 pieces, including A-101's L-shaped curved-glass changing screen
 in each suite: every side table, all the sofas, recliners and armchairs,
@@ -184,8 +198,8 @@ the rugs, the murphy nook, all the wardrobe, cupboard, hanging-run and
 dressing-console joinery in both suites, the entry gallery's curved console and
 bench and its two joinery runs, the mirrors, the wardrobe at the foot of the
 bunk, the utility and store racks, the wall TV, the pantry counter and its two
-appliances in Karan's pod, the drum kit, the terrace chairs, tables, drying
-racks and planters, and the plants.
+the drum kit, the terrace chairs, tables, drying racks and planters, and the
+plants. A-101's pantry counter is back, as the corner unit in Karan's pod.
 
 The dining table's move still stands and is worth keeping in mind: A-101 puts
 it in the parents' pod at (6420, 6900), which is now the service duct, and the
@@ -203,13 +217,21 @@ need. Beside the serving hatch it is also next to the kitchen.
 * internal walls — the flats came as bare shell, so there is nothing to
   demolish and no question about which existing walls are load-bearing. The
   only fabric that has to stay is the shell, and none of the layout touches it.
+* **openings** — there is no longer any such thing here as an opening cut in
+  existing masonry, so the `PROP-OPEN` layer is gone. Every opening is a gap
+  left in a new wall and lives with that wall, which is the only way the two
+  can't disagree. Three walls that the old opening markers implied but that
+  were never actually drawn are now in: the 125 line between each suite and
+  its pod (with the 1050 slider as a gap in it), and the service-bay north
+  wall from the kitchen's west wall to the WC's east wall (with the 1200
+  serving hatch and the gallery's north portal as gaps in it).
+* the gallery's four openings — 900 north to the great room, 1050 south for
+  the front door, 900 west to the kitchen, 800 east to help's room
 
 ## Open for the next round
 
 * the furniture, room by room, added back on purpose rather than inherited
 * the dining table's home, if the great room is not where you want it
-* the entry gallery's four openings — north to the great room, south to the
-  entrance, west to the kitchen, east to help's room
 
 ## Still to be confirmed, not by me
 

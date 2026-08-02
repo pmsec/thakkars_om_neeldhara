@@ -24,6 +24,53 @@ def _rr(x0, y0, x1, y1, style='solid'):
     return ('rect', x0, y0, x1, y1, style)
 
 
+def _corner_unit(what, side, a, b, c, d, dep=600):
+    """A unit built into a wall corner: both legs run along a wall and the
+    front is chamfered.  `side` is 'w' when the corner is at (a, d) and 'e'
+    when it is at (c, d) — i.e. which wall the vertical leg stands against.
+
+    Everything below is set out in the 'w' orientation and mirrored about the
+    unit's own centreline for 'e', so the two are exactly handed.
+    """
+    w, h = c - a, d - b
+    mid = (a + c) / 2
+
+    def X(v):
+        return v if side == 'w' else 2 * mid - v
+
+    def P(pts, style):
+        return ('poly', [(X(x), y) for x, y in pts], style)
+
+    def R(x0, y0, x1, y1, style):
+        return ('rect', min(X(x0), X(x1)), y0, max(X(x0), X(x1)), y1, style)
+
+    face = [(a, d), (c, d), (c, d - dep), (a + dep, b), (a, b)]
+    inset = [(a + 70, d - 70), (c - 70, d - 70), (c - 70, d - dep + 30),
+             (a + dep - 30, b + 70), (a + 70, b + 70)]
+    out = [P(face, 'solid')]
+
+    if what == 'pooja':
+        out.append(P(inset, 'soft'))
+        # the shrine sits square on the corner bisector
+        sx, sy, s = a + 0.30 * w, d - 0.30 * h, 250
+        out.append(P([(sx, sy - s), (sx + s, sy), (sx, sy + s), (sx - s, sy)], 'solid'))
+        for px, py in ((a + 0.14 * w, d - 0.66 * h), (a + 0.66 * w, d - 0.14 * h)):
+            out.append(('circle', X(px), py, 85, 'light'))
+        out.append(('line', X(c), d - dep, X(a + dep), b, 'light'))
+        return out
+
+    # coffee + pantry: counter with a small sink on one leg and two machines
+    # on the other, splashback drawn against both walls
+    out.append(('line', X(a + 90), d - 90, X(c - 90), d - 90, 'light'))
+    out.append(('line', X(a + 90), b + 90, X(a + 90), d - 90, 'light'))
+    out.append(R(a + 0.10 * w, d - 0.72 * h, a + 0.42 * w, d - 0.42 * h, 'light'))
+    out.append(('circle', X(a + 0.26 * w), d - 0.57 * h, 150, 'light'))
+    for k in (0.40, 0.70):
+        out.append(R(a + (k - 0.11) * w, d - 0.42 * h,
+                     a + (k + 0.11) * w, d - 0.14 * h, 'solid'))
+    return out
+
+
 def symbol(kind, a, b, c, d):
     w, h = c - a, d - b
     cx, cy = (a + c) / 2, (b + d) / 2
@@ -78,12 +125,8 @@ def symbol(kind, a, b, c, d):
                ('circle', cx - r * 0.43, cy + r * 0.19, r * 0.17, 'light'),
                ('circle', cx + r * 0.45, cy - r * 0.22, r * 0.19, 'light')]
         return out
-    if kind == 'pooja':
-        out = [_rr(a, b, c, d, 'solid'), _rr(a + 60, b + 60, c - 60, d - 60, 'soft'),
-               _rr(cx - 170, b + 140, cx + 170, d - 120, 'solid')]
-        for dx in (0.16, 0.84):
-            out.append(('circle', a + w * dx, d - 150, 70, 'light'))
-        return out
+    if kind.startswith('pooja-') or kind.startswith('pantry-'):
+        return _corner_unit(kind.split('-')[0], kind[-1], a, b, c, d)
     if kind == 'tv':
         return [_rr(a, b, c, d, 'solid'),
                 _rr(a + w * 0.42, b + 35, c, d - 35, 'soft')]

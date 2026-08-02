@@ -78,12 +78,6 @@ def main():
     # 4 ------------------------------------------------------------ areas
     print()
     print('  room schedule')
-    fam, den, great = R.pod_polys()
-
-    def poly_area(p):
-        return abs(sum(p[i][0] * p[(i + 1) % len(p)][1] - p[(i + 1) % len(p)][0] * p[i][1]
-                       for i in range(len(p)))) / 2e6
-
     tot = 0.0
     rows = []
     for name, sub, rects, _ in D.ROOMS:
@@ -93,8 +87,7 @@ def main():
         if 'DECK' in name:          # the two retained voids are holes in it
             a -= sum((c - x) * (d - y) for x, y, c, d in D.VOID_KEEP) / 1e6
         rows.append((f'{name} {sub}'.strip(), a))
-    rows += [('FAMILY ROOM', poly_area(fam)), ('MUSIC + WORK DEN', poly_area(den)),
-             ('GREAT ROOM', poly_area(great))]
+    rows += [(n, R.poly_area(p)) for n, _s, p, _note, _xy in R.poly_rooms()]
     for n, a in sorted(rows, key=lambda r: -r[1]):
         tot += a
         print(f'    {n:26s} {a:6.1f} m2   {a * 10.7639:5.0f} sq ft')

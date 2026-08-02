@@ -14,8 +14,7 @@ Layers added
                       enclosures, beams, parapets and chajjas
     PROP-REF-CORE     the lift lobby, lifts and fire lift beyond the flat
     PROP-KEEP         shafts, ducts and voids that must stay clear
-    PROP-GLAZ         glazing, sliding glass and the pod screens
-    PROP-OPEN         new openings cut in retained masonry
+    PROP-GLAZ         glazing, sliding glass and the pod portals
     PROP-FURN         fixed joinery and layout furniture
     PROP-TEXT         room names and areas
     PROP-DIM          the set-out dimensions
@@ -65,7 +64,6 @@ LAYERS = [
     ('PROP-REF-CORE', 8, 'CONTINUOUS'),      # grey — lift core, reference
     ('PROP-KEEP', 6, 'DASHED'),              # magenta
     ('PROP-GLAZ', 4, 'CONTINUOUS'),          # cyan
-    ('PROP-OPEN', 30, 'DASHED'),             # orange
     ('PROP-FURN', 9, 'CONTINUOUS'),
     ('PROP-TEXT', 3, 'CONTINUOUS'),          # green
     ('PROP-DIM', 2, 'CONTINUOUS'),           # yellow
@@ -204,17 +202,9 @@ def main():
                 poly(msp, seg, 'PROP-GLAZ', closed=False)
         seg = [p for p, keep_ in zip(pts, (ts >= a) & (ts <= b)) if keep_]
         if len(seg) > 1:
-            poly(msp, seg, 'PROP-OPEN', closed=False)
+            poly(msp, seg, 'PROP-GLAZ', closed=False)   # the arched portal
     for x1, y1, x2, y2, kind in D.GLAZING:
         msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-GLAZ'})
-
-    # ---------------------------------------------------------- new openings
-    for x1, y1, x2, y2, lab in D.CUT_OPENINGS:
-        box(msp, x1, y1, x2, y2, 'PROP-OPEN')
-        msp.add_text(lab, height=70, rotation=90,
-                     dxfattribs={'layer': 'PROP-OPEN'}
-                     ).set_placement(P((x1 + x2) / 2, (y1 + y2) / 2),
-                                     align=TextEntityAlignment.MIDDLE_CENTER)
 
     # -------------------------------------------------------------- furniture
     def prim(p):
@@ -244,12 +234,6 @@ def main():
                                  align=TextEntityAlignment.MIDDLE_CENTER)
 
     # ----------------------------------------------------------------- labels
-    fam, den, great = R.pod_polys()
-
-    def parea(p):
-        return abs(sum(p[i][0] * p[(i + 1) % len(p)][1] - p[(i + 1) % len(p)][0] * p[i][1]
-                       for i in range(len(p)))) / 2e6
-
     def label(x, y, name, sub, a, note):
         msp.add_text(name, height=200, rotation=90, dxfattribs={'layer': 'PROP-TEXT'}
                      ).set_placement(P(x, y), align=TextEntityAlignment.MIDDLE_CENTER)
@@ -274,12 +258,8 @@ def main():
         big = max(rects, key=lambda r_: (r_[2] - r_[0]) * (r_[3] - r_[1]))
         a = sum((c - x) * (d - y) for x, y, c, d in rects) / 1e6
         label((big[0] + big[2]) / 2, (big[1] + big[3]) / 2 - 300, name, sub, a, note)
-    label(6550, 6250, 'FAMILY ROOM', '', parea(fam),
-          'one pod  ·  glass roof over the 3665 x 2280 bay')
-    label(D.M(6550), 6250, 'MUSIC + WORK DEN', '', parea(den),
-          'one pod  ·  glass roof over the 3665 x 2280 bay')
-    label(D.MID, 3450, 'GREAT ROOM', '', parea(great),
-          'party wall removed  ·  7840 across')
+    for name, sub, p, note, (lx_, ly_) in R.poly_rooms():
+        label(lx_, ly_, name, sub, R.poly_area(p), note)
 
     # ------------------------------------------------------------ dimensions
     dimstyle = doc.dimstyles.get('Standard')

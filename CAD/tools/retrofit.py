@@ -92,6 +92,60 @@ def pod_polys():
     return fam, den, great
 
 
+def _arc(cx, cy, r, a0, a1, n=90):
+    return [(cx + math.cos(math.radians(a0 + (a1 - a0) * i / n)) * r,
+             cy + math.sin(math.radians(a0 + (a1 - a0) * i / n)) * r)
+            for i in range(n + 1)]
+
+
+def lobby_polys():
+    """Kitchen, help's room and entry gallery.
+
+    The gallery is a drum, and a drum in a rectangular pocket leaves four dead
+    corners — 3.06 m2 of them.  So the drum's own wall is the boundary: the
+    kitchen wraps it on the west and help's room on the east, and the corners
+    become floor in those two rooms instead of waste in the gallery.
+    """
+    cx, cy, r, t, _gaps = D.GALLERY
+    ro, ri = r + t / 2, r - t / 2
+
+    # where the drum's outer face crosses the south wall of the service bay
+    ay = math.degrees(math.asin((D.BAY_S - cy) / ro))          # 62.2 deg
+    kw, ke = 7050, 16150                                       # outer room faces
+
+    kitchen = ([(kw, D.BAY_N)] + _arc(cx, cy, ro, 270, 180 - ay)
+               + [(kw, D.BAY_S)])
+    helps = ([(ke, D.BAY_N)] + _arc(cx, cy, ro, 270, 360 + ay)
+             + [(ke, D.BAY_S)])
+    gallery = _arc(cx, cy, ri, 0, 360, 180)[:-1]
+    return kitchen, helps, gallery
+
+
+def poly_rooms():
+    """Every room that is not a rectangle: (name, sub, polygon, note, label xy).
+
+    The rectangular ones live in design.ROOMS; these are the pods, the great
+    room, and the three rooms round the entry drum."""
+    fam, den, great = pod_polys()
+    kitchen, helps, gallery = lobby_polys()
+    pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
+    return [
+        ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
+        ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
+        ('GREAT ROOM', '', great, 'party wall removed  ·  7840 across', (D.MID, 3450)),
+        ('KITCHEN', '', kitchen, 'on the builder stack  ·  wrapped round the drum',
+         (8600, 9500)),
+        ("HELP'S ROOM", '', helps, '', (14950, 9500)),
+        ('ENTRY GALLERY', '', gallery, '2300 clear', (D.MID, 9825)),
+    ]
+
+
+def poly_area(p):
+    return abs(sum(p[i][0] * p[(i + 1) % len(p)][1]
+                   - p[(i + 1) % len(p)][0] * p[i][1]
+                   for i in range(len(p)))) / 2e6
+
+
 def keep_wall_mask():
     """The builder walls that stay, as a raster."""
     keep, _ = keep_demo()
@@ -112,8 +166,7 @@ def design_masks():
     for _, _, rects, _ in D.ROOMS:
         for a, b, c, d in rects:
             C.put_rect(fl, a, b, c, d)
-    fam, den, great = pod_polys()
-    for p in (fam, den, great):
+    for _n, _s, p, _note, _xy in poly_rooms():
         C.put_poly(fl, p)
 
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:

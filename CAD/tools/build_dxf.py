@@ -10,8 +10,9 @@ unchanged.
 
 Layers added
     PROP-WALL-NEW     new masonry, hatched solid
-    PROP-REF          the builder's indicative partition layout (layer off)
-    PROP-REF-CORE     the lift lobby and lifts beyond the flat, for reference
+    PROP-SHELL        the existing shell: external walls, shaft and duct
+                      enclosures, beams, parapets and chajjas
+    PROP-REF-CORE     the lift lobby, lifts and fire lift beyond the flat
     PROP-KEEP         shafts, ducts and voids that must stay clear
     PROP-GLAZ         glazing, sliding glass and the pod screens
     PROP-OPEN         new openings cut in retained masonry
@@ -31,6 +32,7 @@ import numpy as np
 from ezdxf.enums import TextEntityAlignment
 
 import clash as C
+import frame
 import design as D
 import retrofit as R
 import symbols as SY
@@ -59,8 +61,8 @@ def box(msp, a, b, c, d, layer):
 
 LAYERS = [
     ('PROP-WALL-NEW', 1, 'CONTINUOUS'),      # red
-    ('PROP-REF', 8, 'DASHED'),               # grey — builder partitions, off
-    ('PROP-REF-CORE', 8, 'DASHED'),          # grey — lift core, visible
+    ('PROP-SHELL', 7, 'CONTINUOUS'),         # white — the existing shell
+    ('PROP-REF-CORE', 8, 'CONTINUOUS'),      # grey — lift core, reference
     ('PROP-KEEP', 6, 'DASHED'),              # magenta
     ('PROP-GLAZ', 4, 'CONTINUOUS'),          # cyan
     ('PROP-OPEN', 30, 'DASHED'),             # orange
@@ -112,13 +114,36 @@ def main():
             doc.layers.remove(name)
         doc.layers.add(name, color=colour, linetype=lt)
 
-    # The flats were handed over as bare shell, so there is nothing to
-    # demolish — every wall in the layout is new.  The builder's indicative
-    # partition layout goes on a frozen reference layer in case it is wanted.
-    keep, indicative = R.keep_demo()
-    for x1, y1, x2, y2 in indicative:
-        msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-REF'})
-    doc.layers.get('PROP-REF').off()
+    # ---------------------------------------------------------------- shell
+    # The flats came as bare shell, so nothing is demolished and every wall in
+    # the layout is new.  What already exists is only the shell: the external
+    # walls, the enclosures round the shafts and ducts, the beams, the parapets
+    # and the chajjas.  All of that lives inside the builder's own unit blocks,
+    # which sit ON layer DA_WALL — so switching DA_WALL off to hide their
+    # never-built partitions would take the shell with it.  It is therefore
+    # copied here, on to PROP-SHELL, so the drawing survives that switch.
+    keep, _never_built = R.keep_demo()
+    for x1, y1, x2, y2 in keep:
+        msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-SHELL'})
+
+    segs, _t = frame.load_cad(x0=40000, y0=10000, x1=135000, y1=75000)
+    HOME = R.HOME
+    for lay, x1, y1, x2, y2 in segs:
+        if lay not in ('DA_BEAM', 'DA_RAILING', 'DA_CHAJJA'):
+            continue
+        if not (HOME[0] < (x1 + x2) / 2 < HOME[2] and HOME[1] < (y1 + y2) / 2 < HOME[3]):
+            continue
+        msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-SHELL'})
+
+    # ------------------------------------------- the lift core, for reference
+    rx0, ry0, rx1, ry1 = D.REFERENCE
+    for lay, x1, y1, x2, y2 in segs:
+        if lay not in ('DA_WALL', 'DA_COLUMN', 'DA_STAIRCASE', 'DA_LINE'):
+            continue
+        if not (rx0 < min(x1, x2) and max(x1, x2) < rx1
+                and ry0 < min(y1, y2) and max(y1, y2) < ry1):
+            continue
+        msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-REF-CORE'})
 
     # ------------------------------------------------------- keep-clear zones
     for name, a, b, c, d, kind in C.NAMED:
@@ -213,8 +238,7 @@ def main():
     for x_, y0_, yc_, xto_ in D.SCREENS:
         poly(msp, SY.screen_path(x_, y0_, yc_, xto_), 'PROP-GLAZ', closed=False)
 
-    # ---------------------------------------- the lift core, for reference
-    rx0, ry0, rx1, ry1 = D.REFERENCE
+    # -------------------------------------------- the lift core, boxed
     box(msp, rx0, ry0, rx1, ry1 - 100, 'PROP-REF-CORE')
     msp.add_text('LIFT LOBBY, LIFTS AND FIRE LIFT — COMMON, NOT PART OF THE HOME',
                  height=160, rotation=90, dxfattribs={'layer': 'PROP-REF-CORE'}
@@ -265,16 +289,20 @@ def main():
     dimstyle.dxf.dimasz = 90
     dimstyle.dxf.dimexe = 60
     dimstyle.dxf.dimexo = 60
-    for x1, y1, x2, y2, txt in D.DIMS:
+    # The text is left as the measured value.  A prefix, where there is one,
+    # uses AutoCAD's <> placeholder so the number stays live: edit the geometry
+    # and the label follows.  Nothing here is typed by hand.
+    for x1, y1, x2, y2, prefix in D.DIMS:
         p1, p2 = P(x1, y1), P(x2, y2)
+        att = {'layer': 'PROP-DIM'}
+        if prefix:
+            att['text'] = prefix + '<>'
         if y1 == y2:                       # runs along the home -> vertical in CAD
             dim = msp.add_linear_dim(base=(p1[0] - 250, 0), p1=p1, p2=p2,
-                                           angle=90,
-                                           dxfattribs={'layer': 'PROP-DIM'})
+                                     angle=90, dxfattribs=att)
         else:
             dim = msp.add_linear_dim(base=(0, p1[1] - 250), p1=p1, p2=p2,
-                                           angle=0,
-                                           dxfattribs={'layer': 'PROP-DIM'})
+                                     angle=0, dxfattribs=att)
         dim.render()
 
     # ------------------------------------------------------------------ title
@@ -287,6 +315,34 @@ def main():
         msp.add_text(line, height=[320, 180, 150, 130, 130][i], rotation=90,
                      dxfattribs={'layer': 'PROP-TEXT'}
                      ).set_placement(P(-2600 - i * 420, 0),
+                                     align=TextEntityAlignment.MIDDLE_LEFT)
+
+    # ------------------------------------------------- layer states, on sheet
+    NOTES = [
+        'LAYER STATES',
+        '',
+        'TO SEE THE DESIGN ONLY — turn OFF:',
+        '   DA_WALL  DA_DOOR  DA_WINDOW  DA_FURNITURE  DA_FURNITURE HIDDEN',
+        '   DA_DOTTED LINES  DA_ELEVATION FEATURE  DA_LINE  DA_CARPET AREA RERA',
+        '   DA_TEXT IN SQ.FT  DA_TEXT 2  DA_Text 1  DA_TEXT  DA_LABL',
+        '   DA_HATCH  DA_SUNK HATCH  DA_COLUMN HATCH  DA_ALUMINIUM',
+        '   DA_DIMENSION  -CG-P-DIM  DA_GUIDE LINE  DA_DRG BORDER  boundary',
+        '   Leave layer 0, DA_COLUMN and DA_BUILDING LINE ON — the columns and',
+        '   the slab edge are inside blocks that sit on those layers.',
+        '',
+        'TO SEE THE DEVELOPER DRAWING ONLY — turn OFF every PROP-* layer.',
+        '',
+        'TO COMPARE — developer state, plus PROP-WALL-NEW and PROP-TEXT back on.',
+        '',
+        'Note: the developer file is built from nested blocks whose references',
+        'sit on DA_WALL and on layer 0.  Switching DA_WALL off therefore hides',
+        'both unit blocks whole — walls, beams, parapets and all.  Everything',
+        'that has to survive that switch is copied on to PROP-SHELL.',
+    ]
+    for i, line in enumerate(NOTES):
+        msp.add_text(line, height=150 if i == 0 else 110, rotation=90,
+                     dxfattribs={'layer': 'PROP-TEXT'}
+                     ).set_placement(P(-4400 - i * 260, 0),
                                      align=TextEntityAlignment.MIDDLE_LEFT)
 
     os.makedirs(OUT, exist_ok=True)

@@ -10,15 +10,54 @@ preserved untouched.
 
 | Layer | What's on it |
 |---|---|
+| `PROP-SHELL` | the existing shell — external walls, shaft and duct enclosures, beams, parapets, chajjas |
 | `PROP-WALL-NEW` | new masonry, solid-hatched |
-| `PROP-REF` | the builder's indicative partition layout — **layer off** |
-| `PROP-REF-CORE` | the lift lobby, lifts and fire lift beyond the flat |
 | `PROP-KEEP` | shafts, ducts and voids that must stay clear |
 | `PROP-GLAZ` | glazing, sliding glass, the pod screens |
-| `PROP-OPEN` | new openings cut in retained masonry |
-| `PROP-FURN` | fixed joinery and the pieces that set the plan |
-| `PROP-TEXT` | room names and areas |
+| `PROP-OPEN` | new openings |
+| `PROP-FURN` | fixed joinery and the layout |
+| `PROP-TEXT` | room names, areas, and the layer-state notes |
 | `PROP-DIM` | the set-out dimensions |
+| `PROP-REF-CORE` | the lift lobby, lifts and fire lift beyond the flat |
+
+## Layer states
+
+The developer's file is built from **nested blocks whose references sit on
+content layers** — both unit blocks sit on `DA_WALL`, and the block holding 31
+of the 43 columns sits on layer `0`. In CAD, switching off a block reference's
+layer hides the whole block. So `DA_WALL` off would take the shell, the beams
+and the parapets with it, and `0` off would take most of the columns.
+
+Everything that has to survive that switch is therefore copied on to
+`PROP-SHELL`. Nothing of the developer's is moved, edited or deleted.
+
+**To see the design only — turn OFF:**
+
+```
+DA_WALL              DA_TEXT IN SQ.FT      DA_DIMENSION
+DA_DOOR              DA_TEXT 2             -CG-P-DIM
+DA_WINDOW            DA_Text 1             DA_GUIDE LINE
+DA_FURNITURE         DA_TEXT               DA_DRG BORDER
+DA_FURNITURE HIDDEN  DA_LABL               boundary
+DA_DOTTED LINES      DA_CARPET AREA RERA   DA_COLUMN HATCH
+DA_ELEVATION FEATURE DA_HATCH              DA_ALUMINIUM
+DA_LINE              DA_SUNK HATCH
+```
+
+Leave **`0`**, **`DA_COLUMN`** and **`DA_BUILDING LINE`** ON — the columns and
+the slab edge live inside blocks that sit on those layers. Verified: this
+leaves 14 columns, the slab edge and every `PROP-*` layer visible in the home,
+and nothing else.
+
+**To see the developer's drawing only** — turn OFF every `PROP-*` layer.
+Verified: zero proposal entities visible, their sheet back exactly as issued.
+
+**To compare** — the developer state, plus `PROP-WALL-NEW` and `PROP-TEXT`
+switched back on. Their layout underneath, yours over it.
+
+The same three notes are written on the drawing itself, on `PROP-TEXT`, to the
+left of the title. Most CAD apps will save them as Layer States so you can
+flip between them.
 
 ---
 
@@ -101,11 +140,16 @@ common. Extending the flat to the lift doors would add about 4.9 m² and is a
 one-line change — say the word.
 
 **There is nothing to demolish.** You took the flats as bare shell, so every
-wall in the layout is new. What is drawn as existing is only the shell: the
-external walls and the enclosures round the shafts, ducts and voids — which
-have to be there, because those are open holes in the slab. The builder's
-indicative partition layout is on `PROP-REF`, switched off, in case it is ever
-useful for seeing where they intended plumbing.
+wall in the layout is new. What is drawn as existing is only the shell — on
+`PROP-SHELL` — the external walls and the enclosures round the shafts, ducts
+and voids, which have to be there because those are open holes in the slab,
+plus the beams, parapets and chajjas.
+
+**Dimensions carry no typed text.** Every one is computed from its two points,
+which sit on the developer's own set-out lines, so the label and the geometry
+cannot disagree. The deck reads 3050 + 1535 + 6250 + 1535 + 3050 = 15 420 —
+the developer's chain, with the two middle bays continuous because there is no
+party wall.
 
 **The recovered 960 × 275 mm** went to the master suites and the great room
 along the length, and to the service bay in depth.

@@ -307,21 +307,38 @@ SCREENS = [(2812, 6650, 3550, 2100), (M(2812), 6650, 3550, M(2100))]
 REFERENCE = (9400, 11125, 16300, 15700)
 
 # ------------------------------------------------------------------ dimensions
-# (x1, y1, x2, y2, text)
+# (x1, y1, x2, y2, prefix).  The text is NEVER written by hand — every drawing
+# computes it from the two points, so the label and the geometry cannot
+# disagree.  The points sit on the builder's own set-out lines.
+#
+# Along the deck the builder's chain is 3050 + 1535 + 3050 per half with a 150
+# party wall at the centre.  There is no party wall here, so the two middle
+# bays read as one continuous 6250:  3050 + 1535 + 6250 + 1535 + 3050 = 15 420.
 DIMS = [
-    (END_W, -1500, END_E, -1500, 'OVERALL  25 680'),
-    (END_W, -900, POD_W0, -900, "WING  5130"),
-    (POD_W0, -900, M(POD_W0), -900, 'CONTINUOUS DECK  15 420'),
-    (M(POD_W0), -900, END_E, -900, "WING  5130"),
-    (POD_W0, -350, 7500, -350, '3050'),
-    (7500, -350, 9115, -350, '1535'),
-    (9115, -350, MID, -350, '3050'),
-    (MID, -350, M(9115), -350, '3050'),
-    (M(9115), -350, M(7500), -350, '1535'),
-    (M(7500), -350, M(POD_W0), -350, '3050'),
-    (-1500, DECK_N, -1500, DECK_S, 'DECK 2620'),
-    (-1500, BODY_N, -1500, BODY_S, 'MAIN BODY 5780'),
-    (-1500, BAY_N, -1500, BAY_S, 'SERVICE BAY 2450'),
-    (-2300, 0, -2300, WING_S, 'WING DEPTH 9545'),
-    (M(-2300), DECK_N, M(-2300), 11125, 'OVERALL DEPTH 11 275'),
+    (END_W, -2100, END_E, -2100, 'OVERALL  '),
+    (END_W, -1500, POD_W0, -1500, 'WING  '),
+    (POD_W0, -1500, M(POD_W0), -1500, 'CONTINUOUS DECK  '),
+    (M(POD_W0), -1500, END_E, -1500, 'WING  '),
+    (POD_W0, -900, 7580, -900, ''),
+    (7580, -900, 9115, -900, ''),
+    (9115, -900, 15365, -900, ''),
+    (15365, -900, 16900, -900, ''),
+    (16900, -900, M(POD_W0), -900, ''),
+    # wing set-out, both ends
+    (END_W, 11900, END_W + 150, 11900, ''),
+    (END_W + 150, 11900, SUITE_W_E, 11900, ''),
+    (SUITE_W_E, 11900, SUITE_W_E + 150, 11900, ''),
+    (SUITE_W_E + 150, 11900, 4380, 11900, ''),
+    (4380, 11900, POD_W0, 11900, ''),
+    (M(POD_W0), 11900, M(4380), 11900, ''),
+    (M(4380), 11900, M(SUITE_W_E + 150), 11900, ''),
+    (M(SUITE_W_E + 150), 11900, M(SUITE_W_E), 11900, ''),
+    (M(SUITE_W_E), 11900, M(END_W + 150), 11900, ''),
+    (M(END_W + 150), 11900, END_E, 11900, ''),
+    # depth
+    (-1400, DECK_N, -1400, DECK_S, 'DECK  '),
+    (-1400, BODY_N, -1400, BODY_S, 'MAIN BODY  '),
+    (-1400, BAY_N, -1400, BAY_S, 'SERVICE BAY  '),
+    (-2200, 0, -2200, WING_S + 150, 'WING DEPTH  '),
+    (26100, -250, 26100, 11125, 'OVERALL DEPTH  '),
 ]

@@ -314,7 +314,8 @@ def main():
                         f'party wall removed, 7840 across', 14, TXT2)
 
     # ----------------------------------------------------------- dimensions
-    for x1, y1, x2, y2, txt in D.DIMS:
+    for x1, y1, x2, y2, _prefix in D.DIMS:
+        txt = _prefix + f'{math.hypot(x2 - x1, y2 - y1):,.0f}'.replace(',', ' ')
         s.line(x1, y1, x2, y2, DIMC, 0.9)
         for px_, py_ in ((x1, y1), (x2, y2)):
             if y1 == y2:

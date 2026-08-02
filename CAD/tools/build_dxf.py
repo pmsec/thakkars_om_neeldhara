@@ -174,8 +174,9 @@ def main():
                 return True
         return False
 
-    run = []
-    for a in list(np.arange(0, 360.5, 1.5)) + [None]:
+    a0 = gaps[0][0]                     # start inside a gap: no run is cut in
+    run = []                            # half where the sweep wraps past 360
+    for a in list(np.arange(a0, a0 + 360.5, 1.5)) + [None]:
         if a is not None and not in_gap(a):
             run.append(math.radians(a))
             continue
@@ -190,6 +191,12 @@ def main():
             h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
             h.set_solid_fill(color=1)
         run = []
+
+    for q in R.fillets():                       # solid behind the two arcs
+        poly(msp, q, 'PROP-WALL-NEW')
+        h = msp.add_hatch(color=1, dxfattribs={'layer': 'PROP-WALL-NEW'})
+        h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
+        h.set_solid_fill(color=1)
 
     # --------------------------------------------------------------- glazing
     for Pc in (D.POD_W, D.POD_E):
@@ -221,6 +228,8 @@ def main():
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)
+    for p in R.corner_units():
+        prim(p)
     gx, gy, gr, gt, _g = D.GALLERY
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:
         for p in SY.annular(gx, gy, r0, r1, a0, a1, back):

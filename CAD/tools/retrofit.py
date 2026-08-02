@@ -92,52 +92,121 @@ def pod_polys():
     return fam, den, great
 
 
-def _arc(cx, cy, r, a0, a1, n=90):
-    return [(cx + math.cos(math.radians(a0 + (a1 - a0) * i / n)) * r,
-             cy + math.sin(math.radians(a0 + (a1 - a0) * i / n)) * r)
-            for i in range(n + 1)]
-
-
-def lobby_polys():
-    """Kitchen, help's room and entry gallery.
-
-    The gallery is a drum, and a drum in a rectangular pocket leaves four dead
-    corners — 3.06 m2 of them.  So the drum's own wall is the boundary: the
-    kitchen wraps it on the west and help's room on the east, and the corners
-    become floor in those two rooms instead of waste in the gallery.
-    """
-    cx, cy, r, t, _gaps = D.GALLERY
-    ro, ri = r + t / 2, r - t / 2
-
-    # where the drum's outer face crosses the south wall of the service bay
-    ay = math.degrees(math.asin((D.BAY_S - cy) / ro))          # 62.2 deg
-    kw, ke = 7050, 16150                                       # outer room faces
-
-    kitchen = ([(kw, D.BAY_N)] + _arc(cx, cy, ro, 270, 180 - ay)
-               + [(kw, D.BAY_S)])
-    helps = ([(ke, D.BAY_N)] + _arc(cx, cy, ro, 270, 360 + ay)
-             + [(ke, D.BAY_S)])
-    gallery = _arc(cx, cy, ri, 0, 360, 180)[:-1]
-    return kitchen, helps, gallery
-
-
 def poly_rooms():
     """Every room that is not a rectangle: (name, sub, polygon, note, label xy).
 
-    The rectangular ones live in design.ROOMS; these are the pods, the great
-    room, and the three rooms round the entry drum."""
+    The rectangular ones live in design.ROOMS; these are the two pods and the
+    great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
-    kitchen, helps, gallery = lobby_polys()
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     return [
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
         ('GREAT ROOM', '', great, 'party wall removed  ·  7840 across', (D.MID, 3450)),
-        ('KITCHEN', '', kitchen, 'on the builder stack  ·  wrapped round the drum',
-         (8600, 9500)),
-        ("HELP'S ROOM", '', helps, '', (14950, 9500)),
-        ('ENTRY GALLERY', '', gallery, '2300 clear', (D.MID, 9825)),
+        ('ENTRY GALLERY', '', gallery_poly(),
+         '2920 across  ·  800 through to the kitchen and to help\'s room',
+         (D.MID, 9600)),
     ]
+
+
+def _gal_arc(r, a0, a1, n=60):
+    cx, cy = D.GAL_CX, D.GAL_CY
+    return [(cx + math.cos(math.radians(a)) * r, cy + math.sin(math.radians(a)) * r)
+            for a in np.linspace(a0, a1, n)]
+
+
+COL_N = 9325                  # top of the two 1800-deep gallery columns
+
+
+def _gal_ends(r):
+    """The angles at which a face of radius r leaves the column top and meets
+    the entrance wall, east side; the west side is 180 minus each."""
+    top = math.degrees(math.asin((COL_N - D.GAL_CY) / r))
+    bot = math.degrees(math.asin((D.BAY_S - D.GAL_CY) / r))
+    return top, bot
+
+
+def gallery_poly():
+    """The gallery floor: the pocket between the two columns, closed by the
+    service-bay north wall, the two arcs and the entrance wall."""
+    _cx, _cy, r, t, _g = D.GALLERY
+    ri = r - t / 2
+    top, bot = _gal_ends(ri)
+    w, e = 10630, D.M(10630)
+    return ([(w, D.BAY_N), (e, D.BAY_N), (e, COL_N)]
+            + _gal_arc(ri, top, bot)                      # east arc, inner face
+            + _gal_arc(ri, 180 - bot, 180 - top)          # west arc, inner face
+            + [(w, COL_N)])
+
+
+def fillets():
+    """The two solid corners left behind the arcs, between each column and the
+    entrance wall.  Masonry, not floor — the 1800 column means there is nothing
+    to reach them from."""
+    top, bot = _gal_ends(D.GAL_RO)
+    return [[(10630, COL_N), (10630, D.BAY_S)]
+            + _gal_arc(D.GAL_RO, 180 - bot, 180 - top),
+            [(D.M(10630), COL_N), (D.M(10630), D.BAY_S)]
+            + _gal_arc(D.GAL_RO, bot, top)]
+
+
+def corner_units():
+    """The mandir and the coffee / pantry, as drawing primitives.
+
+    Both sit in their pod's north corner, behind the retained deck void: one
+    leg along the void's back wall, the other following the pod glazing, so
+    the unit is set out off the two walls that make the corner.  Everything is
+    built on the west pod and mirrored for the east.
+    """
+    P = D.POD_W
+    y0, x0 = D.BODY_N, D.POD_W[0][0]           # the corner: 2620, 9115
+    DEP, LEG = 600, 1200
+
+    def face(y):                               # the glazing, at depth y
+        return bez_x(P, y)
+
+    def shell(dep, leg, off):
+        """outline of the unit, pulled in by `off` from the two walls"""
+        return ([(x0 - leg, y0 + off), (x0 - leg, y0 + dep)]
+                + [(face(y) - dep, y) for y in np.linspace(y0 + dep, y0 + leg, 40)]
+                + [(face(y) - off, y) for y in np.linspace(y0 + leg, y0 + off, 60)])
+
+    def on_glass(y, frac=0.5):                 # a point across the glazing leg
+        return face(y) - DEP * frac
+
+    out = []
+    for what, flip in (('pooja', False), ('pantry', True)):
+        p = [('poly', shell(DEP, LEG, 0), 'solid')]
+        if what == 'pooja':
+            p.append(('poly', shell(DEP - 90, LEG - 90, 90), 'soft'))
+            sx, sy, s = 8600, 2950, 240        # the shrine, square on the corner
+            p.append(('poly', [(sx, sy - s), (sx + s, sy), (sx, sy + s), (sx - s, sy)],
+                      'solid'))
+            p.append(('circle', x0 - LEG + 235, y0 + DEP / 2, 85, 'light'))
+            p.append(('circle', on_glass(3600), 3600, 85, 'light'))
+        else:
+            p.append(('poly', shell(DEP - 90, LEG - 90, 90), 'light'))
+            p.append(('rect', 8100, 2760, 8500, 3080, 'light'))     # sink
+            p.append(('circle', 8300, 2920, 150, 'light'))
+            for y in (3320, 3660):                                  # machines
+                cxx = on_glass(y)
+                p.append(('rect', cxx - 160, y - 160, cxx + 160, y + 160, 'solid'))
+        if flip:
+            p = [_mirror_prim(q) for q in p]
+        out += p
+    return out
+
+
+def _mirror_prim(p):
+    def X(v):
+        return 2 * D.MID - v
+    if p[0] == 'rect':
+        return ('rect', X(p[3]), p[2], X(p[1]), p[4], p[5])
+    if p[0] == 'circle':
+        return ('circle', X(p[1]), p[2], p[3], p[4])
+    if p[0] == 'line':
+        return ('line', X(p[1]), p[2], X(p[3]), p[4], p[5])
+    return ('poly', [(X(x), y) for x, y in p[1]], p[2])
 
 
 def poly_area(p):

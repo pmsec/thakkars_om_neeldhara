@@ -132,7 +132,8 @@ def wall_quads(x1, y1, x2, y2, t, ops):
 
 def arc_quads(cx, cy, r, t, gaps, step=1.5):
     segs, cur = [], []
-    for a in np.arange(0, 360, step):
+    a0 = gaps[0][0]                         # start inside a gap, so no run is
+    for a in np.arange(a0, a0 + 360, step):  # cut in half at the seam
         if any((g0 % 360) <= (a % 360) <= (g1 % 360) if g0 % 360 <= g1 % 360
                else (a % 360) >= (g0 % 360) or (a % 360) <= (g1 % 360)
                for g0, g1 in gaps):
@@ -228,6 +229,8 @@ def main():
     cx, cy, r, t, gaps = D.GALLERY
     for q in arc_quads(cx, cy, r, t, gaps):
         s.poly(q, fill=NEWW, stroke='none')
+    for q in R.fillets():                       # solid behind the two arcs
+        s.poly(q, fill=NEWW, stroke='none')
 
     # ---------------------------------------------------------- furniture
     STYLE = {'solid': ('#ffffff', FURN, 1.1), 'soft': ('#efe9dd', FURN, 1.0),
@@ -262,6 +265,8 @@ def main():
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)
+    for p in R.corner_units():
+        prim(p)
     gx, gy, gr, gt, _g = D.GALLERY
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:
         for p in SY.annular(gx, gy, r0, r1, a0, a1, back):

@@ -100,19 +100,25 @@ two dry balconies, which is what the builder built them as.
 The entry gallery is re-centred on the home's centreline at X 12240 and sits
 inside the 3220 clear between the lobby columns.
 
-**5. The gallery drum keeps only the floor inside it.** A 2600 drum in a
-3220 × 2600 pocket leaves 3.06 m² of dead corner. The drum's own wall is now
-the boundary: the kitchen wraps it on the west, help's room on the east, and
-those corners are floor in those two rooms instead of waste. The kitchen goes
-from 8.2 to **10.1 m² (109 sq ft)**, help's room from 5.0 to **7.0 (75)**, and
-the gallery is stated at what it actually is — the 2300 clear inside the drum,
-4.2 m² (45 sq ft), not the 8.4 the rectangle used to claim.
+**5. The gallery is drawn to the structure, not dropped into it.** A 2450
+drum standing free in the 3220 × 2600 pocket left 3.06 m² of dead corner, and
+there is no way to reach that corner: the builder's two **230 × 1800 columns**
+stand between the pocket and the rooms either side and leave only **800 clear
+at the north end of each**. So the circle is set out to the full 3220 between
+those two columns and cut off by the service-bay north wall above and the
+entrance wall below.
 
-The drum has four openings: 900 north to the great room, 1050 south for the
-front door, 900 west to the kitchen and 800 east to help's room. It is tangent
-to the service-bay north wall at the top and to the building line at the
-bottom, so the north and south openings line up with gaps in those two straight
-walls, with a jamb closing each reveal.
+What is left is two arcs, each landing on a wall at **both** ends — on the
+column at the top and on the entrance wall at the bottom. Nothing floats.
+Nothing is left over except two small solid fillets behind the arcs, 0.22 m²
+each, which are masonry. The room is **6.9 m² (74 sq ft), 2920 across** — both
+bigger and rounder than the drum was, and honestly measured.
+
+Four ways out, all of them gaps in a wall that continues either side: 900 north
+to the great room, 1050 south for the front door, and the two 800 slots north
+of the columns, west to the kitchen and east to help's room. Those two are the
+only openings the structure allows, and they were always there — they are the
+builder's own gaps.
 
 ---
 
@@ -126,16 +132,16 @@ walls, with a jamb closing each reveal.
 | MASTER SUITE — karan | 35.0 | 377 |
 | FAMILY ROOM | 19.4 | 209 |
 | MUSIC + WORK DEN | 19.4 | 209 |
-| KITCHEN | 10.1 | 109 |
-| HELP'S ROOM | 7.0 | 75 |
+| KITCHEN | 8.2 | 88 |
+| ENTRY GALLERY | 6.9 | 74 |
+| HELP'S ROOM | 5.1 | 55 |
 | PARENTS' BATH | 4.4 | 48 |
 | KARAN'S BATH | 4.4 | 48 |
-| ENTRY GALLERY | 4.2 | 45 |
 | TERRACE ×2 | 3.7 each | 40 each |
 | GUEST / SERVICE WC | 2.8 | 30 |
 | UTILITY | 1.9 | 20 |
 | STORE | 1.8 | 19 |
-| **total of named rooms** | **233.7** | **2516** |
+| **total of named rooms** | **232.6** | **2504** |
 
 The great room is 485 sq ft against A-101's 474, and 7840 across the removed
 party wall rather than 7690.
@@ -145,11 +151,17 @@ party wall rather than 7690.
 ## Calls I made — overrule any of them
 
 **The lobby is enclosed to Y 11 125**, the line of the building's own outer
-wall, which gives an 8.4 m² pocket — the drum plus the two crescents that now
-belong to the kitchen and help's room. The lift lobby, the lift and the fire
-lift beyond it are now drawn on the sheet for reference, boxed and labelled as
-common. Extending the flat to the lift doors would add about 4.9 m² and is a
+wall, which gives a 3220 × 2600 pocket between the two columns. The lift
+lobby, the lift and the fire lift beyond it are drawn on the sheet for
+reference, boxed and labelled as common. Extending the flat to the lift doors would add about 4.9 m² and is a
 one-line change — say the word.
+
+**One front door, not two.** The service door I had put in the entrance wall
+west of the main one is out: the 1800 column means it could only ever have
+opened into the gallery, a few steps from the main door, so it was a second
+front door and nothing more. Service access is through the gallery and the 800
+slot into the kitchen. Say the word if you want a separate one — it would have
+to go in the kitchen's own south wall, on to the lift landing.
 
 **There is nothing to demolish.** You took the flats as bare shell, so every
 wall in the layout is new. What is drawn as existing is only the shell — on
@@ -186,8 +198,8 @@ Kept — 31 pieces, the ones that prove the plan works:
 * guest / service WC — shower, WC, basin
 * both master beds, and the bunk in help's room
 * the mandir in the parents' pod and the coffee / pantry in Karan's, both as
-  1200 × 1200 corner units, 600 deep with a chamfered front, set out off the
-  service-duct wall and the service-bay north wall
+  corner units behind the retained deck void: one leg 1200 along the void's
+  back wall, the other 1200 following the pod glazing, 600 deep throughout
 * deck — the two grass beds, the strength trainer, the spa, the fountain and
   the parapet planter
 * the dining table, in the great room beside the serving hatch
@@ -226,7 +238,12 @@ need. Beside the serving hatch it is also next to the kitchen.
   wall from the kitchen's west wall to the WC's east wall (with the 1200
   serving hatch and the gallery's north portal as gaps in it).
 * the gallery's four openings — 900 north to the great room, 1050 south for
-  the front door, 900 west to the kitchen, 800 east to help's room
+  the front door, and the builder's own 800 slots north of each column, west to
+  the kitchen and east to help's room
+* **the gallery corners** — they cannot become floor in the kitchen or help's
+  room, because a 230 × 1800 column stands in the way of each. Drawing the
+  circle to the full 3220 removes them instead: there is no dead corner left,
+  only two 0.22 m² solid fillets.
 
 ## Open for the next round
 

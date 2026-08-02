@@ -89,9 +89,9 @@ ROOMS = [
     ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck"),
     ("ALL-WEATHER DECK", "", [(POD_W0, DECK_N, M(POD_W0), DECK_S)],
      "15 420 long × 2620 deep  ·  net of the two retained voids"),  # voids cut out below
-    # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles: the gallery is
-    # the drum itself, and the two rooms either side wrap round it.  They are
-    # built as polygons in retrofit.poly_rooms().
+    ("KITCHEN", "", [(7050, BAY_N, 10400, BAY_S)],
+     "3350 × 2450 on the existing stack"),
+    ("HELP'S ROOM", "", [(14080, BAY_N, 16150, BAY_S)], ""),
     ("UTILITY", "", [(5705, 9470, 6900, 11025)], "the builder's dry balcony"),
     ("GUEST / SERVICE WC", "", [(16280, BAY_N, 17430, BAY_S)], ""),
     ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
@@ -128,31 +128,37 @@ NEW_WALLS = [
     (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, [(1275, 2075)]),
     (16205, BAY_N, 16205, BAY_S, T_THIN, [(1050, 1850)]),          # help's room / WC
 
-    # --- the absorbed lobby: new entrance wall on the building line, sitting
-    #     in the 150 between the service bay and the building line.  The main
-    #     door is centred on the home and lands in the gallery; the service
-    #     door is west of it and lands in the kitchen.
-    (10630, 11050, 13850, 11050, T_INT,
-     [(0, 700), (1085, 2135)]),                                    # service + main doors
+    # --- gallery side walls.  The builder's two 230 x 1800 columns stand
+    #     between the gallery pocket and the rooms either side, from Y 9325
+    #     right down to the building line.  The wall is built ON them, so the
+    #     column is the wall and the only way through is the 800 north of it.
+    (10515, 9325, 10515, 11125, 230, []),
+    (M(10515), 9325, M(10515), 11125, 230, []),
 
-    # --- jambs where the drum's north and south portals meet the straight
-    #     walls.  The drum is tangent to both, so the arc stops a little short
-    #     of each and these close the reveal.
-    (11790, 8462.5, 11790, 8755, 125, []),
-    (12690, 8462.5, 12690, 8755, 125, []),
-    (11715, 10865, 11715, 11050, 125, []),
-    (12765, 10865, 12765, 11050, 125, []),
+    # --- the absorbed lobby: new entrance wall on the building line, sitting
+    #     in the 150 between the service bay and the building line.  One door,
+    #     centred on the home, landing in the gallery.
+    (10630, 11050, 13850, 11050, T_INT, [(1085, 2135)]),
 ]
 
-# circular gallery wall: centre, radius, thickness, list of (start, end) gaps in
-# degrees measured with Y downwards, 0 = east, 90 = south.  The drum is tangent
-# to the service-bay north line at the top and to the building line at the
-# bottom, so its four openings line up with the gaps in the straight walls.
-GALLERY = (MID, 9825, 1225, T_INT,
-           [(248, 292),      # north, 900 to the great room
-            (64, 116),       # south, 1050 main entrance
-            (158, 202),      # west, 900 to the kitchen
-            (-19, 19)])      # east, 800 to help's room
+# The round entry gallery.  It is no longer a free-standing drum sitting in a
+# bigger pocket: a drum leaves dead corners, and there is no way into them,
+# because the builder's two 230 x 1800 columns stand between the pocket and the
+# rooms either side and only leave 800 clear at the north end of each.
+#
+# So the circle is drawn to the full 3220 between those two columns and cut off
+# by the service-bay north wall above and the entrance wall below.  What is
+# left is two arcs, each landing on a wall at BOTH ends — the column at the top
+# and the entrance wall at the bottom.  Nothing floats, nothing is left over
+# except the two solid fillets behind the arcs, and the room is bigger and
+# rounder than the drum was.
+#
+# centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east)
+GAL_CX, GAL_CY = MID, (BAY_N + BAY_S) / 2      # 12240, 9750
+GAL_RO = 1610                                  # outer face, on both column faces
+GALLERY = (GAL_CX, GAL_CY, GAL_RO - T_INT / 2, T_INT,
+           [(49.5, 130.5),      # south — closed by the entrance wall
+            (195.3, 344.7)])    # north — closed by the service-bay north wall
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it
@@ -216,12 +222,10 @@ _ONCE = [
     ('hob',      8180, 10230, 8820, 10570, ''),
     ('chimney',  8000, 10050, 9600, 10750, 'chimney over'),
     ('appliance', 9700, 10075, 10400, 10775, 'tall fridge'),
-    # ------------------------------------------------------------ both pods
-    # Corner units, set out off the two walls that make the corner: the
-    # service-duct wall on one side, the service-bay north wall on the other.
-    # 1200 legs, 600 deep, chamfered front.
-    ('pooja-w',  5705, 7200, 6905, 8400, 'mandir  ·  corner unit'),
-    ('pantry-e', M(6905), 7200, M(5705), 8400, 'coffee + pantry  ·  corner unit'),
+    # The two pod corner units — mandir and coffee / pantry — are behind the
+    # retained deck void, in the corner between its back wall and the pod
+    # glazing.  Their shape follows the curve, so they are built in
+    # retrofit.corner_units() where the Bezier lives.
     # ------------------------------------------------------------- utility
     ('appliance', 5850, 9700, 6550, 10400, 'washer + dryer, stacked'),
     # --------------------------------------------------------- help\'s room

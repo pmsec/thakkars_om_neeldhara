@@ -95,7 +95,7 @@ ROOMS = [
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
     # is a free-standing drum and the two rooms run up to it.  See
     # retrofit.lobby_polys().
-    ("GUEST / SERVICE WC", "", [(16280, BAY_N, 17430, BAY_S)], ""),
+    ("GUEST / SERVICE WC", "", [(15655, BAY_N, 17430, BAY_S)], ""),
     ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
 ]
 
@@ -169,12 +169,23 @@ NEW_WALLS = [
     #     hatch and help's room door are gaps in it.
     (6900, 8462.5, _BRK_W, 8462.5, 125, [(0, 1100)]),   # serving hatch only
     (_BRK_E, 8462.5, 17580, 8462.5, 125,
-     [(14250 - _BRK_E, 15150 - _BRK_E)]),               # help's room door
+     [(14250 - _BRK_E, 15150 - _BRK_E),                 # help's room door
+      (16650 - _BRK_E, 17400 - _BRK_E)]),               # guest WC, off the den
 
     # --- service bay
     # (the kitchen / utility wall is gone — the two are one space now)
     (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, [(1275, 2075)]),  # WC / store
-    (16205, BAY_N, 16205, BAY_S, T_THIN, [(1050, 1850)]),          # help's room / WC
+    # Help's room / WC.  This line moves 605 west: help's room is a bunk and a
+    # cupboard now, and the width it gives up goes to the WC, which was 1150
+    # wide and had no room to stand up in.
+    #
+    # It is SOLID.  The WC used to be entered through help's room, which was
+    # only ever tolerable while that room had space to walk across.  It has not:
+    # 2450 deep less a 1900 bunk leaves 550, and a through-route needs more than
+    # that.  So the WC takes its own door off the den instead — which is what a
+    # guest WC should have had all along, rather than being reached through the
+    # staff bedroom.
+    (15600, BAY_N, 15600, BAY_S, T_THIN, []),                      # help's room / WC
 
     # --- the absorbed lobby: new entrance wall on the building line, sitting
     #     in the 150 between the service bay and the building line.  One door,
@@ -326,13 +337,19 @@ _ONCE = [
     ('basket',   5755, 9470, 6255, 9970, 'laundry basket'),
     ('bin',      6305, 9470, 6855, 10020, 'dustbin'),
     # --------------------------------------------------------- help\'s room
-    # Against the east wall, not the gallery: the gallery door lands on this
-    # side of the apse and the whole west half of the room is its approach.
-    ('bunk',     15250, 8700, 16150, 10600, 'bunk'),
+    # One bunk and one cupboard, and that is the room.  The bunk goes east,
+    # against the WC wall, which leaves the whole west strip clear for the
+    # gallery door; the cupboard takes the corner behind it.  The north 550 is
+    # the landing both doors share.
+    ('bunk',     14645, 9075, 15545, 10975, 'bunk'),
+    ('shelves',  14080, 10425, 14645, 10975, 'cupboard'),
     # ------------------------------------------------- guest / service WC
-    ('shower',   16330, 8575, 17380, 9375, ''),
-    ('wc',       16480, 9700, 17100, 10320, ''),
-    ('basin',    16480, 10450, 17100, 10890, ''),
+    # 1775 wide now instead of 1150, and entered from the den at the north-east.
+    # Everything sits on a wall — shower north-west, pan on the west, basin
+    # along the south — so the door lands on clear floor.
+    ('shower',   15705, 8575, 16605, 9575, ''),
+    ('wc',       15705, 9800, 16325, 10420, ''),
+    ('basin',    16480, 10475, 17380, 10915, ''),
 ]
 
 # Drawn on both halves of the home.

@@ -227,13 +227,6 @@ def main():
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
         for q in wall_quads(x1, y1, x2, y2, t, ops):
             s.poly(q, fill=NEWW, stroke='none')
-    # the entry gallery is a 75 wood screen, not masonry — drawn thin
-    cx, cy, r, t, gaps = D.GALLERY
-    for q in arc_quads(cx, cy, r, t, gaps):
-        s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
-    for x1, y1, x2, y2, t, ops in D.SCREEN_WALLS:
-        for q in wall_quads(x1, y1, x2, y2, t, ops):
-            s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
 
     # ---------------------------------------------------------- furniture
     STYLE = {'solid': ('#ffffff', FURN, 1.1), 'soft': ('#efe9dd', FURN, 1.0),
@@ -278,6 +271,15 @@ def main():
     # ---------------------------------------------------- columns and beams
     for r_ in cols:
         s.rect(*r_, fill=KEEP, stroke='#7c1610', stroke_width=1.0)
+
+    # The entry gallery goes on last, so that the two columns it is built on
+    # disappear into it and the U reads as one continuous wall.
+    cx, cy, r, t, gaps = D.GALLERY
+    for q in arc_quads(cx, cy, r, t, gaps):
+        s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
+    for x1, y1, x2, y2, t, ops in D.SCREEN_WALLS:
+        for q in wall_quads(x1, y1, x2, y2, t, ops):
+            s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
 
     # --------------------------------------------------------------- labels
     def area_of(rects):
@@ -347,7 +349,7 @@ def main():
             (KEEP, 'builder column / beam, and keep-clear shaft, duct or void'),
             (NEWW, 'new masonry — every wall is new, every opening a gap in it'),
             (GLAS, 'glazing / sliding glass'),
-            (WOOD, 'wood screen — the U of the entry gallery, 75 thick')]):
+            (WOOD, 'the U of the entry gallery — 230, on the two columns')]):
         s.o.append(f'<rect x="{s.X(lx):.1f}" y="{s.Y(ly) + i * 26 - 13:.0f}" width="34" '
                    f'height="17" fill="{col}" stroke="#888" stroke-width="0.6"/>')
         s.o.append(f'<text x="{s.X(lx) + 46:.1f}" y="{s.Y(ly) + i * 26:.0f}" '

@@ -133,7 +133,7 @@ def poly_rooms():
          (8700, 9500)),
         ("HELP'S ROOM", '', helps, '', (14900, 9500)),
         ('ENTRY GALLERY', '', gallery,
-         'a U in 75 wood  ·  3070 wide x 2375 deep  ·  column to column',
+         'a U on the two columns  ·  3220 wide x 2450 deep  ·  230 throughout',
          (D.MID, 9750)),
     ]
 
@@ -144,7 +144,7 @@ def _gal_arc(r, a0, a1, n=60):
             for a in np.linspace(a0, a1, n)]
 
 
-COL_N = 9325                  # top of the two 230 x 1800 gallery columns
+COL_N = D.COL_N               # top of the two 230 x 1800 gallery columns
 
 
 def lobby_polys():
@@ -157,16 +157,17 @@ def lobby_polys():
     room through the 800 the builder leaves above each column — so they are
     floor in those rooms, not waste.
     """
-    ro, ri = D.GAL_RO, D.GAL_RO - D.T_SCREEN
+    r, t = D.GAL_R, D.T_GAL
+    ro, ri = r + t / 2, r - t / 2
     kw, ke = 7050, 16150                   # far faces of the two rooms
-    a = math.degrees(math.asin((COL_N - D.GAL_CY) / ro))     # -30.2 deg
+    iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
-    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, 180 - a)
-               + [(D.GAL_W - 230, COL_N), (D.GAL_W - 230, D.BAY_S), (kw, D.BAY_S)])
-    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, 270, 360 + a)
-             + [(D.GAL_E + 230, COL_N), (D.GAL_E + 230, D.BAY_S), (ke, D.BAY_S)])
-    gallery = ([(D.GAL_W + D.T_SCREEN, D.BAY_S)] + _gal_arc(ri, 180, 360)
-               + [(D.GAL_E - D.T_SCREEN, D.BAY_S)])
+    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, D._A0)
+               + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S)])
+    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, 270, D._A1)
+             + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (ke, D.BAY_S)])
+    gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
+               + [(ie, COL_N), (ie, D.BAY_S)])
     return kitchen, helps, gallery
 
 

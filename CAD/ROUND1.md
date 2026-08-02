@@ -14,7 +14,7 @@ preserved untouched.
 | `PROP-WALL-NEW` | new masonry, solid-hatched |
 | `PROP-KEEP` | shafts, ducts and voids that must stay clear |
 | `PROP-GLAZ` | glazing, sliding glass, the pod portals |
-| `PROP-SCREEN` | the entry gallery U — 75 wood screen |
+| `PROP-SCREEN` | the entry gallery U — 230, built on the two columns |
 | `PROP-FURN` | fixed joinery and the layout |
 | `PROP-TEXT` | room names, areas, and the layer-state notes |
 | `PROP-DIM` | the set-out dimensions |
@@ -106,33 +106,36 @@ two dry balconies, which is what the builder built them as.
 The entry gallery is re-centred on the home's centreline at X 12240 and sits
 inside the 3220 clear between the lobby columns.
 
-**5. The entry gallery is a U in wood, spanning column to column.** A circle
-standing free in the pocket made little sense with the builder's two
-**230 × 1800 columns** in the middle of it. The U uses them: its two legs are
-**75 wood** linings on the inner face of each column, joined across the north
-by a semicircle of R 1610 whose outer face is tangent to the service-bay north
-wall. Two short jambs carry the curve's ends up to that wall either side of
-the door, so the wall is **continuous the whole way round** — entrance wall,
-leg, curve, jamb, great-room wall, and back.
+**5. The entry gallery is a U built on the two columns.** A circle standing
+free in the pocket made little sense with the builder's two **230 × 1800
+columns** in the middle of it. The U uses them: its two legs sit **exactly on
+the columns**, at the same 230, so column and wall read as one continuous
+piece rather than a thin thing stuck beside a thick one.
 
-**3070 wide × 2375 deep — 6.3 m² net, 68 sq ft.** Two doors, both 1050 and
-both on the home's centreline: the front door from the lift lobby in the
-entrance wall, and the great-room door at the apex of the curve.
+The curve is a **segmental arch**, springing off the top corner of each column
+and rising to meet the great-room wall at the crown. A semicircle cannot do
+that — tangent to the legs it has to spring half the span below the crown,
+which is 800 south of where the columns stop, and the wedge between column and
+curve is the gap. A segmental arch springs where the columns actually end.
 
-Nothing in an entry foyer needs privacy, which is why it is 75 of wood and not
-150 of masonry.
+**3220 wide × 2450 deep — the whole pocket. 6.7 m², 72 sq ft.** Two doors,
+both 1050 and both on the home's centreline: the front door from the lift
+lobby in the entrance wall, and the great-room door at the crown of the arch.
 
-The two corners the curve leaves behind it, north of each column, stay open to
-the kitchen and to help's room through the builder's own **800 clear above
-each column** — so they are floor in those rooms, not waste:
+The two corners the arch leaves behind it stay open to the kitchen and to
+help's room through the builder's own **800 clear above each column** — floor
+in those rooms, not waste:
 
 | | rectangle | now |
 |---|---|---|
-| KITCHEN | 8.2 m² / 88 sq ft | **8.9 / 96** |
-| HELP'S ROOM | 5.1 / 55 | **5.8 / 62** |
+| KITCHEN | 8.2 m² / 88 sq ft | **8.7 / 94** |
+| HELP'S ROOM | 5.1 / 55 | **5.5 / 60** |
 
-Both rooms also have their own **900 door off the great room** in the
-service-bay north wall, so neither depends on the gallery to be reached.
+Both also have their own **900 door off the great room** in the service-bay
+north wall, so neither depends on the gallery to be reached.
+
+At 230 the U is masonry, not the wood screen it started as — that follows from
+asking it to match the column. Finish it in wood if you want the same effect.
 
 ---
 
@@ -146,9 +149,9 @@ service-bay north wall, so neither depends on the gallery to be reached.
 | MASTER SUITE — karan | 35.0 | 377 |
 | FAMILY ROOM | 19.4 | 209 |
 | MUSIC + WORK DEN | 19.4 | 209 |
-| KITCHEN | 8.9 | 96 |
-| ENTRY GALLERY | 6.3 | 68 |
-| HELP'S ROOM | 5.8 | 62 |
+| KITCHEN | 8.7 | 94 |
+| ENTRY GALLERY | 6.7 | 72 |
+| HELP'S ROOM | 5.5 | 60 |
 | PARENTS' BATH | 4.4 | 48 |
 | KARAN'S BATH | 4.4 | 48 |
 | TERRACE ×2 | 3.7 each | 40 each |

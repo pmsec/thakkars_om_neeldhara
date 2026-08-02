@@ -134,47 +134,63 @@ NEW_WALLS = [
     (10630, 11050, 13850, 11050, T_INT, [(1085, 2135)]),
 ]
 
-# There is no wall between the gallery and the rooms either side: the drum is a
-# screen, and the kitchen and help's room run right up to it.  The builder's two
-# 230 x 1800 columns are left standing as piers, which is what they are.
+# The entry gallery: a U on plan, the same 230 as the columns it is built on,
+# so column and wall read as one continuous piece rather than a thin thing
+# stuck beside a thick one.
+#
+# The two legs sit exactly on the two 230 x 1800 columns.  The curve is a
+# SEGMENTAL ARCH springing off the top corner of each column and rising to the
+# great-room wall at the crown.  A semicircle cannot do that: tangent to the
+# legs it must spring half the span below the crown, which is 800 south of
+# where the columns stop, and that leaves a wedge of gap between the column and
+# the curve.  A segmental arch springs where the columns actually end.
+#
+import math as _m
 
-# The entry gallery: a U on plan, in a thin WOOD SCREEN, not masonry.  There is
-# nothing to keep private in an entry foyer, so it is 75 rather than 150.
-#
-# A free-standing circle made little sense with the builder's two 230 x 1800
-# columns standing in the middle of the pocket.  The U uses them instead: its
-# two legs are wood linings on the inner face of each column, and they are
-# joined across the north by a semicircular end.  So the wall runs from the
-# entrance wall, up the west leg, round the curve and back down to the entrance
-# wall — one continuous piece, spanning column to column.
-#
-# The curve's outer face is tangent to the service-bay north wall, so the whole
-# thing sits exactly inside the bay.  Two doors, both 1050 and both on the
-# home's centreline: the front door in the entrance wall below, the great-room
-# door in the service-bay north wall above.
-T_SCREEN = 75
-GAL_W, GAL_E = 10630, M(10630)                 # the two column faces, 3220 apart
+T_GAL = 230                                    # same as the column, so it reads
+GAL_W, GAL_E = 10400, M(10400)                 # OUTER faces of the two columns
+COL_N = 9325                                   # top of the two columns
 GAL_CX = MID
-GAL_RO = (GAL_E - GAL_W) / 2                   # 1610 — outer face of the curve
-GAL_CY = BAY_N + GAL_RO                        # 10135 — where the curve springs
 GAL_DOOR_W, GAL_DOOR_E = 11715, 12765          # both doors, on the centreline
 
-# centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east)
-GALLERY = (GAL_CX, GAL_CY, GAL_RO - T_SCREEN / 2, T_SCREEN,
-           [(0, 180),           # the whole south half — the U is open there
-            (250.5, 289.5)])    # 1050 at the apex, on to the great room
+# The two legs sit exactly on the columns, so the column IS the leg.
+GAL_LEGS = [(GAL_W, COL_N, GAL_W + T_GAL, 11125),
+            (GAL_E - T_GAL, COL_N, GAL_E, 11125)]
+
+# The curve is a segmental arch springing off the top corner of each column —
+# no gap, nothing left over — and rising to touch the great-room wall at the
+# crown.  A semicircle cannot do both: tangent to the legs it would have to
+# spring 1610 below the crown, which is 800 south of where the columns end, and
+# that is the gap.  A segmental arch springs where the columns actually stop.
+_HALF = MID - (GAL_W + T_GAL / 2)              # 1725, leg centreline to centre
+# The crown rides 60 up into the great-room wall, so that the arch still
+# meets that wall at the two door jambs instead of stopping 50 short of it.
+_CROWN = BAY_N + T_GAL / 2 - 60                # 8580, centreline at the crown
+_SAG = COL_N - _CROWN                          # 685, rise of the arch
+GAL_R = (_HALF ** 2 + _SAG ** 2) / (2 * _SAG)  # 2514.5
+GAL_CY = _CROWN + GAL_R                        # 11154.5
+
+
+def _ang(x, y):
+    return _m.degrees(_m.atan2(y - GAL_CY, x - GAL_CX)) % 360
+
+
+_A0, _A1 = _ang(GAL_W + T_GAL / 2, COL_N), _ang(GAL_E - T_GAL / 2, COL_N)
+_D0 = _ang(GAL_DOOR_W, GAL_CY - _m.sqrt(GAL_R ** 2 - (GAL_DOOR_W - MID) ** 2))
+_D1 = 540 - _D0
+
+# centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east).
+# The first gap wraps past 0 and kills everything below the springings.
+GALLERY = (GAL_CX, GAL_CY, GAL_R, T_GAL,
+           [(_A1 + 0.2, _A0 - 0.2),   # everything below the two springings
+            (_D0, _D1)])              # 1050 at the crown, on to the great room
 
 # The U's two straight legs, wood, lining the inner face of each column.
-# The legs run 150 past the springing so they always meet the curve cleanly.
-# The two jambs close the U at the top: the curve is tangent to the great-room
-# wall but its ends stop 130 short of it either side of the door, so these
-# carry it up to the wall and the U is continuous all the way round.
-SCREEN_WALLS = [
-    (GAL_W + T_SCREEN / 2, GAL_CY - 150, GAL_W + T_SCREEN / 2, 11050, T_SCREEN, []),
-    (GAL_E - T_SCREEN / 2, GAL_CY - 150, GAL_E - T_SCREEN / 2, 11050, T_SCREEN, []),
-    (GAL_DOOR_W, 8462.5, GAL_DOOR_W, 8700, T_SCREEN, []),
-    (GAL_DOOR_E, 8462.5, GAL_DOOR_E, 8700, T_SCREEN, []),
-]
+# The straight legs, 230 on the column footprint: the column IS the leg, so
+# the wall runs from the entrance wall to the springing as one continuous
+# thickness and the arch takes over from there.
+SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
+                for a, b, c, d in GAL_LEGS]
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it

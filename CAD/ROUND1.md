@@ -14,7 +14,7 @@ preserved untouched.
 | `PROP-WALL-NEW` | new masonry, solid-hatched |
 | `PROP-KEEP` | shafts, ducts and voids that must stay clear |
 | `PROP-GLAZ` | glazing, sliding glass, the pod portals |
-| `PROP-SCREEN` | the entry gallery U — 230, built on the two columns |
+| `PROP-SCREEN` | the entry gallery U — 230, built on the two columns, and its three curved doors |
 | `PROP-FURN` | fixed joinery and the layout |
 | `PROP-TEXT` | room names, areas, and the layer-state notes |
 | `PROP-DIM` | the set-out dimensions |
@@ -125,9 +125,29 @@ at each end fills it, its outer edge following the arc's own face rather than
 cutting the corner with a chord. That is the piece a mason would cut, and it
 is why the U now reads as one unbroken line.
 
-**3220 wide × 2450 deep — the whole pocket. 6.7 m², 72 sq ft.** Two doors,
-both 1050 and both on the home's centreline: the front door from the lift
-lobby in the entrance wall, and the great-room door at the crown of the arch.
+**3220 wide × 2450 deep — the whole pocket. 6.7 m², 72 sq ft.**
+
+**Four ways in, and three of them are in the arch** — because the arch is the
+only part of the U that is not a column. You cannot put a door through a
+230 × 1800 column, so both legs stay solid.
+
+| | width | opening |
+|---|---|---|
+| entrance wall | 1050 | the front door, from the lift lobby |
+| arch, west | 700 | gallery → kitchen, for staff |
+| arch, crown | 1050 | gallery → great room |
+| arch, east | 700 | gallery → help's room, for staff |
+
+The arch is 3864 of arc and 2450 of that is opening, so what is left is **four
+piers of 351**, set out evenly rather than left to fall where they may. On
+their own they read as fragments — so each door is drawn **shut, with a leaf
+curved on the arch's own 2370 radius**. Closed, the sweep runs unbroken from
+leg to leg and the piers read as the frames the doors hang in.
+
+For the joinery: a leaf curved to that radius **cannot swing** — the far edge
+would drive into the wall — so these are **curved sliders on a track**. No
+swing is drawn, deliberately. And a 700 leaf cannot pocket into a 351 pier, so
+each has to slide across the face of the arch and sit proud on one side.
 
 The two corners the arch leaves behind it stay open to the kitchen and to
 help's room through the builder's own **800 clear above each column** — floor
@@ -156,7 +176,7 @@ asking it to match the column. Finish it in wood if you want the same effect.
 | MASTER SUITE — karan | 35.0 | 377 |
 | FAMILY ROOM | 19.4 | 209 |
 | MUSIC + WORK DEN | 19.4 | 209 |
-| KITCHEN | 8.7 | 94 |
+| KITCHEN (with the utility open to it) | 9.1 | 98 |
 | ENTRY GALLERY | 6.7 | 72 |
 | HELP'S ROOM | 5.5 | 60 |
 | PARENTS' BATH | 4.4 | 48 |
@@ -165,7 +185,7 @@ asking it to match the column. Finish it in wood if you want the same effect.
 | GUEST / SERVICE WC | 2.8 | 30 |
 | UTILITY | 1.9 | 20 |
 | STORE | 1.8 | 19 |
-| **total of named rooms** | **233.4** | **2512** |
+| **total of named rooms** | **233.7** | **2516** |
 
 The great room is 485 sq ft against A-101's 474, and 7840 across the removed
 party wall rather than 7690.
@@ -217,7 +237,9 @@ changed shape, so they are out and will go back in deliberately.
 
 Kept — 31 pieces, the ones that prove the plan works:
 
-* kitchen — run, sink, hatch shelf, island, hob, chimney over, tall fridge
+* kitchen — run B only: the counter, its sink and the hatch shelf, at 600
+  deep. The peninsula opposite is out, and the hob, chimney and tall fridge
+  went with it — **both the hob and the fridge still need a home**
 * utility — stacked washer and dryer
 * both master baths — vanity, basin, WC, curved glass shower
 * guest / service WC — shower, WC, basin
@@ -251,6 +273,9 @@ need. Beside the serving hatch it is also next to the kitchen.
 * baths — left as they are
 * help's room and WC — left where they are
 * all A-101 furniture — resolved, two pieces moved (see above)
+* **the kitchen and the utility are one space** — the wall between them is
+  removed in full, so the builder's dry balcony reads as the kitchen's utility
+  end. The kitchen is 9.1 m² / 98 sq ft
 * internal walls — the flats came as bare shell, so there is nothing to
   demolish and no question about which existing walls are load-bearing. The
   only fabric that has to stay is the shell, and none of the layout touches it.
@@ -271,8 +296,12 @@ need. Beside the serving hatch it is also next to the kitchen.
 
 ## Open for the next round
 
+* **the hob and the fridge** — the run they sat on has gone, so both need
+  placing. The hob drops into run B; the fridge needs somewhere of its own
 * the furniture, room by room, added back on purpose rather than inherited
-* the dining table's home, if the great room is not where you want it
+* the dining table's home. Measured for the parents' pod, which is 2295 clear
+  at the kitchen wall: a round 1400 is 600 short and a 1300 square 500 short,
+  but a banquette on the duct wall with an 800 table seats six with 295 spare
 
 ## Still to be confirmed, not by me
 

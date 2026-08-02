@@ -6,9 +6,15 @@ of Neeldhara CHS, 15.03.2024.
 
 Everything here is derived from those files. Nothing outside `CAD/` was touched.
 
-**Start with `drawings/06-clash-map.png`.** Grey is the builder's slab; the
-white gaps inside it are shafts with no floor; pink is plan floor drawn over
-those gaps; red is a column or beam.
+**Round 1 is done** — the corrected layout, drawn on the builder's shell and
+verified clear of every column, beam, shaft, duct and void. See
+[`ROUND1.md`](ROUND1.md), the drawing `out/round1-layout.dxf` and the review
+image `drawings/07-round1-layout.png`.
+
+The rest of this file is the audit that led to it. **Start with
+`drawings/06-clash-map.png`:** grey is the builder's slab, the white gaps
+inside it are shafts with no floor, pink is A-101 floor drawn over those gaps,
+red is a column or beam.
 
 ---
 
@@ -311,8 +317,12 @@ on a column *not* being somewhere.
 ```
 CAD/
   README.md                             this report
+  ROUND1.md                             the Round 1 design note
+  out/
+    round1-layout.dxf                    THE DELIVERABLE - builder file + PROP-* layers
   drawings/
-    06-clash-map.png/.svg               START HERE - every clash on one sheet
+    07-round1-layout.png/.svg            Round 1 review drawing
+    06-clash-map.png/.svg                every A-101 clash on one sheet
     01-overlay-whole-home                A-101 in grey over the builder shell
     02-wing-end-and-sealed-shaft         the sealed-shaft mismatch
     03-deck-and-retained-void            the void set-out and its column
@@ -332,10 +342,15 @@ CAD/
     frame.py            the common measurement frame
     plan_model.py       A-101 transcribed from its own matplotlib source
     extract_dwg.py      DXF -> geometry + dimensions
-    clash.py            the structural audit
+    clash.py            the structural audit of A-101
+    analyse.py          the set-out comparison
+    design.py           the Round 1 layout
+    retrofit.py         keep/demolish classification, design masks
+    verify.py           Round 1 audited against the shell - must pass
+    build_dxf.py        writes out/round1-layout.dxf
     draw.py             drawings 01-05
     draw_clash.py       drawing 06
-    analyse.py          the set-out comparison
+    draw_design.py      drawing 07
 ```
 
 ## 9. Reproducing
@@ -351,6 +366,11 @@ python3 tools/extract_dwg.py source/floor14.dxf
 python3 tools/clash.py          # the structural audit
 python3 tools/analyse.py        # the set-out comparison
 python3 tools/draw.py && python3 tools/draw_clash.py
+
+# Round 1
+python3 tools/verify.py         # must report ALL CHECKS PASS
+python3 tools/build_dxf.py      # writes out/round1-layout.dxf
+python3 tools/draw_design.py
 ```
 
 Three things make this a measurement rather than a visual fit:

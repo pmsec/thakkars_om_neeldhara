@@ -119,7 +119,7 @@ NEW_WALLS = [
     # --- service bay, north wall: great room / pods above, service bay below.
     #     Broken either side of the 1050 door into the entry gallery.  The
     #     kitchen door, the serving hatch and help's room door are gaps in it.
-    (6900, 8462.5, 11715, 8462.5, 125, [(0, 1100), (3550, 4450)]),
+    (6900, 8462.5, 11715, 8462.5, 125, [(0, 1100)]),   # serving hatch only
     (12765, 8462.5, 17580, 8462.5, 125, [(1935, 2835)]),
 
     # --- service bay
@@ -204,8 +204,8 @@ SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it
-POD_W = ((9115, BODY_N), (8000, 5030), (8000, BODY_S))
-POD_E = ((M(9115), BODY_N), (M(8000), 5030), (M(8000), BODY_S))
+POD_W = ((9115, BODY_N), (8650, 5030), (8650, BODY_S))
+POD_E = ((M(9115), BODY_N), (M(8650), 5030), (M(8650), BODY_S))
 POD_PORTAL = (0.42, 0.60)                 # arched opening, as a t-range
 
 # straight glazing runs: (x1, y1, x2, y2, kind)
@@ -251,11 +251,11 @@ _ONCE = [
     ('spa',      17930, 400, 19680, 2150, '4-seat spa'),
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room
-    # A-101's dining, moved out of the parents' pod: that corner is the
-    # service duct, and the pod's remaining half is 2350 wide against the 2520
-    # the table and six chairs need.  Beside the serving hatch, next to the
-    # kitchen.
-    ('dining',   9600, 6350, 11000, 7750, 'round 1400 dia, seats 6'),
+    # ------------------------------------------------- parents' pod: dining
+    # Round 1400, six chairs, at the serving hatch end of the pod.  It needs a
+    # 2900 clear circle; the pod's south end only gave 2295 until the glazing
+    # was straightened, which is why that curve changed.
+    ('dining',   6500, 6200, 7900, 7600, 'round 1400 dia, seats 6'),
     # ------------------------------------------------------------- kitchen
     ('counter-re', 6900, 8575, 10350, 9175,
      'run B  ·  600 deep, end rounded off for the entry door'),

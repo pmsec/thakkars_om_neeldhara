@@ -128,7 +128,9 @@ def poly_rooms():
     return [
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
-        ('GREAT ROOM', '', great, 'party wall removed  ·  7840 across', (D.MID, 3450)),
+        ('GREAT ROOM', '', great,
+         'party wall removed  ·  7180 across at the pods, 8480 at the deck',
+         (D.MID, 3450)),
         ('KITCHEN', '', kitchen,
          'kitchen and utility as one room  ·  the dry balcony is its utility end',
          (8700, 9500)),

@@ -129,7 +129,8 @@ def poly_rooms():
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
         ('GREAT ROOM', '', great, 'party wall removed  ·  7840 across', (D.MID, 3450)),
-        ('KITCHEN', '', kitchen, 'on the builder stack, opened out round the U',
+        ('KITCHEN', '', kitchen,
+         'kitchen and utility as one room  ·  the dry balcony is its utility end',
          (8700, 9500)),
         ("HELP'S ROOM", '', helps, '', (14900, 9500)),
         ('ENTRY GALLERY', '', gallery,
@@ -162,8 +163,10 @@ def lobby_polys():
     kw, ke = 6900, 16150                   # far faces of the two rooms
     iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
+    # the kitchen now includes the builder's dry balcony — one room, one area
     kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, D._A0)
-               + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S)])
+               + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
+                  (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
     helps = ([(ke, D.BAY_N)] + _gal_arc(ro, 270, D._A1)
              + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (ke, D.BAY_S)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)

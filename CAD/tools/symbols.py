@@ -24,6 +24,16 @@ def _rr(x0, y0, x1, y1, style='solid'):
     return ('rect', x0, y0, x1, y1, style)
 
 
+def _rrect(a, b, c, d, r):
+    """rectangle with all four corners filleted by r"""
+    pts = []
+    for cx0, cy0, a0, a1 in ((c - r, b + r, -90, 0), (c - r, d - r, 0, 90),
+                             (a + r, d - r, 90, 180), (a + r, b + r, 180, 270)):
+        pts += [(cx0 + math.cos(math.radians(t)) * r,
+                 cy0 + math.sin(math.radians(t)) * r) for t in range(a0, a1 + 1, 6)]
+    return pts
+
+
 def symbol(kind, a, b, c, d):
     w, h = c - a, d - b
     cx, cy = (a + c) / 2, (b + d) / 2
@@ -84,11 +94,26 @@ def symbol(kind, a, b, c, d):
     if kind == 'sidetable':
         return [_rr(a, b, c, d, 'solid')]
     if kind == 'counter-re':
-        # counter with a rounded end, so nobody turns a sharp corner into it
-        r = h / 2
-        arc = [(c - r + math.cos(math.radians(t)) * r, cy + math.sin(math.radians(t)) * r)
-               for t in range(-90, 91, 5)]
-        return [('poly', [(a, b)] + arc + [(a, d)], 'solid')]
+        # full bullnose on the east end — nobody turns a sharp corner into it —
+        # and the far end's corners eased, like the rest of the kitchen
+        r, f = h / 2, 200
+        pts = [(a + f, b)]
+        pts += [(c - r + math.cos(math.radians(t)) * r,
+                 cy + math.sin(math.radians(t)) * r) for t in range(-90, 91, 5)]
+        pts += [(a + f + math.cos(math.radians(t)) * f,
+                 d - f + math.sin(math.radians(t)) * f) for t in range(90, 181, 6)]
+        pts += [(a + f + math.cos(math.radians(t)) * f,
+                 b + f + math.sin(math.radians(t)) * f) for t in range(180, 271, 6)]
+        return [('poly', pts, 'solid')]
+    if kind == 'counter-r':
+        return [('poly', _rrect(a, b, c, d, 200), 'solid')]
+    if kind == 'basket':
+        return [('poly', _rrect(a, b, c, d, 90), 'solid'),
+                ('poly', _rrect(a + 70, b + 70, c - 70, d - 70, 70), 'soft')]
+    if kind == 'bin':
+        r = min(w, h) / 2
+        return [('poly', _rrect(a, b, c, d, 120), 'solid'),
+                ('circle', cx, cy, r * 0.62, 'light')]
     if kind == 'under':
         return [_rr(a, b, c, d, 'dash')]
     if kind in ('counter', 'island', 'joinery', 'appliance', 'shelves', 'console',

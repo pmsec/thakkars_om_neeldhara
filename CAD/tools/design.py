@@ -92,7 +92,6 @@ ROOMS = [
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
     # is a free-standing drum and the two rooms run up to it.  See
     # retrofit.lobby_polys().
-    ("UTILITY", "", [(5705, 9470, 6900, 11025)], "the builder's dry balcony"),
     ("GUEST / SERVICE WC", "", [(16280, BAY_N, 17430, BAY_S)], ""),
     ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
 ]
@@ -264,7 +263,7 @@ _ONCE = [
     ('shelves',  6900, 8525, 8000, 8725,
      'serving hatch, 1100 — opens into the parents pod'),
     # --- the window run: hob only, integrated dishwasher under it
-    ('counter',  8200, 10375, 9400, 10975,
+    ('counter-r', 8200, 10375, 9400, 10975,
      'hob counter  ·  centred on the window, 400 clear each side'),
     ('under',    8430, 10455, 9170, 10895, 'integrated dishwasher, under the hob'),
     ('hob',      8500, 10525, 9100, 10825, ''),
@@ -272,7 +271,7 @@ _ONCE = [
     #     of the window, which starts at 7800, so nothing stands in front of it.
     ('appliance', 7000, 10275, 7800, 10975, 'fridge  ·  flush with the wall'),
     # --- the appliance corner, flush with the entry gallery column
-    ('counter',  9800, 9700, 10400, 10975, 'appliance corner  ·  600 deep'),
+    ('counter-r', 9800, 9700, 10400, 10975, 'appliance corner  ·  600 deep'),
     ('under',    9860, 9770, 10340, 10190, 'microwave'),
     ('under',    9860, 10250, 10340, 10600, 'air fryer  ·  toaster'),
     ('under',    9860, 10660, 10340, 10920, 'coffee  ·  soda maker'),
@@ -280,8 +279,10 @@ _ONCE = [
     # retained deck void, in the corner between its back wall and the pod
     # glazing.  Their shape follows the curve, so they are built in
     # retrofit.corner_units() where the Bezier lives.
-    # ------------------------------------------------------------- utility
-    ('appliance', 5850, 9700, 6550, 10400, 'washer + dryer, stacked'),
+    # ------------------------------- the utility end of the kitchen
+    ('appliance', 5755, 10375, 6355, 11025, 'washer + dryer, stacked'),
+    ('basket',   5755, 9470, 6255, 9970, 'laundry basket'),
+    ('bin',      6305, 9470, 6855, 10020, 'dustbin'),
     # --------------------------------------------------------- help\'s room
     ('bunk',     14180, 8700, 15080, 10600, 'bunk'),
     # ------------------------------------------------- guest / service WC

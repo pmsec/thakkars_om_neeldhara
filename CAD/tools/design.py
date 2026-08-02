@@ -266,8 +266,9 @@ _ONCE = [
     ('counter',  7800, 10375, 9000, 10975, 'hob counter at the window  ·  600 deep'),
     ('under',    8080, 10455, 8820, 10895, 'integrated dishwasher, under the hob'),
     ('hob',      8150, 10525, 8750, 10825, ''),
-    # --- the fridge, between the two new runs, flush with the wall
-    ('appliance', 9000, 10275, 9800, 10975, 'fridge  ·  flush with the wall'),
+    # --- the fridge, west of the hob run, flush with the wall.  It sits clear
+    #     of the window, which starts at 7800, so nothing stands in front of it.
+    ('appliance', 7000, 10275, 7800, 10975, 'fridge  ·  flush with the wall'),
     # --- the appliance corner, flush with the entry gallery column
     ('counter',  9800, 9700, 10400, 10975, 'appliance corner  ·  600 deep'),
     ('under',    9860, 9770, 10340, 10190, 'microwave'),

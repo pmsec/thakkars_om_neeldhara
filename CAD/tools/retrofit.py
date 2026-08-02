@@ -98,13 +98,16 @@ def poly_rooms():
     The rectangular ones live in design.ROOMS; these are the two pods and the
     great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
+    kitchen, helps, gallery = lobby_polys()
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     return [
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
         ('GREAT ROOM', '', great, 'party wall removed  ·  7840 across', (D.MID, 3450)),
-        ('ENTRY GALLERY', '', gallery_poly(),
-         '2920 across  ·  800 through to the kitchen and to help\'s room',
+        ('KITCHEN', '', kitchen, 'on the builder stack, opened out to the drum',
+         (8700, 9500)),
+        ("HELP'S ROOM", '', helps, '', (14900, 9500)),
+        ('ENTRY GALLERY', '', gallery, '2300 clear  ·  75 wood screen',
          (D.MID, 9600)),
     ]
 
@@ -115,39 +118,23 @@ def _gal_arc(r, a0, a1, n=60):
             for a in np.linspace(a0, a1, n)]
 
 
-COL_N = 9325                  # top of the two 1800-deep gallery columns
+def lobby_polys():
+    """Kitchen, help's room and the entry gallery.
 
+    The gallery is a thin wood drum standing free in the service bay, tangent
+    to the bay's north wall and to the entrance wall.  Nothing walls it off
+    from the rooms either side, so the kitchen runs east up to it and help's
+    room runs west up to it, and the two 230 x 1800 columns are left standing
+    as piers.
+    """
+    ro = D.GAL_RO                          # outer face of the screen
+    ri = ro - D.T_SCREEN                   # clear inside
+    kw, ke = 7050, 16150                   # far faces of the two rooms
 
-def _gal_ends(r):
-    """The angles at which a face of radius r leaves the column top and meets
-    the entrance wall, east side; the west side is 180 minus each."""
-    top = math.degrees(math.asin((COL_N - D.GAL_CY) / r))
-    bot = math.degrees(math.asin((D.BAY_S - D.GAL_CY) / r))
-    return top, bot
-
-
-def gallery_poly():
-    """The gallery floor: the pocket between the two columns, closed by the
-    service-bay north wall, the two arcs and the entrance wall."""
-    _cx, _cy, r, t, _g = D.GALLERY
-    ri = r - t / 2
-    top, bot = _gal_ends(ri)
-    w, e = 10630, D.M(10630)
-    return ([(w, D.BAY_N), (e, D.BAY_N), (e, COL_N)]
-            + _gal_arc(ri, top, bot)                      # east arc, inner face
-            + _gal_arc(ri, 180 - bot, 180 - top)          # west arc, inner face
-            + [(w, COL_N)])
-
-
-def fillets():
-    """The two solid corners left behind the arcs, between each column and the
-    entrance wall.  Masonry, not floor — the 1800 column means there is nothing
-    to reach them from."""
-    top, bot = _gal_ends(D.GAL_RO)
-    return [[(10630, COL_N), (10630, D.BAY_S)]
-            + _gal_arc(D.GAL_RO, 180 - bot, 180 - top),
-            [(D.M(10630), COL_N), (D.M(10630), D.BAY_S)]
-            + _gal_arc(D.GAL_RO, bot, top)]
+    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, 90) + [(kw, D.BAY_S)])
+    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, 270, 450) + [(ke, D.BAY_S)])
+    gallery = _gal_arc(ri, 0, 360, 180)[:-1]
+    return kitchen, helps, gallery
 
 
 def corner_units():

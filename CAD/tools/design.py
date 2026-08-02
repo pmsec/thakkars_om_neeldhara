@@ -89,9 +89,9 @@ ROOMS = [
     ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck"),
     ("ALL-WEATHER DECK", "", [(POD_W0, DECK_N, M(POD_W0), DECK_S)],
      "15 420 long × 2620 deep  ·  net of the two retained voids"),  # voids cut out below
-    ("KITCHEN", "", [(7050, BAY_N, 10400, BAY_S)],
-     "3350 × 2450 on the existing stack"),
-    ("HELP'S ROOM", "", [(14080, BAY_N, 16150, BAY_S)], ""),
+    # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
+    # is a free-standing drum and the two rooms run up to it.  See
+    # retrofit.lobby_polys().
     ("UTILITY", "", [(5705, 9470, 6900, 11025)], "the builder's dry balcony"),
     ("GUEST / SERVICE WC", "", [(16280, BAY_N, 17430, BAY_S)], ""),
     ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
@@ -118,47 +118,45 @@ NEW_WALLS = [
     (M(DUCT_W1 + 75), 6175, M(DUCT_W1 + 75), BODY_S, T_INT, []),
 
     # --- service bay, north wall: great room / pods above, service bay below.
-    #     Broken either side of the gallery's north portal.  The 1200 serving
-    #     hatch is a gap in the run, not a cut.
-    (6900, 8462.5, 11790, 8462.5, 125, [(1700, 2900)]),
-    (12690, 8462.5, 17580, 8462.5, 125, []),
+    #     Broken either side of the 1050 door into the entry gallery.  The
+    #     kitchen door, the serving hatch and help's room door are gaps in it.
+    (6900, 8462.5, 11715, 8462.5, 125, [(400, 1300), (1700, 2900)]),
+    (12765, 8462.5, 17580, 8462.5, 125, [(1935, 2835)]),
 
     # --- service bay
     (7050 - 75, BAY_N, 7050 - 75, BAY_S, T_INT, [(1275, 2075)]),   # kitchen west
     (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, [(1275, 2075)]),
     (16205, BAY_N, 16205, BAY_S, T_THIN, [(1050, 1850)]),          # help's room / WC
 
-    # --- gallery side walls.  The builder's two 230 x 1800 columns stand
-    #     between the gallery pocket and the rooms either side, from Y 9325
-    #     right down to the building line.  The wall is built ON them, so the
-    #     column is the wall and the only way through is the 800 north of it.
-    (10515, 9325, 10515, 11125, 230, []),
-    (M(10515), 9325, M(10515), 11125, 230, []),
-
     # --- the absorbed lobby: new entrance wall on the building line, sitting
     #     in the 150 between the service bay and the building line.  One door,
-    #     centred on the home, landing in the gallery.
+    #     centred on the home, lining up with the drum's south opening.
     (10630, 11050, 13850, 11050, T_INT, [(1085, 2135)]),
 ]
 
-# The round entry gallery.  It is no longer a free-standing drum sitting in a
-# bigger pocket: a drum leaves dead corners, and there is no way into them,
-# because the builder's two 230 x 1800 columns stand between the pocket and the
-# rooms either side and only leave 800 clear at the north end of each.
+# There is no wall between the gallery and the rooms either side: the drum is a
+# screen, and the kitchen and help's room run right up to it.  The builder's two
+# 230 x 1800 columns are left standing as piers, which is what they are.
+
+# The entry gallery: a clean circle in a thin WOOD SCREEN, not masonry.  There
+# is nothing to keep private in an entry foyer, so the wall is 75 rather than
+# 150, and it stands free — a piece of joinery, which is allowed to.  Because
+# it is thin and free-standing, the space either side of it belongs to the
+# kitchen on the west and to help's room on the east.
 #
-# So the circle is drawn to the full 3220 between those two columns and cut off
-# by the service-bay north wall above and the entrance wall below.  What is
-# left is two arcs, each landing on a wall at BOTH ends — the column at the top
-# and the entrance wall at the bottom.  Nothing floats, nothing is left over
-# except the two solid fillets behind the arcs, and the room is bigger and
-# rounder than the drum was.
+# It is the largest circle the pocket takes: 2450 outside, tangent to the
+# service-bay north wall at the top and to the entrance wall at the bottom.
+# Two openings only, both 1050 and both lined up with a real door — the front
+# door from the lift lobby below, the great-room door above.
 #
 # centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east)
+T_SCREEN = 75
 GAL_CX, GAL_CY = MID, (BAY_N + BAY_S) / 2      # 12240, 9750
-GAL_RO = 1610                                  # outer face, on both column faces
-GALLERY = (GAL_CX, GAL_CY, GAL_RO - T_INT / 2, T_INT,
-           [(49.5, 130.5),      # south — closed by the entrance wall
-            (195.3, 344.7)])    # north — closed by the service-bay north wall
+GAL_RO = (BAY_S - BAY_N) / 2                   # 1225 — outer face of the screen
+GAL_DOOR_W, GAL_DOOR_E = 11715, 12765          # both doors, on the home's centre
+GALLERY = (GAL_CX, GAL_CY, GAL_RO - T_SCREEN / 2, T_SCREEN,
+           [(63.8, 116.2),      # south, 1050 — on to the front door
+            (243.8, 296.2)])    # north, 1050 — on to the great room
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it

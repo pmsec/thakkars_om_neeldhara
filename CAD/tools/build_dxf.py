@@ -15,6 +15,7 @@ Layers added
     PROP-REF-CORE     the lift lobby, lifts and fire lift beyond the flat
     PROP-KEEP         shafts, ducts and voids that must stay clear
     PROP-GLAZ         glazing, sliding glass and the pod portals
+    PROP-SCREEN       the entry gallery drum — 75 wood screen
     PROP-FURN         fixed joinery and layout furniture
     PROP-TEXT         room names and areas
     PROP-DIM          the set-out dimensions
@@ -64,6 +65,7 @@ LAYERS = [
     ('PROP-REF-CORE', 8, 'CONTINUOUS'),      # grey — lift core, reference
     ('PROP-KEEP', 6, 'DASHED'),              # magenta
     ('PROP-GLAZ', 4, 'CONTINUOUS'),          # cyan
+    ('PROP-SCREEN', 32, 'CONTINUOUS'),       # brown — the wood drum
     ('PROP-FURN', 9, 'CONTINUOUS'),
     ('PROP-TEXT', 3, 'CONTINUOUS'),          # green
     ('PROP-DIM', 2, 'CONTINUOUS'),           # yellow
@@ -186,17 +188,11 @@ def main():
             outer = [(cx + math.cos(u) * (r + t / 2), cy + math.sin(u) * (r + t / 2))
                      for u in reversed(run)]
             q = inner + outer
-            poly(msp, q, 'PROP-WALL-NEW')
-            h = msp.add_hatch(color=1, dxfattribs={'layer': 'PROP-WALL-NEW'})
+            poly(msp, q, 'PROP-SCREEN')
+            h = msp.add_hatch(color=32, dxfattribs={'layer': 'PROP-SCREEN'})
             h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
-            h.set_solid_fill(color=1)
+            h.set_solid_fill(color=32)
         run = []
-
-    for q in R.fillets():                       # solid behind the two arcs
-        poly(msp, q, 'PROP-WALL-NEW')
-        h = msp.add_hatch(color=1, dxfattribs={'layer': 'PROP-WALL-NEW'})
-        h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
-        h.set_solid_fill(color=1)
 
     # --------------------------------------------------------------- glazing
     for Pc in (D.POD_W, D.POD_E):

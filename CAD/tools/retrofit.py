@@ -159,7 +159,7 @@ def lobby_polys():
     """
     r, t = D.GAL_R, D.T_GAL
     ro, ri = r + t / 2, r - t / 2
-    kw, ke = 7050, 16150                   # far faces of the two rooms
+    kw, ke = 6900, 16150                   # far faces of the two rooms
     iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
     kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, 270, D._A0)

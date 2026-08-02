@@ -124,8 +124,8 @@ NEW_WALLS = [
     (12765, 8462.5, 17580, 8462.5, 125, [(1935, 2835)]),
 
     # --- service bay
-    (7050 - 75, BAY_N, 7050 - 75, BAY_S, T_INT, [(1275, 2075)]),   # kitchen west
-    (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, [(1275, 2075)]),
+    # (the kitchen / utility wall is gone — the two are one space now)
+    (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, [(1275, 2075)]),  # WC / store
     (16205, BAY_N, 16205, BAY_S, T_THIN, [(1050, 1850)]),          # help's room / WC
 
     # --- the absorbed lobby: new entrance wall on the building line, sitting
@@ -146,6 +146,7 @@ NEW_WALLS = [
 # the curve.  A segmental arch springs where the columns actually end.
 #
 import math as _m
+import math
 
 T_GAL = 230                                    # same as the column, so it reads
 GAL_W, GAL_E = 10400, M(10400)                 # OUTER faces of the two columns
@@ -181,14 +182,24 @@ _D1 = 540 - _D0
 
 # centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east).
 # The first gap wraps past 0 and kills everything below the springings.
+# The arch carries all three doors, because it is the only part of the U that
+# is not a column.  It spans 93 degrees — 3864 of arc — and 1050 + 700 + 700
+# of that is opening, so what is left is four piers.  They are set out evenly,
+# 350 each, rather than left to fall where they may.
+_SVC = math.degrees(700 / GAL_R)                 # a 700 service door
+_PIER = ((_A1 - _A0) - (_D1 - _D0) - 2 * _SVC) / 4
 GALLERY = (GAL_CX, GAL_CY, GAL_R, T_GAL,
-           [(_A1 + 0.2, _A0 - 0.2),   # everything below the two springings
-            (_D0, _D1)])              # 1050 at the crown, on to the great room
+           [(_A1 + 0.2, _A0 - 0.2),              # below the two springings
+            (_D0, _D1),                          # 1050 at the crown, great room
+            (_A0 + _PIER, _A0 + _PIER + _SVC),   # 700 service door, to the kitchen
+            (_A1 - _PIER - _SVC, _A1 - _PIER)])  # 700 service door, to help's room
 
 # The U's two straight legs, wood, lining the inner face of each column.
 # The straight legs, 230 on the column footprint: the column IS the leg, so
 # the wall runs from the entrance wall to the springing as one continuous
 # thickness and the arch takes over from there.
+# No opening in either: the leg IS the column, and you cannot put a door
+# through a 230 x 1800 structural column.  The service doors go in the arch.
 SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
                 for a, b, c, d in GAL_LEGS]
 
@@ -247,13 +258,9 @@ _ONCE = [
     # kitchen.
     ('dining',   9600, 6350, 11000, 7750, 'round 1400 dia, seats 6'),
     # ------------------------------------------------------------- kitchen
-    ('counter',  7100, 8575, 10350, 9135, 'run'),
+    ('counter',  7100, 8575, 10350, 9175, 'run  ·  600 deep'),
     ('sink',     7620, 8700, 8180, 9010, ''),
     ('shelves',  8600, 8525, 9800, 8725, 'hatch shelf, deepened into the kitchen'),
-    ('island',   7150, 10000, 9900, 10800, 'peninsula island'),
-    ('hob',      8180, 10230, 8820, 10570, ''),
-    ('chimney',  8000, 10050, 9600, 10750, 'chimney over'),
-    ('appliance', 9700, 10075, 10400, 10775, 'tall fridge'),
     # The two pod corner units — mandir and coffee / pantry — are behind the
     # retained deck void, in the corner between its back wall and the pod
     # glazing.  Their shape follows the curve, so they are built in

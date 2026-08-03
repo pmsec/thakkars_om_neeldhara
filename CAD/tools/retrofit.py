@@ -424,9 +424,14 @@ def suite_sliders(t=60):
 
         leaves = [box(x0 - t, x0, 2620, mid, 'glass' if shut else 'dash'),
                   box(x0 - t, x0, mid, 6175, 'glass' if shut else 'dash')]
-        # parked: the two leaves stacked behind each other, 1778 of the deck
-        park = [box(x0 - t, x0, 190, 190 + (6175 - mid), 'dash' if shut else 'glass'),
-                box(x0, x0 + t, 190, 190 + (6175 - mid), 'dash' if shut else 'glass')]
+        # Parked: the two leaves stacked behind each other, 1778 of the deck.
+        # They stop as soon as they are clear of the opening — leading edge
+        # flush with the pod's north face at 2620 — rather than running on to
+        # the parapet.  They only have to get out of the way, and the deck
+        # beyond them is deck, not a garage.
+        p1, p0 = 2620, 2620 - (6175 - mid)
+        park = [box(x0 - t, x0, p0, p1, 'dash' if shut else 'glass'),
+                box(x0, x0 + t, p0, p1, 'dash' if shut else 'glass')]
         out += leaves + park
     return out
 

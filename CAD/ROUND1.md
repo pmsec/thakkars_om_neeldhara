@@ -112,10 +112,14 @@ Two things about it are forced rather than chosen:
   square on the route north, and only a track east of 4530 gets past it. Ten
   millimetres of clearance, and the panels read flush with the wall's own east
   face at 4529.
-* So they park at the **deck's own end**, X 4540–4600 / Y 190–1968 — beside the
-  gym on the parents' side, behind the spa on Karan's. A straight track has to
-  stay in line with its opening; reaching the 2040 between the gym and the void
-  would need an L-track slide-and-stack, and the turn would land on the grass.
+* So they park **on the deck**, X 4540–4600 / **Y 842–2620** — beside the gym on
+  the parents' side, behind the spa on Karan's. A straight track has to stay in
+  line with its opening; reaching the 2040 between the gym and the void would
+  need an L-track slide-and-stack, and the turn would land on the grass.
+
+They stop as soon as they are clear of the opening — leading edge **flush with
+the pod's north face at 2620** — rather than running on to the parapet. They
+only have to get out of the way, and the deck beyond them is deck, not a garage.
 
 The deck's south glazing therefore starts at 4650 instead of 4530, so the panels
 have a slot to pass through.

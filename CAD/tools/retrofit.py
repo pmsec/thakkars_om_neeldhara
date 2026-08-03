@@ -393,34 +393,42 @@ def arch_doors(leaf=60):
     return out
 
 
-def suite_sliders(t=60, gap=10):
-    """The partition between each master bed and its pod, and where it parks.
+def suite_sliders(t=60):
+    """The partition between each master bed and its pod, drawn in BOTH states.
 
-    3555 of opening, Y 2620 to 6175.  Two interlocking leaves of 1778, shown
-    SHUT; open, they run north on to the deck and stack behind each other,
-    which takes 1778 of the deck's 2620 depth.  One leaf would need 3555 and
-    would not fit — that is why there are two.
+    3555 of opening, Y 2620 to 6175.  Two interlocking leaves of 1778.  One leaf
+    would need 3555 of parking and the deck is 2620 deep, which is why there are
+    two: stacked they take 1778.
 
-    They run on the POD face of the wall line, X 4540-4600, not on its
-    centreline.  They have to: the builder's 230 x 1200 column at 4300-4530 /
-    1200-2400 sits square on the route north, and only a track east of 4530
-    gets past it.  Ten millimetres of clearance, and the panels read flush with
-    the wall's own east face at 4529.
+    The two sides are drawn differently on purpose, so the plan shows how they
+    work without a note.  The parents' pair is SHUT, closing the bed off from
+    the pod, with the parked position dashed on the deck.  Karan's pair is OPEN
+    and stacked on the deck behind the spa, with the shut position dashed across
+    the opening.
 
-    The deck's south glazing starts at 4650 instead of 4530 for the same
-    reason — the panels pass through that line, so it cannot run across it.
+    They run on the POD FACE of the wall line, X 4540-4600, not on its
+    centreline.  They have to: a builder column 230 x 1200 sits at X 4300-4530 /
+    Y 1200-2400, square on the route north, and only a track east of 4530 gets
+    past it.  Ten millimetres of clearance, and the panels read flush with the
+    wall's own east face at 4529.  The deck's south glazing starts at 4650 for
+    the same reason — the panels pass through that line.
     """
-    x0 = 4600                                       # the pod-side face
+    x0, mid = 4600, (2620 + 6175) / 2
     out = []
-    for a, b in ((x0 - t, x0), (D.M(x0), D.M(x0 - t))):
-        mid = (2620 + 6175) / 2
-        for y0, y1 in ((2620, mid), (mid, 6175)):   # the two leaves, shut
-            out.append(('poly', [(a, y0), (b, y0), (b, y1), (a, y1)], 'glass'))
-        park = 6175 - mid                           # where they go when open
-        out.append(('poly', [(a, 190), (b, 190), (b, 190 + park), (a, 190 + park)],
-                    'dash'))
-    return out
+    for west, shut in ((True, True), (False, False)):
+        def X(v):
+            return v if west else D.M(v)
 
+        def box(a, b, y0, y1, style):
+            return ('poly', [(X(a), y0), (X(b), y0), (X(b), y1), (X(a), y1)], style)
+
+        leaves = [box(x0 - t, x0, 2620, mid, 'glass' if shut else 'dash'),
+                  box(x0 - t, x0, mid, 6175, 'glass' if shut else 'dash')]
+        # parked: the two leaves stacked behind each other, 1778 of the deck
+        park = [box(x0 - t, x0, 190, 190 + (6175 - mid), 'dash' if shut else 'glass'),
+                box(x0, x0 + t, 190, 190 + (6175 - mid), 'dash' if shut else 'glass')]
+        out += leaves + park
+    return out
 
 def corner_units():
     """The mandir and the coffee / pantry.  They no longer share a shape.

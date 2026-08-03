@@ -98,6 +98,33 @@ wing strip comes out for the northern 5300, so the brief's "one room ·
 cupboards + dressing + terrace" reads properly. **377 sq ft each**, with a
 2895-long bath off the south end.
 
+**And the wall between each bed and its pod comes out too**, replaced by a
+sliding glass partition. What is left as wall is the 1420 at the north end —
+nearly all of it the builder's column — and the 475 at the south. Between them,
+**3555 of opening, Y 2620 to 6175, in two interlocking leaves of 1778.** One
+leaf would need 3555 of parking and the deck is 2620 deep; two leaves stacked
+take 1778, which fits.
+
+Two things about it are forced rather than chosen:
+
+* The panels run on the **pod face** of the wall line, X 4540–4600, not on its
+  centreline. A builder column **230 × 1200 at X 4300–4530 / Y 1200–2400** sits
+  square on the route north, and only a track east of 4530 gets past it. Ten
+  millimetres of clearance, and the panels read flush with the wall's own east
+  face at 4529.
+* So they park at the **deck's own end**, X 4540–4600 / Y 190–1968 — beside the
+  gym on the parents' side, behind the spa on Karan's. A straight track has to
+  stay in line with its opening; reaching the 2040 between the gym and the void
+  would need an L-track slide-and-stack, and the turn would land on the grass.
+
+The deck's south glazing therefore starts at 4650 instead of 4530, so the panels
+have a slot to pass through.
+
+The drawing shows **both states on purpose**: the parents' pair shut, closing
+the bed off from the pod, with the parked position dashed on the deck; Karan's
+pair open and stacked on the deck, with the shut position dashed across the
+opening. Between the two halves the plan explains itself.
+
 **4. The service bay keeps only what physically fits between the two ducts.**
 Kitchen on its existing stack, entry hall between the two lobby columns,
 help's room + WC in the mirrored bay. The two dry balconies become the

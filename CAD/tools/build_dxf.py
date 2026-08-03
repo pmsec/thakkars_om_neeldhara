@@ -241,6 +241,8 @@ def main():
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)
+    for p in R.wc_out_door():
+        prim(p)
     for p in R.corner_units():
         prim(p)
     gx, gy, gr, gt, _g = D.GALLERY

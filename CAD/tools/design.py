@@ -161,7 +161,7 @@ T_WC = 110
 WC_SPRING = WC_CX - WC_A           # 15000, on the great-room wall
 WC_DIE = WC_CY + WC_B              # 10200, on the east wall
 WC_DOOR = (0.42, 0.64)             # help's room's door, as a fraction of the arc
-STORE_W = 16400                    # the store's new west wall
+STORE_W = 16800                    # the store's new west wall
 
 
 def wc_y(x):
@@ -213,7 +213,10 @@ NEW_WALLS = [
     # The store's new west wall, from the apse down to the outer wall.  The
     # store is entered from help's room through it — which is where a staff
     # store should be entered from, rather than through the guest WC.
-    (STORE_W, wc_y(STORE_W) - 60, STORE_W, BAY_S, T_THIN, [(150, 850)]),
+    # The opening is hard against the apse rather than centred: the wall is only
+    # 893 long, and centring a door in it leaves two jambs too short to be
+    # anything.  The apse is one jamb, and what is left is a 190 return.
+    (STORE_W, wc_y(STORE_W) - 60, STORE_W, BAY_S, T_THIN, [(0, 700)]),
 
     # --- the absorbed lobby: new entrance wall on the building line, sitting
     #     in the 150 between the service bay and the building line.  One door,
@@ -365,17 +368,23 @@ _ONCE = [
     ('basket',   5755, 9470, 6255, 9970, 'laundry basket'),
     ('bin',      6305, 9470, 6855, 10020, 'dustbin'),
     # --------------------------------------------------------- help\'s room
-    # The apse gives the room back its width to the south, so the bunk and the
-    # cupboard both stand on the floor again.
-    ('bunk',     14090, 9075, 14990, 10975, 'bunk'),
-    ('shelves',  15200, 10375, 15800, 10975, 'cupboard'),
+    # The bunk turns and lies ALONG the south wall.  Standing it on end against
+    # the west wall left a 96 gap between its head and the apse — the apse
+    # leaves its springing vertically, so it hugs 15000 for the first half metre
+    # and there is nothing to be gained there.  Lying down, the bunk leaves the
+    # whole northern 1550 of the room clear, which is the walking space, and
+    # 755 past its foot to the store door.
+    ('bunk',     14090, 10075, 15990, 10975, 'bunk'),
+    ('shelves',  14090, 9425, 14690, 10025, 'cupboard'),
     # ------------------------------------------------- guest / service WC
     # One WC, one small basin, one very small shower — and nothing else, which
-    # is what an apse this size will take.  All three sit on the two straight
-    # walls; the curved side is left clear, because it is where both doors are.
-    ('shower',   15950, 8600, 16700, 9350, ''),
-    ('basin',    16750, 8575, 17250, 8925, ''),
-    ('wc',       16800, 9300, 17420, 9920, ''),
+    # is what an apse this size will take.  The basin is the first thing inside
+    # the door, so washing your hands is one step in and one step out.  The
+    # shower is flush into the corner against the duct wall, and the pan is at
+    # the far end, where the apse dies into that wall.
+    ('basin',    15850, 8575, 16350, 8925, ''),
+    ('shower',   16680, 8575, 17430, 9325, ''),
+    ('wc',       16790, 9480, 17410, 10100, ''),
 ]
 
 # Drawn on both halves of the home.

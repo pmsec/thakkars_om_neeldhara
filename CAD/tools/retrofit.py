@@ -199,6 +199,21 @@ def wc_wall():
             for run in runs]
 
 
+def wc_out_door(hinge=15020, jamb=15820, y=8400):
+    """The guest WC's door off the great room, hinged west, swinging OUT.
+
+    Every other door on this drawing is a gap in a wall, because which way it
+    swings does not change the plan.  This one does.  The apse has no floor to
+    spare for a leaf inside it, and the door is there so you can step in, wash
+    your hands and step out — so it opens into the great room, and it is drawn
+    that way rather than left to the joiner to guess."""
+    w = jamb - hinge
+    arc = [(hinge + w * math.cos(math.radians(t)), y - w * math.sin(math.radians(t)))
+           for t in np.linspace(90, 0, 24)]
+    return [('poly', [(hinge, y)] + arc, 'light'),
+            ('line', hinge, y, hinge, y - w, 'solid')]
+
+
 def wc_door(leaf=60):
     """Help's room's door into the WC, curved on the apse and drawn shut."""
     us = np.linspace(*D.WC_DOOR, 30)

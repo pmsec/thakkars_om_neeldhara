@@ -505,10 +505,42 @@ settles three separate things at once:
   **120 clear in front of it**, so the column is inside the joinery and the wall
   reads flat. Nothing is boxed out, nothing is left sticking into the room, and
   the column is still on the drawing where the architect needs to see it.
-* **The bed centres on it exactly** — 3635 less an 1800 bed leaves **918 of
-  headboard each side**, equal left and right.
 * **It covers no glass.** It stops precisely on the 600 window's south jamb at
   Y 1950 and the 3880 window's north jamb at Y 5585, so it can be full height.
+
+### The bed centres on the room, not on the headboard
+
+It used to be centred on the headboard, at Y 2802–4732. That put it **602 off
+the back of the bench sofa** and left the whole southern half of the room as
+empty floor — which is exactly what it looked like.
+
+It now centres on **the two walls it lies between**: the terrace wall at
+Y 1350 and the dressing screen's north face at Y 7675. **6325 clear, an 1930
+bed, 2197 to each of them.** It moves 745 south, and the walk behind the bench
+sofa goes from 602 to **1347**.
+
+**The headboard does not move with it, and it cannot.** It is already hard on
+both window jambs; any southward shift puts full-height joinery across the
+3880 window. So the bed slides along a headboard that stays put, and the price
+is the symmetry Karan asked for earlier:
+
+| | before | now |
+|---|---|---|
+| headboard showing north of the bed | 852 | **1597** |
+| headboard showing south of the bed | 852 | **107** |
+| north side table | on the headboard | on the headboard |
+| south side table | on the headboard | **in front of the window** |
+
+That is the one thing in this round worth a second look. It stops reading as a
+board behind a bed and starts reading as **a panelled wall with the bed at one
+end of it** — which is a legitimate thing for it to be, given it is 3635 long
+and 200 thick and swallows a column, but it is not what was drawn before.
+
+If the asymmetry is worse than the centring, the alternative is to move the bed
+only **252** instead of 745 and trim the headboard to 3130 — exactly bed plus
+both tables — so both tables land on it and the bed is centred on it again.
+That costs 505 of the column left sticking out at the north end, and the bed
+ends up 492 north of the room's centre rather than on it.
 
 ### The bed — square at the head, curved at the foot
 
@@ -525,15 +557,15 @@ where it has to meet something.
 | | mm | ft |
 |---|---|---|
 | headboard | 3635 × 200 | 11'-11" × 0'-8" |
-| — showing each side of the bed | 852 | 2'-10" |
+| — showing north of the bed | 1597 | 5'-3" |
+| — showing south of the bed | 107 | 0'-4" |
 | — in front of the column's face | 120 | 0'-5" |
 | mattress | 1930 × 2032 | 6'-4" × 6'-8" |
 | foot corner radius | 594 | 1'-11" |
 | side tables, each | 550 × 450 | 1'-10" × 1'-6" |
-| bare headboard beyond each table | 252 | 0'-10" |
 | clear west of the bed | 2623 | 8'-7" |
-| clear north, to the terrace wall | 1518 | 4'-11" |
-| clear south, to the partition | 3008 | 9'-10" |
+| clear north, to the terrace wall | 2197 | 7'-2" |
+| clear south, to the dressing screen | 2197 | 7'-2" |
 
 **It sleeps 1930 across**, which is a full American king and 130 more than the
 Indian one. The round bed, for comparison, managed 1482 at the shoulders — 741
@@ -592,7 +624,7 @@ the art and the plants.
 
 ### The loose furniture
 
-Three chairs, an ottoman and a plant, all Karan's side.
+Three sofas, a table and a plant, all Karan's side.
 
 **A conversation pod across the terrace opening.** Not chairs stood in the
 terrace: a **bench sofa inside the room** with its back to the bed, facing north
@@ -604,7 +636,7 @@ group; shut it and the bench still faces the view.
 |---|---|---|
 | bench sofa, in the room | 2000 × 800 | 6'-7" × 2'-7" |
 | — off the terrace wall | 50 | 0'-2" |
-| — to the bed | 602 | 1'-12" |
+| — to the bed | 1347 | 4'-5" |
 | single sofas, each | 800 | 2'-7" |
 | — clear at each end of the terrace | 100 | 0'-4" |
 | — clear top and bottom of its 1200 depth | 200 | 0'-8" |
@@ -620,21 +652,13 @@ group work at all.
 **Karan's terrace label had to move for it.** The room label sits in the middle
 of its rectangle by default, and the middle of this one is now exactly where
 the centre table is. `ROOMS` entries carry an optional label anchor now; his
-terrace uses it, drops into the gap between the bench and the bed, and gives up
-its note to fit in the 602 available.
+terrace uses it, and drops into the gap between the bench and the bed.
 
-**A reading chair and ottoman** in the open floor between the arch console and
-the bed, facing north up the room with the ottoman 150 in front of it. It is
-placed off three clearances, not by eye:
-
-| | mm | ft |
-|---|---|---|
-| to the console front | 580 | 1'-11" |
-| to the dressing partition | 550 | 1'-10" |
-| **to the end wall** | **945** | **3'-1"** |
-
-The last one matters most — that strip is the run down to the dressing gap, so
-the chair is set to leave it open rather than stand in it.
+**The reading chair and its ottoman are out.** They stood in the floor between
+the arch console and the bed, and the bed has now moved 745 south into it. Two
+loose pieces in the last 2200 before the dressing screen would have turned the
+one clear run in the suite — bed to screen to bath — back into an obstacle
+course. The floor stays open instead.
 
 **A low wooden table with a big plant on it**, and it takes the north-west
 corner properly rather than sitting near it: **900 × 900 with a 1200 spread**,
@@ -686,13 +710,24 @@ one end. The cupboards run down to its north edge and stop there; the 1200 the
 column occupies becomes the laundry basket's. So the one stretch of wall that
 is 80 shallower than the rest carries the one thing that does not care.
 
-Everything is set off X −370, the column's face, so the run and the basket are
-one flush line.
+**The cupboards go back hard on the wall, X −450.** They used to be held off at
+X −370, the column's proud face, because the run crossed the column and had to
+be scribed to it. It does not cross it any more — it stops on the column's north
+edge and the basket takes the column's own 1200 — so the setback bought nothing
+and cost **80 of floor the whole way**. The run moves 80 west onto the wall face.
+
+The basket cannot follow it: it stands on the column. Its back sits on the
+column's face and only its **front** lines through with the cupboards, 20 off —
+a joiner's tolerance, and invisible on an open basket.
 
 ### The dressing console is in the corner, and on the bath wall
 
-It moves to the corner where the bath wall meets the south window — **and it
-goes on the bath wall, not under the window.**
+It is **jammed into the corner** where the bath wall meets the south window:
+its back is on the bath wall at X 2400 and its end is on the south wall at
+Y 9545, so there is nothing behind it and nothing beside it. It was 75 short of
+the bath wall, which read as a gap rather than a corner.
+
+And it goes **on the bath wall, not under the window.**
 
 That is not a stylistic preference. On the window wall the mirror would cover
 940 of a 3200 window, and you would sit facing the glass with all the light

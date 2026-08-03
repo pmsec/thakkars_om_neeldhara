@@ -158,7 +158,22 @@ HB_X = END_E - 150 - HB_T           # 24730 — the headboard's FRONT face
 # and every fitted sheet then have to be imported, which is the real price.
 BED_W, BED_L = 1930, 2032           # across, and out from the headboard
 BED_R = 594                         # foot corners only; the head is square
-BED_Y0 = (HB_Y0 + HB_Y1 - BED_W) / 2
+# The bed is centred ON THE ROOM, not on the headboard.  The two walls it lies
+# between are the terrace wall at Y 1350 and the dressing screen's north face at
+# 7675 — 6325 clear — so an 1930 bed leaves 2197 to each of them, equal.  Centred
+# on the headboard instead it sat at 2802, only 602 off the back of the bench
+# sofa, and the whole of the south half of the room was empty floor.
+#
+# THE HEADBOARD DOES NOT MOVE WITH IT, and it cannot: it is already hard on both
+# window jambs, so any southward shift puts joinery across the 3880 window.  The
+# bed slides 745 south along a headboard that stays put.  What that costs is the
+# symmetry — 1597 of headboard shows north of the bed and 107 south, instead of
+# 852 each side.  It stops reading as a board behind a bed and starts reading as
+# a panelled wall with the bed at one end of it, which is why the north side
+# table lands on it and the south one does not.
+BED_ROOM_N = 1350                   # terrace wall
+BED_ROOM_S = SCR_Y - T_SCR          # 7675 — the dressing screen's north face
+BED_Y0 = (BED_ROOM_N + BED_ROOM_S - BED_W) / 2
 BED_Y1 = BED_Y0 + BED_W
 TAB_W, TAB_D, TAB_GAP = 550, 450, 50
 
@@ -464,11 +479,12 @@ _ONCE = [
     # 2095 between.  It runs the bath's own length, 2820, and stops dead on the
     # window's north jamb at Y 8945, so the 600 window there stays open.
     #
-    # Set off X -370, not the wall face at -450: the builder leaves a 230 x 1200
-    # column on this wall over Y 7745-8945 whose face stands 80 proud, and that
-    # is squarely inside the run.  Scribed to the column and packed out behind,
-    # so the whole 2820 is one flush line rather than 600 deep for two thirds
-    # and 520 for the rest.
+    # The run now goes back HARD ON THE WALL, X -450.  It used to be held off at
+    # X -370 — the proud face of the builder's 230 x 1200 column — because the
+    # run crossed that column and had to be scribed to it.  It does not cross it
+    # any more: it stops on the column's north edge at 7745 and the basket takes
+    # the column's own 1200.  So the setback bought nothing and cost 80 of floor
+    # the whole way.  The whole run moves 80 west onto the wall face.
     #
     # Three units of 940.  The last one — the one against the window — is NOT a
     # cupboard: it is the dressing console, 450 deep instead of 600, with the
@@ -478,16 +494,23 @@ _ONCE = [
     # The run now STOPS on the column's north edge at Y 7745, and the 1200 the
     # column occupies below it is the laundry basket's — so the basket sits in
     # the one stretch of this wall that is 80 shallower than the rest anyway.
-    ('hanging',   -370, 6125, 230, 6935, "wardrobe 1  ·  810 x 600, hanging"),
-    ('hanging',   -370, 6935, 230, 7745, "wardrobe 2  ·  810 x 600, hanging"),
-    ('basket',    -370, 7995, 130, 8695, "laundry basket  ·  700 x 500"),
+    ('hanging',   -450, 6125, 150, 6935, "wardrobe 1  ·  810 x 600, hanging"),
+    ('hanging',   -450, 6935, 150, 7745, "wardrobe 2  ·  810 x 600, hanging"),
+    # The basket cannot follow them west — it stands on the column, so its back
+    # is on the column's face at -350 and only its FRONT lines through with the
+    # wardrobes at 150.  It is 20 off the column, which is a joiner's tolerance.
+    ('basket',    -350, 7995, 150, 8695, "laundry basket  ·  700 x 500"),
     # The dressing console moves to the corner where the bath wall meets the
     # south window, and it goes on the BATH WALL, not under the window.  On the
     # window wall the mirror would cover 940 of a 3200 window and you would sit
     # with the light behind the glass, lighting the back of your own head.  On
     # the bath wall you face east into it with the south window on your right —
     # side light on your face, which is the whole point of putting it here.
-    ('console-e', 1875, 8605, 2325, 9545,
+    # Hard into the corner now: its back is ON the bath wall at X 2400 and its
+    # end is ON the south wall at Y 9545, so it is jammed into the angle with
+    # nothing behind it and nothing beside it.  It was 75 short of the bath
+    # wall, which read as a gap rather than a corner.
+    ('console-e', 1950, 8605, 2400, 9545,
      "dressing console  ·  940 x 450, mirror on the bath wall"),
 
     # ------------------------------- Karan's terrace: the conversation pod
@@ -507,13 +530,10 @@ _ONCE = [
     ('sofa-e',   23930, 200, 24730, 1000, 'single sofa  ·  800, facing west'),
     ('table',    22905, 265, 23655, 1015, 'centre table  ·  750 round'),
 
-    # ------------------------------------ Karan's suite: the reading chair
-    # In the open floor between the arch console and the bed, facing north up
-    # the room with the ottoman in front of it.  580 clear to the console, 550
-    # to the dressing partition, and 945 to the end wall — which is the run
-    # down to the dressing gap, so the chair does not stand in it.
-    ('swivel',   23135, 6275, 23985, 7125, 'reading chair  ·  swivel, 850'),
-    ('ottoman',  23260, 5675, 23860, 6125, 'ottoman  ·  600 x 450'),
+    # The reading chair and its ottoman came out of this corner.  The bed moved
+    # south into the floor they were standing on, and two pieces of loose
+    # furniture in the last 2200 before the dressing screen would have turned
+    # the one clear run in the suite back into an obstacle course.
 
     # ------------------------------- Karan's suite: the plant table
     # Low wooden table in the north-west corner, just inside the terrace, with

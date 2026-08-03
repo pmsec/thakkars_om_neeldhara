@@ -182,7 +182,7 @@ def lobby_polys():
     """
     r, t = D.GAL_R, D.T_GAL
     ro, ri = D.GAL_RO, D.GAL_RI
-    kw, ke = 6900, 15545                   # far faces of the two rooms
+    kw, ke = 6900, 15000                   # far faces of the two rooms
     iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
     # the kitchen now includes the builder's dry balcony — one room, one area

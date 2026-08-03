@@ -95,7 +95,8 @@ ROOMS = [
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
     # is a free-standing drum and the two rooms run up to it.  See
     # retrofit.lobby_polys().
-    ("GUEST / SERVICE WC", "", [(15655, BAY_N, 17430, BAY_S)], ""),
+    ("GUEST / SERVICE WC", "", [(15110, BAY_N, 17430, BAY_S)],
+     "off the great room"),
     ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
 ]
 
@@ -168,9 +169,12 @@ NEW_WALLS = [
     #     the boundary, so there is nothing for this one to do.  The serving
     #     hatch and help's room door are gaps in it.
     (6900, 8462.5, _BRK_W, 8462.5, 125, [(0, 1100)]),   # serving hatch only
+    # Help's room has no door on to the great room any more — it is reached
+    # from the entry gallery, and through it the WC.  The one opening left in
+    # this run is the guest WC's, and it sits in the last 600 of wall the great
+    # room still has before the pod glazing lands at 15880.
     (_BRK_E, 8462.5, 17580, 8462.5, 125,
-     [(14250 - _BRK_E, 15150 - _BRK_E),                 # help's room door
-      (16650 - _BRK_E, 17400 - _BRK_E)]),               # guest WC, off the den
+     [(15180 - _BRK_E, 15780 - _BRK_E)]),               # guest WC, off the great room
 
     # --- service bay
     # (the kitchen / utility wall is gone — the two are one space now)
@@ -179,13 +183,15 @@ NEW_WALLS = [
     # cupboard now, and the width it gives up goes to the WC, which was 1150
     # wide and had no room to stand up in.
     #
-    # It is SOLID.  The WC used to be entered through help's room, which was
-    # only ever tolerable while that room had space to walk across.  It has not:
-    # 2450 deep less a 1900 bunk leaves 550, and a through-route needs more than
-    # that.  So the WC takes its own door off the den instead — which is what a
-    # guest WC should have had all along, rather than being reached through the
-    # staff bedroom.
-    (15600, BAY_N, 15600, BAY_S, T_THIN, []),                      # help's room / WC
+    # 15055 is as far east as it can go.  The WC's door has to come off the
+    # great room, and the great room only reaches 15880 on the service-bay wall
+    # — east of that the pod glazing lands and it is the den.  So the door width
+    # and help's room's width come out of the same 1800, one for one.  A 600
+    # door leaves 920, which is a fitted berth: bunk, and drawers under it.
+    #
+    # The door in it is help's room's second door, at the north end where the
+    # landing is — the bunk takes the rest of the wall.
+    (15055, BAY_N, 15055, BAY_S, T_THIN, [(50, 650)]),             # help's room / WC
 
     # --- the absorbed lobby: new entrance wall on the building line, sitting
     #     in the 150 between the service bay and the building line.  One door,
@@ -337,18 +343,18 @@ _ONCE = [
     ('basket',   5755, 9470, 6255, 9970, 'laundry basket'),
     ('bin',      6305, 9470, 6855, 10020, 'dustbin'),
     # --------------------------------------------------------- help\'s room
-    # One bunk and one cupboard, and that is the room.  The bunk goes east,
-    # against the WC wall, which leaves the whole west strip clear for the
-    # gallery door; the cupboard takes the corner behind it.  The north 550 is
-    # the landing both doors share.
-    ('bunk',     14645, 9075, 15545, 10975, 'bunk'),
-    ('shelves',  14080, 10425, 14645, 10975, 'cupboard'),
+    # 920 x 2450.  The bunk is built in, wall to wall, and the north 550 is the
+    # landing the gallery door and the WC door share.  Nothing is left to stand
+    # a cupboard on, so the cupboard is drawers under the bunk — which is what
+    # you would build into a berth this size anyway.
+    ('bunk',     14090, 9075, 14990, 10975, 'bunk, built in'),
+    ('under',    14140, 9375, 14940, 10875, 'drawers under the bunk'),
     # ------------------------------------------------- guest / service WC
-    # 1775 wide now instead of 1150, and entered from the den at the north-east.
-    # Everything sits on a wall — shower north-west, pan on the west, basin
-    # along the south — so the door lands on clear floor.
-    ('shower',   15705, 8575, 16605, 9575, ''),
-    ('wc',       15705, 9800, 16325, 10420, ''),
+    # 2320 wide now instead of 1150.  Both doors are at the north-west, so the
+    # shower goes to the far corner and the pan and basin take the two far
+    # walls, leaving that corner clear to walk into.
+    ('shower',   16330, 8575, 17380, 9575, ''),
+    ('wc',       15170, 9900, 15790, 10520, ''),
     ('basin',    16480, 10475, 17380, 10915, ''),
 ]
 

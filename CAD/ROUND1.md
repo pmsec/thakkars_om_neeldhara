@@ -387,9 +387,26 @@ Kept — 31 pieces, the ones that prove the plan works:
 * both master baths — vanity, basin, WC, curved glass shower
 * guest / service WC — shower, WC, basin
 * both master beds, and the bunk in help's room
-* the mandir in the parents' pod and the coffee / pantry in Karan's, both as
-  corner units behind the retained deck void: one leg 1200 along the void's
-  back wall, the other 1200 following the pod glazing, 600 deep throughout
+* **the mandir** in the parents' pod — a corner unit with an arched front,
+  flush into the corner between the retained void's back wall and the pod
+  glazing. That corner is **40.5°, not 90°** (the glazing leaves it heading
+  south-west), so the unit is a wedge, which is what a shrine wants: the idol
+  stands deep in it and you see it through the arch, and the point behind is
+  the back of the niche rather than dead worktop. 1200 legs on each wall,
+  arched front on a 1021 chord bulging 200 into the pod, and a **480 × 340**
+  idol platform on the axis — 20 off the glass, 73 off the void wall, 130 clear
+  in front. **0.64 m² / 6.9 sq ft**, against 0.24–0.54 for a normal counter
+  mandir
+* **the coffee / pantry** in Karan's pod — a straight run, the exact length of
+  the void's back wall and flush with it. It is a **trapezoid, not a
+  rectangle**: 1615 along the back but only **1051 along the front**, because
+  the glazing leans away, so full 600 depth starts 563 in. The fittings are set
+  out off *that* line and not off the back wall's length — setting out off the
+  1615 is what left the old L-shaped version with 300-wide stretches. Sink 400,
+  one machine 320, **400 of clear landing** between them, and the tapering end
+  at the glass left as an open shelf. **0.78 m² / 8.4 sq ft**
+  · 1051 is inside the 900–1200 usually wanted for a beverage point, but it
+  will not also take a 500 landing; that wants 1220
 * deck — the two grass beds, the strength trainer, the spa, the fountain and
   the parapet planter
 * the dining table, in the great room beside the serving hatch

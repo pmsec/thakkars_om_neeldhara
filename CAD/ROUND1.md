@@ -512,7 +512,12 @@ settles three separate things at once:
 
 ### The bed — square at the head, curved at the foot
 
-**1800 × 2000. The foot corners come off at 594** — a third of the width — and
+**1930 × 2032 — the US EASTERN KING, 76 × 80 in**, not the Indian 1800 × 2000
+that was drawn first. The wall carries it: it costs 66 of headboard each side
+and 32 of floor at the foot, and nothing else changes. The real price is that
+the mattress and every fitted sheet then have to be imported.
+
+**The foot corners come off at 594** — a third of the width — and
 **the head is square**, so the bed sits flush on the headboard instead of
 leaving two crescent gaps behind the pillows. Curve where you see it, square
 where it has to meet something.
@@ -520,20 +525,20 @@ where it has to meet something.
 | | mm | ft |
 |---|---|---|
 | headboard | 3635 × 200 | 11'-11" × 0'-8" |
-| — showing each side of the bed | 918 | 3'-0" |
+| — showing each side of the bed | 852 | 2'-10" |
 | — in front of the column's face | 120 | 0'-5" |
-| mattress | 1800 × 2000 | 5'-11" × 6'-7" |
+| mattress | 1930 × 2032 | 6'-4" × 6'-8" |
 | foot corner radius | 594 | 1'-11" |
 | side tables, each | 550 × 450 | 1'-10" × 1'-6" |
-| bare headboard beyond each table | 318 | 1'-0" |
-| clear west of the bed | 2655 | 8'-9" |
+| bare headboard beyond each table | 252 | 0'-10" |
+| clear west of the bed | 2623 | 8'-7" |
 | clear north, to the terrace wall | 1518 | 4'-11" |
 | clear south, to the partition | 3008 | 9'-10" |
 
-**It sleeps 1800 across at the shoulders**, which is what a king should do and
-what the round bed could not — that one managed 1482, or 741 each. Two rounded
-corners at the foot are the whole of what is given up, and nobody sleeps in the
-corners of a bed.
+**It sleeps 1930 across**, which is a full American king and 130 more than the
+Indian one. The round bed, for comparison, managed 1482 at the shoulders — 741
+each. Two rounded corners at the foot are the whole of what is given up here,
+and nobody sleeps in the corners of a bed.
 
 **The mattress is still not a catalogue item** — a 594 radius on two corners has
 to be cut — but the frame and base do the shaping and only the foot end is
@@ -543,6 +548,40 @@ as softened rather than arched and most makers will do it.
 **And the room is no longer crowded at the bottom.** The bath, the wardrobes and
 the dressing gap have the southern half to themselves; the bed has the northern
 half with 2655 of open floor beside it.
+
+### The console round the outside of the arch
+
+The bath's arch is the best wall in the bedroom and it had nothing on it. A
+console now runs **the whole of it** — off the pod partition, over the crown,
+down the straight tail and dead into the dressing partition.
+
+| | mm | ft |
+|---|---|---|
+| curved run on the arch | 2721 | 8'-11" |
+| straight tail | 960 | 3'-2" |
+| **total** | **3681** | **12'-1"** |
+| depth | 400 | 1'-4" |
+| cupboard under it | 1.58 m² | 17 sq ft |
+| wall cabinet over, at the partition end | 900 × 250 | 3'-0" × 0'-10" |
+
+It is struck as an **offset of the sweep's own outer face**, so it beds on the
+curve for its whole length — the same move as the vanity on the inside, and the
+reason both of them sit on the wall instead of touching it at a point.
+
+**Offsetting outward is the easy direction.** Pushing out from a convex curve
+only ever increases the radius, so unlike the vanity inside there is no depth
+at which this one folds on itself. 400 is a choice, not a limit.
+
+**One thing had to be cut, and it is worth recording.** The back and the front
+do NOT start at the same point on the curve: offsetting outward at the
+springing throws the front face straight through the pod partition. Each face
+is therefore cut where *it* crosses that wall, which puts both ends on X 4405
+and makes the closing edge a clean vertical — the same trick `mb_wall` uses on
+the arch itself. Drawn naively the console overhangs into the pod by 400.
+
+Cupboards under it the whole way; one wall cabinet over the straight tail at
+the partition end, drawn dashed because it is over, not in plan. The top is for
+the art and the plants.
 
 ### The bath door had to move for the line
 

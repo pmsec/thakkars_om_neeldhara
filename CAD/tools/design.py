@@ -152,7 +152,11 @@ def M(v):
 HB_T = 200
 HB_Y0, HB_Y1 = 1950, 5585           # the blank stretch, jamb to jamb
 HB_X = END_E - 150 - HB_T           # 24730 — the headboard's FRONT face
-BED_W, BED_L = 1800, 2000           # across, and out from the headboard
+# US EASTERN KING, 1930 x 2032 — 76 x 80 in.  Not the Indian 1800 x 2000 that
+# was drawn first: Karan asked for the American size and the wall carries it.
+# It costs 66 of headboard each side and 32 of floor at the foot.  The mattress
+# and every fitted sheet then have to be imported, which is the real price.
+BED_W, BED_L = 1930, 2032           # across, and out from the headboard
 BED_R = 594                         # foot corners only; the head is square
 BED_Y0 = (HB_Y0 + HB_Y1 - BED_W) / 2
 BED_Y1 = BED_Y0 + BED_W

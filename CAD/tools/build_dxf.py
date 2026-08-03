@@ -254,6 +254,8 @@ def main():
         prim(p)
     for p in R.mb_door(D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
         prim(R.mirror_prim(p))
+    for p in R.arch_console():          # Karan's only — drawn mirrored
+        prim(R.mirror_prim(p))
     for p in R.suite_screen():                  # Karan's dressing screen
         prim(p)
     for p in R.wc_out_door():

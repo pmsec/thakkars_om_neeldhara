@@ -346,6 +346,38 @@ def mb_door(door=None, hinge='S'):
             ('line', x, p, x + w, p, 'solid')]
 
 
+def arch_console(dep=400, n=140, over=900, over_d=250):
+    """The console that curls round the OUTSIDE of the bath's arch.
+
+    Written in the WEST frame like everything else on this sweep; it is drawn
+    mirrored, because it is Karan's only.
+
+    The bath's arch is the best wall in the bedroom and it had nothing on it.
+    This runs the whole of it — off the pod partition, over the crown, down the
+    straight tail, and dead into the dressing partition — struck as an offset of
+    the sweep's own outer face, so it beds on the curve for its whole length
+    the way the vanity does on the inside.
+
+    Offsetting OUTWARD from a convex curve only ever increases the radius, so
+    unlike the vanity inside there is no depth at which this one folds on
+    itself: 400 is a choice, not a limit.
+
+    Cupboards under it the whole way; one wall cabinet over the straight tail at
+    the partition end, drawn dashed because it is over, not in plan.  The top is
+    for the art and the plants."""
+    h = D.T_MB / 2
+    # The back and the front do NOT start at the same u.  Offsetting outward at
+    # the springing throws the front face PAST the pod wall, so each face is cut
+    # where IT crosses that wall — which puts both ends on X = MB_XE and makes
+    # the closing edge a clean vertical, the same trick mb_wall uses.
+    back = [mb_pt(u, -h) for u in np.linspace(mb_u_at_wall(-h), 1.0, n)]
+    front = [mb_pt(u, -h - dep) for u in np.linspace(mb_u_at_wall(-h - dep), 1.0, n)]
+    ys, xb = D.SCR_Y - D.T_SCR, D.MB_XW - D.T_MB      # 7675, 2325
+    return [('poly', back + [(xb, ys), (xb - dep, ys)] + list(reversed(front)),
+             'solid'),
+            ('rect', xb - over_d, ys - over, xb, ys, 'dash')]
+
+
 def suite_screen():
     """Karan's dressing screen — brown tinted glass, in the EAST frame.
 

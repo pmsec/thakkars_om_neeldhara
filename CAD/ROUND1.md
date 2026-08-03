@@ -90,13 +90,15 @@ per half with a 150 party wall at the centre.
 17 650–19 750, which is almost entirely the 1000 × 4950 open service duct.
 They move into the wing strips, at the south end, **against** that duct — which
 is what it is for: the builder's own `M.TOILET 02` and `COMMON TOILET`
-ventilate into it through windows. Each bath is now 1530 × 2895 (48 sq ft,
-against the builder's own 40 sq ft) with a real openable window.
+ventilate into it through windows. Each bath is now **1930 clear × 3520 at its
+deepest** (69 sq ft, against the builder's own 40) with a real openable window,
+and its north side is an arch rather than a wall — see *The master baths are
+arches too*, below.
 
 **3. The suite becomes one L-shaped room.** The wall between the suite and the
 wing strip comes out for the northern 5300, so the brief's "one room ·
-cupboards + dressing + terrace" reads properly. **377 sq ft each**, with a
-2895-long bath off the south end.
+cupboards + dressing + terrace" reads properly. **350 sq ft each**, with the
+bath off the south end behind an arched wall.
 
 **And the wall between each bed and its pod comes out too**, replaced by a
 sliding glass partition. What is left as wall is the 1420 at the north end —
@@ -229,24 +231,111 @@ asking it to match the column. Finish it in wood if you want the same effect.
 |---|---|---|
 | GREAT ROOM | 41.4 | 445 |
 | ALL-WEATHER DECK (net of the two voids) | 35.8 | 385 |
-| MASTER SUITE — parents | 35.0 | 377 |
-| MASTER SUITE — karan | 35.0 | 377 |
+| MASTER SUITE — parents | 32.5 | 350 |
+| MASTER SUITE — karan | 32.5 | 350 |
 | FAMILY ROOM | 20.2 | 218 |
 | MUSIC + WORK DEN | 20.2 | 218 |
 | KITCHEN (one room with the utility) | 10.5 | 113 |
 | ENTRY GALLERY | 9.4 | 101 |
-| PARENTS' BATH | 4.4 | 48 |
-| KARAN'S BATH | 4.4 | 48 |
+| PARENTS' BATH | 6.5 | 69 |
+| KARAN'S BATH | 6.5 | 69 |
 | HELP'S ROOM | 4.4 | 47 |
 | TERRACE ×2 | 3.7 each | 40 each |
 | GUEST / SERVICE WC | 3.0 | 33 |
 | STORE | 2.4 | 26 |
-| **total of named rooms** | **233.6** | **2514** |
+| **total of named rooms** | **232.7** | **2504** |
 
 The great room is 445 sq ft against A-101's 474, and reads 6250 across the
 removed party wall at the deck, 8220 at the waist and 7280 at the pods — the
 pod glazing is a cubic now, not an arc. It gives 2.1 m² back to the entry
 gallery's apse, which projects into it.
+
+---
+
+## The master baths are arches
+
+The bath used to be a rectangle in the corner of the wing strip: 1518 clear ×
+2820, north wall straight across, west wall straight down. At that width it
+could not carry a fitting on both long walls — a 550 vanity opposite a 600 pan
+left **350 between their fronts**, against the 600 you want in front of a pan.
+It was the one genuinely bad room on the drawing.
+
+Karan drew the fix: a single curve springing off the pod partition, cresting
+inside the suite, and turning down to become the bath's own west wall. The bath
+takes the ground it needs from the suite, and the suite gets a curved wall
+instead of a corner.
+
+### The set-out
+
+Two quadrants meeting at the crown with a shared horizontal tangent, so the
+join does not read. A single ellipse cannot do it — the crown is 1240 in from
+one end and only 690 from the other, and one ellipse cannot put its widest
+point off-centre like that.
+
+| | |
+|---|---|
+| east flank | ellipse, semi-axes 1550 × 1500, leaving the pod wall at about 52° |
+| west flank | quarter circle, radius 765, turning the sweep vertical |
+| crown | X 3165, Y 5950 on the centreline — 700 further into the suite than the old wall |
+| meets the pod wall at | Y 6550 on the centreline; the band spans 6432–6678 |
+| thickness | 150 throughout, offset along the curve's own normal |
+
+That last row is why the sweep needed its own machinery. The circular-arc code
+that draws the entry gallery cannot express an ellipse, so the faces are struck
+by offsetting the centreline along its own normal (`retrofit.mb_pt`), the same
+method the guest WC's apse uses.
+
+**It clears the sliding partition.** The suite-to-pod sliders close over Y
+2620–6175. The sweep's outer face reaches the pod wall at 6432, so **257 of the
+partition is left as the slider's south jamb** — a jamb, not a collision.
+
+### What the room does now
+
+| | mm | ft |
+|---|---|---|
+| clear width at the shower | 1930 | 6'-4" |
+| deepest, crown to the south wall | 3520 | 11'-7" |
+| clear floor, net of every fitting | 3.81 m² | 41 sq ft |
+| **largest circle that fits on the clear floor** | **1500** | **4'-11"** |
+| door, clear | 800 | 2'-7" |
+| in front of the pan | 1330 | 4'-4" |
+| pan to the shower screen | 355 | 1'-2" |
+| console front to the pan | 653 | 2'-2" |
+| walk-in shower | 1850 × 950 | 6'-1" × 3'-1" |
+
+The 1500 circle is the number that matters. That is the wheelchair turning
+circle the guest WC could not come close to (it manages 1000), and this room
+now meets it with the fittings in.
+
+### The three fittings
+
+* **The arched vanity** — struck off the sweep itself, not stood against it. A
+  straight top against a curved wall touches at one point and gaps either side;
+  this one is the same curve offset inwards, so it beds on the wall for its
+  whole length. **1267 long, 520 deep**, easing to 330 at its west end so it
+  dies into the arch instead of ending in a square corner. The basin sits in it
+  at the duct end, 100 clear of the wall behind.
+* **The pan** goes on the duct wall, because the soil stack is directly behind
+  it. 600 out from the wall, 620 wide.
+* **The shower** takes the whole south end — 1850 × 950 behind a glass screen.
+  At 1930 clear a full-width wet zone is simpler than a cubicle with a dead gap
+  beside it. 1850 rather than 1930 because the builder leaves a 230 × 1000
+  column on the duct's corner and 80 of it stands in that corner of the room.
+
+### One wall that was missing
+
+The bath's east side is the enclosure to the builder's main service duct, and
+**it had never been drawn** — the shell arrives with the shaft simply open, so
+there was nothing there in either the builder's fabric or ours. The bath cannot
+be closed without it. It is now a 150 wall from Y 6650 to the outer wall,
+picking up exactly where the pod partition above it leaves off, so the two read
+as one line. It is also what the pan sits on.
+
+### The cost
+
+The suite pays for it: **377 → 350 sq ft** each. The bath goes **48 → 69**. Net
+across the home is −0.9 m², which is the extra masonry — a curve is longer than
+the straight line it replaces.
 
 ---
 
@@ -415,7 +504,8 @@ Kept — 31 pieces, the ones that prove the plan works:
 * the **serving hatch** is at the west end of run B, X 6900–8000, so it opens
   into the parents' pod — ready for the dining table to move there
 * utility — stacked washer and dryer
-* both master baths — vanity, basin, WC, curved glass shower
+* both master baths — arched vanity with the basin set into it, WC on the
+  duct wall, full-width walk-in shower
 * guest / service WC — shower, WC, basin
 * the bunk in help's room
 * **the mandir** in the parents' pod — a corner unit with an arched front,
@@ -461,7 +551,6 @@ need. Beside the serving hatch it is also next to the kitchen.
 ## Settled in this round
 
 * entry hall size — kept as drawn, with the lift lobby now shown for reference
-* baths — left as they are
 * **help's room, the guest WC and the store** — re-cut round the WC's elliptical
   apse. Help's room 4.4 m², WC 3.0, store 2.4; see the section above
 * all A-101 furniture — resolved, two pieces moved (see above)

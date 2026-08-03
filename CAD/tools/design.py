@@ -51,13 +51,38 @@ WING_S = 9545                       # wing inner face of the south wall
 MID = 12240                         # centreline of the home
 
 # bay lines along the length, west half (mirror with M())
-SUITE_W_E = 2750        # suite / strip
+SUITE_W_E = 2750        # suite / strip — terrace set-out only now, see MB_*
 STRIP_W0, STRIP_W1 = 2875, 4405     # dressing + bath strip, clear
 POD_W0 = 4530           # wing wall / pod
 POD_W1 = 8195           # family-room bay, 3665
 LIV_W0 = 8320           # living bay, 3845
 DUCT_W0, DUCT_W1 = 4555, 5555       # main service duct - KEEP CLEAR
-BATH_N = 6650           # dressing / bath split
+BATH_N = 6650           # old dressing / bath split — superseded by the sweep
+
+
+# ------------------------------------------------- the master baths' sweep
+# The bath's north side is not a wall across the strip any more.  It springs
+# off the pod partition, crests inside the suite, and then turns down and
+# BECOMES the bath's west wall — one continuous sweep, and the vanity is
+# struck off it rather than stood against it.
+#
+# Two quadrants meeting at the crown with a shared horizontal tangent, so the
+# join is invisible:
+#   east flank   a long shallow ellipse leaving the pod wall at about 50°
+#   west flank   a quarter circle that turns the sweep vertical
+# Everything below is the CENTRELINE of a T_MB wall; the faces are offset from
+# it along its own normal (retrofit.mb_pt), which is the only way to band a
+# curve that is not a circular arc.
+T_MB = 150
+MB_XE = STRIP_W1                    # 4405 — east face, on the pod / duct line
+MB_CX, MB_CY = 3165, 5950           # the crown, on the centreline
+MB_YE = 6550                        # where the centreline meets the pod wall
+MB_AE = 1550                        # east flank, semi-axis along X
+MB_BE = (MB_YE - MB_CY) / (1 - _m.sqrt(1 - ((MB_XE - MB_CX) / MB_AE) ** 2))
+MB_RW = 765                         # west flank, a quarter circle
+MB_YW = MB_CY + MB_RW               # 6715 — where it has turned vertical
+MB_XW = MB_CX - MB_RW + T_MB / 2    # 2475 — the bath's west face below that
+MB_DOOR = (300, 1100)               # the door, along the straight west wall
 
 
 # The two retained deck voids stay exactly as built: opening plus the builder's
@@ -73,20 +98,10 @@ def M(v):
 # --------------------------------------------------------------------- rooms
 # (name, subtitle, list of rectangles, note)
 ROOMS = [
-    ("MASTER SUITE", "PARENTS",
-     [(END_W + 150, 1350, STRIP_W1, BATH_N), (END_W + 150, BATH_N, SUITE_W_E, WING_S)],
-     "one room  ·  bed + dressing, joinery to be designed"),
-    ("MASTER SUITE", "KARAN",
-     [(M(STRIP_W1), 1350, END_E - 150, BATH_N), (M(SUITE_W_E), BATH_N, END_E - 150, WING_S)],
-     "one room  ·  bed + dressing, joinery to be designed"),
     ("TERRACE", "PARENTS", [(-350, 0, SUITE_W_E, 1200)],
      "under high glass roof"),
     ("TERRACE", "KARAN", [(M(SUITE_W_E), 0, M(-350), 1200)],
      "under high glass roof"),
-    ("PARENTS' BATH", "", [(STRIP_W0, BATH_N, STRIP_W1, WING_S)],
-     "window east into the builder's service duct"),
-    ("KARAN'S BATH", "", [(M(STRIP_W1), BATH_N, M(STRIP_W0), WING_S)],
-     "window west into the builder's service duct"),
     ("FAMILY ROOM", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay"),
     ("MUSIC + WORK DEN", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay"),
     ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck"),
@@ -97,6 +112,9 @@ ROOMS = [
     # retrofit.lobby_polys().
     # GUEST / SERVICE WC, HELP'S ROOM and STORE are not rectangles either — the
     # WC's apse cuts all three.  See retrofit.lobby_polys().
+    # The two MASTER SUITES and their BATHS are not rectangles now either: the
+    # sweep set out above is the boundary between each pair.  See
+    # retrofit.suite_polys().
 ]
 
 # --------------------------------------------------- entry gallery, setting out
@@ -175,11 +193,21 @@ def wc_y(x):
 T_INT, T_THIN = 150, 110
 
 NEW_WALLS = [
-    # --- wing strips: bath enclosure, both ends
-    (SUITE_W_E + 62, BATH_N, STRIP_W1 + 75, BATH_N, T_INT, [(150, 1050)]),
-    (SUITE_W_E + 62, BATH_N, SUITE_W_E + 62, WING_S, T_INT, []),
-    (M(SUITE_W_E + 62), BATH_N, M(STRIP_W1 + 75), BATH_N, T_INT, [(150, 1050)]),
-    (M(SUITE_W_E + 62), BATH_N, M(SUITE_W_E + 62), WING_S, T_INT, []),
+    # --- wing strips: bath enclosure, both ends.
+    # The north wall and the west wall used to be two straight walls meeting in
+    # a corner.  They are one thing now: the sweep does the north side and the
+    # top of the west side, and this is only the straight tail of it, from
+    # where the sweep has finished turning down to the outer wall.  The door is
+    # a gap in that tail, hard against the curve.  See retrofit.mb_wall().
+    (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR]),
+    (M(MB_XW - T_MB / 2), MB_YW, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR]),
+    # The bath's east side is the enclosure to the builder's main service duct.
+    # It was never drawn — the shell arrives with the shaft simply open — and
+    # the bath cannot be closed without it.  It picks up exactly where the pod
+    # partition above it leaves off, so the two read as one line, and it is the
+    # wall the pan sits on because the soil stack is directly behind it.
+    (MB_XE + T_INT / 2, BATH_N, MB_XE + T_INT / 2, WING_S, T_INT, []),
+    (M(MB_XE + T_INT / 2), BATH_N, M(MB_XE + T_INT / 2), WING_S, T_INT, []),
 
     # --- suite <-> pod, the 125 line between the two.  The 1050 slider is a
     #     gap left in this wall; it is not a hole cut in anything.
@@ -413,13 +441,21 @@ _MIRROR = [
     # mirror rule stay, so it is one line to bring back:
     #   ('bed-e', 700, 6975, 2700, 8775, 'king 1800 x 2000, head on the bath wall'),
     # ---------------------------------------------------------------- bath
-    ('counter',  3855, 6900, 4405, 8300, 'vanity'),
-    ('basin',    3955, 7350, 4355, 7850, ''),
-    ('wc',       2905, 7500, 3505, 8120, ''),
-    ('cshower',  3455, 8595, 4405, 9545, 'curved glass shower'),
+    # The vanity is NOT here.  It is a curved console struck off the sweep, so
+    # it sits on that wall for its whole length instead of touching it at one
+    # point — see retrofit.mb_console().  What is left is the pan and the
+    # shower, and both are set out off the two things that cannot move: the
+    # soil stack is in the builder's main service duct, so the pan goes on the
+    # duct wall, and the shower takes the whole south end because at 1930 clear
+    # a full-width wet zone is simpler than a cubicle with a gap beside it.
+    ('wc-e',     3805, 7620, 4405, 8240, ''),      # 600 off the duct wall
+    # 4325, not the wall at 4405: the builder leaves a 230 x 1000 column on
+    # the duct's corner and 80 of it stands in this corner of the room.
+    ('shower',   2475, 8595, 4325, 9545, 'walk-in, 1850 x 950'),
 ]
 
-_FLIP = {'bed-e': 'bed-w', 'bed-w': 'bed-e', 'bed-n': 'bed-n', 'bed-s': 'bed-s'}
+_FLIP = {'bed-e': 'bed-w', 'bed-w': 'bed-e', 'bed-n': 'bed-n', 'bed-s': 'bed-s',
+         'wc-e': 'wc-w', 'wc-w': 'wc-e'}
 FURNITURE = (list(_ONCE) + list(_MIRROR)
              + [(_FLIP.get(k, k), M(c), b, M(a), d, lab)
                 for k, a, b, c, d, lab in _MIRROR])
@@ -451,14 +487,14 @@ DIMS = [
     (16900, -900, M(POD_W0), -900, ''),
     # wing set-out, both ends
     (END_W, 11900, END_W + 150, 11900, ''),
-    (END_W + 150, 11900, SUITE_W_E, 11900, ''),
-    (SUITE_W_E, 11900, SUITE_W_E + 150, 11900, ''),
-    (SUITE_W_E + 150, 11900, 4380, 11900, ''),
+    (END_W + 150, 11900, MB_XW - T_MB, 11900, ''),
+    (MB_XW - T_MB, 11900, MB_XW, 11900, ''),
+    (MB_XW, 11900, 4380, 11900, ''),
     (4380, 11900, POD_W0, 11900, ''),
     (M(POD_W0), 11900, M(4380), 11900, ''),
-    (M(4380), 11900, M(SUITE_W_E + 150), 11900, ''),
-    (M(SUITE_W_E + 150), 11900, M(SUITE_W_E), 11900, ''),
-    (M(SUITE_W_E), 11900, M(END_W + 150), 11900, ''),
+    (M(4380), 11900, M(MB_XW), 11900, ''),
+    (M(MB_XW), 11900, M(MB_XW - T_MB), 11900, ''),
+    (M(MB_XW - T_MB), 11900, M(END_W + 150), 11900, ''),
     (M(END_W + 150), 11900, END_E, 11900, ''),
     # depth
     (-1400, DECK_N, -1400, DECK_S, 'DECK  '),

@@ -216,6 +216,9 @@ def main():
             s.poly(q, fill=NEWW, stroke='none')
     for q in R.wc_wall():                # the guest WC's apse — same masonry
         s.poly(q, fill=NEWW, stroke='none')
+    for q in R.mb_wall():                # the two master baths' sweep
+        s.poly(q, fill=NEWW, stroke='none')
+        s.poly(R.mirror_poly(q), fill=NEWW, stroke='none')
     for q in R.wc_door():                # its door, curved and drawn shut
         s.poly(q, fill='none', stroke=FURN, stroke_width=1.1)
 
@@ -256,6 +259,9 @@ def main():
         prim(p)
     for p in R.wc_console():
         prim(p)
+    for p in R.mb_console():             # the arched vanity, both suites
+        prim(p)
+        prim(R.mirror_prim(p))
     for p in R.wc_out_door():
         prim(p)
     for p in R.corner_units():
@@ -308,12 +314,19 @@ def main():
     for nm, sub, p, note, (lx_, ly_) in R.poly_rooms():
         A = R.poly_area(p)
         big = A > 25
-        s.text(lx_, ly_, ' '.join(nm) if big else nm, 30 if big else 19, TXT,
-               weight='bold', letter=1.4)
-        s.text(lx_, ly_ + (330 if big else 250),
+        # letter-spaced through the attribute, not by joining with spaces: SVG
+        # collapses runs of whitespace, so ' '.join eats the gap between words
+        # and MASTER SUITE comes out as MASTERSUITE.
+        s.text(lx_, ly_, nm, 30 if big else 19, TXT, weight='bold',
+               letter=9 if big else 1.4)
+        dy = 330 if big else 250
+        if sub:
+            s.text(lx_, ly_ + dy, sub, 15 if big else 14, '#2c5c61', letter=2.5)
+            dy += 230 if big else 200
+        s.text(lx_, ly_ + dy,
                f'{A:.1f} m²  ·  {A * 10.7639:.0f} sq ft', 14 if big else 13, TXT2)
         if note:
-            s.text(lx_, ly_ + (560 if big else 480), note, 11, TXT2)
+            s.text(lx_, ly_ + dy + (230 if big else 200), note, 11, TXT2)
 
     # ----------------------------------------------------------- dimensions
     for x1, y1, x2, y2, _prefix in D.DIMS:

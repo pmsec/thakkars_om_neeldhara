@@ -142,8 +142,16 @@ def poly_rooms():
     great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
     kitchen, helps, gallery, wc, store = lobby_polys()
+    bath, suite = suite_polys()
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
+    suite_note = 'one room  ·  bed + dressing, joinery to be designed'
+    bath_note = 'arched wall  ·  1930 clear'
     return [
+        ('MASTER SUITE', 'PARENTS', suite, suite_note, (1150, 4200)),
+        ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note,
+         (D.M(1150), 4200)),
+        ("PARENTS' BATH", '', bath, bath_note, (3140, 7750)),
+        ("KARAN'S BATH", '', mirror_poly(bath), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (16620, 9760)),
         ('STORE', '', store, '', (18200, 10250)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
@@ -160,6 +168,119 @@ def poly_rooms():
          'semicircular apse, 230 throughout',
          (D.MID, 9950)),
     ]
+
+
+# ------------------------------------------------ the master baths' sweep
+def mb_pt(u, off=0.0):
+    """A point on the master bath's sweep, offset normal to itself.
+
+    u runs -1 at the pod wall, through 0 at the crown, to +1 where the curve
+    has finished turning and becomes the straight west wall.  Past -1 it keeps
+    going, which is what lets each face be cut square on the pod wall instead
+    of stopping wherever the offset happens to land.  off > 0 is INTO the bath
+    — south over the crown, east down the west flank.
+
+    Two quadrants, not one: a single ellipse cannot put its crown 1240 in from
+    one end and 690 from the other.  They share a horizontal tangent at the
+    crown, so the join does not read."""
+    if u <= 0:                                   # east flank, off the pod wall
+        th = -u * math.asin((D.MB_XE - D.MB_CX) / D.MB_AE)
+        c, s = math.cos(th), math.sin(th)
+        x, y = D.MB_CX + D.MB_AE * s, D.MB_CY + D.MB_BE * (1 - c)
+        tx, ty = D.MB_AE * c, D.MB_BE * s        # d/dth, pointing east-south
+        nx, ny = -ty, tx                         # left of it = into the bath
+    else:                                        # west flank, a quarter circle
+        ph = u * math.pi / 2
+        c, s = math.cos(ph), math.sin(ph)
+        x, y = D.MB_CX - D.MB_RW * s, D.MB_CY + D.MB_RW * (1 - c)
+        tx, ty = -D.MB_RW * c, D.MB_RW * s       # d/dph, pointing west-south
+        nx, ny = ty, -tx                         # right of it = into the bath
+    m = math.hypot(nx, ny)
+    return x + off * nx / m, y + off * ny / m
+
+
+def mb_u_at_wall(off):
+    """u where the sweep's `off` face crosses the pod wall.
+
+    Bisection rather than algebra: the offset of an ellipse is not an ellipse,
+    so there is nothing to solve in closed form.  x falls as u rises."""
+    lo, hi = -1.6, 0.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        if mb_pt(mid, off)[0] > D.MB_XE:
+            lo = mid
+        else:
+            hi = mid
+    return hi
+
+
+def mb_pts(off=0.0, n=140):
+    """The `off` face, from the pod wall round to where it turns vertical."""
+    return [mb_pt(u, off) for u in np.linspace(mb_u_at_wall(off), 1.0, n)]
+
+
+def mb_wall():
+    """The sweep as one filled band, cut square on the pod wall."""
+    h = D.T_MB / 2
+    return [mb_pts(h) + list(reversed(mb_pts(-h)))]
+
+
+def mb_console(u1=-0.14, d0=330, d1=520, fade=0.16):
+    """The arched vanity, struck off the sweep itself.
+
+    Karan asked for the vanity in the arc, and this is the only honest way to
+    do it: a straight top against a curved wall touches it at one point and
+    gaps either side.  This one is the same curve offset inwards, so it beds on
+    the wall for its whole length.
+
+    It runs at a constant 520 from the pod wall — which is where the plumbing
+    is, the builder's main service duct being directly behind it — and eases
+    off over the last 300 so the west end is a soft return rather than a square
+    520 corner standing in the room.  520 is safe: the east flank's radius of
+    curvature never drops below 1500, so the offset curve stays convex and the
+    top can be made in one piece."""
+    h = D.T_MB / 2
+    u0 = mb_u_at_wall(h)                 # start ON the wall, not near it
+    us = list(np.linspace(u0, u1, 80))
+
+    def dep(u):
+        s = min(1.0, (u1 - u) / fade)                        # 0 at the west end
+        return d0 + (d1 - d0) * s * s * (3 - 2 * s)          # smoothstep
+
+    band = ([mb_pt(u, h) for u in us]
+            + [mb_pt(u, h + dep(u)) for u in reversed(us)])
+    bx, by = mb_pt(u0 + 0.36, h + 300)   # 100 clear of the wall behind it
+    return [('poly', band, 'solid'), ('circle', bx, by, 200, 'light')]
+
+
+def suite_polys():
+    """(bath, suite) for the west end.  Mirror them for the east.
+
+    The sweep is the whole boundary between the two, so neither is a rectangle
+    any more: the bath is what is south-east of it, the suite is everything
+    else in the wing."""
+    inner, outer = mb_pts(D.T_MB / 2), mb_pts(-D.T_MB / 2)
+    bath = (inner + [(D.MB_XW, D.WING_S), (D.MB_XE, D.WING_S)])
+    suite = ([(D.END_W + 150, 1350), (D.MB_XE, 1350)] + outer
+             + [(D.MB_XW - D.T_MB, D.WING_S), (D.END_W + 150, D.WING_S)])
+    return bath, suite
+
+
+def mirror_poly(p):
+    return [(D.M(x), y) for x, y in reversed(p)]
+
+
+def mirror_prim(p):
+    """The mirror of one drawing primitive, about the centre of the home."""
+    if p[0] == 'poly':
+        return ('poly', mirror_poly(p[1]), p[2])
+    if p[0] == 'circle':
+        return ('circle', D.M(p[1]), p[2], p[3], p[4])
+    if p[0] == 'line':
+        return ('line', D.M(p[1]), p[2], D.M(p[3]), p[4], p[5])
+    if p[0] == 'rect':
+        return ('rect', D.M(p[3]), p[2], D.M(p[1]), p[4], p[5])
+    raise ValueError(p[0])
 
 
 # ------------------------------------------------- the guest WC's arched wall
@@ -596,6 +717,6 @@ def design_masks():
                    cy + math.sin(rad) * (r - t / 2) - C.CELL,
                    cx + math.cos(rad) * (r + t / 2) + C.CELL,
                    cy + math.sin(rad) * (r + t / 2) + C.CELL)
-    for q in wc_wall():
+    for q in wc_wall() + mb_wall() + [mirror_poly(q_) for q_ in mb_wall()]:
         C.put_poly(wl, q)
     return fl, wl, keep_wall_mask()

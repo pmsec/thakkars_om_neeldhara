@@ -164,7 +164,8 @@ def main():
             h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
             h.set_solid_fill(color=1)
 
-    for q in R.wc_wall():               # the guest WC's apse, same masonry
+    for q in (R.wc_wall() + R.mb_wall()          # the WC's apse and the two
+              + [R.mirror_poly(q_) for q_ in R.mb_wall()]):   # baths' sweep
         poly(msp, q, 'PROP-WALL-NEW')
         h = msp.add_hatch(color=1, dxfattribs={'layer': 'PROP-WALL-NEW'})
         h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
@@ -245,6 +246,9 @@ def main():
         prim(p)
     for p in R.wc_console():
         prim(p)
+    for p in R.mb_console():            # the arched vanity, both suites
+        prim(p)
+        prim(R.mirror_prim(p))
     for p in R.wc_out_door():
         prim(p)
     for p in R.corner_units():

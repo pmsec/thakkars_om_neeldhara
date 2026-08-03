@@ -495,34 +495,54 @@ The head sits on **X 24850, not the wall face at 24930**: the builder leaves a
 230 × 1200 column here whose face is 80 proud over the bed's northern 280. Bed
 and both tables are set to that line, so the three read as one run.
 
-### The bed itself — rectangular, corners taken right off
+### The headboard is the whole wall, and it swallows the column
 
-**1800 × 2000 with a 594 corner radius** — a third of the width. What is left
-straight is 612 across the head and 812 down each side; everything else is
-curve. It is the room's third curve after the bath's arch and the console
-struck off it.
+**3635 long, window jamb to window jamb, 200 thick.** One decision, and it
+settles three separate things at once:
+
+* **The column disappears into it.** The builder leaves a 230 × 1200 column on
+  this wall standing **80 proud** over Y 1950–3150. At 200 the headboard passes
+  **120 clear in front of it**, so the column is inside the joinery and the wall
+  reads flat. Nothing is boxed out, nothing is left sticking into the room, and
+  the column is still on the drawing where the architect needs to see it.
+* **The bed centres on it exactly** — 3635 less an 1800 bed leaves **918 of
+  headboard each side**, equal left and right.
+* **It covers no glass.** It stops precisely on the 600 window's south jamb at
+  Y 1950 and the 3880 window's north jamb at Y 5585, so it can be full height.
+
+### The bed — square at the head, curved at the foot
+
+**1800 × 2000. The foot corners come off at 594** — a third of the width — and
+**the head is square**, so the bed sits flush on the headboard instead of
+leaving two crescent gaps behind the pillows. Curve where you see it, square
+where it has to meet something.
 
 | | mm | ft |
 |---|---|---|
+| headboard | 3635 × 200 | 11'-11" × 0'-8" |
+| — showing each side of the bed | 918 | 3'-0" |
+| — in front of the column's face | 120 | 0'-5" |
 | mattress | 1800 × 2000 | 5'-11" × 6'-7" |
-| corner radius | 594 | 1'-11" |
+| foot corner radius | 594 | 1'-11" |
 | side tables, each | 550 × 450 | 1'-10" × 1'-6" |
-| clear west of the bed, to the pod line | 2775 | 9'-1" |
-| clear north, to the terrace wall | 1520 | 4'-11" |
-| clear south, to the partition | 3005 | 9'-10" |
+| bare headboard beyond each table | 318 | 1'-0" |
+| clear west of the bed | 2655 | 8'-9" |
+| clear north, to the terrace wall | 1518 | 4'-11" |
+| clear south, to the partition | 3008 | 9'-10" |
 
 **It sleeps 1800 across at the shoulders**, which is what a king should do and
-what the round bed could not — that one managed 1482, or 741 each. The corners
-are the only thing given up, and you do not sleep in the corners of a bed.
+what the round bed could not — that one managed 1482, or 741 each. Two rounded
+corners at the foot are the whole of what is given up, and nobody sleeps in the
+corners of a bed.
 
-**One thing to know: the mattress is bespoke.** A 594 radius is not something
-you buy off a shelf. It is a far smaller ask than a round mattress — the frame
-and the base do the shaping and the mattress is cut to match — but it is not a
-catalogue item, and neither is a fitted sheet for it.
+**The mattress is still not a catalogue item** — a 594 radius on two corners has
+to be cut — but the frame and base do the shaping and only the foot end is
+affected. If you would rather it were entirely off the shelf, about 250 reads
+as softened rather than arched and most makers will do it.
 
-**And the room is no longer crowded at the bottom.** The bath, the wardrobes
-and the dressing gap now have the southern half to themselves, and the bed has
-the northern half with 2775 of open floor beside it.
+**And the room is no longer crowded at the bottom.** The bath, the wardrobes and
+the dressing gap have the southern half to themselves; the bed has the northern
+half with 2655 of open floor beside it.
 
 ### The bath door had to move for the line
 

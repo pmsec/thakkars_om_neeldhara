@@ -216,9 +216,15 @@ def symbol(kind, a, b, c, d):
         if kind == 'recliner':
             out.append(_rr(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft'))
         return out
-    if kind == 'bed-rr':                   # rectangular, corners taken right off
+    if kind == 'bed-rr':      # corners off at the FOOT, square at the head (east)
         r = min(w, h) * 0.33
-        out = [('poly', _rrect(a, b, c, d, r), 'solid')]
+        pts = [(c, b)]
+        pts += [(a + r + math.cos(math.radians(t)) * r,
+                 b + r + math.sin(math.radians(t)) * r) for t in range(270, 179, -6)]
+        pts += [(a + r + math.cos(math.radians(t)) * r,
+                 d - r + math.sin(math.radians(t)) * r) for t in range(180, 91, -6)]
+        pts += [(c, d)]
+        out = [('poly', pts, 'solid')]
         x0, x1 = c - 500, c - 150          # pillows, head on the EAST side —
         out.append(_rr(x0, cy - 650, x1, cy - 30, 'soft'))    # kept inside the
         out.append(_rr(x0, cy + 30, x1, cy + 650, 'soft'))    # corner radius

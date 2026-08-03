@@ -128,25 +128,33 @@ def M(v):
     return 2 * MID - v
 
 
-# --------------------------------------------------- Karan's bed, moved north
+# --------------------------------------------------- Karan's bed and headboard
 # The bed is off the partition entirely.  Down there it had the bath on one
 # side, the wardrobes behind it and the way into the dressing area squeezing
-# past — three things and a bed in one corner.  It moves to the END WALL, and
-# the reason is that the end wall has the only solid stretch in the suite:
+# past — four things in one corner.  It moves to the END WALL, because the end
+# wall carries the only solid stretch in the suite:
 #
 #   y 1350 - 1950   window, 600
 #   y 1950 - 5585   BLANK, 3635          <- the headboard wall
 #   y 5585 - 9465   window, 3880
 #
-# 3635 takes a 1800 bed and a 550 table each side with 320 to spare at each
-# end, and it does it without standing in front of either window.
+# THE HEADBOARD IS THE WHOLE OF THAT STRETCH.  Window jamb to window jamb, 3635,
+# 200 thick — and that one decision settles three separate things at once:
 #
-# The head sits on X 24850, not the wall face at 24930: the builder leaves a
-# 230 x 1200 column on this wall whose face is 80 proud over the bed's northern
-# 280.  Bed and both tables are set to that line so the three read as one run.
-BED_HEAD = 24850
-BED_W, BED_L = 1800, 2000           # across, and out from the wall
-BED_Y0 = 2870                       # centred on the blank stretch
+#  * the builder's 230 x 1200 column stands 80 proud of this wall over y 1950 -
+#    3150.  At 200 the headboard passes 120 clear in front of it, so the column
+#    is inside the joinery and the wall reads flat.  Nothing is boxed out and
+#    nothing is left sticking into the room.
+#  * the bed centres on it almost exactly — 3635 less an 1800 bed leaves 917
+#    each side, equal left and right, which is what Karan asked for.
+#  * it stops precisely on both window jambs, so a full-height headboard covers
+#    no glass at either end.
+HB_T = 200
+HB_Y0, HB_Y1 = 1950, 5585           # the blank stretch, jamb to jamb
+HB_X = END_E - 150 - HB_T           # 24730 — the headboard's FRONT face
+BED_W, BED_L = 1800, 2000           # across, and out from the headboard
+BED_R = 594                         # foot corners only; the head is square
+BED_Y0 = (HB_Y0 + HB_Y1 - BED_W) / 2
 BED_Y1 = BED_Y0 + BED_W
 TAB_W, TAB_D, TAB_GAP = 550, 450, 50
 
@@ -462,12 +470,16 @@ _ONCE = [
     # an 1800 x 2000, which is a third of the width, so what is left straight is
     # 612 across the head and 812 down each side.  It is the room's third curve
     # after the bath's arch and the console on it.
-    ('bed-rr',   BED_HEAD - BED_L, BED_Y0, BED_HEAD, BED_Y1,
-     "king 1800 x 2000  ·  corners at 594, head on the end wall"),
-    # A proper table each side, on the same line as the headboard.
-    ('counter-r', BED_HEAD - TAB_D, BED_Y0 - TAB_GAP - 550, BED_HEAD, BED_Y0 - TAB_GAP,
+    ('joinery',  HB_X, HB_Y0, END_E - 150, HB_Y1,
+     "headboard  ·  3635 x 200, window jamb to window jamb, column inside it"),
+    # Rounded at the FOOT only — 594, a third of the width — and square at the
+    # head, so the bed sits flush on the headboard instead of leaving two
+    # crescent gaps behind the pillows.
+    ('bed-rr',   HB_X - BED_L, BED_Y0, HB_X, BED_Y1,
+     "king 1800 x 2000  ·  foot corners 594, head square on the headboard"),
+    ('counter-r', HB_X - TAB_D, BED_Y0 - TAB_GAP - TAB_W, HB_X, BED_Y0 - TAB_GAP,
      "side table  ·  550 x 450"),
-    ('counter-r', BED_HEAD - TAB_D, BED_Y1 + TAB_GAP, BED_HEAD, BED_Y1 + TAB_GAP + 550,
+    ('counter-r', HB_X - TAB_D, BED_Y1 + TAB_GAP, HB_X, BED_Y1 + TAB_GAP + TAB_W,
      "side table  ·  550 x 450"),
 
     # ------------------------------------------- Karan's suite: the wardrobes

@@ -241,6 +241,8 @@ def main():
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)
+    for p in R.suite_sliders():
+        prim(p)
     for p in R.wc_console():
         prim(p)
     for p in R.wc_out_door():

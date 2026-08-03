@@ -183,8 +183,12 @@ NEW_WALLS = [
 
     # --- suite <-> pod, the 125 line between the two.  The 1050 slider is a
     #     gap left in this wall; it is not a hole cut in anything.
-    (STRIP_W1 + 62, 1200, STRIP_W1 + 62, BATH_N, 125, [(3775, 4825)]),
-    (M(STRIP_W1 + 62), 1200, M(STRIP_W1 + 62), BATH_N, 125, [(3775, 4825)]),
+    # The whole bed-to-pod stretch is open now — 3555 of it, Y 2620 to 6175 —
+    # and a sliding partition closes it.  What is left as wall is the 1420 north
+    # of that (which is nearly all the builder's 230 x 1200 column) and the 475
+    # south of it.  See retrofit.suite_sliders().
+    (STRIP_W1 + 62, 1200, STRIP_W1 + 62, BATH_N, 125, [(1420, 4975)]),
+    (M(STRIP_W1 + 62), 1200, M(STRIP_W1 + 62), BATH_N, 125, [(1420, 4975)]),
 
     # --- family-room / music-den pods: wall off the service duct
     (DUCT_W1 + 75, 6175, DUCT_W1 + 75, BODY_S, T_INT, []),
@@ -306,9 +310,9 @@ GLAZING = [
     (-350, 1275, SUITE_W_E, 1275, 'slider'),
     (M(SUITE_W_E), 1275, M(-350), 1275, 'slider'),
     # deck <-> great room and pods: the old 150 partition comes out
-    (POD_W0, DECK_S + 75, 7500, DECK_S + 75, 'slider'),
+    (4650, DECK_S + 75, 7500, DECK_S + 75, 'slider'),
     (9115, DECK_S + 75, 15365, DECK_S + 75, 'slider'),
-    (M(7500), DECK_S + 75, M(POD_W0), DECK_S + 75, 'slider'),
+    (M(7500), DECK_S + 75, M(4650), DECK_S + 75, 'slider'),
     # windows in the external walls
     (-525, 2200, -525, 3800, 'window'),
     (-525, 4600, -525, 6400, 'window'),

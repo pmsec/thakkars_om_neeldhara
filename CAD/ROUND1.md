@@ -295,7 +295,7 @@ partition is left as the slider's south jamb** — a jamb, not a collision.
 |---|---|---|
 | clear width at the shower | 1930 | 6'-4" |
 | deepest, crown to the south wall | 3520 | 11'-7" |
-| clear floor, net of every fitting | 3.81 m² | 41 sq ft |
+| clear floor, net of every fitting | 3.56 m² | 38 sq ft |
 | **largest circle that fits on the clear floor** | **1500** | **4'-11"** |
 | door, clear | 800 | 2'-7" |
 | in front of the pan | 1330 | 4'-4" |
@@ -309,18 +309,34 @@ now meets it with the fittings in.
 
 ### The three fittings
 
-* **The arched vanity** — struck off the sweep itself, not stood against it. A
-  straight top against a curved wall touches at one point and gaps either side;
-  this one is the same curve offset inwards, so it beds on the wall for its
-  whole length. **1267 long, 520 deep**, easing to 330 at its west end so it
-  dies into the arch instead of ending in a square corner. The basin sits in it
-  at the duct end, 100 clear of the wall behind.
+* **The arched vanity, and the mirror over it** — both struck off the sweep
+  itself, not stood against it. A straight top against a curved wall touches at
+  one point and gaps either side; these are the same curve offset inwards, so
+  they bed on the wall for their whole length. The console runs the **whole
+  arc, 2543 long**, pod wall to the foot of the west flank, and the mirror runs
+  with it — so what you face at the basin is a mirror that wraps with the room
+  rather than a flat sheet fighting it.
+  It cannot run at one depth. 520 is right at the basin end, where the east
+  flank's radius of curvature never drops below 1500; but the west flank is a
+  690 inner radius, and 520 into that leaves 170 and closes the corner off to a
+  point. So it eases over its whole length to **340 at the foot** — one
+  unbroken taper, not a deep bit and a thin bit — which still leaves 350 of
+  radius at the tightest part of the turn. The basin sits at the duct end,
+  100 clear of the wall behind, where the plumbing is.
 * **The pan** goes on the duct wall, because the soil stack is directly behind
   it. 600 out from the wall, 620 wide.
 * **The shower** takes the whole south end — 1850 × 950 behind a glass screen.
   At 1930 clear a full-width wet zone is simpler than a cubicle with a dead gap
   beside it. 1850 rather than 1930 because the builder leaves a 230 × 1000
   column on the duct's corner and 80 of it stands in that corner of the room.
+
+### The door is drawn open
+
+Almost every door on this drawing is left as a gap in a wall, because which way
+it swings does not change the plan. This one is drawn, because Karan asked to
+see it work. **800 clear, hinged on the south jamb**, so the leaf opens back
+along the wall it is in and clears the run from the door to the shower instead
+of standing across it. Open, it reaches X 3275 — 530 short of the pan.
 
 ### One wall that was missing
 

@@ -225,32 +225,55 @@ def mb_wall():
     return [mb_pts(h) + list(reversed(mb_pts(-h)))]
 
 
-def mb_console(u1=-0.14, d0=330, d1=520, fade=0.16):
-    """The arched vanity, struck off the sweep itself.
+def mb_console(d_e=520, d_w=340, u_e=-1.0, u_w=1.0, mir=55):
+    """The arched vanity and the mirror over it, both struck off the sweep.
 
     Karan asked for the vanity in the arc, and this is the only honest way to
     do it: a straight top against a curved wall touches it at one point and
     gaps either side.  This one is the same curve offset inwards, so it beds on
     the wall for its whole length.
 
-    It runs at a constant 520 from the pod wall — which is where the plumbing
-    is, the builder's main service duct being directly behind it — and eases
-    off over the last 300 so the west end is a soft return rather than a square
-    520 corner standing in the room.  520 is safe: the east flank's radius of
-    curvature never drops below 1500, so the offset curve stays convex and the
-    top can be made in one piece."""
+    It runs the WHOLE arc, pod wall to the foot of the west flank, but it
+    cannot run at one depth.  520 is right at the basin end, where the east
+    flank's radius of curvature never drops below 1500 — but the west flank is
+    a 690 inner radius, and 520 into that leaves 170 and closes the corner off
+    to a point.  So it eases, over its whole length, to 340 at the foot — one
+    unbroken taper rather than a deep bit and a thin bit, and it still leaves
+    350 of radius at the tightest part of the turn.
+
+    The mirror is the same curve again, a 55 band on the wall face, running the
+    full length of the console — so what you face at the basin is a mirror that
+    wraps with the room instead of a flat sheet fighting it."""
     h = D.T_MB / 2
     u0 = mb_u_at_wall(h)                 # start ON the wall, not near it
-    us = list(np.linspace(u0, u1, 80))
+    us = list(np.linspace(u0, 1.0, 160))
 
-    def dep(u):
-        s = min(1.0, (u1 - u) / fade)                        # 0 at the west end
-        return d0 + (d1 - d0) * s * s * (3 - 2 * s)          # smoothstep
+    def dep(u):                                  # deep at the basin, thin round
+        s = min(1.0, max(0.0, (u_w - u) / (u_w - u_e)))      # the turn
+        return d_w + (d_e - d_w) * s * s * (3 - 2 * s)       # smoothstep
 
-    band = ([mb_pt(u, h) for u in us]
-            + [mb_pt(u, h + dep(u)) for u in reversed(us)])
+    back = [mb_pt(u, h) for u in us]
+    band = back + [mb_pt(u, h + dep(u)) for u in reversed(us)]
+    glass = back + [mb_pt(u, h + mir) for u in reversed(us)]
     bx, by = mb_pt(u0 + 0.36, h + 300)   # 100 clear of the wall behind it
-    return [('poly', band, 'solid'), ('circle', bx, by, 200, 'light')]
+    return [('poly', band, 'solid'), ('circle', bx, by, 200, 'light'),
+            ('poly', glass, 'glass')]
+
+
+def mb_door():
+    """The bath door, drawn open into the room.
+
+    Almost every door on this drawing is left as a gap in a wall, because which
+    way it swings does not change the plan.  This one is drawn because Karan
+    asked to see it work: hinged on the SOUTH jamb, so the leaf opens back
+    along the wall it is in and clears the run from the door to the shower,
+    rather than standing across it."""
+    y0, y1 = D.MB_YW + D.MB_DOOR[0], D.MB_YW + D.MB_DOOR[1]
+    w, x = y1 - y0, D.MB_XW
+    arc = [(x + w * math.cos(math.radians(t)), y1 - w * math.sin(math.radians(t)))
+           for t in np.linspace(0, 90, 28)]
+    return [('poly', [(x, y1)] + arc, 'light'),
+            ('line', x, y1, x + w, y1, 'solid')]
 
 
 def suite_polys():

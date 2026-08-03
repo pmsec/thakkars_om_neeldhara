@@ -259,7 +259,7 @@ def main():
         prim(p)
     for p in R.wc_console():
         prim(p)
-    for p in R.mb_console():             # the arched vanity, both suites
+    for p in R.mb_console() + R.mb_door():   # arched vanity, mirror, door
         prim(p)
         prim(R.mirror_prim(p))
     for p in R.wc_out_door():

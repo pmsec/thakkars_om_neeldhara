@@ -452,6 +452,10 @@ _MIRROR = [
     # 4325, not the wall at 4405: the builder leaves a 230 x 1000 column on
     # the duct's corner and 80 of it stands in this corner of the room.
     ('shower',   2475, 8595, 4325, 9545, 'walk-in, 1850 x 950'),
+    # The 300 of straight wall between the foot of the arch and the door jamb
+    # is too short for anything hung and too shallow for anything deep.  It is
+    # exactly a bin, and a bin has to go somewhere.
+    ('bin',      2475, 6715, 2775, 7015, ''),
 ]
 
 _FLIP = {'bed-e': 'bed-w', 'bed-w': 'bed-e', 'bed-n': 'bed-n', 'bed-s': 'bed-s',

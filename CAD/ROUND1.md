@@ -295,19 +295,24 @@ partition is left as the slider's south jamb** — a jamb, not a collision.
 |---|---|---|
 | clear width at the shower | 1930 | 6'-4" |
 | deepest, crown to the south wall | 3520 | 11'-7" |
-| clear floor, net of every fitting | 3.56 m² | 38 sq ft |
-| **largest circle that fits on the clear floor** | **1500** | **4'-11"** |
+| clear floor, net of every fitting | 3.25 m² | 35 sq ft |
+| **largest circle that fits on the clear floor** | **1300** | **4'-3"** |
 | door, clear | 800 | 2'-7" |
 | in front of the pan | 1330 | 4'-4" |
 | pan to the shower screen | 355 | 1'-2" |
 | console front to the pan | 653 | 2'-2" |
 | walk-in shower | 1850 × 950 | 6'-1" × 3'-1" |
 
-The 1500 circle is the number that matters. That is the wheelchair turning
-circle the guest WC could not come close to (it manages 1000), and this room
-now meets it with the fittings in.
+**A correction on that last figure.** When the arch was first drawn I reported
+1500, and said it met the wheelchair turning circle. It did not: that reading
+came off a 16-direction probe, which overestimates. Sampled properly it was
+**1400** even before any joinery, and with the cupboard, the shelves and the
+bin in it is **1300**. So the room does not meet the 1500 standard — it is
+still far better than the guest WC, which manages 1000, and 1300 is a
+comfortable bathroom, but it is not an accessible one. The bin is worth 100 of
+that and is the one thing here you can move with your foot.
 
-### The three fittings
+### The fittings
 
 * **The arched vanity, and the mirror over it** — both struck off the sweep
   itself, not stood against it. A straight top against a curved wall touches at
@@ -329,6 +334,31 @@ now meets it with the fittings in.
   At 1930 clear a full-width wet zone is simpler than a cubicle with a dead gap
   beside it. 1850 rather than 1930 because the builder leaves a 230 × 1000
   column on the duct's corner and 80 of it stands in that corner of the room.
+
+### And the storage, which is the rest of the run
+
+The console is not the whole of the joinery. The arch, and the two walls it
+dies into, carry a continuous run — and each piece is where it is because that
+is the one stretch of wall nothing else wants.
+
+| | | |
+|---|---|---|
+| console + mirror | 1743 on the arch | 520 deep at the basin, 395 where the cupboard starts |
+| **cupboard** | 800 on the arch, to its foot | 395 → 340 deep, one door |
+| **shelves** | 822 down the duct wall | 432 → 400 deep, stopping 120 short of the pan |
+| **bin** | 300 × 300 | in the 300 between the arch's foot and the door jamb |
+
+* **The cupboard** takes the last 800 of the arch. It is the end of the run,
+  it is out of the wet zone, and it picks up the same face as the console
+  beside it — so the two read as one length of joinery with a door on the end
+  rather than two pieces meeting.
+* **The shelves** carry the run on round the corner and down the duct wall.
+  The console's end cut *is* the shelves' top, so the joinery turns out of the
+  arch without a joint. This is the only piece with a shelf in it: towels, bath
+  mats, the things a bathroom has to keep and a vanity has nowhere for.
+* **The bin** fills the 300 of straight wall between the foot of the arch and
+  the door jamb — too short for anything hung, too shallow for anything deep,
+  and exactly a bin.
 
 ### The door is drawn open
 

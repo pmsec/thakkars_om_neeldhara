@@ -225,7 +225,37 @@ def mb_wall():
     return [mb_pts(h) + list(reversed(mb_pts(-h)))]
 
 
-def mb_console(d_e=520, d_w=340, u_e=-1.0, u_w=1.0, mir=55):
+MB_CAB = 800            # the cupboard at the west end, measured along the arc
+
+
+def mb_dep(u, d_e=520, d_w=340, u_e=-1.0, u_w=1.0):
+    """How far the console stands off the wall at u.
+
+    It cannot run at one depth.  520 is right at the basin end, where the east
+    flank's radius of curvature never drops below 1500 — but the west flank is
+    a 690 inner radius, and 520 into that leaves 170 and closes the corner off
+    to a point.  So it eases, over its whole length, to 340 at the foot: one
+    unbroken taper rather than a deep bit and a thin bit, and it still leaves
+    350 of radius at the tightest part of the turn.  The cupboard at the end
+    picks up the same face, so the whole run is flush."""
+    s = min(1.0, max(0.0, (u_w - u) / (u_w - u_e)))
+    return d_w + (d_e - d_w) * s * s * (3 - 2 * s)              # smoothstep
+
+
+def mb_u_from_end(run, n=600):
+    """u that is `run` back from the foot of the arc, measured along the wall."""
+    h = D.T_MB / 2
+    us = np.linspace(mb_u_at_wall(h), 1.0, n)
+    pts = [mb_pt(u, h) for u in us]
+    d = 0.0
+    for i in range(n - 1, 0, -1):
+        d += math.dist(pts[i], pts[i - 1])
+        if d >= run:
+            return us[i - 1]
+    return us[0]
+
+
+def mb_console(mir=55):
     """The arched vanity and the mirror over it, both struck off the sweep.
 
     Karan asked for the vanity in the arc, and this is the only honest way to
@@ -233,31 +263,62 @@ def mb_console(d_e=520, d_w=340, u_e=-1.0, u_w=1.0, mir=55):
     gaps either side.  This one is the same curve offset inwards, so it beds on
     the wall for its whole length.
 
-    It runs the WHOLE arc, pod wall to the foot of the west flank, but it
-    cannot run at one depth.  520 is right at the basin end, where the east
-    flank's radius of curvature never drops below 1500 — but the west flank is
-    a 690 inner radius, and 520 into that leaves 170 and closes the corner off
-    to a point.  So it eases, over its whole length, to 340 at the foot — one
-    unbroken taper rather than a deep bit and a thin bit, and it still leaves
-    350 of radius at the tightest part of the turn.
+    It runs from the pod wall to where the cupboard takes over at the west end
+    of the arc — see mb_dep for why the depth eases along the way, and
+    mb_shelves for the unit that carries the same face on down the duct wall.
 
     The mirror is the same curve again, a 55 band on the wall face, running the
     full length of the console — so what you face at the basin is a mirror that
-    wraps with the room instead of a flat sheet fighting it."""
+    wraps with the room instead of a flat sheet fighting it.  It stops where
+    the console does: there is no mirroring the front of a cupboard."""
     h = D.T_MB / 2
-    u0 = mb_u_at_wall(h)                 # start ON the wall, not near it
-    us = list(np.linspace(u0, 1.0, 160))
-
-    def dep(u):                                  # deep at the basin, thin round
-        s = min(1.0, max(0.0, (u_w - u) / (u_w - u_e)))      # the turn
-        return d_w + (d_e - d_w) * s * s * (3 - 2 * s)       # smoothstep
+    u0, u1 = mb_u_at_wall(h), mb_u_from_end(MB_CAB)
+    us = list(np.linspace(u0, u1, 160))
 
     back = [mb_pt(u, h) for u in us]
-    band = back + [mb_pt(u, h + dep(u)) for u in reversed(us)]
+    band = back + [mb_pt(u, h + mb_dep(u)) for u in reversed(us)]
     glass = back + [mb_pt(u, h + mir) for u in reversed(us)]
     bx, by = mb_pt(u0 + 0.36, h + 300)   # 100 clear of the wall behind it
     return [('poly', band, 'solid'), ('circle', bx, by, 200, 'light'),
             ('poly', glass, 'glass')]
+
+
+def mb_cabinet(door=55):
+    """The wall cabinet at the west end of the arc, running to its foot.
+
+    The last MB_CAB of the arc is a cupboard rather than open console: it is
+    the end of the run, it is out of the wet zone, and it is the one stretch
+    where nothing else wants the wall.  Same face as the console beside it, so
+    the two read as one length of joinery with a door at the end of it — the
+    inner line is that door."""
+    h = D.T_MB / 2
+    us = list(np.linspace(mb_u_from_end(MB_CAB), 1.0, 60))
+    back = [mb_pt(u, h) for u in us]
+    return [('poly', back + [mb_pt(u, h + mb_dep(u)) for u in reversed(us)],
+             'solid'),
+            ('poly', [mb_pt(u, h + mb_dep(u) - door) for u in us]
+             + [mb_pt(u, h + mb_dep(u)) for u in reversed(us)], 'light')]
+
+
+def mb_shelves(y_end=7500, taper=33):
+    """The linen shelves at the pod-wall end, carrying the console on down.
+
+    The console's end cut IS this unit's top, so the two read as one run of
+    joinery turning out of the arc and down the duct wall.  433 deep at the top
+    easing to 400, 822 along the wall, and it stops 120 short of the pan.  It
+    is the only piece here with a shelf in it: towels, bath mats, the things a
+    bathroom has to keep and a vanity has nowhere for."""
+    h = D.T_MB / 2
+    u0 = mb_u_at_wall(h)
+    back, front = mb_pt(u0, h), mb_pt(u0, h + mb_dep(u0))
+    fx, fy = front
+    poly = [back, front, (fx + taper, y_end), (D.MB_XE, y_end)]
+    out = [('poly', poly, 'solid')]
+    for k in (1, 2):                                   # shelf dividers
+        t = k / 3
+        x_, y_ = fx + taper * t, fy + (y_end - fy) * t
+        out.append(('line', x_, y_, D.MB_XE, y_, 'light'))
+    return out
 
 
 def mb_door():

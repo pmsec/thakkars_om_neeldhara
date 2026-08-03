@@ -208,8 +208,6 @@ def main():
         h = msp.add_hatch(color=32, dxfattribs={'layer': 'PROP-SCREEN'})
         h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
         h.set_solid_fill(color=32)
-    for q in R.gal_sliders():         # the two service doors, straight glass
-        poly(msp, q, 'PROP-GLAZ')
     for q in R.arch_doors():          # leaves, outline only — they are doors
         poly(msp, q, 'PROP-SCREEN')
 

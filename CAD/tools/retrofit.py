@@ -156,8 +156,8 @@ def poly_rooms():
          (8700, 9500)),
         ("HELP'S ROOM", '', helps, '', (14780, 9150)),
         ('ENTRY GALLERY', '', gallery,
-         'a U on the two columns  ·  3040 clear x 3260 deep  ·  '
-         'semicircular apse  ·  glass sliders pocket into the two legs',
+         'a U on the two columns  ·  3220 wide x 3260 deep  ·  '
+         'semicircular apse, 230 throughout',
          (D.MID, 9950)),
     ]
 
@@ -277,14 +277,8 @@ def lobby_polys():
     kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, D._BN0, D._A0)
                + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
                   (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
-    # The gallery's own faces are the pocket casings now, not the legs — they
-    # run past the column top and into the arch, so the straight side ends
-    # where the casing meets the arc's inner face rather than at the springing.
-    pw, pe = D.POCKET_W + D.T_POCKET / 2, D.POCKET_E - D.T_POCKET / 2
-    yq = D.GAL_CY - math.sqrt(max(0.0, ri ** 2 - (D.GAL_CX - pw) ** 2))
-    aq = math.degrees(math.atan2(yq - D.GAL_CY, pw - D.GAL_CX)) % 360
-    gallery = ([(pw, D.BAY_S), (pw, yq)] + _gal_arc(ri, aq, 540 - aq)
-               + [(pe, yq), (pe, D.BAY_S)])
+    gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
+               + [(ie, COL_N), (ie, D.BAY_S)])
 
     # Help's room and the store both run round the OUTSIDE of the WC's apse;
     # the WC is what is left inside it.  Splitting the outside at the store's
@@ -344,16 +338,31 @@ def arch_haunches():
     return out
 
 
-def gal_sliders(leaf=40):
-    """The two service doors — straight glass sliders, drawn shut.
+def gal_swing_doors(leaf=40):
+    """The two service doors: hinged glass, swinging into the gallery.
 
-    They run in the wood casing on the inner face of each leg and pocket south
-    over the column, so shut they close the 800 between the column top and the
-    service-bay wall, and open they are gone into the wall rather than standing
-    proud of it, which is all a curved leaf on this radius could ever do."""
-    h = leaf / 2
-    return [[(x - h, D.BAY_N), (x + h, D.BAY_N), (x + h, COL_N), (x - h, COL_N)]
-            for x in (D.POCKET_W, D.POCKET_E)]
+    Not sliding.  A pocket needs a cavity as long as the leaf and in line with
+    it, and the 800 ahead of each column has nothing beyond either end — the
+    great room north, the structural column south.  Split for a pocket it gives
+    400 clear, or about 550 with a three-panel telescopic, against 750 on
+    hinges.  On a serving door the width wins.
+
+    Hinged at the column top and opening INTO the gallery, which is 3220 x 3260
+    of circulation with nothing in it.  The far side is the kitchen's approach
+    to its counter end and help's room's landing, where a leaf standing open
+    would cost something.  And coming out of the kitchen with your hands full
+    you push, which is the way you want a serving door to go.
+    """
+    w, h = COL_N - D.BAY_N, leaf / 2
+    out = []
+    for hx, sgn in ((D.GAL_W + D.T_GAL / 2, 1), (D.GAL_E - D.T_GAL / 2, -1)):
+        arc = [(hx + sgn * w * math.sin(math.radians(t)),
+                COL_N - w * math.cos(math.radians(t)))
+               for t in np.linspace(0, 90, 28)]
+        out.append(('poly', [(hx, COL_N)] + arc, 'light'))
+        out.append(('poly', [(hx, COL_N - h), (hx + sgn * w, COL_N - h),
+                             (hx + sgn * w, COL_N + h), (hx, COL_N + h)], 'glass'))
+    return out
 
 
 def arch_doors(leaf=60):

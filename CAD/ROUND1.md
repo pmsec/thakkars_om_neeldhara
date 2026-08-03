@@ -14,7 +14,7 @@ preserved untouched.
 | `PROP-WALL-NEW` | new masonry, solid-hatched |
 | `PROP-KEEP` | shafts, ducts and voids that must stay clear |
 | `PROP-GLAZ` | glazing, sliding glass, the pod portals |
-| `PROP-SCREEN` | the entry gallery U — 230, built on the two columns, and its three curved doors |
+| `PROP-SCREEN` | the entry gallery U — 230, built on the two columns, and the curved door on its axis |
 | `PROP-FURN` | fixed joinery and the layout |
 | `PROP-TEXT` | room names, areas, and the layer-state notes |
 | `PROP-DIM` | the set-out dimensions |
@@ -125,37 +125,58 @@ the columns actually stop but leaves its pier at 47° off vertical against a
 flat leg top — a notch outside, an overhang inside, and a springer block at
 each end to fill it. Moving the crown north instead of shortening the arc gets
 the same "springs off the column" and loses the notch. The springer blocks are
-still in the code; on a semicircle they collapse to a 4° patch and do nothing.
+still in the code for a shallower arch, but they draw nothing here: on a
+semicircle they collapse to a 4° patch, and with the 800 ahead of each column
+now a doorway, a patch there would be a fragment of wall standing in it.
 
 The apse breaks through the service-bay north wall, so that wall stops on each
 side of it and the apse's own curved wall is the boundary between.
 
 **3220 wide × 3260 deep. 9.4 m², 101 sq ft.**
 
-**Four ways in, and three of them are in the arch** — because the arch is the
-only part of the U that is not a column. You cannot put a door through a
-230 × 1800 column, so both legs stay solid.
+**Four ways in, and none of them is through a leg** — you cannot put a door
+through a 230 × 1800 structural column, so both legs stay solid. One is in the
+arch, two are in the 800 ahead of each column, and one is in the entrance wall.
 
 | | width | opening |
 |---|---|---|
 | entrance wall | 1050 | the front door, from the lift lobby |
-| arch, west | 776 | gallery → kitchen, for staff |
+| ahead of the west column | 800 | gallery → kitchen, for staff |
 | arch, crown | 1050 | gallery → great room |
-| arch, east | 776 | gallery → help's room, for staff |
+| ahead of the east column | 800 | gallery → help's room, for staff |
 
 The two service doors are **not set out by eye**. Once the apse pushes north,
-the only stretch of arch with the kitchen behind it is the 776 between the
-springing and the service-bay wall; north of that the arch faces the great
-room, and a door there opens into the wrong room. So each takes that whole
-stretch — jambed by the column at one end and by the wall at the other, with
-no thin pier between them to be nervous about. That leaves two **1400 piers**
-flanking the 1050 door on the axis.
+the only stretch with the kitchen behind it is the **800 between the column top
+and the great-room wall**; north of that the arch faces the great room, and a
+door there opens into the wrong room. So each service door takes that whole 800
+— jambed by the column below and the wall above — and what is left of the arch
+is two **1400 piers** flanking the 1050 door on the axis.
 
-Each door is drawn **shut, with a leaf curved on the arch's own 1725 radius**.
-Closed, the sweep runs unbroken from leg to leg. For the joinery: a leaf curved
-to that radius **cannot swing** — the far edge would drive into the wall — so
-these are **curved sliders on a track**, and each sits proud on one side of the
-arch rather than pocketing into a pier.
+**They are hinged, glass, and they swing into the gallery.** Sliding was tried
+three ways and none of them pays:
+
+| | clear opening |
+|---|---|
+| curved leaf on the arch's 1725 radius | 776, but it can only slide on the face of the arch and stand proud of it |
+| pocket inside the 800, single leaf | 400 — the pocket eats half the run |
+| pocket inside the 800, three-panel telescopic | ~550, on specialist track |
+| pocket carried over the column | 800, but the leg goes 230 → 320 and the gallery loses 180 of width |
+| **hinged** | **~730, and the leg stays 230** |
+
+A pocket needs a cavity at least as long as the leaf and in line with it, and
+that 800 has nothing beyond either end — the great room north, a structural
+column south. On a serving door the width wins, and hinges are ordinary
+ironmongery on a door used twenty times a day.
+
+They swing **into the gallery**, which is 3220 × 3260 of circulation with
+nothing in it; the swing is clear through its full quarter. The far side is the
+kitchen's approach to its counter end and help's room's landing, where a leaf
+standing open would cost something. And coming out of the kitchen with your
+hands full you push.
+
+The **door on the axis** keeps its curved leaf, drawn shut on the arch's own
+1725 radius — it is 1050 wide in a curved wall, so a hinge is out and it slides
+on the face of the arc.
 
 The corners the arch leaves behind it stay open to the kitchen and to help's
 room through the builder's own **800 clear above each column** — floor in those
@@ -415,8 +436,9 @@ need. Beside the serving hatch it is also next to the kitchen.
   wall, in two runs either side of the gallery's apse (with the 1100 serving
   hatch into the parents' pod and the guest WC's 800 door as the gaps in it).
 * **the gallery's four openings** — 1050 on the axis to the great room, 1050
-  south for the front door, and a 776 in the arch each side, west to the kitchen
-  and east to help's room. All three in the arch, because both legs are columns
+  south for the front door, and an 800 each side ahead of the column, west to
+  the kitchen and east to help's room. The two service doors are hinged glass
+  swinging into the gallery; the one on the axis is a curved slider
 * **the gallery corners** — the corners the apse leaves behind it are open to
   the kitchen and to help's room through the builder's own 800 clear above each
   column, so they are floor in those rooms rather than waste

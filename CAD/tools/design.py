@@ -274,31 +274,19 @@ GALLERY = (GAL_CX, GAL_CY, GAL_R, T_GAL,
 # No opening in either: the leg IS the column, and you cannot put a door
 # through a 230 x 1800 structural column.  The service doors go in the arch.
 #
-# --- the two pocket casings, and why they are where they are ----------------
-# The service doors are STRAIGHT GLASS SLIDERS.  A leaf curved to 1725 can only
-# slide on the face of the arch and stand proud of it; a straight one can vanish
-# — but only into a pocket, and the whole 800 between the column top and the
-# service-bay wall is opening.  There is nowhere in line with it to put one.
+# The two service doors are HINGED, not sliding, and the 800 ahead of each
+# column is the doorway end to end.  A pocket needs a cavity as long as the leaf
+# and in line with it, and there is nothing beyond either end of that 800 — the
+# great room north, the structural column south.  Split for a pocket it gives
+# 400 clear, or about 550 with a three-panel telescopic, against 750 on hinges.
+# On a serving door the width wins, and it is ordinary ironmongery.
 #
-# So the pocket runs OVER the column: a wood casing on the leg, 90 thick, with
-# the slot inside it.  The leaf slides south out of the opening and disappears
-# along the column, which is 1800 long and only has to swallow 800.
-#
-# On the INNER face, not the outer.  A pocket casing has to stand in the plane
-# of the opening it closes, and that opening ends at 10687 on the arch — 12 from
-# this casing's centreline.  Put it on the kitchen side and it sits 280 off the
-# opening and closes nothing.  It costs the gallery 90 a side: 3220 clear
-# becomes 3040.
-T_POCKET = 90
-POCKET_W = GAL_W + T_GAL + T_POCKET / 2        # 10675, centreline of the casing
-POCKET_E = M(POCKET_W)
-GAL_SLIDE = COL_N - BAY_N                      # 800, the opening it closes
-
+# It also keeps the leg at 230 on the column's own line, so column, doorway and
+# arch read as one continuous thickness — which a pocket could not do either
+# way round: on the column it made the leg 320, ahead of it it needed 120 on an
+# offset line.  See retrofit.gal_swing_doors().
 SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
-                for a, b, c, d in GAL_LEGS] + [
-    (POCKET_W, BAY_N, POCKET_W, BAY_S, T_POCKET, [(0, GAL_SLIDE)]),
-    (POCKET_E, BAY_N, POCKET_E, BAY_S, T_POCKET, [(0, GAL_SLIDE)]),
-]
+                for a, b, c, d in GAL_LEGS]
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it

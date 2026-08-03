@@ -572,12 +572,14 @@ reason both of them sit on the wall instead of touching it at a point.
 only ever increases the radius, so unlike the vanity inside there is no depth
 at which this one folds on itself. 400 is a choice, not a limit.
 
-**One thing had to be cut, and it is worth recording.** The back and the front
-do NOT start at the same point on the curve: offsetting outward at the
-springing throws the front face straight through the pod partition. Each face
-is therefore cut where *it* crosses that wall, which puts both ends on X 4405
-and makes the closing edge a clean vertical — the same trick `mb_wall` uses on
-the arch itself. Drawn naively the console overhangs into the pod by 400.
+**It tapers to nothing at the pod wall**, over 626 of arc, and that is doing
+real work rather than decoration. Cut square there, the console ends in a 400
+blunt face standing in the doorway to the pod — and worse, offsetting outward
+at the springing throws the front face straight *through* that wall, so a naive
+square cut overhangs into the pod by 400. Running the depth out to zero solves
+both at once: the two faces meet at a point exactly on the wall, and there is
+nothing left to collide with. Footprint 1.52 m² rather than 1.58 — the taper
+costs 0.06 m² of cupboard and buys a clean end.
 
 Cupboards under it the whole way; one wall cabinet over the straight tail at
 the partition end, drawn dashed because it is over, not in plan. The top is for

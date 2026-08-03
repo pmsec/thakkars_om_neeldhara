@@ -346,7 +346,7 @@ def mb_door(door=None, hinge='S'):
             ('line', x, p, x + w, p, 'solid')]
 
 
-def arch_console(dep=400, n=140, over=900, over_d=250):
+def arch_console(dep=400, n=140, over=900, over_d=250, grow=0.42):
     """The console that curls round the OUTSIDE of the bath's arch.
 
     Written in the WEST frame like everything else on this sweep; it is drawn
@@ -362,16 +362,27 @@ def arch_console(dep=400, n=140, over=900, over_d=250):
     unlike the vanity inside there is no depth at which this one folds on
     itself: 400 is a choice, not a limit.
 
+    It TAPERS TO NOTHING at the pod wall, over 626 of arc, and that is not
+    decoration.  Cut square there instead, the console ends in a 400 blunt face
+    standing in the doorway to the pod — and worse, offsetting outward at the
+    springing throws the front face straight THROUGH that wall, so a naive
+    square cut overhangs into the pod.  Running the depth out to zero solves
+    both: the two faces meet at a point exactly on the wall, and there is
+    nothing left to collide with.
+
     Cupboards under it the whole way; one wall cabinet over the straight tail at
     the partition end, drawn dashed because it is over, not in plan.  The top is
     for the art and the plants."""
     h = D.T_MB / 2
-    # The back and the front do NOT start at the same u.  Offsetting outward at
-    # the springing throws the front face PAST the pod wall, so each face is cut
-    # where IT crosses that wall — which puts both ends on X = MB_XE and makes
-    # the closing edge a clean vertical, the same trick mb_wall uses.
-    back = [mb_pt(u, -h) for u in np.linspace(mb_u_at_wall(-h), 1.0, n)]
-    front = [mb_pt(u, -h - dep) for u in np.linspace(mb_u_at_wall(-h - dep), 1.0, n)]
+    u0 = mb_u_at_wall(-h)
+    us = list(np.linspace(u0, 1.0, n))
+
+    def d(u):                       # nothing at the pod wall, full depth by 626
+        t = min(1.0, (u - u0) / grow)
+        return dep * t * t * (3 - 2 * t)                        # smoothstep
+
+    back = [mb_pt(u, -h) for u in us]
+    front = [mb_pt(u, -h - d(u)) for u in us]
     ys, xb = D.SCR_Y - D.T_SCR, D.MB_XW - D.T_MB      # 7675, 2325
     return [('poly', back + [(xb, ys), (xb - dep, ys)] + list(reversed(front)),
              'solid'),

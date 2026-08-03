@@ -508,12 +508,12 @@
 <line x1="2422.4" y1="1845.7" x2="2678.7" y2="1845.7" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="2422.4" y="1685.2" width="80.9" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <line x1="2462.9" y1="1685.2" x2="2462.9" y2="1766.1" stroke="#9a9184" stroke-width="0.8"/>
-<rect x="2771.8" y="1570.5" width="101.2" height="101.2" fill="#dfeef2" stroke="#8ab0bd" stroke-width="1.1"/>
-<line x1="2771.8" y1="1570.5" x2="2873.0" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
-<line x1="2873.0" y1="1570.5" x2="2771.8" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
-<circle cx="2822.4" cy="1621.1" r="12.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
-<circle cx="2821.0" cy="1727.0" r="31.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="2846.5" y="1708.6" width="26.4" height="36.8" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
+<rect x="2751.6" y="1570.5" width="121.4" height="101.2" fill="#dfeef2" stroke="#8ab0bd" stroke-width="1.1"/>
+<line x1="2751.6" y1="1570.5" x2="2873.0" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
+<line x1="2873.0" y1="1570.5" x2="2751.6" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2812.3" cy="1621.1" r="12.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2821.0" cy="1722.3" r="31.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="2846.5" y="1703.9" width="26.4" height="36.8" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="616.1" y="1354.7" width="269.8" height="242.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="858.9" y="1342.5" width="27.0" height="267.1" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="1041.7" y="1344.6" width="74.2" height="188.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>

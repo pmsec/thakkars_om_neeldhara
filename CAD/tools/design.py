@@ -383,11 +383,11 @@ _ONCE = [
     # into that wall.  The basin is not here: it is set into a curved console
     # struck off the apse itself, immediately inside the door — see
     # retrofit.wc_console().
-    ('shower',   16680, 8575, 17430, 9325, ''),
+    ('shower',   16530, 8575, 17430, 9325, ''),   # 900 x 750
     # Turned a quarter, so its back is on the duct wall rather than floating in
     # the room.  700 deep from that wall, 620 wide, and it clears the apse: the
     # arc's inner face is at 16439 on this pan's south line.
-    ('wc-e',     16730, 9425, 17430, 10045, ''),
+    ('wc-e',     16730, 9390, 17430, 10010, ''),
 ]
 
 # Drawn on both halves of the home.

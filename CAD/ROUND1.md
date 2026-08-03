@@ -113,20 +113,24 @@ columns** in the middle of it. The U uses them: its two legs sit **exactly on
 the columns**, at the same 230, so column and wall read as one continuous
 piece rather than a thin thing stuck beside a thick one.
 
-The curve is a **segmental arch**, springing off the top corner of each column
-and rising to meet the great-room wall at the crown. A semicircle cannot do
-that — tangent to the legs it has to spring half the span below the crown,
-which is 800 south of where the columns stop, and the wedge between column and
-curve is the gap. A segmental arch springs where the columns actually end.
+The end is a **true semicircle**. The sag equals the half-span, 1725, which
+puts the centre on the line of the column tops — and two things follow, which
+are the whole reason for it. The tangent at the springing is **vertical**, so
+the arc leaves the column parallel to it: no radial cut against a flat leg top,
+no notch, nothing to patch. And the crown lands **1040 north of the service
+bay**, so the gallery ends in an apse you read from inside the great room.
 
-A segmental arch leaves its pier at **47° off vertical**, and its end is cut
-radially — square to the arc, not square to the leg. Those two faces cannot
-meet, which leaves a notch outside and an overhang inside. A **springer block**
-at each end fills it, its outer edge following the arc's own face rather than
-cutting the corner with a chord. That is the piece a mason would cut, and it
-is why the U now reads as one unbroken line.
+That is the second attempt. The first was a segmental arch, which springs where
+the columns actually stop but leaves its pier at 47° off vertical against a
+flat leg top — a notch outside, an overhang inside, and a springer block at
+each end to fill it. Moving the crown north instead of shortening the arc gets
+the same "springs off the column" and loses the notch. The springer blocks are
+still in the code; on a semicircle they collapse to a 4° patch and do nothing.
 
-**3220 wide × 2450 deep — the whole pocket. 6.7 m², 72 sq ft.**
+The apse breaks through the service-bay north wall, so that wall stops on each
+side of it and the apse's own curved wall is the boundary between.
+
+**3220 wide × 3260 deep. 9.4 m², 101 sq ft.**
 
 **Four ways in, and three of them are in the arch** — because the arch is the
 only part of the U that is not a column. You cannot put a door through a
@@ -135,32 +139,32 @@ only part of the U that is not a column. You cannot put a door through a
 | | width | opening |
 |---|---|---|
 | entrance wall | 1050 | the front door, from the lift lobby |
-| arch, west | 700 | gallery → kitchen, for staff |
+| arch, west | 776 | gallery → kitchen, for staff |
 | arch, crown | 1050 | gallery → great room |
-| arch, east | 700 | gallery → help's room, for staff |
+| arch, east | 776 | gallery → help's room, for staff |
 
-The arch is 3864 of arc and 2450 of that is opening, so what is left is **four
-piers of 351**, set out evenly rather than left to fall where they may. On
-their own they read as fragments — so each door is drawn **shut, with a leaf
-curved on the arch's own 2370 radius**. Closed, the sweep runs unbroken from
-leg to leg and the piers read as the frames the doors hang in.
+The two service doors are **not set out by eye**. Once the apse pushes north,
+the only stretch of arch with the kitchen behind it is the 776 between the
+springing and the service-bay wall; north of that the arch faces the great
+room, and a door there opens into the wrong room. So each takes that whole
+stretch — jambed by the column at one end and by the wall at the other, with
+no thin pier between them to be nervous about. That leaves two **1400 piers**
+flanking the 1050 door on the axis.
 
-For the joinery: a leaf curved to that radius **cannot swing** — the far edge
-would drive into the wall — so these are **curved sliders on a track**. No
-swing is drawn, deliberately. And a 700 leaf cannot pocket into a 351 pier, so
-each has to slide across the face of the arch and sit proud on one side.
+Each door is drawn **shut, with a leaf curved on the arch's own 1725 radius**.
+Closed, the sweep runs unbroken from leg to leg. For the joinery: a leaf curved
+to that radius **cannot swing** — the far edge would drive into the wall — so
+these are **curved sliders on a track**, and each sits proud on one side of the
+arch rather than pocketing into a pier.
 
-The two corners the arch leaves behind it stay open to the kitchen and to
-help's room through the builder's own **800 clear above each column** — floor
-in those rooms, not waste:
+The corners the arch leaves behind it stay open to the kitchen and to help's
+room through the builder's own **800 clear above each column** — floor in those
+rooms, not waste.
 
-| | rectangle | now |
-|---|---|---|
-| KITCHEN | 8.2 m² / 88 sq ft | **8.7 / 94**, and 10.9 / 118 with the utility |
-| HELP'S ROOM | 5.1 / 55 | **5.5 / 60** |
-
-Both also have their own **900 door off the great room** in the service-bay
-north wall, so neither depends on the gallery to be reached.
+The apse cost the kitchen its run-B counter length: run B stops at 9550 instead
+of 10350, because a deep apse hugs the columns and the door beside the column
+had 165 of clear approach. It now has 850, and the sink moves west with the
+counter, still at its east end.
 
 At 230 the U is masonry, not the wood screen it started as — that follows from
 asking it to match the column. Finish it in wood if you want the same effect.
@@ -171,25 +175,102 @@ asking it to match the column. Finish it in wood if you want the same effect.
 
 | | m² | sq ft |
 |---|---|---|
-| GREAT ROOM | 43.4 | 468 |
+| GREAT ROOM | 41.4 | 445 |
 | ALL-WEATHER DECK (net of the two voids) | 35.8 | 385 |
 | MASTER SUITE — parents | 35.0 | 377 |
 | MASTER SUITE — karan | 35.0 | 377 |
 | FAMILY ROOM | 20.2 | 218 |
 | MUSIC + WORK DEN | 20.2 | 218 |
-| KITCHEN (one room with the utility) | 10.9 | 118 |
-| ENTRY GALLERY | 6.7 | 72 |
-| HELP'S ROOM | 5.5 | 60 |
+| KITCHEN (one room with the utility) | 10.5 | 113 |
+| ENTRY GALLERY | 9.4 | 101 |
 | PARENTS' BATH | 4.4 | 48 |
 | KARAN'S BATH | 4.4 | 48 |
+| HELP'S ROOM | 4.4 | 47 |
 | TERRACE ×2 | 3.7 each | 40 each |
-| GUEST / SERVICE WC | 2.8 | 30 |
-| STORE | 1.8 | 19 |
-| **total of named rooms** | **233.7** | **2516** |
+| GUEST / SERVICE WC | 3.0 | 33 |
+| STORE | 2.4 | 26 |
+| **total of named rooms** | **233.6** | **2514** |
 
-The great room is 468 sq ft against A-101's 474, and reads 6250 across the
+The great room is 445 sq ft against A-101's 474, and reads 6250 across the
 removed party wall at the deck, 8220 at the waist and 7280 at the pods — the
-pod glazing is a cubic now, not an arc.
+pod glazing is a cubic now, not an arc. It gives 2.1 m² back to the entry
+gallery's apse, which projects into it.
+
+---
+
+## The guest WC is an arch too
+
+The north-east corner of the service bay had to hold three things: a staff
+bunk room reached from the entry gallery, a guest WC reached from the great
+room, and the store. Three straight walls could not do it. The great room only
+reaches **15880** on the service-bay wall — east of that the pod glazing lands
+and it is the den — so the WC's door width and help's room's width came out of
+the same run of wall, one for one. A 600 door left help's room 920, which is a
+berth with no floor for a cupboard.
+
+So the WC's wall is a **quarter ellipse**, struck from the corner at
+(17430, 8525), semi-axes **2430 and 1675**. It springs off the great-room wall
+at 15000 and dies into the east wall at 10200. Help's room and the store wrap
+round the outside of it.
+
+An ellipse and not a circle because the two walls it has to reach are not the
+same distance away. A circle is tangent to both only as a quarter round, and a
+quarter round springing west of 15880 would run the full 2450 depth of the bay.
+The ellipse reaches west without reaching south — which is the shape of the
+problem.
+
+| | before | after |
+|---|---|---|
+| HELP'S ROOM | 2.3 m² / 25 sq ft | **4.4 / 47** |
+| GUEST / SERVICE WC | 5.7 / 61 | **3.0 / 33** |
+| STORE | 1.8 / 19 | **2.4 / 26** |
+
+It also buys the door: **880** of great-room wall in front of the WC instead of
+600, so that door is a proper **800**.
+
+**The doors.** The WC has two — 800 off the great room, and a 776 off help's
+room, curved on the apse and drawn shut like the gallery's. Help's room has
+the gallery's service door and the one into the WC; it has **no door on to the
+great room** any more. The store is entered from help's room through a 700
+opening hard against the apse, which is where a staff store should be entered
+from rather than through the guest WC as it was.
+
+**The great-room door swings OUT.** It is the only door on the sheet drawn with
+its leaf and swing, because it is the only one where the direction changes
+anything: there is no floor inside the apse to give a leaf, and the point of
+the door is to step in, wash your hands and step out.
+
+**The basin is a curved console** struck off the same ellipse, offset inwards,
+so it sits on the wall for its whole **1015** rather than touching it at one
+point. It grows out of the wall and dies back into it — a **120 ledge** at the
+door jamb, **400** deep at the bowl. At full depth from the springing it would
+leave only 425 of the 800 door to walk through; as a ledge it leaves **645**.
+A 344 bowl is set into it, and the tap has to be **wall-mounted**: there is 38
+behind the rim, and deepening the console to take a deck tap would cut the
+basin's activity space below the minimum.
+
+**Space check**, measured off the geometry rather than estimated:
+
+| | provided | minimum in general use |
+|---|---|---|
+| shower enclosure | 900 × 750 | 750 × 750 |
+| drying space in front of it | 1380 | 700 |
+| pan — space in front | 905 | 600 |
+| pan — width across it | 750 (375 each side) | 750 |
+| basin — space in front | 755 | 700 |
+| door — clear walk-through | 645 | 600 |
+| largest free circle on the floor | 1000 | — |
+
+It clears throughout, with the pan's width and the door the tightest of them.
+**It is not an accessible WC** — a wheelchair turning circle is 1500 and this
+is 1000. Nothing asked for it; it is a limit of the space, stated so nobody
+discovers it later. Confirm the figures above against the local code.
+
+**Help's room** is 4.4 m². The bunk lies **along the south wall** rather than
+standing against the west one: stood on end, the gap between its head and the
+apse was 96, because the apse leaves its springing vertically and hugs 15000
+for the first half metre. Lying down it leaves the whole northern 1550 clear
+and 755 past its foot to the store door. Cupboard on the west wall.
 
 ---
 
@@ -312,11 +393,16 @@ need. Beside the serving hatch it is also next to the kitchen.
 
 * entry hall size — kept as drawn, with the lift lobby now shown for reference
 * baths — left as they are
-* help's room and WC — left where they are
+* **help's room, the guest WC and the store** — re-cut round the WC's elliptical
+  apse. Help's room 4.4 m², WC 3.0, store 2.4; see the section above
 * all A-101 furniture — resolved, two pieces moved (see above)
+* **the dining table** — a round 1400 seating six, in the parents' pod at the
+  serving hatch, centred (7180, 6950). It fits because the pod glazing became a
+  cubic S: 2895–3053 clear for the 2900 circle, 812 from the table edge to the
+  hatch counter
 * **the kitchen and the utility are one space** — the wall between them is
   removed in full, so the builder's dry balcony reads as the kitchen's utility
-  end. The kitchen is 9.1 m² / 98 sq ft
+  end. The kitchen is 10.5 m² / 113 sq ft
 * internal walls — the flats came as bare shell, so there is nothing to
   demolish and no question about which existing walls are load-bearing. The
   only fabric that has to stay is the shell, and none of the layout touches it.
@@ -326,21 +412,19 @@ need. Beside the serving hatch it is also next to the kitchen.
   can't disagree. Three walls that the old opening markers implied but that
   were never actually drawn are now in: the 125 line between each suite and
   its pod (with the 1050 slider as a gap in it), and the service-bay north
-  wall from the kitchen's west wall to the WC's east wall (with the 1200
-  serving hatch and the gallery's north portal as gaps in it).
-* the gallery's four openings — 900 north to the great room, 1050 south for
-  the front door, and the builder's own 800 slots north of each column, west to
-  the kitchen and east to help's room
-* **the gallery corners** — the drum is a thin wood screen with nothing
-  walling it off, so the space either side is simply kitchen and help's room
-  floor. The two 1800 columns remain as piers, with a 385 niche behind each.
+  wall, in two runs either side of the gallery's apse (with the 1100 serving
+  hatch into the parents' pod and the guest WC's 800 door as the gaps in it).
+* **the gallery's four openings** — 1050 on the axis to the great room, 1050
+  south for the front door, and a 776 in the arch each side, west to the kitchen
+  and east to help's room. All three in the arch, because both legs are columns
+* **the gallery corners** — the corners the apse leaves behind it are open to
+  the kitchen and to help's room through the builder's own 800 clear above each
+  column, so they are floor in those rooms rather than waste
 
 ## Open for the next round
 
 * the furniture, room by room, added back on purpose rather than inherited
-* the dining table's home. Measured for the parents' pod, which is 2295 clear
-  at the kitchen wall: a round 1400 is 600 short and a 1300 square 500 short,
-  but a banquette on the duct wall with an 800 table seats six with 295 spare
+* the two pods' furniture beyond the dining table and the corner units
 
 ## Still to be confirmed, not by me
 

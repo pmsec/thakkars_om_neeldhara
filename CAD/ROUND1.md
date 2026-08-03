@@ -585,6 +585,39 @@ Cupboards under it the whole way; one wall cabinet over the straight tail at
 the partition end, drawn dashed because it is over, not in plan. The top is for
 the art and the plants.
 
+### The loose furniture
+
+Three chairs, an ottoman and a plant, all Karan's side.
+
+**Two swivel recliners on the terrace**, 850 each. Round on plan because they
+turn: you can face the view or spin right round and face into the room. The
+terrace is only 1200 deep, so they are centred on it — **175 to the parapet and
+175 to the slider** — and set 830 apart, which leaves 285 at each end of the
+3100 run. That is the whole of the fit; an 850 chair is the largest that gives
+a usable margin at both faces.
+
+**A reading chair and ottoman** in the open floor between the arch console and
+the bed, facing north up the room with the ottoman 150 in front of it. It is
+placed off three clearances, not by eye:
+
+| | mm | ft |
+|---|---|---|
+| to the console front | 580 | 1'-11" |
+| to the dressing partition | 550 | 1'-10" |
+| **to the end wall** | **945** | **3'-1"** |
+
+The last one matters most — that strip is the run down to the dressing gap, so
+the chair is set to leave it open rather than stand in it.
+
+**A low wooden table with a big plant on it**, north-west corner, just inside
+the terrace. 700 × 700 with a 900 spread over it. It is set off X 20280 because
+the builder leaves a 230 × 1200 column here standing **105 into the room**, and
+the plant's spread comes out to that column's face and no further.
+
+Drawn plant-first, table-over: the spread is 900 against a 700 top, so the
+other way round the foliage swallows the table and you cannot see what it
+stands on.
+
 ### The bath door had to move for the line
 
 It has come south until its far jamb lands flush on the shower screen at

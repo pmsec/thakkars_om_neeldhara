@@ -453,6 +453,34 @@ GLAZING = [
 #   (kind, x0, y0, x1, y1, label)
 
 _ONCE = [
+    # --------------------------------------------- Karan's terrace: two chairs
+    # Swivel recliners, 850, in the 1200-deep terrace under the high glass
+    # roof.  Centred on its depth — 175 to the parapet and 175 to the slider —
+    # and set 830 apart, which leaves 285 at each end of the 3100 run.  Round on
+    # plan because they turn: from the terrace you can face the view, or turn
+    # right round and face into the room.
+    ('swivel',   22015, 175, 22865, 1025, 'swivel recliner  ·  850'),
+    ('swivel',   23695, 175, 24545, 1025, 'swivel recliner  ·  850'),
+
+    # ------------------------------------ Karan's suite: the reading chair
+    # In the open floor between the arch console and the bed, facing north up
+    # the room with the ottoman in front of it.  580 clear to the console, 550
+    # to the dressing partition, and 945 to the end wall — which is the run
+    # down to the dressing gap, so the chair does not stand in it.
+    ('swivel',   23135, 6275, 23985, 7125, 'reading chair  ·  swivel, 850'),
+    ('ottoman',  23260, 5675, 23860, 6125, 'ottoman  ·  600 x 450'),
+
+    # ------------------------------- Karan's suite: the plant table
+    # Low wooden table in the north-west corner, just inside the terrace, with
+    # a big real plant on it.  Set off X 20280 because the builder leaves a
+    # 230 x 1200 column here standing 105 into the room — the plant's spread
+    # comes out to that column's face and no further.
+    # Plant first, table over it: the spread is 900 against a 700 top, so drawn
+    # the other way round the foliage swallows the table and you cannot see what
+    # it stands on.
+    ('plant',    20180, 1450, 21080, 2350, 'large plant  ·  900 spread'),
+    ('counter-r', 20280, 1550, 20980, 2250, 'low wooden table  ·  700 x 700'),
+
     # -------------------------------------------------- Karan's suite: the bed
     # A king, 1800 x 2000, head hard on the partition's north face.  Karan's
     # side only — the parents' suite has no partition to back on to.

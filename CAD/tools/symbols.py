@@ -197,6 +197,12 @@ def symbol(kind, a, b, c, d):
         return [('poly', pts, 'water'),
                 ('circle', ox + math.cos(math.radians((a0 + a1) / 2)) * r * 0.45,
                  oy + math.sin(math.radians((a0 + a1) / 2)) * r * 0.45, 95, 'light')]
+    if kind == 'swivel':        # a swivel recliner — round, because it rotates
+        r = min(w, h) / 2
+        return [('circle', cx, cy, r, 'solid'),          # the seat offset off
+                ('circle', cx, cy - r * 0.22, r * 0.62, 'soft')]   # centre leaves
+    if kind == 'ottoman':                                # the back as a crescent
+        return [('poly', _rrect(a, b, c, d, min(w, h) * 0.28), 'soft')]
     if kind in ('sofa', 'recliner', 'chair'):
         out = [_rr(a, b, c, d, 'solid')]
         back = 190 if kind == 'sofa' else 170

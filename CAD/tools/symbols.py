@@ -216,6 +216,13 @@ def symbol(kind, a, b, c, d):
         if kind == 'recliner':
             out.append(_rr(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft'))
         return out
+    if kind == 'bed-round':
+        r = min(w, h) / 2
+        out = [('circle', cx, cy, r, 'solid')]
+        y0, y1 = cy + r * 0.38, cy + r * 0.72     # the head is the SOUTH side
+        out.append(_rr(cx - r * 0.66, y0, cx - 30, y1, 'soft'))
+        out.append(_rr(cx + 30, y0, cx + r * 0.66, y1, 'soft'))
+        return out
     if kind.startswith('bed'):
         out = [_rr(a, b, c, d, 'solid')]
         hb = 200

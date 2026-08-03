@@ -470,36 +470,52 @@ instead of two of 1387. The 800 became the dresser. The dresser is 450 deep
 rather than 600 because it is a place to sit at, not to hang in, and 450 leaves
 1220 in front of it for a stool.
 
-### The bed
+### The bed — round, and what that actually costs
 
-A king — **1800 × 2000, 2200 with the headboard** — head hard on the
-partition's north face. Karan's suite only; the parents' has no partition to
-back on to.
+Karan asked what a round bed would do here. It is drawn: **2130 diameter**, the
+standard round king, tangent to the bath wall on the west and to the partition
+on the south. 2130 is also the largest that works — 2400 would leave 375 to the
+end wall, and 375 is not a way past a bed.
 
-**It cannot be centred in the bay, and that is worth stating rather than
-hiding.** Wall to wall at the bed head is 2775. The bed with its headboard is
-1980. That leaves 795 — and the 795 is already spoken for, because it is the
-way into the dressing area. So the bed goes hard against the bath wall and the
-whole remainder becomes **one 885 walkway on the east side**, which runs the
-bed's full length and then straight on through the gap into the dressing strip.
-A centred bed would give 487 a side, and 487 is not a side.
+It lands on a nice accident: tangent to the straight wall at X 22155, it also
+clears the bath's curved sweep by **3 mm**. The two curves miss each other by
+nothing at all.
 
-The west side is not lost, it is just not at the head: the bath's arch curves
-away northward, so by the foot of the bed that side has opened out to 2080 and
-you walk round into it.
+**What it gains**
 
-**Everything in this corner now sets out off two X lines**, 22155 and 24135:
+* **The corner table.** 703 along the bath wall, 703 along the partition, and a
+  front struck from the bed's own centre 60 clear of it — so the table beds
+  against the bed the whole way round, the same move as the console on the
+  bath's arch. **0.17 m² of top**, which is about the surface of a 450 × 400
+  bedside table, laid along the two walls instead of in a block.
+* **The way into the dressing area opens up.** A circle touches the partition
+  at one point instead of along 1980 of it, so at the partition line there is
+  **1710 clear** where the rectangular bed left 885.
 
-| | from | to |
-|---|---|---|
-| the partition | 22155 | 24135 |
-| the headboard over it | 22155 | 24135 |
-| the wardrobe run under it | 22155 | 24135 |
-| the gap | 24135 | 24930 |
-| the dresser under the gap | 24135 | 24930 |
+**What it costs, and this is the part to weigh**
 
-The headboard is 1980 — the same as the wood dado behind it, running from the
-bath wall to the edge of the gap. Nothing here is nearly-aligned.
+* **Sleeping width.** A round bed is nothing like as wide as it is round.
+
+  | measured in from the head edge | across | each |
+  |---|---|---|
+  | 300 — where your shoulders are | 1482 | **741** |
+  | 400 | 1664 | 832 |
+  | 500 — waist | 1806 | 903 |
+  | a 1800 rectangular king | 1800 everywhere | **900** |
+
+  At the shoulders each person gets **741 against 900** — less than a single
+  bed's 900. It only reaches a king's width down at waist level.
+* **The walk past it pinches to 645** at the bed's equator, against a constant
+  885 for the rectangular bed. It opens to 823 by Y 7200 and 1710 at the
+  partition, so it is one squeeze rather than a corridor — but it is a squeeze.
+* **Bespoke mattress and bespoke linen**, for as long as the bed exists.
+* **Only one cubby, not two.** The east corner is the way into the dressing
+  area. A table there closes it, and there is no version where that corner is
+  both a table and a door.
+
+Both beds are one line apart in `design.py`. The rectangular king — 1800 × 2000,
+2200 with the headboard, 885 walkway, headboard exactly the length of the wood
+dado — is the commented alternative.
 
 ### The bath door had to move for the line
 

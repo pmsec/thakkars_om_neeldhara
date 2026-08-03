@@ -117,6 +117,7 @@ T_SCR = 120
 SCR_GAP = 795                       # left open at the end-wall end
 
 
+
 # The two retained deck voids stay exactly as built: opening plus the builder's
 # own enclosure (a 230 column on the outboard face, 150 walls elsewhere).
 VOID_KEEP = [(7500, 1200, 9115, 2620), (2 * 12240 - 9115, 1200, 2 * 12240 - 7500, 2620)]
@@ -125,6 +126,21 @@ VOID_KEEP = [(7500, 1200, 9115, 2620), (2 * 12240 - 9115, 1200, 2 * 12240 - 7500
 def M(v):
     """mirror a length-axis coordinate about the centre of the home"""
     return 2 * MID - v
+
+
+# ------------------------------------------------- Karan's round bed
+# Tangent to two things: the bath wall on the west and the partition on the
+# south.  That is the whole idea — it touches the partition at ONE point
+# instead of along 1980 of it, which frees the corner beside it for a bedside
+# table and leaves the way into the dressing area open where a rectangular bed
+# closed it down to a slot.
+#
+# 2130 is the standard round king and it is also the biggest that works here:
+# 2400 would leave 375 to the end wall, and 375 is not a way past a bed.
+BED_D = 2130
+BED_R = BED_D / 2
+BED_CX = M(MB_XW - T_MB) + BED_R    # 23220 — tangent to the bath wall
+BED_CY = SCR_Y - T_SCR - BED_R      # 6610 — tangent to the partition
 
 
 # --------------------------------------------------------------------- rooms
@@ -434,8 +450,8 @@ _ONCE = [
     # corner of the home now sets out off two X lines, 22155 and 24135 — the
     # partition, the wardrobes under it, the headboard over it, and the gap and
     # the dresser beyond it.
-    ('bed-s',    22245, 5475, 24045, 7675,
-     "king 1800 x 2000  ·  head on the partition, 200 headboard"),
+    ('bed-round', BED_CX - BED_R, BED_CY - BED_R, BED_CX + BED_R, BED_CY + BED_R,
+     "round bed, 2130 dia  ·  tangent to the bath wall and the partition"),
 
     # ------------------------------------------- Karan's suite: the wardrobes
     # The south wall, which is the only long blank wall in the suite — the east

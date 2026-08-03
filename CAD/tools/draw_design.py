@@ -277,8 +277,10 @@ def main():
             s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
     for q in R.arch_haunches():          # springer blocks, arch on to leg
         s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
-    for q in R.arch_doors():             # the three doors, shut
+    for q in R.arch_doors():             # the door on the axis, shut
         s.poly(q, fill=WOODL, stroke=WOOD, stroke_width=1.2)
+    for q in R.gal_sliders():            # the two service doors, glass
+        s.poly(q, fill='#dde7ea', stroke=GLAS, stroke_width=1.2)
 
     # --------------------------------------------------------------- labels
     def area_of(rects):

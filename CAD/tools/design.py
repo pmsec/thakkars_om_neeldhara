@@ -268,14 +268,37 @@ GALLERY = (GAL_CX, GAL_CY, GAL_R, T_GAL,
             (_A0 - 0.2, _BN0),                   # 776 service door, to the kitchen
             (_BN1, _A1 + 0.2)])                  # 776 service door, to help's room
 
-# The U's two straight legs, wood, lining the inner face of each column.
-# The straight legs, 230 on the column footprint: the column IS the leg, so
-# the wall runs from the entrance wall to the springing as one continuous
-# thickness and the arch takes over from there.
+# The U's two straight legs, 230 on the column footprint: the column IS the
+# leg, so the wall runs from the entrance wall to the springing as one
+# continuous thickness and the arch takes over from there.
 # No opening in either: the leg IS the column, and you cannot put a door
 # through a 230 x 1800 structural column.  The service doors go in the arch.
+#
+# --- the two pocket casings, and why they are where they are ----------------
+# The service doors are STRAIGHT GLASS SLIDERS.  A leaf curved to 1725 can only
+# slide on the face of the arch and stand proud of it; a straight one can vanish
+# — but only into a pocket, and the whole 800 between the column top and the
+# service-bay wall is opening.  There is nowhere in line with it to put one.
+#
+# So the pocket runs OVER the column: a wood casing on the leg, 90 thick, with
+# the slot inside it.  The leaf slides south out of the opening and disappears
+# along the column, which is 1800 long and only has to swallow 800.
+#
+# On the INNER face, not the outer.  A pocket casing has to stand in the plane
+# of the opening it closes, and that opening ends at 10687 on the arch — 12 from
+# this casing's centreline.  Put it on the kitchen side and it sits 280 off the
+# opening and closes nothing.  It costs the gallery 90 a side: 3220 clear
+# becomes 3040.
+T_POCKET = 90
+POCKET_W = GAL_W + T_GAL + T_POCKET / 2        # 10675, centreline of the casing
+POCKET_E = M(POCKET_W)
+GAL_SLIDE = COL_N - BAY_N                      # 800, the opening it closes
+
 SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
-                for a, b, c, d in GAL_LEGS]
+                for a, b, c, d in GAL_LEGS] + [
+    (POCKET_W, BAY_N, POCKET_W, BAY_S, T_POCKET, [(0, GAL_SLIDE)]),
+    (POCKET_E, BAY_N, POCKET_E, BAY_S, T_POCKET, [(0, GAL_SLIDE)]),
+]
 
 # --------------------------------------------------------------- pod glazing
 # quadratic Bezier, bowing away from the great room, as A-101 draws it

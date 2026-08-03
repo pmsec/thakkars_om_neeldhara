@@ -156,8 +156,8 @@ def poly_rooms():
          (8700, 9500)),
         ("HELP'S ROOM", '', helps, '', (14780, 9150)),
         ('ENTRY GALLERY', '', gallery,
-         'a U on the two columns  ·  3220 wide x 3260 deep  ·  '
-         'semicircular apse, 230 throughout',
+         'a U on the two columns  ·  3040 clear x 3260 deep  ·  '
+         'semicircular apse  ·  glass sliders pocket into the two legs',
          (D.MID, 9950)),
     ]
 
@@ -277,8 +277,14 @@ def lobby_polys():
     kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, D._BN0, D._A0)
                + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
                   (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
-    gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
-               + [(ie, COL_N), (ie, D.BAY_S)])
+    # The gallery's own faces are the pocket casings now, not the legs — they
+    # run past the column top and into the arch, so the straight side ends
+    # where the casing meets the arc's inner face rather than at the springing.
+    pw, pe = D.POCKET_W + D.T_POCKET / 2, D.POCKET_E - D.T_POCKET / 2
+    yq = D.GAL_CY - math.sqrt(max(0.0, ri ** 2 - (D.GAL_CX - pw) ** 2))
+    aq = math.degrees(math.atan2(yq - D.GAL_CY, pw - D.GAL_CX)) % 360
+    gallery = ([(pw, D.BAY_S), (pw, yq)] + _gal_arc(ri, aq, 540 - aq)
+               + [(pe, yq), (pe, D.BAY_S)])
 
     # Help's room and the store both run round the OUTSIDE of the WC's apse;
     # the WC is what is left inside it.  Splitting the outside at the store's
@@ -306,10 +312,14 @@ def arch_haunches():
     pieces fill that, which is the springer stone a mason would cut.
 
     A semicircle springs vertically and the radial cut is horizontal, so there
-    is nothing to fill and each piece collapses to a 4-degree patch sitting
-    inside the arch.  Harmless, and it keeps the arch honest if the sag is ever
-    pulled back off the half-span.
+    is nothing to fill — and now that the first 26 degrees of arc either side is
+    the service door's opening, a patch there is not merely redundant, it is a
+    fragment of wall standing in a doorway.  So: none, while the arch is a
+    semicircle.  The code stays for a sag pulled back off the half-span, which
+    is the case that needs them.
     """
+    if abs(D.GAL_CY - D.COL_N) < 1:
+        return []
     cx, cy, r, t, _g = D.GALLERY
     ro, ri = r + t / 2, r - t / 2
     out = []
@@ -334,18 +344,35 @@ def arch_haunches():
     return out
 
 
-def arch_doors(leaf=60):
-    """The three doors in the arch, drawn SHUT.
+def gal_sliders(leaf=40):
+    """The two service doors — straight glass sliders, drawn shut.
 
-    Each leaf is curved on the same radius as the wall it sits in, so with the
-    doors closed the arch reads as one continuous sweep and the U is whole.
-    A leaf curved to a 2370 radius cannot swing — it has to slide on the face
-    of the arc — so no swing is drawn; the leaf is shown where it lives.
+    They run in the wood casing on the inner face of each leg and pocket south
+    over the column, so shut they close the 800 between the column top and the
+    service-bay wall, and open they are gone into the wall rather than standing
+    proud of it, which is all a curved leaf on this radius could ever do."""
+    h = leaf / 2
+    return [[(x - h, D.BAY_N), (x + h, D.BAY_N), (x + h, COL_N), (x - h, COL_N)]
+            for x in (D.POCKET_W, D.POCKET_E)]
+
+
+def arch_doors(leaf=60):
+    """The door on the axis, drawn SHUT.
+
+    Its leaf is curved on the same radius as the wall it sits in, so closed,
+    the arch reads as one continuous sweep.  A leaf curved to 1725 cannot swing
+    — the far edge would drive into the wall — so it slides on the face of the
+    arc, and no swing is drawn.
+
+    Only this one.  The two service doors used to be curved leaves too; they
+    are straight glass sliders now and live in gal_sliders().
     """
     cx, cy, r, t, gaps = D.GALLERY
     out = []
     for a0, a1 in gaps:
         if (a1 - a0) % 360 > 60:          # the big gap below the springings
+            continue
+        if abs(((a0 + a1) / 2) % 360 - 270) > 30:      # not on the axis
             continue
         ang = np.linspace(a0, a1, 40)
         inner = [(cx + math.cos(math.radians(a)) * (r - leaf / 2),

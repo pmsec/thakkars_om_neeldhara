@@ -861,7 +861,7 @@ def design_masks():
     shell and the shaft enclosures, so they must not be counted as new build
     when testing the design against those zones."""
     fl, wl = C.blank(), C.blank()
-    for _, _, rects, _ in D.ROOMS:
+    for _, _, rects, _, _anchor in D.ROOMS:
         for a, b, c, d in rects:
             C.put_rect(fl, a, b, c, d)
     for _n, _s, p, _note, _xy in poly_rooms():

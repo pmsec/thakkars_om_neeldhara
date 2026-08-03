@@ -203,23 +203,31 @@ def symbol(kind, a, b, c, d):
                 ('circle', cx, cy - r * 0.22, r * 0.62, 'soft')]   # centre leaves
     if kind == 'ottoman':                                # the back as a crescent
         return [('poly', _rrect(a, b, c, d, min(w, h) * 0.28), 'soft')]
-    if kind in ('sofa', 'recliner', 'chair'):
+    if kind.split('-')[0] in ('sofa', 'recliner', 'chair'):
+        base = kind.split('-')[0]
+        # which side the BACK is on.  Given explicitly as a suffix — sofa-w,
+        # sofa-n — or, with none, guessed from the proportion the old way.
+        side = kind.split('-')[1] if '-' in kind else ('s' if w >= h else 'e')
         out = [_rr(a, b, c, d, 'solid')]
-        back = 190 if kind == 'sofa' else 170
-        if kind == 'chair':
+        back = 190 if base == 'sofa' else 170
+        if base == 'chair':
             out.append(('circle', cx, cy, min(w, h) * 0.25, 'soft'))
             return out
-        if w >= h:
-            out.append(_rr(a, d - back, c, d, 'soft'))
+        if side in ('s', 'n'):
+            y0, y1 = (d - back, d) if side == 's' else (b, b + back)
+            out.append(_rr(a, y0, c, y1, 'soft'))
             for i in (1, 2):
-                out.append(('line', a + i * w / 3, b + 80, a + i * w / 3, d - back - 50,
-                            'light'))
+                x_ = a + i * w / 3
+                out.append(('line', x_, y1 + 50 if side == 'n' else b + 80,
+                            x_, d - back - 50 if side == 's' else d - 80, 'light'))
         else:
-            out.append(_rr(c - back, b, c, d, 'soft'))
+            x0, x1 = (c - back, c) if side == 'e' else (a, a + back)
+            out.append(_rr(x0, b, x1, d, 'soft'))
             for i in (1, 2):
-                out.append(('line', a + 80, b + i * h / 3, c - back - 50, b + i * h / 3,
-                            'light'))
-        if kind == 'recliner':
+                y_ = b + i * h / 3
+                out.append(('line', x1 + 50 if side == 'w' else a + 80, y_,
+                            c - back - 50 if side == 'e' else c - 80, y_, 'light'))
+        if base == 'recliner':
             out.append(_rr(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft'))
         return out
     if kind == 'bed-rr':      # corners off at the FOOT, square at the head (east)

@@ -164,17 +164,22 @@ TAB_W, TAB_D, TAB_GAP = 550, 450, 50
 
 
 # --------------------------------------------------------------------- rooms
-# (name, subtitle, list of rectangles, note)
+# (name, subtitle, list of rectangles, note, label anchor or None)
+# None puts the label in the middle of the biggest rectangle, which is right
+# for an empty room and wrong for a full one.
 ROOMS = [
     ("TERRACE", "PARENTS", [(-350, 0, SUITE_W_E, 1200)],
-     "under high glass roof"),
-    ("TERRACE", "KARAN", [(M(SUITE_W_E), 0, M(-350), 1200)],
-     "under high glass roof"),
-    ("FAMILY ROOM", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay"),
-    ("MUSIC + WORK DEN", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay"),
-    ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck"),
+     "under high glass roof", None),
+    # Karan's terrace is furnished now — bench, two singles and a table — and
+    # the middle of it is exactly where the table is.  The label drops into the
+    # gap between the bench and the bed instead, and loses its note to fit.
+    ("TERRACE", "KARAN", [(M(SUITE_W_E), 0, M(-350), 1200)], "", (23280, 2480)),
+    ("FAMILY ROOM", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay", None),
+    ("MUSIC + WORK DEN", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay",
+     None),
+    ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck", None),
     ("ALL-WEATHER DECK", "", [(POD_W0, DECK_N, M(POD_W0), DECK_S)],
-     "15 420 long × 2620 deep  ·  net of the two retained voids"),  # voids cut out below
+     "15 420 long × 2620 deep  ·  net of the two retained voids", None),  # voids below
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
     # is a free-standing drum and the two rooms run up to it.  See
     # retrofit.lobby_polys().
@@ -453,14 +458,22 @@ GLAZING = [
 #   (kind, x0, y0, x1, y1, label)
 
 _ONCE = [
-    # --------------------------------------------- Karan's terrace: two chairs
-    # Swivel recliners, 850, in the 1200-deep terrace under the high glass
-    # roof.  Centred on its depth — 175 to the parapet and 175 to the slider —
-    # and set 830 apart, which leaves 285 at each end of the 3100 run.  Round on
-    # plan because they turn: from the terrace you can face the view, or turn
-    # right round and face into the room.
-    ('swivel',   22015, 175, 22865, 1025, 'swivel recliner  ·  850'),
-    ('swivel',   23695, 175, 24545, 1025, 'swivel recliner  ·  850'),
+    # ------------------------------- Karan's terrace: the conversation pod
+    # Not chairs stood in the terrace.  A BENCH SOFA inside the room with its
+    # back to the bed, facing north through the slider, and a single sofa at
+    # each end of the terrace facing in — so the three of them and the centre
+    # table make one group that works across the opening rather than on one
+    # side of it.  Open the slider and it is a single room; shut it and the
+    # bench still faces the view.
+    #
+    # The bench is IN THE ROOM: 2000 x 800, 50 off the terrace wall, centred on
+    # the terrace's 3100 so it sits square between the two singles.
+    ('sofa',     22280, 1400, 24280, 2200, 'bench sofa  ·  2000 x 800, back to the bed'),
+    # The two singles, 800 each, facing each other across the table.  100 clear
+    # at each end of the terrace and 200 top and bottom of its 1200 depth.
+    ('sofa-w',   21830, 200, 22630, 1000, 'single sofa  ·  800, facing east'),
+    ('sofa-e',   23930, 200, 24730, 1000, 'single sofa  ·  800, facing west'),
+    ('table',    22905, 265, 23655, 1015, 'centre table  ·  750 round'),
 
     # ------------------------------------ Karan's suite: the reading chair
     # In the open floor between the arch console and the bed, facing north up
@@ -475,11 +488,15 @@ _ONCE = [
     # a big real plant on it.  Set off X 20280 because the builder leaves a
     # 230 x 1200 column here standing 105 into the room — the plant's spread
     # comes out to that column's face and no further.
-    # Plant first, table over it: the spread is 900 against a 700 top, so drawn
+    # It takes the corner properly: the spread reaches BOTH faces — the column's
+    # at X 20180 and the wall under the sealed shaft at Y 1350 — so the plant
+    # fills the corner rather than sitting near it, and the table is centred
+    # under it with an equal 150 to each.
+    # Plant first, table over it: the spread is 1200 against a 900 top, so drawn
     # the other way round the foliage swallows the table and you cannot see what
     # it stands on.
-    ('plant',    20180, 1450, 21080, 2350, 'large plant  ·  900 spread'),
-    ('counter-r', 20280, 1550, 20980, 2250, 'low wooden table  ·  700 x 700'),
+    ('plant',    20180, 1350, 21380, 2550, 'large plant  ·  1200 spread'),
+    ('counter-r', 20330, 1500, 21230, 2400, 'low wooden table  ·  900 x 900'),
 
     # -------------------------------------------------- Karan's suite: the bed
     # A king, 1800 x 2000, head hard on the partition's north face.  Karan's

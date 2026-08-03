@@ -80,7 +80,7 @@ def main():
     print('  room schedule')
     tot = 0.0
     rows = []
-    for name, sub, rects, _ in D.ROOMS:
+    for name, sub, rects, _, _anchor in D.ROOMS:
         if not rects:
             continue
         a = sum((c - x) * (d - y) for x, y, c, d in rects) / 1e6

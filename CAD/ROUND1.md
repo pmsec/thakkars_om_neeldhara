@@ -594,12 +594,34 @@ the art and the plants.
 
 Three chairs, an ottoman and a plant, all Karan's side.
 
-**Two swivel recliners on the terrace**, 850 each. Round on plan because they
-turn: you can face the view or spin right round and face into the room. The
-terrace is only 1200 deep, so they are centred on it — **175 to the parapet and
-175 to the slider** — and set 830 apart, which leaves 285 at each end of the
-3100 run. That is the whole of the fit; an 850 chair is the largest that gives
-a usable margin at both faces.
+**A conversation pod across the terrace opening.** Not chairs stood in the
+terrace: a **bench sofa inside the room** with its back to the bed, facing north
+through the slider, and **a single sofa at each end of the terrace** facing in,
+with a round table between them. Open the slider and the three of them are one
+group; shut it and the bench still faces the view.
+
+| | mm | ft |
+|---|---|---|
+| bench sofa, in the room | 2000 × 800 | 6'-7" × 2'-7" |
+| — off the terrace wall | 50 | 0'-2" |
+| — to the bed | 602 | 1'-12" |
+| single sofas, each | 800 | 2'-7" |
+| — clear at each end of the terrace | 100 | 0'-4" |
+| — clear top and bottom of its 1200 depth | 200 | 0'-8" |
+| centre table, round | 750 | 2'-6" |
+| — to each single sofa | 275 | 0'-11" |
+
+The terrace is only **1200 deep and 3100 long**, and that is the whole reason
+the bench is inside rather than out. Three pieces and a table will not fit in
+1200; two singles and a table will, with 200 top and bottom and 100 at each
+end. Putting the third seat on the room's side of the glass is what makes the
+group work at all.
+
+**Karan's terrace label had to move for it.** The room label sits in the middle
+of its rectangle by default, and the middle of this one is now exactly where
+the centre table is. `ROOMS` entries carry an optional label anchor now; his
+terrace uses it, drops into the gap between the bench and the bed, and gives up
+its note to fit in the 602 available.
 
 **A reading chair and ottoman** in the open floor between the arch console and
 the bed, facing north up the room with the ottoman 150 in front of it. It is
@@ -614,10 +636,13 @@ placed off three clearances, not by eye:
 The last one matters most — that strip is the run down to the dressing gap, so
 the chair is set to leave it open rather than stand in it.
 
-**A low wooden table with a big plant on it**, north-west corner, just inside
-the terrace. 700 × 700 with a 900 spread over it. It is set off X 20280 because
-the builder leaves a 230 × 1200 column here standing **105 into the room**, and
-the plant's spread comes out to that column's face and no further.
+**A low wooden table with a big plant on it**, and it takes the north-west
+corner properly rather than sitting near it: **900 × 900 with a 1200 spread**,
+and the spread reaches **both** faces of the corner — the column's at X 20180
+and the wall under the sealed shaft at Y 1350. The table is centred under it
+with an equal 150 to each. So the plant fills the corner, and screens the
+builder's column — which stands 105 into the room — instead of standing beside
+it.
 
 Drawn plant-first, table-over: the spread is 900 against a 700 top, so the
 other way round the foliage swallows the table and you cannot see what it

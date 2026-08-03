@@ -419,9 +419,21 @@ dressing area you can cross in a towel with the bedroom on the other side.
 | **the gap — the way in** | **800** | **2'-7"** |
 | wardrobes, two of | 988 and 987 | 3'-3" each |
 | dresser | 800 × 450 | 2'-7" × 1'-6" |
-| clear in front of the wardrobes | 1070 | 3'-6" |
-| clear in front of the dresser | 1220 | 4'-0" |
+| clear in front of the wardrobes | 1040 | 3'-5" |
+| clear in front of the dresser | 1190 | 3'-11" |
 | gap to the mirror — the light path | 1615 | 5'-4" |
+
+Those two clearances are **face to face** — wardrobe carcass to the south face
+of the glass, not to its centreline. An earlier version of this table read 1070
+and 1220, which was the centreline figure and 30 too generous each.
+
+**What that means with the doors open.** 1040 is comfortable to stand and
+dress in. But a 988 unit split into two 494 leaves projects 494 when a leaf is
+open, leaving **546 beside it** — enough to reach past, not enough to stand.
+Three leaves of 329 leave 711. **Sliding doors project nothing at all** and
+keep the full 1040 whatever is open, at the cost of only ever reaching half the
+unit at a time. At 1040 the run is on the edge of wanting sliders, and the
+choice is the joiner's to make with Karan — the plan works either way.
 
 **The gap is doing three jobs, which is why it is a gap and not a door.** It is
 the way in. It is what stops the strip being a dead end reachable only through

@@ -227,7 +227,8 @@ def main():
              'light': ('none', FURN, 0.8), 'dash': ('none', '#b9ae9c', 1.0),
              'glass': ('#dde7ea', GLAS, 1.0), 'green': ('#cdd9c2', '#93a884', 1.0),
              'water': ('#dfeef2', '#8ab0bd', 1.1),
-             'tint': ('#cbb08a', '#7a5a38', 1.2)}
+             'tint': ('#e2cfae', '#8a6440', 1.0),
+             'wood': ('#b9884f', '#6b4426', 1.2)}
 
     def prim(p):
         st = p[-1]
@@ -373,7 +374,9 @@ def main():
             (NEWW, 'new masonry — every wall is new, every opening a gap in it'),
             (GLAS, 'glazing / sliding glass'),
             (WOOD, 'the U of the entry gallery — 230, on the two columns'),
-            (WOODL, 'curved doors, drawn shut — they slide on the arc')]):
+            (WOODL, 'curved doors, drawn shut — they slide on the arc'),
+            ('#b9884f', "Karan's dressing partition — wood dado, tinted "
+                        'glass over it')]):
         s.o.append(f'<rect x="{s.X(lx):.1f}" y="{s.Y(ly) + i * 26 - 13:.0f}" width="34" '
                    f'height="17" fill="{col}" stroke="#888" stroke-width="0.6"/>')
         s.o.append(f'<text x="{s.X(lx) + 46:.1f}" y="{s.Y(ly) + i * 26:.0f}" '

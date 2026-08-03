@@ -415,17 +415,18 @@ dressing area you can cross in a towel with the bedroom on the other side.
 | | mm | ft |
 |---|---|---|
 | the strip | 2775 × 1750 | 9'-1" × 5'-9" |
-| screen, one fixed pane | 1975 | 6'-6" |
-| **the gap — the way in** | **800** | **2'-7"** |
-| wardrobes, two of | 988 and 987 | 3'-3" each |
-| dresser | 800 × 450 | 2'-7" × 1'-6" |
+| partition, one pane | 1980 × 120 | 6'-6" |
+| **the gap — the way in** | **795** | **2'-7"** |
+| wardrobes, two of | 990 | 3'-3" each |
+| dresser | 795 × 450 | 2'-7" × 1'-6" |
 | clear in front of the wardrobes | 1040 | 3'-5" |
 | clear in front of the dresser | 1190 | 3'-11" |
 | gap to the mirror — the light path | 1615 | 5'-4" |
 
 Those two clearances are **face to face** — wardrobe carcass to the south face
-of the glass, not to its centreline. An earlier version of this table read 1070
-and 1220, which was the centreline figure and 30 too generous each.
+of the partition. That face now sits exactly on the bath door's north jamb, so
+the strip is bounded by the door opening and nothing else, and the whole 120
+of partition is taken off the bedroom side.
 
 **What that means with the doors open.** 1040 is comfortable to stand and
 dress in. But a 988 unit split into two 494 leaves projects 494 when a leaf is
@@ -434,6 +435,22 @@ Three leaves of 329 leave 711. **Sliding doors project nothing at all** and
 keep the full 1040 whatever is open, at the cost of only ever reaching half the
 unit at a time. At 1040 the run is on the edge of wanting sliders, and the
 choice is the joiner's to make with Karan — the plan works either way.
+
+### The partition is wood at the bottom and glass above it
+
+Karan's bed backs on to this partition, so it cannot be glass all the way down.
+It is **120 thick, wood up to headboard height, tinted glass above that** —
+drawn on plan as the wood band with the glass shown as an inset stripe inside
+it: one line, two materials up it.
+
+Three reasons, and each on its own would be enough. A headboard needs something
+solid to sit against and to screw a bracket into. Glass to the floor would put
+the back of that headboard on show from the dressing side, which is the one
+view the screen exists to prevent. And a partition a king bed leans on is a
+piece of construction, not a pane — hence 120 rather than 60.
+
+The glass still runs the full length above, so the strip keeps its privacy and
+every bit of its borrowed daylight.
 
 **The gap is doing three jobs, which is why it is a gap and not a door.** It is
 the way in. It is what stops the strip being a dead end reachable only through
@@ -452,6 +469,37 @@ square under the opening. Nothing is nearly-aligned.
 instead of two of 1387. The 800 became the dresser. The dresser is 450 deep
 rather than 600 because it is a place to sit at, not to hang in, and 450 leaves
 1220 in front of it for a stool.
+
+### The bed
+
+A king — **1800 × 2000, 2200 with the headboard** — head hard on the
+partition's north face. Karan's suite only; the parents' has no partition to
+back on to.
+
+**It cannot be centred in the bay, and that is worth stating rather than
+hiding.** Wall to wall at the bed head is 2775. The bed with its headboard is
+1980. That leaves 795 — and the 795 is already spoken for, because it is the
+way into the dressing area. So the bed goes hard against the bath wall and the
+whole remainder becomes **one 885 walkway on the east side**, which runs the
+bed's full length and then straight on through the gap into the dressing strip.
+A centred bed would give 487 a side, and 487 is not a side.
+
+The west side is not lost, it is just not at the head: the bath's arch curves
+away northward, so by the foot of the bed that side has opened out to 2080 and
+you walk round into it.
+
+**Everything in this corner now sets out off two X lines**, 22155 and 24135:
+
+| | from | to |
+|---|---|---|
+| the partition | 22155 | 24135 |
+| the headboard over it | 22155 | 24135 |
+| the wardrobe run under it | 22155 | 24135 |
+| the gap | 24135 | 24930 |
+| the dresser under the gap | 24135 | 24930 |
+
+The headboard is 1980 — the same as the wood dado behind it, running from the
+bath wall to the edge of the gap. Nothing here is nearly-aligned.
 
 ### The bath door had to move for the line
 

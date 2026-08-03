@@ -95,15 +95,26 @@ MB_DOOR_E = (1080, 1880)            # Karan's: Y 7795 - 8595
 # and the bath door into one private strip you can cross in a towel, without
 # closing it off from the bedroom or taking any light off it.
 #
-# It stops short of the end wall rather than running the whole way, and the 800
+# It stops short of the end wall rather than running the whole way, and the 795
 # it leaves is the way in — no leaf, no track, nothing to slide.  That gap does
 # three things at once: it is the door, it is what keeps the strip from being a
 # dead end reachable only through the bath, and it is the aperture that throws
 # the end-wall window's light across the strip onto the dresser mirror facing
 # it.  A sliding leaf would have done only the first.
-SCR_Y = 7795                        # on the door's north jamb
-T_SCR = 60
-SCR_GAP = 800                       # left open at the end-wall end
+#
+# It is not one material.  The bed's head backs on to it, so the bottom of it
+# is WOOD — a dado you can lean a headboard against and screw a bracket into —
+# and only above the headboard does it become tinted glass.  Glass all the way
+# down would put the back of a headboard on show from the dressing side and
+# give the bed nothing to sit against.  120 thick rather than 60 for the same
+# reason: a partition a king bed leans on is a piece of construction.
+#
+# SCR_Y is its SOUTH face, on the bath door's north jamb, so the strip is
+# bounded exactly by the door opening.  The 120 is taken off the bedroom side,
+# which has it to spare; the dressing side keeps its 1070.
+SCR_Y = 7795                        # SOUTH face, on the door's north jamb
+T_SCR = 120
+SCR_GAP = 795                       # left open at the end-wall end
 
 
 # The two retained deck voids stay exactly as built: opening plus the builder's
@@ -406,6 +417,26 @@ GLAZING = [
 #   (kind, x0, y0, x1, y1, label)
 
 _ONCE = [
+    # -------------------------------------------------- Karan's suite: the bed
+    # A king, 1800 x 2000, head hard on the partition's north face.  Karan's
+    # side only — the parents' suite has no partition to back on to.
+    #
+    # It cannot be centred in the bay and it is worth saying why.  Wall to wall
+    # is 2775; the bed with its headboard is 1980; that leaves 795, and the 795
+    # is already spoken for — it is the way into the dressing area.  So the bed
+    # goes hard against the bath wall and the whole of the remainder becomes one
+    # 885 walkway on the east side, which runs the bed's full length and then
+    # straight on through the gap into the dressing strip.  A centred bed would
+    # give 487 a side, which is not a side.
+    #
+    # The headboard lands exactly on the partition: 1980 long, the same as the
+    # wood, from the bath wall to the edge of the gap.  Everything in this
+    # corner of the home now sets out off two X lines, 22155 and 24135 — the
+    # partition, the wardrobes under it, the headboard over it, and the gap and
+    # the dresser beyond it.
+    ('bed-s',    22245, 5475, 24045, 7675,
+     "king 1800 x 2000  ·  head on the partition, 200 headboard"),
+
     # ------------------------------------------- Karan's suite: the wardrobes
     # The south wall, which is the only long blank wall in the suite — the east
     # end is three windows and the north is the terrace slider.  2775 of it,
@@ -424,13 +455,13 @@ _ONCE = [
     # joinery under it are exactly the same length and the gap and the dresser
     # are exactly the same length.  Two of 988 instead of two of 1387: the 800
     # went to the dresser, which is the trade Karan asked for.
-    ('hanging',  22155, 8865, 23143, 9465, "wardrobe 1  ·  988 x 600, hanging"),
-    ('hanging',  23143, 8865, 24130, 9465, "wardrobe 2  ·  987 x 600, hanging"),
+    ('hanging',  22155, 8865, 23145, 9465, "wardrobe 1  ·  990 x 600, hanging"),
+    ('hanging',  23145, 8865, 24135, 9465, "wardrobe 2  ·  990 x 600, hanging"),
     # The dresser, square opposite the gap in the screen — which is the point
     # of it.  The end wall's 3880 window lights the bedroom, the gap lets that
     # light through, and it lands on the mirror 1615 away.  450 deep rather
     # than the wardrobes' 600: a dresser is a place to sit at, not to hang in.
-    ('console-s', 24130, 9015, 24930, 9465, "dresser  ·  800 x 450, mirror over"),
+    ('console-s', 24135, 9015, 24930, 9465, "dresser  ·  795 x 450, mirror over"),
 
     # ---------------------------------------------------------------- deck
     ('planter',  POD_W0, DECK_N, M(POD_W0), DECK_N + 340, 'planter + trellis on the parapet'),

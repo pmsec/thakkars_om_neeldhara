@@ -354,18 +354,28 @@ def suite_screen():
     stand, and the way into the bath, all behind glass you cannot see through
     from the bed.
 
-    Tinted rather than clear because the point is privacy, and solid rather
-    than glass would make it a windowless corridor — the strip has no window of
-    its own, so every bit of its light comes through this pane.
+    Tinted rather than clear because the point is privacy, and glass rather than
+    solid because the strip has no window of its own — every bit of its light
+    comes through this pane.  But not glass all the way down: the bed's head
+    backs on to it, so the bottom is a wood dado and only above the headboard
+    does it become glass.  Both are drawn, the glass as an inset band inside
+    the wood one: one line on plan, two materials up it.
 
     One fixed pane, stopping SCR_GAP short of the end wall.  The gap is the way
     in — no leaf, no track — and it is also the aperture that throws the end
     wall's window light across the strip onto the dresser mirror square opposite
     it, 1615 away."""
-    y, t, g = D.SCR_Y, D.T_SCR, D.SCR_GAP
+    y1, t, g = D.SCR_Y, D.T_SCR, D.SCR_GAP      # y1 is the SOUTH face
+    y0 = y1 - t
     w, e = D.M(D.MB_XW - D.T_MB), D.END_E - 150
-    return [('poly', [(w, y - t / 2), (e - g, y - t / 2),
-                      (e - g, y + t / 2), (w, y + t / 2)], 'tint')]
+
+    def band(a, b, lo, hi, style):
+        return ('poly', [(a, lo), (b, lo), (b, hi), (a, hi)], style)
+
+    # the wood dado at full thickness, and the tinted glass over it drawn as an
+    # inset band — one line on plan, two materials up it
+    return [band(w, e - g, y0, y1, 'wood'),
+            band(w, e - g, y0 + t / 3, y1 - t / 3, 'tint')]
 
 
 def suite_polys():

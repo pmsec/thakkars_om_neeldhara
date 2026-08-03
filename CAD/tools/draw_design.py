@@ -226,7 +226,8 @@ def main():
     STYLE = {'solid': ('#ffffff', FURN, 1.1), 'soft': ('#efe9dd', FURN, 1.0),
              'light': ('none', FURN, 0.8), 'dash': ('none', '#b9ae9c', 1.0),
              'glass': ('#dde7ea', GLAS, 1.0), 'green': ('#cdd9c2', '#93a884', 1.0),
-             'water': ('#dfeef2', '#8ab0bd', 1.1)}
+             'water': ('#dfeef2', '#8ab0bd', 1.1),
+             'tint': ('#cbb08a', '#7a5a38', 1.2)}
 
     def prim(p):
         st = p[-1]
@@ -259,10 +260,15 @@ def main():
         prim(p)
     for p in R.wc_console():
         prim(p)
-    for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
-              + R.mb_door()):    # vanity, mirror, cupboard, shelves, door
+    for p in R.mb_console() + R.mb_cabinet() + R.mb_shelves():
         prim(p)
         prim(R.mirror_prim(p))
+    for p in R.mb_door():                       # the parents' bath door
+        prim(p)
+    for p in R.mb_door(D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
+        prim(R.mirror_prim(p))
+    for p in R.suite_screen():                  # Karan's dressing screen
+        prim(p)
     for p in R.wc_out_door():
         prim(p)
     for p in R.corner_units():

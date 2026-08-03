@@ -82,7 +82,24 @@ MB_BE = (MB_YE - MB_CY) / (1 - _m.sqrt(1 - ((MB_XE - MB_CX) / MB_AE) ** 2))
 MB_RW = 765                         # west flank, a quarter circle
 MB_YW = MB_CY + MB_RW               # 6715 — where it has turned vertical
 MB_XW = MB_CX - MB_RW + T_MB / 2    # 2475 — the bath's west face below that
-MB_DOOR = (300, 1100)               # the door, along the straight west wall
+MB_DOOR = (300, 1100)               # parents': the door, along the straight wall
+# Karan's door moves south so its far jamb lands flush on the shower screen at
+# Y 8595, which is also where the dressing screen below meets this wall.  His
+# side only — the parents' bath is as shipped, and without a screen to line up
+# with there is nothing there for the move to buy.
+MB_DOOR_E = (1080, 1880)            # Karan's: Y 7795 - 8595
+
+# ------------------------------------------- Karan's dressing screen
+# Brown tinted glass across the south strip of his suite, on the line of his
+# bath door's north jamb.  It makes the wardrobes, the walk in front of them
+# and the bath door into one private strip you can cross in a towel, without
+# closing it off from the bedroom or taking any light off it.
+#
+# It has to be openable or the strip is a dead end reachable only through the
+# bath, so the first 1000 is a sliding leaf, drawn parked over the fixed pane.
+SCR_Y = 7795                        # on the door's north jamb
+T_SCR = 60
+SCR_SLIDE = 1000                    # the sliding leaf
 
 
 # The two retained deck voids stay exactly as built: opening plus the builder's
@@ -200,7 +217,7 @@ NEW_WALLS = [
     # where the sweep has finished turning down to the outer wall.  The door is
     # a gap in that tail, hard against the curve.  See retrofit.mb_wall().
     (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR]),
-    (M(MB_XW - T_MB / 2), MB_YW, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR]),
+    (M(MB_XW - T_MB / 2), MB_YW, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR_E]),
     # The bath's east side is the enclosure to the builder's main service duct.
     # It was never drawn — the shell arrives with the shaft simply open — and
     # the bath cannot be closed without it.  It picks up exactly where the pod

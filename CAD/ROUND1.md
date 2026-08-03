@@ -405,6 +405,45 @@ The run's east end butts the end wall, where the builder's 3880 window comes
 down to Y 9465. So the wardrobe's 600 return stands across the last 600 of it,
 leaving 3280. That is the only thing the wardrobes cost.
 
+### The dressing screen, and the door that had to move for it
+
+A wall of **brown tinted glass** runs from the bath wall to the end wall on
+**Y 7795**, and it turns the south strip of Karan's suite into one private
+place — the wardrobes, the space you need in front of them, and the way into
+the bath. You can cross it in a towel with the bedroom on the other side of it.
+
+| | mm | ft |
+|---|---|---|
+| the strip | 2775 × 1750 | 9'-1" × 5'-9" |
+| clear in front of the wardrobes | 1070 | 3'-6" |
+| screen, total | 2775 | 9'-1" |
+| — sliding leaf, the way in | 1000 | 3'-3" |
+| — fixed pane | 1775 | 5'-10" |
+
+**Tinted, not solid, and not clear.** Clear defeats the point. Solid would make
+it a windowless corridor: the strip has no window of its own, so every bit of
+its daylight arrives through this pane.
+
+**The first 1000 slides**, drawn parked over the fixed pane. It has to open —
+sealed, the strip would be a dead end reachable only through the bathroom. A
+slider rather than a hinged leaf because a 1070 walkway has nowhere to put a
+swing.
+
+**The bath door moved to make the line.** It has come south until its far jamb
+lands flush on the shower screen at Y 8595, which is also where the screen
+meets that wall — so the glass starts exactly on the door frame's edge and the
+two read as one line rather than two things missing each other by a few
+hundred.
+
+Moving it forced the hinge over. The parents' door hinges south, so its leaf
+falls back along its own wall; Karan's cannot, because a south hinge on the new
+position swings the leaf straight across the way into the shower. **His hinges
+north**, and the open leaf lies back along the very line the screen runs on
+outside.
+
+**Karan's side only.** The parents' bath is exactly as shipped — without a
+screen to line up with, there is nothing there for the move to buy.
+
 ---
 
 ## The suite windows — a correction, and why it matters

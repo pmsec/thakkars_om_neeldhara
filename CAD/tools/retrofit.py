@@ -321,20 +321,55 @@ def mb_shelves(y_end=7500, taper=33):
     return out
 
 
-def mb_door():
-    """The bath door, drawn open into the room.
+def mb_door(door=None, hinge='S'):
+    """The bath door, drawn open into the room.  Always in the WEST frame; the
+    east one is the mirror of it, with its own opening.
 
     Almost every door on this drawing is left as a gap in a wall, because which
     way it swings does not change the plan.  This one is drawn because Karan
-    asked to see it work: hinged on the SOUTH jamb, so the leaf opens back
-    along the wall it is in and clears the run from the door to the shower,
-    rather than standing across it."""
-    y0, y1 = D.MB_YW + D.MB_DOOR[0], D.MB_YW + D.MB_DOOR[1]
+    asked to see it work.
+
+    The parents' one hinges SOUTH, so the leaf falls back along the wall it is
+    in and clears the run from the door to the shower.  Karan's cannot: his
+    door has moved down until its south jamb is flush with the shower screen,
+    and a south hinge there would swing the leaf straight across the way into
+    the shower.  So his hinges NORTH, and the leaf opens back along the same
+    line his dressing screen runs on outside."""
+    door = D.MB_DOOR if door is None else door
+    y0, y1 = D.MB_YW + door[0], D.MB_YW + door[1]
     w, x = y1 - y0, D.MB_XW
-    arc = [(x + w * math.cos(math.radians(t)), y1 - w * math.sin(math.radians(t)))
+    p, sgn = (y1, -1) if hinge == 'S' else (y0, 1)      # pivot, and which way
+    arc = [(x + w * math.cos(math.radians(t)), p + sgn * w * math.sin(math.radians(t)))
            for t in np.linspace(0, 90, 28)]
-    return [('poly', [(x, y1)] + arc, 'light'),
-            ('line', x, y1, x + w, y1, 'solid')]
+    return [('poly', [(x, p)] + arc, 'light'),
+            ('line', x, p, x + w, p, 'solid')]
+
+
+def suite_screen():
+    """Karan's dressing screen — brown tinted glass, in the EAST frame.
+
+    It runs on the line of his bath door's north jamb, from the bath wall to
+    the end wall, and it turns the south strip of his suite into one private
+    place: the wardrobes, the 1070 you need in front of them to open a door and
+    stand, and the way into the bath, all behind glass you cannot see through
+    from the bed.
+
+    Tinted rather than clear because the point is privacy, and solid rather
+    than glass would make it a windowless corridor — the strip has no window of
+    its own, so every bit of its light comes through this pane.
+
+    The first 1000 is a sliding leaf, drawn parked over the fixed pane.  It has
+    to open: sealed, the strip would be a dead end reachable only through the
+    bathroom."""
+    y, t, s_ = D.SCR_Y, D.T_SCR, D.SCR_SLIDE
+    w, e = D.M(D.MB_XW - D.T_MB), D.END_E - 150
+
+    def box(a, b, y0, y1, style):
+        return ('poly', [(a, y0), (b, y0), (b, y1), (a, y1)], style)
+
+    return [box(w + s_, e, y - t / 2, y + t / 2, 'tint'),           # fixed pane
+            box(w + s_, w + 2 * s_, y + t / 2, y + t * 1.5, 'tint'),  # leaf, open
+            box(w, w + s_, y - t / 2, y + t / 2, 'dash')]           # where it shuts
 
 
 def suite_polys():

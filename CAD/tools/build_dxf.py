@@ -229,7 +229,7 @@ def main():
 
     # -------------------------------------------------------------- furniture
     def prim(p):
-        lyr = 'PROP-FURN' if p[-1] != 'glass' else 'PROP-GLAZ'
+        lyr = 'PROP-GLAZ' if p[-1] in ('glass', 'tint') else 'PROP-FURN'
         if p[0] == 'rect':
             box(msp, p[1], p[2], p[3], p[4], lyr)
         elif p[0] == 'circle':
@@ -246,10 +246,15 @@ def main():
         prim(p)
     for p in R.wc_console():
         prim(p)
-    for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
-              + R.mb_door()):    # vanity, mirror, cupboard, shelves, door
+    for p in R.mb_console() + R.mb_cabinet() + R.mb_shelves():
         prim(p)
         prim(R.mirror_prim(p))
+    for p in R.mb_door():                       # the parents' bath door
+        prim(p)
+    for p in R.mb_door(D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
+        prim(R.mirror_prim(p))
+    for p in R.suite_screen():                  # Karan's dressing screen
+        prim(p)
     for p in R.wc_out_door():
         prim(p)
     for p in R.corner_units():

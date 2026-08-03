@@ -144,9 +144,8 @@ def poly_rooms():
     kitchen, helps, gallery, wc, store = lobby_polys()
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     return [
-        ('GUEST / SERVICE WC', '', wc, '', (16580, 9720)),
-        ('STORE', '', store, "the dry balcony, and the corner behind the apse",
-         (18200, 10250)),
+        ('GUEST / SERVICE WC', '', wc, '', (16620, 9760)),
+        ('STORE', '', store, '', (18200, 10250)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
         ('GREAT ROOM', '', great,
@@ -155,7 +154,7 @@ def poly_rooms():
         ('KITCHEN', '', kitchen,
          'kitchen and utility as one room  ·  the dry balcony is its utility end',
          (8700, 9500)),
-        ("HELP'S ROOM", '', helps, '', (14900, 9500)),
+        ("HELP'S ROOM", '', helps, '', (14780, 9150)),
         ('ENTRY GALLERY', '', gallery,
          'a U on the two columns  ·  3220 wide x 3260 deep  ·  '
          'semicircular apse, 230 throughout',

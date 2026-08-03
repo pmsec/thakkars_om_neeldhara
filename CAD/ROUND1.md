@@ -666,6 +666,41 @@ screen to line up with, there is nothing there for the move to buy.
 
 ---
 
+## The parents' wardrobes
+
+On the **west end wall, square opposite the bath door** — which opens west out
+of the bath at Y 7015–7815, so the run faces it across 2095 of floor.
+
+It is **2820 long, which is the bath's own length**, and it stops dead on the
+window's north jamb at Y 8945 so the 600 window there stays open.
+
+| | mm | ft |
+|---|---|---|
+| the run | 2820 | 9'-3" |
+| wardrobes, two of | 940 × 600 | 3'-1" × 1'-12" |
+| dressing console | 940 × 450 | 3'-1" × 1'-6" |
+| — recessed behind the wardrobe fronts | 150 | 0'-6" |
+| front of the run to the bath wall | 2095 | 6'-10" |
+| window left open at the south | 600 | 1'-12" |
+
+**Set off X −370, not the wall face at −450.** The builder leaves a 230 × 1200
+column on this wall over Y 7745–8945 whose face stands 80 proud — and that is
+squarely inside the run, not at one end of it. Scribed to the column and packed
+out behind, so the whole 2820 is one flush line rather than 600 deep for two
+thirds of it and 520 for the rest.
+
+**The last unit is not a cupboard.** The one against the window is the dressing
+console — 450 deep instead of 600, with the mirror on the wall behind it. So
+nothing full height stands against the glass, and the one place in the room you
+sit to look at yourself is the one place that gets daylight to do it by.
+
+**This is the trade Karan's side did not have to make.** His south wall was
+blank, so his wardrobes cost nothing. Their end wall has a window at each end of
+it, which is why the run is on the end wall at all rather than the south wall —
+and why it stops where it does.
+
+---
+
 ## The suite windows — a correction, and why it matters
 
 The glazing schedule used to carry **three invented windows on each wing end
@@ -949,10 +984,9 @@ need. Beside the serving hatch it is also next to the kitchen.
 
 * the furniture, room by room, added back on purpose rather than inherited
 * the two pods' furniture beyond the dining table and the corner units
-* **the parents' wardrobes.** Karan's are in — two of 1387 × 600 on his south
-  wall, see the section above. Nothing has gone into the parents' suite, which
-  was the instruction. Their south wall still has its 2000 window, so the same
-  move there is the same trade
+* **the parents' bed and their loose furniture.** Their wardrobes and dressing
+  console are in — see the section above. There is no bed in that suite, and
+  nothing loose: no chairs, no terrace furniture, no plants
 * **the beds.** They are off the drawing for now — a bed sitting in the suite
   while the joinery is being set out only argues with it. One commented line in
   `design.py` brings each one back, mirrored, when the wardrobes are settled

@@ -458,6 +458,28 @@ GLAZING = [
 #   (kind, x0, y0, x1, y1, label)
 
 _ONCE = [
+    # ------------------------- the PARENTS' wardrobes and dressing console
+    # On the west end wall, square opposite the bath door — which opens west
+    # out of the bath at Y 7015-7815, so this run faces it across the room with
+    # 2095 between.  It runs the bath's own length, 2820, and stops dead on the
+    # window's north jamb at Y 8945, so the 600 window there stays open.
+    #
+    # Set off X -370, not the wall face at -450: the builder leaves a 230 x 1200
+    # column on this wall over Y 7745-8945 whose face stands 80 proud, and that
+    # is squarely inside the run.  Scribed to the column and packed out behind,
+    # so the whole 2820 is one flush line rather than 600 deep for two thirds
+    # and 520 for the rest.
+    #
+    # Three units of 940.  The last one — the one against the window — is NOT a
+    # cupboard: it is the dressing console, 450 deep instead of 600, with the
+    # mirror on the wall behind it.  So nothing full height stands against the
+    # glass, and the one place in the room you sit to look at yourself is the
+    # one place that gets daylight to do it by.
+    ('hanging',   -370, 6125, 230, 7065, "wardrobe 1  ·  940 x 600, hanging"),
+    ('hanging',   -370, 7065, 230, 8005, "wardrobe 2  ·  940 x 600, hanging"),
+    ('console-w', -370, 8005,  80, 8945,
+     "dressing console  ·  940 x 450, mirror over, at the window"),
+
     # ------------------------------- Karan's terrace: the conversation pod
     # Not chairs stood in the terrace.  A BENCH SOFA inside the room with its
     # back to the bed, facing north through the slider, and a single sofa at

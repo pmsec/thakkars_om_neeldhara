@@ -407,7 +407,11 @@ _ONCE = [
 
 # Drawn on both halves of the home.
 _MIRROR = [
-    ('bed-e',    700, 6975, 2700, 8775, 'king 1800 × 2000, head on the bath wall'),
+    # The bed is OFF the drawing for now — the wardrobes and the bath come
+    # first, and a bed sitting there while they are set out only argues with
+    # them.  It goes back when the joinery is settled.  The symbol and the
+    # mirror rule stay, so it is one line to bring back:
+    #   ('bed-e', 700, 6975, 2700, 8775, 'king 1800 x 2000, head on the bath wall'),
     # ---------------------------------------------------------------- bath
     ('counter',  3855, 6900, 4405, 8300, 'vanity'),
     ('basin',    3955, 7350, 4355, 7850, ''),

@@ -417,7 +417,7 @@ Kept — 31 pieces, the ones that prove the plan works:
 * utility — stacked washer and dryer
 * both master baths — vanity, basin, WC, curved glass shower
 * guest / service WC — shower, WC, basin
-* both master beds, and the bunk in help's room
+* the bunk in help's room
 * **the mandir** in the parents' pod — a corner unit with an arched front,
   flush into the corner between the retained void's back wall and the pod
   glazing. That corner is **40.5°, not 90°** (the glazing leaves it heading
@@ -495,6 +495,10 @@ need. Beside the serving hatch it is also next to the kitchen.
 
 * the furniture, room by room, added back on purpose rather than inherited
 * the two pods' furniture beyond the dining table and the corner units
+* **the master suites' wardrobes**, and the beds after them. The beds are off
+  the drawing for now — a bed sitting in the suite while the wardrobes and the
+  bath are being set out only argues with them. One commented line in
+  `design.py` brings each one back, mirrored, when the joinery is settled
 
 ## Still to be confirmed, not by me
 

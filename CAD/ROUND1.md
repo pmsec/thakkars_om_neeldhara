@@ -385,15 +385,15 @@ the straight line it replaces.
 
 ---
 
-## Karan's wardrobes, and the window they cost
+## Karan's wardrobes
 
 Two wardrobes on the south wall of Karan's suite, **1387 and 1388 wide, both
 600 deep**. His side only — nothing has gone into the parents' suite.
 
 **600 is the depth, and it is not a round number chosen for neatness.** A
 shoulder on a hanger is 550–580, so a rail running left-to-right needs 600 of
-carcass. Anything shallower and the doors will not shut on a coat, and the
-unit turns into shelves with a rail in it.
+carcass. Anything shallower and the doors will not shut on a coat, and the unit
+turns into shelves with a rail in it.
 
 They are set off **Y 9465, not the wall face at 9545**. The builder leaves a
 1200 × 230 column on this wall whose face stands 80 proud of it, so the run is
@@ -401,23 +401,42 @@ scribed to the deepest obstruction and packed out behind over the stretch where
 there is no column — which is what a joiner would do anyway. The alternative is
 600 for two thirds of the run and 520 for the rest, which is worse.
 
-### The window
+The run's east end butts the end wall, where the builder's 3880 window comes
+down to Y 9465. So the wardrobe's 600 return stands across the last 600 of it,
+leaving 3280. That is the only thing the wardrobes cost.
 
-That wall had a **2000 window in it, and it is gone.**
+---
 
-It is the only long blank wall in the suite. The east end is already three
-windows — 1600, 1800 and 1900 — and the north is the 3100 terrace slider. So
-the joinery and the window wanted the same 2775 of wall, and there was no
-version where both had it. What is left is **5100 of window on the end wall
-plus the terrace slider**, which is a well-lit room by any measure, and the
-south is the aspect you lose least by giving up.
+## The suite windows — a correction, and why it matters
 
-The lowest end-wall window also lost 200 off its south end (9000 → 8800) so the
-wardrobe's return does not stand across the bottom corner of it.
+The glazing schedule used to carry **three invented windows on each wing end
+wall and a mirrored south window in Karan's suite**. None of them exist. They
+were written by assuming the two ends of the home are symmetric. **They are
+not**, and it is not a small difference:
 
-**Both are one line each in `design.py` if you would rather keep the window and
-have shorter wardrobes** — the commented line is sitting next to the parents'
-one, which is untouched.
+| | parents' (west) | Karan's (east) |
+|---|---|---|
+| end wall | 600 at the terrace + 600 at the south corner | 600 at the terrace + **one 3880** |
+| south wall | **3200**, the length of the strip | **nothing** |
+
+The builder gave the parents a long south window and gave Karan one enormous
+end-wall window instead. The two suites end up with almost the same glazing —
+about 4400 each — by completely different means.
+
+Everything above is read off the source drawing's own `DA_WINDOW` layer, and
+`design.py` now carries those openings verbatim, with the mirror rule
+deliberately **not** applied to them.
+
+**What this changes.** Karan's wardrobes cost no window at all: there was never
+one on that wall. It also means the same move in the parents' suite is a
+genuinely different proposition — their south wall is a real 3200 window, and
+wardrobes there would take it. Worth knowing before that round starts.
+
+**And one thing it gains.** The parents' 3200 south window runs X −450 to 2750.
+The bath's new west wall crosses it at 2325–2475, so **275 of that window now
+falls inside the parents' bath** — a south-facing slot in a room that was going
+to be lit artificially. It is narrow, but it is real daylight and a real
+openable pane, and it is there for nothing.
 
 ---
 

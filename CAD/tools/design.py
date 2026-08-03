@@ -342,13 +342,25 @@ GLAZING = [
     (9115, DECK_S + 75, 15365, DECK_S + 75, 'slider'),
     (M(7500), DECK_S + 75, M(4650), DECK_S + 75, 'slider'),
     # windows in the external walls
-    (-525, 2200, -525, 3800, 'window'),
-    (-525, 4600, -525, 6400, 'window'),
-    (-525, 7100, -525, 9000, 'window'),
-    (M(-525), 2200, M(-525), 3800, 'window'),
-    (M(-525), 4600, M(-525), 6400, 'window'),
-    (M(-525), 7100, M(-525), 8800, 'window'),   # 200 off, to clear the wardrobes
-    (400, 9620, 2400, 9620, 'window'),
+    # These are the builder's OWN openings, read off the source drawing's
+    # DA_WINDOW layer, not invented and NOT mirrored.  The two wing ends are
+    # not symmetric and it matters:
+    #
+    #   parents' end wall   600 at the terrace, 600 at the south corner
+    #   parents' south wall 3200, the length of the strip
+    #   KARAN'S end wall    600 at the terrace, and then one 3880
+    #   Karan's south wall  NOTHING.  There is no window on it and never was.
+    #
+    # An earlier version of this list had three invented windows per end wall
+    # and a mirrored copy of the parents' south window on Karan's side.  All of
+    # it was wrong.  The builder gave the parents a south window and gave Karan
+    # one enormous end-wall window instead; the two suites get about the same
+    # glazing by completely different means.
+    (-525, 1350, -525, 1950, 'window'),         # parents', end wall
+    (-525, 8945, -525, 9545, 'window'),
+    (-450, 9620, 2750, 9620, 'window'),         # parents', south wall — 3200
+    (M(-525), 1350, M(-525), 1950, 'window'),   # Karan's, end wall
+    (M(-525), 5585, M(-525), 9465, 'window'),   # Karan's one big one — 3880
     # Karan's south window is GONE — the wardrobe run took that wall.  It is
     # the only long blank wall in his suite (the whole east end is already
     # three windows), so the joinery and the window wanted the same 2775 and

@@ -403,14 +403,16 @@
 <polygon points="1271.0,1246.8 1271.0,1546.9 1291.3,1546.9 1291.3,1246.8" fill="#1b1a18" stroke="none"/>
 <polygon points="3054.4,1246.8 3054.4,1546.9 3074.6,1546.9 3074.6,1246.8" fill="#1b1a18" stroke="none"/>
 <polygon points="1600.9,1563.8 1958.3,1563.8 1958.3,1546.9 1600.9,1546.9" fill="#1b1a18" stroke="none"/>
-<polygon points="2387.4,1563.8 2569.4,1563.8 2569.4,1546.9 2387.4,1546.9" fill="#1b1a18" stroke="none"/>
-<polygon points="2650.4,1563.8 2893.2,1563.8 2893.2,1546.9 2650.4,1546.9" fill="#1b1a18" stroke="none"/>
-<polygon points="2873.0,1563.8 2873.0,1735.8 2893.2,1735.8 2893.2,1563.8" fill="#1b1a18" stroke="none"/>
-<polygon points="2873.0,1843.7 2873.0,1894.3 2893.2,1894.3 2893.2,1843.7" fill="#1b1a18" stroke="none"/>
-<polygon points="2545.2,1563.8 2545.2,1570.5 2560.0,1570.5 2560.0,1563.8" fill="#1b1a18" stroke="none"/>
-<polygon points="2545.2,1651.5 2545.2,1894.3 2560.0,1894.3 2560.0,1651.5" fill="#1b1a18" stroke="none"/>
+<polygon points="2387.4,1563.8 2547.9,1563.8 2547.9,1546.9 2387.4,1546.9" fill="#1b1a18" stroke="none"/>
+<polygon points="2655.8,1563.8 2893.2,1563.8 2893.2,1546.9 2655.8,1546.9" fill="#1b1a18" stroke="none"/>
+<polygon points="2873.0,1563.8 2873.0,1797.2 2893.2,1797.2 2893.2,1563.8" fill="#1b1a18" stroke="none"/>
+<polygon points="2726.6,1760.3 2726.6,1780.6 2741.4,1780.6 2741.4,1760.3" fill="#1b1a18" stroke="none"/>
+<polygon points="2726.6,1875.0 2726.6,1894.3 2741.4,1894.3 2741.4,1875.0" fill="#1b1a18" stroke="none"/>
 <polygon points="1955.7,1914.5 2102.0,1914.5 2102.0,1894.3 1955.7,1894.3" fill="#1b1a18" stroke="none"/>
 <polygon points="2243.7,1914.5 2390.0,1914.5 2390.0,1894.3 2243.7,1894.3" fill="#1b1a18" stroke="none"/>
+<polygon points="2552.6,1563.8 2552.6,1565.5 2552.6,1567.2 2552.7,1568.9 2552.7,1570.6 2552.8,1572.3 2552.9,1574.0 2553.1,1575.7 2553.2,1577.4 2553.4,1579.1 2553.6,1580.7 2553.8,1582.4 2554.0,1584.1 2554.2,1585.8 2554.5,1587.5 2554.8,1589.2 2555.1,1590.9 2555.4,1592.6 2555.7,1594.3 2556.1,1595.9 2556.5,1597.6 2556.9,1599.3 2557.3,1601.0 2557.7,1602.7 2558.2,1604.3 2558.7,1606.0 2559.1,1607.7 2559.7,1609.3 2560.2,1611.0 2560.7,1612.7 2561.3,1614.3 2561.9,1616.0 2562.5,1617.6 2563.1,1619.3 2563.8,1620.9 2564.5,1622.6 2565.1,1624.2 2565.8,1625.9 2566.6,1627.5 2567.3,1629.1 2568.1,1630.8 2568.9,1632.4 2569.7,1634.0 2570.5,1635.6 2571.3,1637.2 2572.2,1638.8 2573.0,1640.4 2573.9,1642.0 2574.8,1643.6 2575.8,1645.2 2576.7,1646.8 2577.7,1648.4 2578.7,1650.0 2579.7,1651.5 2580.7,1653.1 2581.7,1654.7 2582.8,1656.2 2583.9,1657.8 2585.0,1659.3 2586.1,1660.9 2587.2,1662.4 2588.4,1663.9 2589.5,1665.5 2590.7,1667.0 2591.9,1668.5 2593.1,1670.0 2594.4,1671.5 2595.6,1673.0 2596.9,1674.5 2598.2,1675.9 2599.5,1677.4 2600.8,1678.9 2602.1,1680.3 2603.5,1681.8 2604.9,1683.2 2606.3,1684.7 2607.7,1686.1 2609.1,1687.5 2610.5,1689.0 2612.0,1690.4 2613.5,1691.8 2615.0,1693.2 2616.5,1694.5 2618.0,1695.9 2608.1,1707.0 2606.5,1705.5 2604.9,1704.0 2603.3,1702.6 2601.7,1701.1 2600.2,1699.6 2598.7,1698.1 2597.1,1696.6 2595.6,1695.0 2594.2,1693.5 2592.7,1692.0 2591.3,1690.4 2589.8,1688.9 2588.4,1687.3 2587.0,1685.7 2585.6,1684.2 2584.3,1682.6 2583.0,1681.0 2581.6,1679.4 2580.3,1677.8 2579.0,1676.2 2577.8,1674.5 2576.5,1672.9 2575.3,1671.3 2574.1,1669.6 2572.9,1668.0 2571.7,1666.3 2570.6,1664.6 2569.4,1663.0 2568.3,1661.3 2567.2,1659.6 2566.1,1657.9 2565.1,1656.2 2564.0,1654.5 2563.0,1652.8 2562.0,1651.1 2561.0,1649.3 2560.0,1647.6 2559.1,1645.9 2558.2,1644.1 2557.3,1642.4 2556.4,1640.6 2555.5,1638.9 2554.7,1637.1 2553.8,1635.3 2553.0,1633.6 2552.2,1631.8 2551.5,1630.0 2550.7,1628.2 2550.0,1626.4 2549.3,1624.6 2548.6,1622.8 2548.0,1621.0 2547.3,1619.2 2546.7,1617.4 2546.1,1615.6 2545.5,1613.8 2544.9,1612.0 2544.4,1610.1 2543.9,1608.3 2543.4,1606.5 2542.9,1604.6 2542.5,1602.8 2542.0,1601.0 2541.6,1599.1 2541.2,1597.3 2540.8,1595.4 2540.5,1593.6 2540.2,1591.7 2539.8,1589.9 2539.6,1588.0 2539.3,1586.2 2539.0,1584.3 2538.8,1582.4 2538.6,1580.6 2538.4,1578.7 2538.3,1576.8 2538.1,1575.0 2538.0,1573.1 2537.9,1571.2 2537.8,1569.4 2537.8,1567.5 2537.8,1565.6 2537.7,1563.8" fill="#1b1a18" stroke="none"/>
+<polygon points="2701.7,1748.4 2703.8,1749.3 2706.0,1750.2 2708.2,1751.1 2710.4,1752.0 2712.5,1752.9 2714.8,1753.7 2717.0,1754.6 2719.2,1755.4 2721.4,1756.2 2723.7,1757.1 2725.9,1757.9 2728.2,1758.7 2730.5,1759.4 2732.8,1760.2 2735.0,1761.0 2737.3,1761.7 2739.7,1762.4 2742.0,1763.2 2744.3,1763.9 2746.6,1764.5 2749.0,1765.2 2751.3,1765.9 2753.7,1766.6 2756.1,1767.2 2758.4,1767.8 2760.8,1768.4 2763.2,1769.0 2765.6,1769.6 2768.0,1770.2 2770.4,1770.8 2772.8,1771.3 2775.2,1771.9 2777.7,1772.4 2780.1,1772.9 2782.5,1773.4 2785.0,1773.9 2787.4,1774.4 2789.9,1774.8 2792.3,1775.3 2794.8,1775.7 2797.3,1776.1 2799.8,1776.5 2802.2,1776.9 2804.7,1777.3 2807.2,1777.6 2809.7,1778.0 2812.2,1778.3 2814.7,1778.7 2817.2,1779.0 2819.7,1779.3 2822.2,1779.5 2824.8,1779.8 2827.3,1780.1 2829.8,1780.3 2832.3,1780.5 2834.9,1780.8 2837.4,1781.0 2839.9,1781.1 2842.5,1781.3 2845.0,1781.5 2847.5,1781.6 2850.1,1781.8 2852.6,1781.9 2855.2,1782.0 2857.7,1782.1 2860.2,1782.1 2862.8,1782.2 2865.3,1782.2 2867.9,1782.3 2870.4,1782.3 2873.0,1782.3 2873.0,1797.2 2870.3,1797.1 2867.7,1797.1 2865.1,1797.1 2862.5,1797.0 2859.8,1797.0 2857.2,1796.9 2854.6,1796.8 2852.0,1796.7 2849.3,1796.6 2846.7,1796.4 2844.1,1796.3 2841.5,1796.1 2838.9,1795.9 2836.3,1795.8 2833.6,1795.5 2831.0,1795.3 2828.4,1795.1 2825.8,1794.8 2823.2,1794.6 2820.6,1794.3 2818.0,1794.0 2815.4,1793.7 2812.9,1793.4 2810.3,1793.0 2807.7,1792.7 2805.1,1792.3 2802.5,1792.0 2800.0,1791.6 2797.4,1791.2 2794.9,1790.7 2792.3,1790.3 2789.8,1789.9 2787.2,1789.4 2784.7,1788.9 2782.1,1788.4 2779.6,1787.9 2777.1,1787.4 2774.6,1786.9 2772.1,1786.4 2769.6,1785.8 2767.1,1785.2 2764.6,1784.6 2762.1,1784.0 2759.6,1783.4 2757.1,1782.8 2754.7,1782.2 2752.2,1781.5 2749.8,1780.9 2747.3,1780.2 2744.9,1779.5 2742.5,1778.8 2740.0,1778.1 2737.6,1777.3 2735.2,1776.6 2732.8,1775.8 2730.4,1775.1 2728.1,1774.3 2725.7,1773.5 2723.3,1772.7 2721.0,1771.9 2718.6,1771.0 2716.3,1770.2 2714.0,1769.3 2711.7,1768.4 2709.4,1767.6 2707.1,1766.7 2704.8,1765.7 2702.5,1764.8 2700.3,1763.9 2698.0,1762.9 2695.8,1762.0" fill="#1b1a18" stroke="none"/>
+<polygon points="2616.6,1699.2 2619.0,1701.3 2621.4,1703.4 2623.9,1705.4 2626.4,1707.5 2628.9,1709.5 2631.4,1711.5 2634.0,1713.4 2636.6,1715.4 2639.3,1717.3 2642.0,1719.2 2644.7,1721.1 2647.5,1722.9 2650.3,1724.8 2653.1,1726.6 2655.9,1728.4 2658.8,1730.1 2661.7,1731.9 2664.7,1733.6 2667.7,1735.3 2670.7,1737.0 2673.7,1738.6 2676.8,1740.2 2679.8,1741.8 2683.0,1743.4 2686.1,1744.9 2689.3,1746.4 2692.5,1747.9 2695.7,1749.4 2698.9,1750.8 2695.7,1758.3 2692.4,1756.8 2689.1,1755.3 2685.8,1753.8 2682.6,1752.2 2679.4,1750.6 2676.2,1749.0 2673.0,1747.4 2669.9,1745.7 2666.8,1744.0 2663.7,1742.3 2660.6,1740.6 2657.6,1738.8 2654.6,1737.1 2651.7,1735.2 2648.7,1733.4 2645.9,1731.5 2643.0,1729.7 2640.2,1727.8 2637.4,1725.8 2634.6,1723.9 2631.9,1721.9 2629.2,1719.9 2626.5,1717.9 2623.9,1715.8 2621.3,1713.8 2618.7,1711.7 2616.2,1709.6 2613.7,1707.4 2611.3,1705.3" fill="none" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="1132.8" y="393.5" width="2080.1" height="45.9" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
 <circle cx="1132.8" cy="416.5" r="15.9" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
 <circle cx="1219.4" cy="416.5" r="15.9" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
@@ -505,15 +507,16 @@
 <rect x="2422.4" y="1638.0" width="121.4" height="256.3" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="2431.9" y="1647.4" width="102.5" height="237.4" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <line x1="2422.4" y1="1845.7" x2="2543.8" y2="1845.7" stroke="#9a9184" stroke-width="0.8"/>
-<rect x="2429.2" y="1678.4" width="107.9" height="202.3" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
-<rect x="2724.6" y="1570.5" width="141.6" height="134.9" fill="#dfeef2" stroke="#8ab0bd" stroke-width="1.1"/>
-<line x1="2724.6" y1="1570.5" x2="2866.2" y2="1705.4" stroke="#9a9184" stroke-width="0.8"/>
-<line x1="2866.2" y1="1570.5" x2="2724.6" y2="1705.4" stroke="#9a9184" stroke-width="0.8"/>
-<circle cx="2795.4" cy="1638.0" r="12.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
-<circle cx="2609.9" cy="1786.9" r="31.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="2591.5" y="1809.5" width="36.8" height="23.4" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
-<rect x="2744.8" y="1826.8" width="121.4" height="59.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<circle cx="2805.5" cy="1856.5" r="17.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="2572.1" y="1813.3" width="80.9" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<line x1="2612.6" y1="1813.3" x2="2612.6" y2="1894.3" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="2673.3" y="1573.9" width="101.2" height="101.2" fill="#dfeef2" stroke="#8ab0bd" stroke-width="1.1"/>
+<line x1="2673.3" y1="1573.9" x2="2774.5" y2="1675.1" stroke="#9a9184" stroke-width="0.8"/>
+<line x1="2774.5" y1="1573.9" x2="2673.3" y2="1675.1" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2723.9" cy="1624.5" r="12.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="2781.2" y="1570.5" width="67.4" height="47.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2815.0" cy="1594.1" r="14.2" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2829.8" cy="1706.0" r="31.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="2811.4" y="1728.5" width="36.8" height="23.4" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="616.1" y="1354.7" width="269.8" height="242.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="858.9" y="1342.5" width="27.0" height="267.1" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="1041.7" y="1344.6" width="74.2" height="188.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
@@ -594,12 +597,11 @@
 <text x="2172.8" y="550.0" font-size="22" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">ALL-WEATHER DECK</text>
 <text x="2172.8" y="587.8" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">40.4 m²  ·  435 sq ft</text>
 <text x="2172.8" y="610.7" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">15 420 long × 2620 deep  ·  net of the two retained voids</text>
-<text x="2716.5" y="1708.8" font-size="16" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">GUEST / SERVICE WC</text>
-<text x="2716.5" y="1746.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">5.7 m²  ·  61 sq ft</text>
-<text x="2716.5" y="1769.5" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">off the great room</text>
-<text x="2977.2" y="1777.9" font-size="16" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">STORE</text>
-<text x="2977.2" y="1815.7" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">1.8 m²  ·  19 sq ft</text>
-<text x="2977.2" y="1838.6" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">the builder's dry balcony</text>
+<text x="2758.3" y="1725.0" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">GUEST / SERVICE WC</text>
+<text x="2758.3" y="1758.7" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">3.0 m²  ·  33 sq ft</text>
+<text x="2976.8" y="1796.5" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">STORE</text>
+<text x="2976.8" y="1830.2" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">2.7 m²  ·  29 sq ft</text>
+<text x="2976.8" y="1861.2" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">the dry balcony, and the corner behind the apse</text>
 <text x="1405.3" y="1256.9" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">FAMILY ROOM</text>
 <text x="1405.3" y="1290.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">20.2 m²  ·  218 sq ft</text>
 <text x="1405.3" y="1321.6" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">one pod  ·  glass roof over the 3665 x 2280 bay</text>
@@ -613,7 +615,7 @@
 <text x="1695.3" y="1729.0" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">10.5 m²  ·  113 sq ft</text>
 <text x="1695.3" y="1760.1" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">kitchen and utility as one room  ·  the dry balcony is its utility end</text>
 <text x="2531.7" y="1695.3" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">HELP'S ROOM</text>
-<text x="2531.7" y="1729.0" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">2.3 m²  ·  25 sq ft</text>
+<text x="2531.7" y="1729.0" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">4.0 m²  ·  43 sq ft</text>
 <text x="2172.8" y="1756.0" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">ENTRY GALLERY</text>
 <text x="2172.8" y="1789.7" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">9.4 m²  ·  101 sq ft</text>
 <text x="2172.8" y="1820.8" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">a U on the two columns  ·  3220 wide x 3260 deep  ·  semicircular apse, 230 throughout</text>

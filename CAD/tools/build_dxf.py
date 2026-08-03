@@ -164,6 +164,14 @@ def main():
             h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
             h.set_solid_fill(color=1)
 
+    for q in R.wc_wall():               # the guest WC's apse, same masonry
+        poly(msp, q, 'PROP-WALL-NEW')
+        h = msp.add_hatch(color=1, dxfattribs={'layer': 'PROP-WALL-NEW'})
+        h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
+        h.set_solid_fill(color=1)
+    for q in R.wc_door():               # its door, outline only — it is a door
+        poly(msp, q, 'PROP-FURN')
+
     cx, cy, r, t, gaps = D.GALLERY
 
     def in_gap(a):

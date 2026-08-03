@@ -141,9 +141,12 @@ def poly_rooms():
     The rectangular ones live in design.ROOMS; these are the two pods and the
     great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
-    kitchen, helps, gallery = lobby_polys()
+    kitchen, helps, gallery, wc, store = lobby_polys()
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     return [
+        ('GUEST / SERVICE WC', '', wc, '', (16580, 9720)),
+        ('STORE', '', store, "the dry balcony, and the corner behind the apse",
+         (18200, 10250)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
         ('GREAT ROOM', '', great,
@@ -158,6 +161,49 @@ def poly_rooms():
          'semicircular apse, 230 throughout',
          (D.MID, 9950)),
     ]
+
+
+# ------------------------------------------------- the guest WC's arched wall
+def wc_pt(u, off=0.0):
+    """A point on the WC apse, offset normal to itself.
+
+    u runs 0 (springing, on the great-room wall) to 1 (where it dies into the
+    east wall).  off > 0 is away from the corner the ellipse is struck from —
+    help's room's side and the store's."""
+    th = u * math.pi / 2
+    c, s = math.cos(th), math.sin(th)
+    x, y = D.WC_CX - D.WC_A * c, D.WC_CY + D.WC_B * s
+    nx, ny = -c / D.WC_A, s / D.WC_B          # outward normal of the ellipse
+    m = math.hypot(nx, ny)
+    return x + off * nx / m, y + off * ny / m
+
+
+def wc_pts(off=0.0, n=90):
+    return [wc_pt(u, off) for u in np.linspace(0, 1, n)]
+
+
+def wc_wall():
+    """The apse as filled bands, with help's room's door taken out of it."""
+    h = D.T_WC / 2
+    runs, cur = [], []
+    for u in np.linspace(0, 1, 200):
+        if D.WC_DOOR[0] <= u <= D.WC_DOOR[1]:
+            if len(cur) > 1:
+                runs.append(cur)
+            cur = []
+        else:
+            cur.append(u)
+    if len(cur) > 1:
+        runs.append(cur)
+    return [[wc_pt(u, -h) for u in run] + [wc_pt(u, h) for u in reversed(run)]
+            for run in runs]
+
+
+def wc_door(leaf=60):
+    """Help's room's door into the WC, curved on the apse and drawn shut."""
+    us = np.linspace(*D.WC_DOOR, 30)
+    return [[wc_pt(u, -leaf / 2) for u in us]
+            + [wc_pt(u, leaf / 2) for u in reversed(us)]]
 
 
 def _gal_arc(r, a0, a1, n=60):
@@ -182,18 +228,32 @@ def lobby_polys():
     """
     r, t = D.GAL_R, D.T_GAL
     ro, ri = D.GAL_RO, D.GAL_RI
-    kw, ke = 6900, 15000                   # far faces of the two rooms
+    kw = 6900                              # far face of the kitchen
+    sw = D.STORE_W - D.T_THIN / 2          # store's west face, 16345
     iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
     # the kitchen now includes the builder's dry balcony — one room, one area
     kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, D._BN0, D._A0)
                + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
                   (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
-    helps = ([(ke, D.BAY_N)] + _gal_arc(ro, D._BN1, D._A1)
-             + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (ke, D.BAY_S)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
                + [(ie, COL_N), (ie, D.BAY_S)])
-    return kitchen, helps, gallery
+
+    # Help's room and the store both run round the OUTSIDE of the WC's apse;
+    # the WC is what is left inside it.  Splitting the outside at the store's
+    # west face is what gives the two of them their curved wall each.
+    out = wc_pts(D.T_WC / 2)
+    h_arc = [p for p in out if p[0] <= sw]
+    s_arc = [p for p in out if p[0] >= sw]
+    helps = ([h_arc[0]] + _gal_arc(ro, D._BN1, D._A1)
+             + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (sw, D.BAY_S),
+                (sw, h_arc[-1][1])] + list(reversed(h_arc)))
+    store = (s_arc + [(D.WC_CX, D.WC_DIE + D.T_WC / 2), (17580, 10255),
+                      (17580, 9550), (18825, 9550), (18825, D.BAY_S),
+                      (sw, D.BAY_S), (sw, s_arc[0][1])])
+    wc = ([(D.WC_CX, D.BAY_N), (D.WC_CX, D.WC_DIE - D.T_WC / 2)]
+          + list(reversed(wc_pts(-D.T_WC / 2))))
+    return kitchen, helps, gallery, wc, store
 
 
 def arch_haunches():
@@ -376,4 +436,6 @@ def design_masks():
                    cy + math.sin(rad) * (r - t / 2) - C.CELL,
                    cx + math.cos(rad) * (r + t / 2) + C.CELL,
                    cy + math.sin(rad) * (r + t / 2) + C.CELL)
+    for q in wc_wall():
+        C.put_poly(wl, q)
     return fl, wl, keep_wall_mask()

@@ -95,9 +95,8 @@ ROOMS = [
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
     # is a free-standing drum and the two rooms run up to it.  See
     # retrofit.lobby_polys().
-    ("GUEST / SERVICE WC", "", [(15110, BAY_N, 17430, BAY_S)],
-     "off the great room"),
-    ("STORE", "", [(17580, 9550, 18825, 10975)], "the builder's dry balcony"),
+    # GUEST / SERVICE WC, HELP'S ROOM and STORE are not rectangles either — the
+    # WC's apse cuts all three.  See retrofit.lobby_polys().
 ]
 
 # --------------------------------------------------- entry gallery, setting out
@@ -143,6 +142,34 @@ def gal_cross(y, r=None):
 _BRK_W = gal_cross(BODY_S) or GAL_DOOR_W
 _BRK_E = M(_BRK_W)
 
+# ------------------------------------------ the guest WC's arched wall
+# The guest WC is an arch on plan too: a quarter ELLIPSE struck from the
+# north-east corner of the service bay, springing off the great-room wall and
+# dying into the east wall.  Help's room and the store wrap round the outside
+# of it.
+#
+# An ellipse and not a circle because the two walls it has to reach are not the
+# same distance away — 2430 along the great-room wall, 1675 down the east one.
+# A circle is tangent to both only if it is a quarter round, and a quarter round
+# wide enough to carry a door off the great room (it has to spring west of
+# 15880, where the pod glazing lands) would run the whole 2450 depth of the bay
+# and leave help's room a berth again.  The ellipse reaches west without
+# reaching south, which is exactly the shape of the problem.
+WC_CX, WC_CY = 17430, BAY_N        # the corner it is struck from
+WC_A, WC_B = 2430, 1675            # semi-axes, on the centreline of the wall
+T_WC = 110
+WC_SPRING = WC_CX - WC_A           # 15000, on the great-room wall
+WC_DIE = WC_CY + WC_B              # 10200, on the east wall
+WC_DOOR = (0.42, 0.64)             # help's room's door, as a fraction of the arc
+STORE_W = 16400                    # the store's new west wall
+
+
+def wc_y(x):
+    """y of the apse centreline where it crosses this x."""
+    c = (WC_CX - x) / WC_A
+    return WC_CY + WC_B * _m.sqrt(max(0.0, 1 - c * c))
+
+
 # ------------------------------------------------------------------- new walls
 # (x1, y1, x2, y2, thickness, [(from, to) openings along the wall])
 T_INT, T_THIN = 150, 110
@@ -171,27 +198,22 @@ NEW_WALLS = [
     (6900, 8462.5, _BRK_W, 8462.5, 125, [(0, 1100)]),   # serving hatch only
     # Help's room has no door on to the great room any more — it is reached
     # from the entry gallery, and through it the WC.  The one opening left in
-    # this run is the guest WC's, and it sits in the last 600 of wall the great
-    # room still has before the pod glazing lands at 15880.
+    # this run is the guest WC's.  The apse springs at 15000 and the pod glazing
+    # lands at 15880, so there is 880 of great-room wall in front of the WC and
+    # the door can be a proper 800 rather than the 600 a straight wall allowed.
     (_BRK_E, 8462.5, 17580, 8462.5, 125,
-     [(15180 - _BRK_E, 15780 - _BRK_E)]),               # guest WC, off the great room
+     [(15020 - _BRK_E, 15820 - _BRK_E)]),               # guest WC, off the great room
 
     # --- service bay
     # (the kitchen / utility wall is gone — the two are one space now)
-    (M(7050 - 75), BAY_N, M(7050 - 75), BAY_S, T_INT, [(1275, 2075)]),  # WC / store
-    # Help's room / WC.  This line moves 605 west: help's room is a bunk and a
-    # cupboard now, and the width it gives up goes to the WC, which was 1150
-    # wide and had no room to stand up in.
-    #
-    # 15055 is as far east as it can go.  The WC's door has to come off the
-    # great room, and the great room only reaches 15880 on the service-bay wall
-    # — east of that the pod glazing lands and it is the den.  So the door width
-    # and help's room's width come out of the same 1800, one for one.  A 600
-    # door leaves 920, which is a fitted berth: bunk, and drawers under it.
-    #
-    # The door in it is help's room's second door, at the north end where the
-    # landing is — the bunk takes the rest of the wall.
-    (15055, BAY_N, 15055, BAY_S, T_THIN, [(50, 650)]),             # help's room / WC
+    # WC / secondary duct.  This one stops where the apse dies into the east
+    # wall: below that the store runs straight through, so its old cross-wall
+    # and the door in it are both gone.
+    (M(7050 - 75), BAY_N, M(7050 - 75), 10255, T_INT, []),         # WC / duct
+    # The store's new west wall, from the apse down to the outer wall.  The
+    # store is entered from help's room through it — which is where a staff
+    # store should be entered from, rather than through the guest WC.
+    (STORE_W, wc_y(STORE_W) - 60, STORE_W, BAY_S, T_THIN, [(150, 850)]),
 
     # --- the absorbed lobby: new entrance wall on the building line, sitting
     #     in the 150 between the service bay and the building line.  One door,
@@ -343,19 +365,17 @@ _ONCE = [
     ('basket',   5755, 9470, 6255, 9970, 'laundry basket'),
     ('bin',      6305, 9470, 6855, 10020, 'dustbin'),
     # --------------------------------------------------------- help\'s room
-    # 920 x 2450.  The bunk is built in, wall to wall, and the north 550 is the
-    # landing the gallery door and the WC door share.  Nothing is left to stand
-    # a cupboard on, so the cupboard is drawers under the bunk — which is what
-    # you would build into a berth this size anyway.
-    ('bunk',     14090, 9075, 14990, 10975, 'bunk, built in'),
-    ('under',    14140, 9375, 14940, 10875, 'drawers under the bunk'),
+    # The apse gives the room back its width to the south, so the bunk and the
+    # cupboard both stand on the floor again.
+    ('bunk',     14090, 9075, 14990, 10975, 'bunk'),
+    ('shelves',  15200, 10375, 15800, 10975, 'cupboard'),
     # ------------------------------------------------- guest / service WC
-    # 2320 wide now instead of 1150.  Both doors are at the north-west, so the
-    # shower goes to the far corner and the pan and basin take the two far
-    # walls, leaving that corner clear to walk into.
-    ('shower',   16330, 8575, 17380, 9575, ''),
-    ('wc',       15170, 9900, 15790, 10520, ''),
-    ('basin',    16480, 10475, 17380, 10915, ''),
+    # One WC, one small basin, one very small shower — and nothing else, which
+    # is what an apse this size will take.  All three sit on the two straight
+    # walls; the curved side is left clear, because it is where both doors are.
+    ('shower',   15950, 8600, 16700, 9350, ''),
+    ('basin',    16750, 8575, 17250, 8925, ''),
+    ('wc',       16800, 9300, 17420, 9920, ''),
 ]
 
 # Drawn on both halves of the home.

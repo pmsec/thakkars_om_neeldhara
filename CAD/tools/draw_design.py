@@ -214,6 +214,10 @@ def main():
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
         for q in wall_quads(x1, y1, x2, y2, t, ops):
             s.poly(q, fill=NEWW, stroke='none')
+    for q in R.wc_wall():                # the guest WC's apse — same masonry
+        s.poly(q, fill=NEWW, stroke='none')
+    for q in R.wc_door():                # its door, curved and drawn shut
+        s.poly(q, fill='none', stroke=FURN, stroke_width=1.1)
 
     # ---------------------------------------------------------- furniture
     STYLE = {'solid': ('#ffffff', FURN, 1.1), 'soft': ('#efe9dd', FURN, 1.0),

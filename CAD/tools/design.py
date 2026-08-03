@@ -128,19 +128,27 @@ def M(v):
     return 2 * MID - v
 
 
-# ------------------------------------------------- Karan's round bed
-# Tangent to two things: the bath wall on the west and the partition on the
-# south.  That is the whole idea — it touches the partition at ONE point
-# instead of along 1980 of it, which frees the corner beside it for a bedside
-# table and leaves the way into the dressing area open where a rectangular bed
-# closed it down to a slot.
+# --------------------------------------------------- Karan's bed, moved north
+# The bed is off the partition entirely.  Down there it had the bath on one
+# side, the wardrobes behind it and the way into the dressing area squeezing
+# past — three things and a bed in one corner.  It moves to the END WALL, and
+# the reason is that the end wall has the only solid stretch in the suite:
 #
-# 2130 is the standard round king and it is also the biggest that works here:
-# 2400 would leave 375 to the end wall, and 375 is not a way past a bed.
-BED_D = 2130
-BED_R = BED_D / 2
-BED_CX = M(MB_XW - T_MB) + BED_R    # 23220 — tangent to the bath wall
-BED_CY = SCR_Y - T_SCR - BED_R      # 6610 — tangent to the partition
+#   y 1350 - 1950   window, 600
+#   y 1950 - 5585   BLANK, 3635          <- the headboard wall
+#   y 5585 - 9465   window, 3880
+#
+# 3635 takes a 1800 bed and a 550 table each side with 320 to spare at each
+# end, and it does it without standing in front of either window.
+#
+# The head sits on X 24850, not the wall face at 24930: the builder leaves a
+# 230 x 1200 column on this wall whose face is 80 proud over the bed's northern
+# 280.  Bed and both tables are set to that line so the three read as one run.
+BED_HEAD = 24850
+BED_W, BED_L = 1800, 2000           # across, and out from the wall
+BED_Y0 = 2870                       # centred on the blank stretch
+BED_Y1 = BED_Y0 + BED_W
+TAB_W, TAB_D, TAB_GAP = 550, 450, 50
 
 
 # --------------------------------------------------------------------- rooms
@@ -450,8 +458,17 @@ _ONCE = [
     # corner of the home now sets out off two X lines, 22155 and 24135 — the
     # partition, the wardrobes under it, the headboard over it, and the gap and
     # the dresser beyond it.
-    ('bed-round', BED_CX - BED_R, BED_CY - BED_R, BED_CX + BED_R, BED_CY + BED_R,
-     "round bed, 2130 dia  ·  tangent to the bath wall and the partition"),
+    # Rectangular again, but with the corners taken right off — a 594 radius on
+    # an 1800 x 2000, which is a third of the width, so what is left straight is
+    # 612 across the head and 812 down each side.  It is the room's third curve
+    # after the bath's arch and the console on it.
+    ('bed-rr',   BED_HEAD - BED_L, BED_Y0, BED_HEAD, BED_Y1,
+     "king 1800 x 2000  ·  corners at 594, head on the end wall"),
+    # A proper table each side, on the same line as the headboard.
+    ('counter-r', BED_HEAD - TAB_D, BED_Y0 - TAB_GAP - 550, BED_HEAD, BED_Y0 - TAB_GAP,
+     "side table  ·  550 x 450"),
+    ('counter-r', BED_HEAD - TAB_D, BED_Y1 + TAB_GAP, BED_HEAD, BED_Y1 + TAB_GAP + 550,
+     "side table  ·  550 x 450"),
 
     # ------------------------------------------- Karan's suite: the wardrobes
     # The south wall, which is the only long blank wall in the suite — the east

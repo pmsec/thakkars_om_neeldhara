@@ -470,52 +470,59 @@ instead of two of 1387. The 800 became the dresser. The dresser is 450 deep
 rather than 600 because it is a place to sit at, not to hang in, and 450 leaves
 1220 in front of it for a stool.
 
-### The bed — round, and what that actually costs
+### The bed moves to the end wall
 
-Karan asked what a round bed would do here. It is drawn: **2130 diameter**, the
-standard round king, tangent to the bath wall on the west and to the partition
-on the south. 2130 is also the largest that works — 2400 would leave 375 to the
-end wall, and 375 is not a way past a bed.
+Three rounds of trying to put a bed on the partition ended the same way: with
+the bath on one side of it, the wardrobes behind it and the way into the
+dressing area squeezing past. Four things in one corner. **The bed leaves that
+corner.**
 
-It lands on a nice accident: tangent to the straight wall at X 22155, it also
-clears the bath's curved sweep by **3 mm**. The two curves miss each other by
-nothing at all.
+It goes to the end wall, and the reason is that the end wall carries the one
+solid stretch in the whole suite:
 
-**What it gains**
+| | |
+|---|---|
+| Y 1350 – 1950 | window, 600 |
+| **Y 1950 – 5585** | **BLANK, 3635 — the headboard wall** |
+| Y 5585 – 9465 | window, 3880 |
 
-* **The corner table.** 703 along the bath wall, 703 along the partition, and a
-  front struck from the bed's own centre 60 clear of it — so the table beds
-  against the bed the whole way round, the same move as the console on the
-  bath's arch. **0.17 m² of top**, which is about the surface of a 450 × 400
-  bedside table, laid along the two walls instead of in a block.
-* **The way into the dressing area opens up.** A circle touches the partition
-  at one point instead of along 1980 of it, so at the partition line there is
-  **1710 clear** where the rectangular bed left 885.
+3635 takes an 1800 bed and a **550 table each side** with 370 and 365 to spare
+at the two ends — so the whole group sits in the blank stretch without standing
+in front of either window. That is the fit that makes this position right, and
+it is the only wall in the suite where it exists.
 
-**What it costs, and this is the part to weigh**
+The head sits on **X 24850, not the wall face at 24930**: the builder leaves a
+230 × 1200 column here whose face is 80 proud over the bed's northern 280. Bed
+and both tables are set to that line, so the three read as one run.
 
-* **Sleeping width.** A round bed is nothing like as wide as it is round.
+### The bed itself — rectangular, corners taken right off
 
-  | measured in from the head edge | across | each |
-  |---|---|---|
-  | 300 — where your shoulders are | 1482 | **741** |
-  | 400 | 1664 | 832 |
-  | 500 — waist | 1806 | 903 |
-  | a 1800 rectangular king | 1800 everywhere | **900** |
+**1800 × 2000 with a 594 corner radius** — a third of the width. What is left
+straight is 612 across the head and 812 down each side; everything else is
+curve. It is the room's third curve after the bath's arch and the console
+struck off it.
 
-  At the shoulders each person gets **741 against 900** — less than a single
-  bed's 900. It only reaches a king's width down at waist level.
-* **The walk past it pinches to 645** at the bed's equator, against a constant
-  885 for the rectangular bed. It opens to 823 by Y 7200 and 1710 at the
-  partition, so it is one squeeze rather than a corridor — but it is a squeeze.
-* **Bespoke mattress and bespoke linen**, for as long as the bed exists.
-* **Only one cubby, not two.** The east corner is the way into the dressing
-  area. A table there closes it, and there is no version where that corner is
-  both a table and a door.
+| | mm | ft |
+|---|---|---|
+| mattress | 1800 × 2000 | 5'-11" × 6'-7" |
+| corner radius | 594 | 1'-11" |
+| side tables, each | 550 × 450 | 1'-10" × 1'-6" |
+| clear west of the bed, to the pod line | 2775 | 9'-1" |
+| clear north, to the terrace wall | 1520 | 4'-11" |
+| clear south, to the partition | 3005 | 9'-10" |
 
-Both beds are one line apart in `design.py`. The rectangular king — 1800 × 2000,
-2200 with the headboard, 885 walkway, headboard exactly the length of the wood
-dado — is the commented alternative.
+**It sleeps 1800 across at the shoulders**, which is what a king should do and
+what the round bed could not — that one managed 1482, or 741 each. The corners
+are the only thing given up, and you do not sleep in the corners of a bed.
+
+**One thing to know: the mattress is bespoke.** A 594 radius is not something
+you buy off a shelf. It is a far smaller ask than a round mattress — the frame
+and the base do the shaping and the mattress is cut to match — but it is not a
+catalogue item, and neither is a fitted sheet for it.
+
+**And the room is no longer crowded at the bottom.** The bath, the wardrobes
+and the dressing gap now have the southern half to themselves, and the bed has
+the northern half with 2775 of open floor beside it.
 
 ### The bath door had to move for the line
 

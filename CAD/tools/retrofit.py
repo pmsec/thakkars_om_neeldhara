@@ -148,8 +148,9 @@ def poly_rooms():
     bath_note = 'arched wall  ·  1930 clear'
     return [
         ('MASTER SUITE', 'PARENTS', suite, suite_note, (1150, 4200)),
-        ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note,
-         (D.M(1150), 4200)),
+        # not the mirror of the parents' anchor any more: that point is inside
+        # Karan's bed.  His label sits in the open floor west of it.
+        ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note, (21300, 4400)),
         ("PARENTS' BATH", '', bath, bath_note, (3140, 7750)),
         ("KARAN'S BATH", '', mirror_poly(bath), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (16620, 9760)),
@@ -343,40 +344,6 @@ def mb_door(door=None, hinge='S'):
            for t in np.linspace(0, 90, 28)]
     return [('poly', [(x, p)] + arc, 'light'),
             ('line', x, p, x + w, p, 'solid')]
-
-
-def bed_table(gap=60, n=44):
-    """The bedside table in the corner the round bed leaves behind it.
-
-    Two straight legs on the bath wall and the partition, and a third side
-    struck from the BED'S OWN CENTRE, 60 clear of it — so the table beds
-    against the bed the whole way round instead of touching it at a point and
-    gapping either side.  It is the same move as the console on the bath's
-    arch, and the same reason.
-
-    This corner only.  The matching corner on the east is the way into the
-    dressing area, and a table there would close it."""
-    cx, cy, r = D.BED_CX, D.BED_CY, D.BED_R + gap
-    xw = D.M(D.MB_XW - D.T_MB)              # 22155, the bath wall
-    ys = D.SCR_Y - D.T_SCR                  # 7675, the partition's north face
-    ya = cy + math.sqrt(r ** 2 - (cx - xw) ** 2)      # arc meets the wall
-    xb = cx - math.sqrt(r ** 2 - (ys - cy) ** 2)      # arc meets the partition
-    a0 = math.atan2(ya - cy, xw - cx)
-    a1 = math.atan2(ys - cy, xb - cx)
-    def shape(off):
-        rr = r + off
-        aa = math.acos((cx - xw - off) / rr) if abs((cx - xw - off) / rr) <= 1 else 0
-        y_a = cy + rr * math.sin(aa)
-        x_b = cx - math.sqrt(max(0.0, rr ** 2 - (ys - off - cy) ** 2))
-        t0 = math.atan2(y_a - cy, (xw + off) - cx)
-        t1 = math.atan2((ys - off) - cy, x_b - cx)
-        return ([(xw + off, ys - off), (xw + off, y_a)]
-                + [(cx + rr * math.cos(t), cy + rr * math.sin(t))
-                   for t in np.linspace(t0, t1, n)]
-                + [(x_b, ys - off)])
-
-    return [('poly', shape(0), 'solid'),        # the carcass
-            ('poly', shape(70), 'light')]       # and the top over it
 
 
 def suite_screen():

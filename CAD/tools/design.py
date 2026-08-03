@@ -414,10 +414,32 @@ SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
 # the great room wants in the middle and the width the pod needs at the
 # serving hatch fight each other.  A cubic gives both: it waists in towards
 # the pod at mid-depth and swells back out at the bottom, where the dining
-# table sits.  Great room 43.4 m2 against 39.9 for the best quadratic that
+# table sits.  Great room 42.3 m2 against 39.9 for the best quadratic that
 # still takes the table, and the table stays at the hatch.
-POD_W = ((9115, BODY_N), (6800, 4600), (9400, 6400), (8600, BODY_S))
-POD_E = ((M(9115), BODY_N), (M(6800), 4600), (M(9400), 6400), (M(8600), BODY_S))
+#
+# RE-DRAWN.  The control points were (6800, 4600) (9400, 6400) — the same idea,
+# badly conditioned: the radius of curvature tightened to 2037, ran effectively
+# straight at Y 6008 and bent again, and the curve met the deck wall at 41 deg
+# with a visible kink.  A curve reads as deliberate when its radius is constant
+# or changes smoothly one way; that one read as a wobble.  The re-fit holds the
+# minimum radius at 3036 and squares the springing up to 54 deg for 1.1 m2 of
+# great room.
+#
+# THREE THINGS PIN IT, and none of them has any slack:
+#  * the south end must land at 8600, which mirrors to 15880 on the service-bay
+#    wall.  The guest WC's apse springs at 15000 and this glazing lands at
+#    15880 — 880 of wall, and the WC door is 800 of it.  Move the landing west
+#    and the door is gone.
+#  * a single arc is impossible: an arc is widest at mid-span and the dining
+#    table is not at mid-span.  The best single arc leaves 0 at the chair
+#    nearest the glass.  The second bend is what gives the pod its width back
+#    exactly where the table is.
+#  * straightening the tail collapses the bow — forced to end at 8600 with a
+#    straight run in, the great room drops to 37.8 m2, barely better than a
+#    flat screen.  The tail has to bend.
+# Clearances at the dining table: 210 to the glass, 215 to the duct wall.
+POD_W = ((9115, BODY_N), (7352, 5047), (9206, 6285), (8600, BODY_S))
+POD_E = ((M(9115), BODY_N), (M(7352), 5047), (M(9206), 6285), (M(8600), BODY_S))
 POD_PORTAL = (0.42, 0.60)                 # arched opening, as a t-range
 
 # straight glazing runs: (x1, y1, x2, y2, kind)

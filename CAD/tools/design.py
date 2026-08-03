@@ -475,10 +475,20 @@ _ONCE = [
     # mirror on the wall behind it.  So nothing full height stands against the
     # glass, and the one place in the room you sit to look at yourself is the
     # one place that gets daylight to do it by.
-    ('hanging',   -370, 6125, 230, 7065, "wardrobe 1  ·  940 x 600, hanging"),
-    ('hanging',   -370, 7065, 230, 8005, "wardrobe 2  ·  940 x 600, hanging"),
-    ('console-w', -370, 8005,  80, 8945,
-     "dressing console  ·  940 x 450, mirror over, at the window"),
+    # The run now STOPS on the column's north edge at Y 7745, and the 1200 the
+    # column occupies below it is the laundry basket's — so the basket sits in
+    # the one stretch of this wall that is 80 shallower than the rest anyway.
+    ('hanging',   -370, 6125, 230, 6935, "wardrobe 1  ·  810 x 600, hanging"),
+    ('hanging',   -370, 6935, 230, 7745, "wardrobe 2  ·  810 x 600, hanging"),
+    ('basket',    -370, 7995, 130, 8695, "laundry basket  ·  700 x 500"),
+    # The dressing console moves to the corner where the bath wall meets the
+    # south window, and it goes on the BATH WALL, not under the window.  On the
+    # window wall the mirror would cover 940 of a 3200 window and you would sit
+    # with the light behind the glass, lighting the back of your own head.  On
+    # the bath wall you face east into it with the south window on your right —
+    # side light on your face, which is the whole point of putting it here.
+    ('console-e', 1875, 8605, 2325, 9545,
+     "dressing console  ·  940 x 450, mirror on the bath wall"),
 
     # ------------------------------- Karan's terrace: the conversation pod
     # Not chairs stood in the terrace.  A BENCH SOFA inside the room with its

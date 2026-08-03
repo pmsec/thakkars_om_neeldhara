@@ -117,7 +117,7 @@ def symbol(kind, a, b, c, d):
     if kind == 'under':
         return [_rr(a, b, c, d, 'dash')]
     if kind in ('counter', 'island', 'joinery', 'appliance', 'shelves', 'console',
-                'console-s', 'console-w', 'bunk', 'mirror'):
+                'console-s', 'console-w', 'console-e', 'bunk', 'mirror'):
         out = [_rr(a, b, c, d, 'solid')]
         if kind == 'shelves':
             n = max(2, int(max(w, h) // 430))
@@ -132,6 +132,8 @@ def symbol(kind, a, b, c, d):
             out.append(_rr(a + 60, d - 55, c - 60, d, 'glass'))
         if kind == 'console-w':                     # and the same, wall west
             out.append(_rr(a, b + 60, a + 55, d - 60, 'glass'))
+        if kind == 'console-e':                     # and east
+            out.append(_rr(c - 55, b + 60, c, d - 60, 'glass'))
         if kind == 'bunk':
             out.append(_rr(a + 70, b + 70, c - 70, d - 70, 'soft'))
             out.append(('line', a, d - 360, c, d - 360, 'light'))

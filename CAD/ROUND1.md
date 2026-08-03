@@ -666,40 +666,41 @@ screen to line up with, there is nothing there for the move to buy.
 
 ---
 
-## The parents' wardrobes
+## The parents' wardrobes, basket and dressing console
 
 On the **west end wall, square opposite the bath door** — which opens west out
 of the bath at Y 7015–7815, so the run faces it across 2095 of floor.
 
-It is **2820 long, which is the bath's own length**, and it stops dead on the
-window's north jamb at Y 8945 so the 600 window there stays open.
-
 | | mm | ft |
 |---|---|---|
-| the run | 2820 | 9'-3" |
-| wardrobes, two of | 940 × 600 | 3'-1" × 1'-12" |
+| wardrobes, two of | 810 × 600 | 2'-8" × 1'-12" |
+| the run | 1620 | 5'-4" |
+| laundry basket | 700 × 500 | 2'-4" × 1'-8" |
 | dressing console | 940 × 450 | 3'-1" × 1'-6" |
-| — recessed behind the wardrobe fronts | 150 | 0'-6" |
-| front of the run to the bath wall | 2095 | 6'-10" |
 | window left open at the south | 600 | 1'-12" |
 
-**Set off X −370, not the wall face at −450.** The builder leaves a 230 × 1200
-column on this wall over Y 7745–8945 whose face stands 80 proud — and that is
-squarely inside the run, not at one end of it. Scribed to the column and packed
-out behind, so the whole 2820 is one flush line rather than 600 deep for two
-thirds of it and 520 for the rest.
+**The run stops on the column, and the basket takes the column.** The builder
+leaves a 230 × 1200 column on this wall over Y 7745–8945 whose face stands 80
+proud — and unlike Karan's it sits in the *middle* of the usable wall, not at
+one end. The cupboards run down to its north edge and stop there; the 1200 the
+column occupies becomes the laundry basket's. So the one stretch of wall that
+is 80 shallower than the rest carries the one thing that does not care.
 
-**The last unit is not a cupboard.** The one against the window is the dressing
-console — 450 deep instead of 600, with the mirror on the wall behind it. So
-nothing full height stands against the glass, and the one place in the room you
-sit to look at yourself is the one place that gets daylight to do it by.
+Everything is set off X −370, the column's face, so the run and the basket are
+one flush line.
 
-**This is the trade Karan's side did not have to make.** His south wall was
-blank, so his wardrobes cost nothing. Their end wall has a window at each end of
-it, which is why the run is on the end wall at all rather than the south wall —
-and why it stops where it does.
+### The dressing console is in the corner, and on the bath wall
 
----
+It moves to the corner where the bath wall meets the south window — **and it
+goes on the bath wall, not under the window.**
+
+That is not a stylistic preference. On the window wall the mirror would cover
+940 of a 3200 window, and you would sit facing the glass with all the light
+*behind* the mirror, lighting the back of your own head. On the bath wall you
+face east into it with the south window on your right: **side light on your
+face**, which is the whole reason for putting a dressing table in this corner.
+
+Nothing covers the window, and nothing full height stands against it.
 
 ## The suite windows — a correction, and why it matters
 

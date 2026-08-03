@@ -572,14 +572,19 @@ reason both of them sit on the wall instead of touching it at a point.
 only ever increases the radius, so unlike the vanity inside there is no depth
 at which this one folds on itself. 400 is a choice, not a limit.
 
-**It tapers to nothing at the pod wall**, over 626 of arc, and that is doing
-real work rather than decoration. Cut square there, the console ends in a 400
-blunt face standing in the doorway to the pod — and worse, offsetting outward
-at the springing throws the front face straight *through* that wall, so a naive
-square cut overhangs into the pod by 400. Running the depth out to zero solves
-both at once: the two faces meet at a point exactly on the wall, and there is
-nothing left to collide with. Footprint 1.52 m² rather than 1.58 — the taper
-costs 0.06 m² of cupboard and buys a clean end.
+**The pod-wall end tapers from 400 to 250 and then stops against that wall in a
+431 face**, at Y 6002 — above the springing, not at it. Both of the obvious
+alternatives are wrong:
+
+* **A square 400 cut** overhangs. Offsetting outward at the springing throws
+  the front face straight *through* the pod wall, so a naive square end pushes
+  400 into the pod.
+* **A taper run out to zero** ends the console in a knife point at the corner —
+  a sliver of joinery nobody can build and nothing can stand on.
+
+Tapering to 250 and clipping the front where *it* crosses the wall does both
+jobs: the end face is a clean vertical on X 4405, and the top is still 250 wide
+where it meets the wall. Footprint 1.57 m².
 
 Cupboards under it the whole way; one wall cabinet over the straight tail at
 the partition end, drawn dashed because it is over, not in plan. The top is for

@@ -346,7 +346,8 @@ def mb_door(door=None, hinge='S'):
             ('line', x, p, x + w, p, 'solid')]
 
 
-def arch_console(dep=400, n=140, over=900, over_d=250, grow=0.42):
+def arch_console(dep=400, dep_end=250, n=140, over=900, over_d=250,
+                 grow=0.42):
     """The console that curls round the OUTSIDE of the bath's arch.
 
     Written in the WEST frame like everything else on this sweep; it is drawn
@@ -362,27 +363,39 @@ def arch_console(dep=400, n=140, over=900, over_d=250, grow=0.42):
     unlike the vanity inside there is no depth at which this one folds on
     itself: 400 is a choice, not a limit.
 
-    It TAPERS TO NOTHING at the pod wall, over 626 of arc, and that is not
-    decoration.  Cut square there instead, the console ends in a 400 blunt face
-    standing in the doorway to the pod — and worse, offsetting outward at the
-    springing throws the front face straight THROUGH that wall, so a naive
-    square cut overhangs into the pod.  Running the depth out to zero solves
-    both: the two faces meet at a point exactly on the wall, and there is
-    nothing left to collide with.
+    It TAPERS at the pod-wall end — 400 down to 250 — and then stops against
+    that wall in a 431 face.  Not a knife point at the corner: run all the way
+    out to zero and the console ends in a sliver of joinery nobody can build and
+    nothing can stand on.  Not a square 400 cut either: offsetting outward at
+    the springing throws the front face straight THROUGH the pod wall, so a
+    square cut overhangs into the pod.  Tapering to 250 and clipping the front
+    where IT crosses the wall does both jobs — the end face is a clean vertical
+    on X = MB_XE, and the top is still 250 wide where it meets the wall.
 
     Cupboards under it the whole way; one wall cabinet over the straight tail at
     the partition end, drawn dashed because it is over, not in plan.  The top is
     for the art and the plants."""
     h = D.T_MB / 2
-    u0 = mb_u_at_wall(-h)
-    us = list(np.linspace(u0, 1.0, n))
+    u0 = mb_u_at_wall(-h)                          # the springing, on the wall
 
-    def d(u):                       # nothing at the pod wall, full depth by 626
+    def d(u):                       # 400 over most of it, easing to dep_end
         t = min(1.0, (u - u0) / grow)
-        return dep * t * t * (3 - 2 * t)                        # smoothstep
+        return dep_end + (dep - dep_end) * t * t * (3 - 2 * t)  # smoothstep
 
-    back = [mb_pt(u, -h) for u in us]
-    front = [mb_pt(u, -h - d(u)) for u in us]
+    # The front still reaches past the pod wall at the springing, so find where
+    # IT crosses and start the front there; the back starts at u0, which is on
+    # the wall already.  Both ends land on X = MB_XE, so the end face is a clean
+    # vertical against that wall — 431 of it — instead of a knife point at the
+    # corner.
+    lo, hi = -1.6, 0.0
+    for _ in range(60):
+        m = (lo + hi) / 2
+        if mb_pt(m, -h - d(m))[0] > D.MB_XE:
+            lo = m
+        else:
+            hi = m
+    back = [mb_pt(u, -h) for u in np.linspace(u0, 1.0, n)]
+    front = [mb_pt(u, -h - d(u)) for u in np.linspace(hi, 1.0, n)]
     ys, xb = D.SCR_Y - D.T_SCR, D.MB_XW - D.T_MB      # 7675, 2325
     return [('poly', back + [(xb, ys), (xb - dep, ys)] + list(reversed(front)),
              'solid'),

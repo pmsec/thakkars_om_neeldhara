@@ -596,6 +596,11 @@ need. Beside the serving hatch it is also next to the kitchen.
 
 ## Settled in this round
 
+* **the two master baths** — settled and in the DXF. The arched wall, the
+  console and mirror struck off it, the cupboard on the end of the arch, the
+  shelves turning down the duct wall, the bin, the pan on the stack, the
+  full-width shower, and the door drawn open. 6.5 m² / 69 sq ft each,
+  1930 clear; see *The master baths are arches*, above
 * entry hall size — kept as drawn, with the lift lobby now shown for reference
 * **help's room, the guest WC and the store** — re-cut round the WC's elliptical
   apse. Help's room 4.4 m², WC 3.0, store 2.4; see the section above

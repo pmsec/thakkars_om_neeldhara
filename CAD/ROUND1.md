@@ -405,35 +405,48 @@ The run's east end butts the end wall, where the builder's 3880 window comes
 down to Y 9465. So the wardrobe's 600 return stands across the last 600 of it,
 leaving 3280. That is the only thing the wardrobes cost.
 
-### The dressing screen, and the door that had to move for it
+### The dressing screen, the gap, and the dresser opposite it
 
-A wall of **brown tinted glass** runs from the bath wall to the end wall on
-**Y 7795**, and it turns the south strip of Karan's suite into one private
-place — the wardrobes, the space you need in front of them, and the way into
-the bath. You can cross it in a towel with the bedroom on the other side of it.
+A pane of **brown tinted glass** runs from the bath wall along **Y 7795** and
+**stops 800 short of the end wall**. Everything south of it — the wardrobes,
+the space in front of them, the way into the bath — becomes one screened
+dressing area you can cross in a towel with the bedroom on the other side.
 
 | | mm | ft |
 |---|---|---|
 | the strip | 2775 × 1750 | 9'-1" × 5'-9" |
+| screen, one fixed pane | 1975 | 6'-6" |
+| **the gap — the way in** | **800** | **2'-7"** |
+| wardrobes, two of | 988 and 987 | 3'-3" each |
+| dresser | 800 × 450 | 2'-7" × 1'-6" |
 | clear in front of the wardrobes | 1070 | 3'-6" |
-| screen, total | 2775 | 9'-1" |
-| — sliding leaf, the way in | 1000 | 3'-3" |
-| — fixed pane | 1775 | 5'-10" |
+| clear in front of the dresser | 1220 | 4'-0" |
+| gap to the mirror — the light path | 1615 | 5'-4" |
 
-**Tinted, not solid, and not clear.** Clear defeats the point. Solid would make
-it a windowless corridor: the strip has no window of its own, so every bit of
-its daylight arrives through this pane.
+**The gap is doing three jobs, which is why it is a gap and not a door.** It is
+the way in. It is what stops the strip being a dead end reachable only through
+the bathroom. And it is the aperture that throws the end wall's 3880 window
+across the strip onto the dresser mirror square opposite it, 1615 away. A
+sliding leaf — which is what was drawn a round ago — would have done only the
+first of those.
 
-**The first 1000 slides**, drawn parked over the fixed pane. It has to open —
-sealed, the strip would be a dead end reachable only through the bathroom. A
-slider rather than a hinged leaf because a 1070 walkway has nowhere to put a
-swing.
+**The screen, the gap, the joinery and the dresser are all set out on two
+lines, not four.** The glass and the wardrobe run stop at the same X (24130),
+so the pane and the joinery under it are exactly the same length; the gap and
+the dresser start at the same X and end at the same X, so the dresser sits
+square under the opening. Nothing is nearly-aligned.
 
-**The bath door moved to make the line.** It has come south until its far jamb
-lands flush on the shower screen at Y 8595, which is also where the screen
-meets that wall — so the glass starts exactly on the door frame's edge and the
-two read as one line rather than two things missing each other by a few
-hundred.
+**The trade.** Hanging goes from 2775 to **1975** — two wardrobes of 988
+instead of two of 1387. The 800 became the dresser. The dresser is 450 deep
+rather than 600 because it is a place to sit at, not to hang in, and 450 leaves
+1220 in front of it for a stool.
+
+### The bath door had to move for the line
+
+It has come south until its far jamb lands flush on the shower screen at
+Y 8595, which is also where the glass meets that wall — so the screen starts
+exactly on the door frame's edge and the two read as one line rather than two
+things missing each other by a few hundred.
 
 Moving it forced the hinge over. The parents' door hinges south, so its leaf
 falls back along its own wall; Karan's cannot, because a south hinge on the new

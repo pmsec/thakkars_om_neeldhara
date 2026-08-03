@@ -95,11 +95,15 @@ MB_DOOR_E = (1080, 1880)            # Karan's: Y 7795 - 8595
 # and the bath door into one private strip you can cross in a towel, without
 # closing it off from the bedroom or taking any light off it.
 #
-# It has to be openable or the strip is a dead end reachable only through the
-# bath, so the first 1000 is a sliding leaf, drawn parked over the fixed pane.
+# It stops short of the end wall rather than running the whole way, and the 800
+# it leaves is the way in — no leaf, no track, nothing to slide.  That gap does
+# three things at once: it is the door, it is what keeps the strip from being a
+# dead end reachable only through the bath, and it is the aperture that throws
+# the end-wall window's light across the strip onto the dresser mirror facing
+# it.  A sliding leaf would have done only the first.
 SCR_Y = 7795                        # on the door's north jamb
 T_SCR = 60
-SCR_SLIDE = 1000                    # the sliding leaf
+SCR_GAP = 800                       # left open at the end-wall end
 
 
 # The two retained deck voids stay exactly as built: opening plus the builder's
@@ -416,8 +420,17 @@ _ONCE = [
     # 520 for the rest.
     #
     # Karan's side only, as asked.  Nothing goes in the parents' suite.
-    ('hanging',  22155, 8865, 23542, 9465, "wardrobe 1  ·  1387 x 600, hanging"),
-    ('hanging',  23542, 8865, 24930, 9465, "wardrobe 2  ·  1388 x 600, hanging"),
+    # The run stops where the screen stops, at 24130, so the glass and the
+    # joinery under it are exactly the same length and the gap and the dresser
+    # are exactly the same length.  Two of 988 instead of two of 1387: the 800
+    # went to the dresser, which is the trade Karan asked for.
+    ('hanging',  22155, 8865, 23143, 9465, "wardrobe 1  ·  988 x 600, hanging"),
+    ('hanging',  23143, 8865, 24130, 9465, "wardrobe 2  ·  987 x 600, hanging"),
+    # The dresser, square opposite the gap in the screen — which is the point
+    # of it.  The end wall's 3880 window lights the bedroom, the gap lets that
+    # light through, and it lands on the mirror 1615 away.  450 deep rather
+    # than the wardrobes' 600: a dresser is a place to sit at, not to hang in.
+    ('console-s', 24130, 9015, 24930, 9465, "dresser  ·  800 x 450, mirror over"),
 
     # ---------------------------------------------------------------- deck
     ('planter',  POD_W0, DECK_N, M(POD_W0), DECK_N + 340, 'planter + trellis on the parapet'),

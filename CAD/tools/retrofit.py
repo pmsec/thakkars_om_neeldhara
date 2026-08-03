@@ -358,18 +358,14 @@ def suite_screen():
     than glass would make it a windowless corridor — the strip has no window of
     its own, so every bit of its light comes through this pane.
 
-    The first 1000 is a sliding leaf, drawn parked over the fixed pane.  It has
-    to open: sealed, the strip would be a dead end reachable only through the
-    bathroom."""
-    y, t, s_ = D.SCR_Y, D.T_SCR, D.SCR_SLIDE
+    One fixed pane, stopping SCR_GAP short of the end wall.  The gap is the way
+    in — no leaf, no track — and it is also the aperture that throws the end
+    wall's window light across the strip onto the dresser mirror square opposite
+    it, 1615 away."""
+    y, t, g = D.SCR_Y, D.T_SCR, D.SCR_GAP
     w, e = D.M(D.MB_XW - D.T_MB), D.END_E - 150
-
-    def box(a, b, y0, y1, style):
-        return ('poly', [(a, y0), (b, y0), (b, y1), (a, y1)], style)
-
-    return [box(w + s_, e, y - t / 2, y + t / 2, 'tint'),           # fixed pane
-            box(w + s_, w + 2 * s_, y + t / 2, y + t * 1.5, 'tint'),  # leaf, open
-            box(w, w + s_, y - t / 2, y + t / 2, 'dash')]           # where it shuts
+    return [('poly', [(w, y - t / 2), (e - g, y - t / 2),
+                      (e - g, y + t / 2), (w, y + t / 2)], 'tint')]
 
 
 def suite_polys():

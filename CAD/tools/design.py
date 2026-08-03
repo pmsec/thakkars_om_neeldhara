@@ -378,11 +378,11 @@ _ONCE = [
     ('shelves',  14090, 9425, 14690, 10025, 'cupboard'),
     # ------------------------------------------------- guest / service WC
     # One WC, one small basin, one very small shower — and nothing else, which
-    # is what an apse this size will take.  The basin is the first thing inside
-    # the door, so washing your hands is one step in and one step out.  The
-    # shower is flush into the corner against the duct wall, and the pan is at
-    # the far end, where the apse dies into that wall.
-    ('basin',    15850, 8575, 16350, 8925, ''),
+    # is what an apse this size will take.  The shower is flush into the corner
+    # against the duct wall, and the pan is at the far end, where the apse dies
+    # into that wall.  The basin is not here: it is set into a curved console
+    # struck off the apse itself, immediately inside the door — see
+    # retrofit.wc_console().
     ('shower',   16680, 8575, 17430, 9325, ''),
     ('wc',       16790, 9480, 17410, 10100, ''),
 ]

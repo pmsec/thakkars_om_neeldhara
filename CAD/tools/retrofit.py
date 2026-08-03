@@ -199,6 +199,33 @@ def wc_wall():
             for run in runs]
 
 
+def wc_console(u0=0.0, u1=0.38, d0=120, d1=400, grow=0.20, fade=0.10):
+    """The curved console at the WC door, with the basin set into it.
+
+    A straight vanity in an apse is a lie: it touches the wall at one point and
+    gaps either side of it.  This one is struck off the same ellipse, offset
+    inwards, so it sits on the wall for its whole length.  The offset is safe —
+    400 against a radius of curvature of 1154 at the springing, which is the
+    tightest the apse ever gets.
+
+    It GROWS out of the wall rather than starting at full depth.  It begins at
+    the door jamb, and at 400 deep there it would leave only 425 of the 800
+    door to walk through; as a 120 ledge it leaves 645, and it is at full depth
+    by the time it reaches the bowl.  So the basin is the first thing your hand
+    reaches and there is still a door to walk through."""
+    h = D.T_WC / 2
+    us = list(np.linspace(u0, u1, 60))
+
+    def dep(u):                                          # out of the wall, and
+        s = min(1.0, (u - u0) / grow, (u1 - u) / fade)   # back into it again
+        return d0 + (d1 - d0) * s * s * (3 - 2 * s)      # smoothstep
+
+    band = ([wc_pt(u, -h) for u in us]
+            + [wc_pt(u, -h - dep(u)) for u in reversed(us)])
+    bx, by = wc_pt(0.24, -h - 210)
+    return [('poly', band, 'solid'), ('circle', bx, by, 172, 'light')]
+
+
 def wc_out_door(hinge=15020, jamb=15820, y=8400):
     """The guest WC's door off the great room, hinged west, swinging OUT.
 

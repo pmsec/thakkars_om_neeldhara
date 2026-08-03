@@ -347,9 +347,15 @@ GLAZING = [
     (-525, 7100, -525, 9000, 'window'),
     (M(-525), 2200, M(-525), 3800, 'window'),
     (M(-525), 4600, M(-525), 6400, 'window'),
-    (M(-525), 7100, M(-525), 9000, 'window'),
+    (M(-525), 7100, M(-525), 8800, 'window'),   # 200 off, to clear the wardrobes
     (400, 9620, 2400, 9620, 'window'),
-    (M(2400), 9620, M(400), 9620, 'window'),
+    # Karan's south window is GONE — the wardrobe run took that wall.  It is
+    # the only long blank wall in his suite (the whole east end is already
+    # three windows), so the joinery and the window wanted the same 2775 and
+    # the joinery won.  He still has 5100 of window on the end wall and the
+    # 3100 terrace slider.  The parents' one above is untouched: this was
+    # asked for on his side only.  One line brings it back:
+    #   (M(2400), 9620, M(400), 9620, 'window'),
     (7800, 11050, 9800, 11050, 'window'),
     (14300, 11050, 15900, 11050, 'window'),
     (16350, 11050, 16800, 11050, 'window'),
@@ -367,6 +373,23 @@ GLAZING = [
 #   (kind, x0, y0, x1, y1, label)
 
 _ONCE = [
+    # ------------------------------------------- Karan's suite: the wardrobes
+    # The south wall, which is the only long blank wall in the suite — the east
+    # end is three windows and the north is the terrace slider.  2775 of it,
+    # split in two.
+    #
+    # 600 deep, which is the depth a hanging rail needs: a shoulder on a hanger
+    # is 550-580, so anything shallower turns into shelves.  Measured off Y 9465
+    # rather than the wall face at 9545, because the builder leaves a 1200 x 230
+    # column on this wall whose face is 80 proud of it — so the run is set to
+    # the deepest obstruction and packed out behind, which is what a joiner
+    # would do anyway.  Full 600 the whole way instead of 600 for two thirds and
+    # 520 for the rest.
+    #
+    # Karan's side only, as asked.  Nothing goes in the parents' suite.
+    ('hanging',  22155, 8865, 23542, 9465, "wardrobe 1  ·  1387 x 600, hanging"),
+    ('hanging',  23542, 8865, 24930, 9465, "wardrobe 2  ·  1388 x 600, hanging"),
+
     # ---------------------------------------------------------------- deck
     ('planter',  POD_W0, DECK_N, M(POD_W0), DECK_N + 340, 'planter + trellis on the parapet'),
     ('grass',    4700, 320, 7360, 2300, 'workout bay on real grass'),

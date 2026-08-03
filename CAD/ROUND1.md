@@ -385,6 +385,42 @@ the straight line it replaces.
 
 ---
 
+## Karan's wardrobes, and the window they cost
+
+Two wardrobes on the south wall of Karan's suite, **1387 and 1388 wide, both
+600 deep**. His side only — nothing has gone into the parents' suite.
+
+**600 is the depth, and it is not a round number chosen for neatness.** A
+shoulder on a hanger is 550–580, so a rail running left-to-right needs 600 of
+carcass. Anything shallower and the doors will not shut on a coat, and the
+unit turns into shelves with a rail in it.
+
+They are set off **Y 9465, not the wall face at 9545**. The builder leaves a
+1200 × 230 column on this wall whose face stands 80 proud of it, so the run is
+scribed to the deepest obstruction and packed out behind over the stretch where
+there is no column — which is what a joiner would do anyway. The alternative is
+600 for two thirds of the run and 520 for the rest, which is worse.
+
+### The window
+
+That wall had a **2000 window in it, and it is gone.**
+
+It is the only long blank wall in the suite. The east end is already three
+windows — 1600, 1800 and 1900 — and the north is the 3100 terrace slider. So
+the joinery and the window wanted the same 2775 of wall, and there was no
+version where both had it. What is left is **5100 of window on the end wall
+plus the terrace slider**, which is a well-lit room by any measure, and the
+south is the aspect you lose least by giving up.
+
+The lowest end-wall window also lost 200 off its south end (9000 → 8800) so the
+wardrobe's return does not stand across the bottom corner of it.
+
+**Both are one line each in `design.py` if you would rather keep the window and
+have shorter wardrobes** — the commented line is sitting next to the parents'
+one, which is untouched.
+
+---
+
 ## The guest WC is an arch too
 
 The north-east corner of the service bay had to hold three things: a staff
@@ -635,10 +671,13 @@ need. Beside the serving hatch it is also next to the kitchen.
 
 * the furniture, room by room, added back on purpose rather than inherited
 * the two pods' furniture beyond the dining table and the corner units
-* **the master suites' wardrobes**, and the beds after them. The beds are off
-  the drawing for now — a bed sitting in the suite while the wardrobes and the
-  bath are being set out only argues with them. One commented line in
-  `design.py` brings each one back, mirrored, when the joinery is settled
+* **the parents' wardrobes.** Karan's are in — two of 1387 × 600 on his south
+  wall, see the section above. Nothing has gone into the parents' suite, which
+  was the instruction. Their south wall still has its 2000 window, so the same
+  move there is the same trade
+* **the beds.** They are off the drawing for now — a bed sitting in the suite
+  while the joinery is being set out only argues with it. One commented line in
+  `design.py` brings each one back, mirrored, when the wardrobes are settled
 
 ## Still to be confirmed, not by me
 

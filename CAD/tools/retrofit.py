@@ -394,51 +394,92 @@ def arch_doors(leaf=60):
 
 
 def corner_units():
-    """The mandir and the coffee / pantry, as drawing primitives.
+    """The mandir and the coffee / pantry.  They no longer share a shape.
 
-    Both sit in their pod's north corner, behind the retained deck void: one
-    leg along the void's back wall, the other following the pod glazing, so
-    the unit is set out off the two walls that make the corner.  Everything is
-    built on the west pod and mirrored for the east.
+    The MANDIR is a corner unit: it fills the corner between the retained
+    void's back wall and the pod glazing, flush into both, and its front is an
+    arch.  That corner is 40.5 degrees, not 90 — the glazing leaves it heading
+    south-west — so the unit is a wedge.  Which is what a shrine wants: the
+    idol stands deep in it and you see it through the arch, and the point
+    behind it is the back of the niche rather than dead worktop.
+
+    The PANTRY is a straight run, the exact length of the void's back wall and
+    flush with it — 1615, its far end following the glazing.  It was an L, and
+    the corner of that L was the awkward part: the fittings were spread over
+    two 1200 legs and the longest clear stretch of counter was 300.  In one
+    line it is 515.
+
+    Everything is built on the west pod and mirrored for the east.
     """
     P = D.POD_W
-    y0, x0 = D.BODY_N, D.POD_W[0][0]           # the corner: 2620, 9115
-    DEP, LEG = 600, 1200
+    cx0, cy0 = P[0][0], D.BODY_N                    # the corner: 9115, 2620
+    ys = list(np.linspace(cy0, cy0 + 3200, 320))
+    glass = [(bez_x(P, y), y) for y in ys]
+    cum = [0.0]
+    for a, b in zip(glass, glass[1:]):
+        cum.append(cum[-1] + math.dist(a, b))
 
-    def face(y):                               # the glazing, at depth y
-        return bez_x(P, y)
+    def glass_at(dist):
+        return next((g for g, s in zip(glass, cum) if s >= dist), glass[-1])
 
-    def shell(dep, leg, off):
-        """outline of the unit, pulled in by `off` from the two walls"""
-        return ([(x0 - leg, y0 + off), (x0 - leg, y0 + dep)]
-                + [(face(y) - dep, y) for y in np.linspace(y0 + dep, y0 + leg, 40)]
-                + [(face(y) - off, y) for y in np.linspace(y0 + leg, y0 + off, 60)])
+    def glass_to(dist):
+        return [g for g, s in zip(glass, cum) if s <= dist]
 
-    def on_glass(y, frac=0.5):                 # a point across the glazing leg
-        return face(y) - DEP * frac
+    # ------------------------------------------------------------- mandir
+    LEG, SAG, FRAME = 1200, 200, 70
+    A, B = (cx0 - LEG, cy0), glass_at(LEG)
+    ax, ay = (A[0] + B[0]) / 2 - cx0, (A[1] + B[1]) / 2 - cy0
+    an = math.hypot(ax, ay)
+    ax, ay = ax / an, ay / an                       # corner -> front, the axis
 
-    out = []
-    for what, flip in (('pooja', False), ('pantry', True)):
-        p = [('poly', shell(DEP, LEG, 0), 'solid')]
-        if what == 'pooja':
-            p.append(('poly', shell(DEP - 90, LEG - 90, 90), 'soft'))
-            sx, sy, s = 8600, 2950, 240        # the shrine, square on the corner
-            p.append(('poly', [(sx, sy - s), (sx + s, sy), (sx, sy + s), (sx - s, sy)],
-                      'solid'))
-            p.append(('circle', x0 - LEG + 235, y0 + DEP / 2, 85, 'light'))
-            p.append(('circle', on_glass(3600), 3600, 85, 'light'))
-        else:
-            p.append(('poly', shell(DEP - 90, LEG - 90, 90), 'light'))
-            p.append(('rect', 8100, 2760, 8500, 3080, 'light'))     # sink
-            p.append(('circle', 8300, 2920, 150, 'light'))
-            for y in (3320, 3660):                                  # machines
-                cxx = on_glass(y)
-                p.append(('rect', cxx - 160, y - 160, cxx + 160, y + 160, 'solid'))
-        if flip:
-            p = [_mirror_prim(q) for q in p]
-        out += p
+    def arch(a, b, sag):
+        c = ((a[0] + b[0]) / 2 + ax * 2 * sag, (a[1] + b[1]) / 2 + ay * 2 * sag)
+        return [bez((a, c, b), t) for t in np.linspace(0, 1, 44)]
+
+    front = arch(B, A, SAG)
+    # the arched surround, offset along the curve's OWN normal — offsetting
+    # along the axis instead pushes the ends past the two walls it sits in
+    inner = []
+    for i, (x, y) in enumerate(front):
+        a2, b2 = front[max(i - 1, 0)], front[min(i + 1, len(front) - 1)]
+        tx, ty = b2[0] - a2[0], b2[1] - a2[1]
+        tn = math.hypot(tx, ty) or 1.0
+        nx, ny = -ty / tn, tx / tn
+        if (cx0 - x) * nx + (cy0 - y) * ny < 0:     # point it at the corner
+            nx, ny = -nx, -ny
+        inner.append((x + nx * FRAME, y + ny * FRAME))
+    out = [('poly', [A, (cx0, cy0)] + glass_to(LEG) + front, 'solid'),
+           ('poly', front + list(reversed(inner)), 'soft')]
+    px, py = -ay, ax                                # across the wedge
+    # the idol platform, 480 x 340, square to the axis and standing 850 back
+    # from the corner: 20 off the glass, 73 off the void wall, 130 off the arch
+    c, W, H = (cx0 + ax * 850, cy0 + ay * 850), 240, 170
+    out.append(('poly', [(c[0] + px * W - ax * H, c[1] + py * W - ay * H),
+                         (c[0] + px * W + ax * H, c[1] + py * W + ay * H),
+                         (c[0] - px * W + ax * H, c[1] - py * W + ay * H),
+                         (c[0] - px * W - ax * H, c[1] - py * W - ay * H)],
+                'solid'))
+    for k in (-1, 1):                               # a diya each side, in front
+        out.append(('circle', cx0 + ax * 1120 + px * k * 180,
+                    cy0 + ay * 1120 + py * k * 180, 78, 'light'))
+
+    # ------------------------------------------------------------- pantry
+    DEP = 600
+    far = D.VOID_KEEP[0][0]                         # 7500, the void's far end
+    run = ([(cx0, cy0), (far, cy0), (far, cy0 + DEP)]
+           + [g for g in reversed(glass_to(cum[-1])) if g[1] <= cy0 + DEP])
+    # The run is 1615 along the back wall but only 1051 along the front — the
+    # glazing leans away from it — so full 600 depth starts 563 in.  An
+    # appliance only wants 400 of that, which it has from 563 - 120 = 443 in;
+    # the fittings are set out off THAT line, not off the back wall's length.
+    # What is left at the glass end is a shelf that tapers to nothing: cups and
+    # jars, not machines.
+    pan = [('poly', run, 'solid'),
+           ('rect', 7540, 2680, 7940, 3000, 'light'),      # sink 400 x 320
+           ('circle', 7740, 2840, 150, 'light'),
+           ('rect', 8340, 2680, 8660, 3000, 'solid')]      # the machine, 320
+    out += [_mirror_prim(q) for q in pan]
     return out
-
 
 def _mirror_prim(p):
     def X(v):

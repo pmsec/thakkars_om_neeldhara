@@ -170,6 +170,9 @@ def symbol(kind, a, b, c, d):
     if kind == 'wc':
         return [('circle', cx, cy - h * 0.05, min(w, h) * 0.38, 'solid'),
                 _rr(cx - w * 0.22, d - h * 0.28, cx + w * 0.22, d, 'soft')]
+    if kind == 'wc-e':                     # the same pan, turned to face west,
+        return [('circle', cx - w * 0.05, cy, min(w, h) * 0.38, 'solid'),
+                _rr(c - w * 0.28, cy - h * 0.22, c, cy + h * 0.22, 'soft')]
     if kind == 'basin':
         return [_rr(a, b, c, d, 'solid'),
                 ('circle', cx, cy, min(w, h) * 0.30, 'light')]

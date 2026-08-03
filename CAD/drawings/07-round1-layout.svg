@@ -512,8 +512,8 @@
 <line x1="2771.8" y1="1570.5" x2="2873.0" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
 <line x1="2873.0" y1="1570.5" x2="2771.8" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
 <circle cx="2822.4" cy="1621.1" r="12.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
-<circle cx="2828.5" cy="1730.2" r="31.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="2810.1" y="1752.8" width="36.8" height="23.4" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
+<circle cx="2821.0" cy="1727.0" r="31.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="2846.5" y="1708.6" width="26.4" height="36.8" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="616.1" y="1354.7" width="269.8" height="242.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="858.9" y="1342.5" width="27.0" height="267.1" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="1041.7" y="1344.6" width="74.2" height="188.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>

@@ -234,6 +234,19 @@ def symbol(kind, a, b, c, d):
         if base == 'recliner':
             out.append(_rr(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft'))
         return out
+    if kind == 'bed-rw':      # the same bed mirrored — head square on the WEST
+        r = min(w, h) * 0.33
+        pts = [(a, b)]
+        pts += [(c - r + math.cos(math.radians(t)) * r,
+                 b + r + math.sin(math.radians(t)) * r) for t in range(270, 361, 6)]
+        pts += [(c - r + math.cos(math.radians(t)) * r,
+                 d - r + math.sin(math.radians(t)) * r) for t in range(0, 91, 6)]
+        pts += [(a, d)]
+        out = [('poly', pts, 'solid')]
+        x0, x1 = a + 150, a + 500
+        out.append(_rr(x0, cy - 650, x1, cy - 30, 'soft'))
+        out.append(_rr(x0, cy + 30, x1, cy + 650, 'soft'))
+        return out
     if kind == 'bed-rr':      # corners off at the FOOT, square at the head (east)
         r = min(w, h) * 0.33
         pts = [(c, b)]

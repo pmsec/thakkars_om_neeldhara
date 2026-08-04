@@ -502,14 +502,30 @@ _ONCE = [
     # parents' bed at the north end and the grandmother's wall bed at the south,
     # and the cupboards move on to the partition between them.
     #
-    # THE PARENTS' BED, head on the west wall, facing east down the room and out
-    # through the pod slider.  1800 x 2000 plus a 200 headboard.  It sits clear
-    # of the 600 window at Y 1350-1950 above it and leaves 675 to the partition
-    # below.  A side table each side, 500 x 450, on the same headboard line.
-    ('joinery',   -450, 2400, -250, 5200, "headboard  ·  2800 x 200"),
-    ('bed-w',     -250, 2900, 1750, 4700, "bed  ·  1800 x 2000, head on the west wall"),
-    ('counter-r', -250, 2400, 250, 2900, "side table  ·  500 x 500"),
-    ('counter-r', -250, 4700, 250, 5200, "side table  ·  500 x 500"),
+    # THE PARENTS' BED IS KARAN'S BED MIRRORED — the same bed, the same
+    # headboard treatment, the same side tables, handed the other way so the
+    # head is square on the WEST wall and the rounded foot faces east down the
+    # room and out through the pod slider.
+    #
+    #   US EASTERN KING, 1930 x 2032, foot corners off at 594, head square
+    #   headboard 200 thick, the whole blank stretch of wall
+    #   side tables 550 x 450, 50 off the bed
+    #
+    # THE HEADBOARD IS THE WHOLE BLANK WALL, Y 1950 to 5875 — window jamb at the
+    # top, the partition at the bottom, 3925 of it.  Karan's is 3635 for exactly
+    # the same reason on his end wall, and there it swallows a column; here
+    # there is no column to swallow, so it is simply the full stretch and the
+    # joinery runs on into the partition block without a break.
+    #
+    # The bed CENTRES ON THE ROOM, not on the headboard — the same decision as
+    # Karan's.  The two lines it lies between are the terrace wall at Y 1350 and
+    # the partition's north face at 5875, 4525 clear, so an 1930 bed leaves 1297
+    # to each.  That is why 97 of headboard shows above it and 697 below.
+    ('joinery',   -450, 1950, -250, 5875, "headboard  ·  3925 x 200"),
+    ('bed-rw',    -250, 2647, 1782, 4577,
+     "king 1930 x 2032  ·  foot corners 594, head square on the headboard"),
+    ('counter-r', -250, 2047, 200, 2597, "side table  ·  550 x 450"),
+    ('counter-r', -250, 4627, 200, 5177, "side table  ·  550 x 450"),
 
     # ------------------------- THE PARTITION: JOINERY, THEN TINTED GLASS
     # It is not a masonry wall any more.  The line is the same — its north face
@@ -546,16 +562,28 @@ _ONCE = [
     ('under',     68, 5875, 1400, 5995, "the same leaf open, pocketed"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
-    # A cabinet 400 deep that is shut fifty-one weeks of the year, and a single
-    # bed that folds down out of it when she is here.  Not a sofa bed: nothing
-    # to unfold nightly, nothing to make up twice.
+    # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN
+    # that folds down out of it when she is here — 1500 x 2000, because Karan's
+    # father will sometimes sleep in here with his mother and neither a single
+    # nor a snug double is fair on two adults.  Not a sofa bed: nothing to
+    # unfold nightly, nothing to make up twice.
     #
-    # It sits EXACTLY ON THE COLUMN — the builder's 230 x 1200 at Y 7745-8945,
-    # whose face stands 80 proud of the wall.  The cabinet is 1200 long and 400
-    # deep off that proud face, so the column is behind it with no void, and the
-    # cabinet stops dead on the 600 window's north jamb at 8945.
-    ('murphy-e',  -370, 7745, 30, 8945,
-     "wall bed  ·  single 1200 x 1900, shown folded down"),
+    # The cabinet's south end is fixed on the 600 window's north jamb at Y 8945,
+    # because anything past that stands in front of glass.  1500 of cabinet
+    # therefore runs back to 7445.  The builder's 230 x 1200 column sits under
+    # Y 7745-8945 with its face 80 proud, so the cabinet backs on to that face
+    # at X -370 and its northern 300 has 80 of void behind it, packed out.
+    #
+    # A SIDE TABLE EACH SIDE, 500 long and 480 deep, flanking the cabinet on the
+    # same wall.  Neither of them stands on the column, so they go back to the
+    # wall face at X -450 and are 480 deep rather than 400 — and all three
+    # pieces then share one flush front at X 30, a single 2500 run.  Standing
+    # against the wall they are the dressing zone's console when the bed is up
+    # and the bed's side tables when it is down.
+    ('counter-r', -450, 6945, 30, 7445, "side table  ·  500 x 480"),
+    ('murphy-e',  -370, 7445, 30, 8945,
+     "wall bed  ·  QUEEN 1500 x 2000, shown folded down"),
+    ('counter-r', -450, 8945, 30, 9445, "side table  ·  500 x 480"),
     # A MIRROR ON THE BATH WALL AND NOTHING ELSE — no console under it.  It is in
     # the corner where the bath wall meets the south window, so you face east
     # into it with the window on your right: side light on your face, which is

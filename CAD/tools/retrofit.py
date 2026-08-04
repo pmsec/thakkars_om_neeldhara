@@ -1133,48 +1133,15 @@ def console_top(a=10878, b=5537, c=12478, d=5887):
     return out
 
 
-def rocking_chairs(px=14080, py=4275, s=1500, aim=(9565, 1872.5)):
-    """THE PAIR.  Two rocking chairs, genuinely parallel, side by side.
-
-    Parallel is a real constraint and it is why this function exists.  A chair
-    that aims itself at the recliner from its own seat centre cannot have a
-    twin: move the twin 1500 sideways and it aims somewhere else, and the two
-    read as knocked out of line rather than set out.  So the AIM IS COMPUTED
-    ONCE, from the midpoint between the two chairs, and both are given the
-    same vector.  28.0 degrees north of east, and the pair as a unit points at
-    the east recliner's seat centre.
-
-    (px, py) is that midpoint and s is the seat-centre spacing.  1500 leaves
-    800 of clear floor between the two footprints — close enough that the two
-    of them are one piece of furniture, wide enough for a side table to go in
-    later without moving either chair.
-
-    THE PAIR'S POSITION WAS SOLVED, not chosen.  It runs on the u axis, which
-    at this angle is mostly north-south, and that is the direction the west
-    half of the room actually has room in — the pod glazing and the gallery
-    portal's lane leave only about 3000 across.  Four things bound it and all
-    four are tight:
-
-        deck glass          468 clear of the north-west chair
-        gallery portal lane 351 clear of the south-east chair, so the walk in
-                            from the front door is not touched
-        family room's door  957 of approach, the same rule the sofa's east end
-                            answers to at the other pod
-        kitchen bump        the aft rock travel stays 100 off it
-
-    WHAT EACH ONE SEES IS NOT THE SAME, and that is the point of a pair rather
-    than a row.  The south-east chair looks over the sofa's extended footrests
-    — 450 high, well under a seated eye — and its line lands on the east
-    recliner.  The north-west chair's line leaves through the slider at
-    X 11914 before it ever reaches the sofa, and goes out over open deck just
-    east of the fountain to the parapet planting.  One view into the room, one
-    straight out of it, from two chairs sitting side by side.
-    """
-    fx, fy = aim[0] - px, aim[1] - py
-    n = math.hypot(fx, fy)
-    ux, uy = -fy / n, fx / n                           # across the pair
-    return (rocking_chair(px - s / 2 * ux, py - s / 2 * uy, face=(fx, fy))
-            + rocking_chair(px + s / 2 * ux, py + s / 2 * uy, face=(fx, fy)))
+# THE PARALLEL PAIR IS GONE.  rocking_chairs() built two chairs on one shared
+# aim, computed from the midpoint between them, because a chair that aims
+# itself from its own seat centre cannot have a twin — move the twin sideways
+# and it points somewhere else.  The pair stood in the great room's east half
+# and came out with that half: the room's seating is the L now, and the single
+# chair that closes it is drawn by rocking_chair() direct from the draw loop.
+#
+# The technique is worth remembering if a pair is ever wanted again: aim once
+# from the midpoint, pass the same vector to both.
 
 
 def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250, face=None):

@@ -1400,52 +1400,21 @@ Bézier is not uniform — the same span of t buys more door low down the curve
 than high up — so setting both to 0.18 of t would have given two different
 doors. Solved instead for the t-range that reproduces the original 823 mm.
 
-### Two rocking chairs, parallel, and a console with things on it
+### The parallel pair came out
 
-The great room's west half holds a **pair** of rocking chairs. The east half
-holds the sofa, its planter and tree, the rug and the console. Between them
-the room reads as two groups rather than one group with strays.
+Two rocking chairs stood in the great room's east half, drawn on one shared
+aim so they were genuinely parallel — the aim computed once from the midpoint
+between them, because a chair that aims itself from its own seat centre cannot
+have a twin. They came out with that half of the room.
 
-| | mm | ft |
-|---|---|---|
-| each chair, seat | 700 × 750 | 2′-4″ × 2′-6″ |
-| footprint incl. rockers | 700 × 1030 | 2′-4″ × 3′-5″ |
-| rock travel, shown dashed | 250 | 10″ |
-| **seat centres, apart** | **1500** | **4′-11″** |
-| clear floor between the footprints | 800 | 2′-7″ |
-| shared aim | 28.0° north of east | |
+The room's seating is the L now, and the single chair that closes it is the
+only rocking chair left in the great room.
 
-**Parallel is a real constraint, and it is why they are drawn together rather
-than twice.** A chair that aims itself at the recliner from its own seat
-centre cannot have a twin — move the twin 1500 mm sideways and it points
-somewhere else, and the two read as knocked out of line rather than set out.
-So the aim is computed **once**, from the midpoint between them, and both get
-the same vector. The pair as a unit points at the east recliner.
-
-**Their position was solved, not chosen.** They run on the across-axis, which
-at this angle is mostly north–south — the direction the west half of the room
-actually has room in, since the pod glazing and the gallery portal's lane
-leave only about 3000 mm (9′-10″) across. Four things bound them, and all four
-are close:
-
-| | mm | ft |
-|---|---|---|
-| deck glass → the north-west chair | 468 | 1′-6″ |
-| the south-east chair → gallery portal lane | 351 | 1′-2″ |
-| family room's door, approach | 957 | 3′-2″ |
-| aft rock travel → kitchen bump | 100 | 4″ |
-
-**What each one sees is not the same, and that is the point of a pair rather
-than a row.** The south-east chair looks over the sofa's extended footrests —
-450 mm (1′-6″) high, well under a seated eye — and its line lands on the east
-recliner. The north-west chair's line leaves through the slider at X 11914,
-before it ever reaches the sofa, and goes out over open deck just east of the
-fountain to the parapet planting. One view into the room, one straight out of
-it, from two chairs sitting side by side.
-
-800 mm (2′-7″) between them is deliberate: close enough that the two read as
-one piece of furniture, wide enough that a side table can go in later without
-moving either chair.
+**What their removal gives back is the east half.** The L's chair had
+**359 mm (1′-2″)** to the nearest of the pair; it now has **2808 mm (9′-3″)**
+of clear floor east of it, out to the pod glazing. That was the tighter of the
+two things pinning the group — the deck glass at 480 mm (1′-7″) is the other —
+so **the L can now be spread east if it wants to be.**
 
 ### The console has its corners eased, and things on it
 

@@ -917,22 +917,20 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    # THE GREAT ROOM HAS NO SEATING IN IT, on instruction — every sofa,
-    # recliner, side table and the rug came out, and only the TREE stays.
-    # What is left is the room itself: 6250 wide at the deck, 8220 at the
-    # waist, running open from the gallery apse to the grass and the fountain
-    # with nothing standing on the axis at all.  The two 2-seat recliners out
-    # on the grass are now the only seats in the combined room.
+    # THE GREAT ROOM HAS ONE PIECE IN IT: a 2-seat recliner sofa set on a 45
+    # degree diagonal with its planter built on to the end of it, facing
+    # north-east down the room at the fountain.  It is drawn in
+    # retrofit.great_room_sofa() because nothing else in this plan is turned
+    # off the orthogonal and the symbol library has no rotation in it.
     #
-    # The tree moved to the room's south-west shoulder, off the axis and off
-    # every route — 1530 to the west pod portal's approach, clear of the
-    # kitchen bump by 450, canopy wholly inside the room.  A single planted
-    # thing in an empty room reads as intent; anywhere nearer the middle it
-    # would read as left behind.
+    # The tree is no longer a free-standing box on the south-west shoulder —
+    # it shares the sofa's back line and depth and butts its south-east end,
+    # so the two are one L of joinery: a sofa with a tree growing out of the
+    # end of it.
+    #
+    # Everything else in the room is still floor.
     # Last in the list so the canopy draws over the two sofas, which is where
     # it actually is: 1710 across, oversailing each of them by about 380.
-    ('treebox',   10140, 6400, 11090, 7350,
-     "planter box  ·  950 square, the tree on the room's south-west shoulder"),
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

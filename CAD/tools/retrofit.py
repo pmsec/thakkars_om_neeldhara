@@ -814,6 +814,74 @@ def great_room_carpet():
     return [('poly', o, 'soft'), ('poly', i, 'light')]
 
 
+def fountain_plants(n=12, ring=800, pot=150):
+    """A collar of small flowering plants round the fountain.
+
+    The fountain is a 1200 bowl in the middle of the lawn on the home's axis.
+    Twelve pots on an 800 radius put them just outside its rim — they occupy
+    650 to 950 from the centre, so the rim stays clear to sit on and the water
+    is seen through a ring of colour rather than over bare grass.
+
+    Small and high: flowering indoor stock, not shrubs.  Anything with a spread
+    would close the ring into a hedge and hide the bowl, which is the one thing
+    on the deck the whole room is aimed at.
+    """
+    cx, cy = 12240, 1160
+    out = []
+    for k in range(n):
+        ang = math.radians(k * 360.0 / n + 15)
+        out.append(('circle', cx + math.cos(ang) * ring,
+                    cy + math.sin(ang) * ring, pot, 'green'))
+    return out
+
+
+def great_room_sofa(ax=10183, ay=3679, deg=45, L=1600, D=900, foot=280, box=900):
+    """The great room's 2-seat recliner sofa, ON THE DIAGONAL, with its planter
+    built on to it.
+
+    Set out on a 45 degree line because that is how it was drawn and because
+    the room has nothing else in it: a single piece square to the walls would
+    read as a leftover, while one turned across them makes the empty floor
+    look chosen.  It faces NORTH-EAST — down the room, through the slider, at
+    the fountain.
+
+    The planter is not a separate object.  It shares the sofa's back line and
+    its depth and butts its south-east end, so the two are built as one L of
+    joinery — a sofa with a tree growing out of the end of it.  The tree keeps
+    its 1620 canopy, drawn dashed because it is overhead.
+
+    (ax, ay) is the north-west end of the BACK line; s runs along the piece,
+    t out from the back towards the front.
+    """
+    r = math.radians(deg)
+    ux, uy = math.cos(r), math.sin(r)          # along the piece, to the SE
+    vx, vy = math.sin(r), -math.cos(r)         # out of the back, to the NE
+
+    def P(s, t):
+        return (ax + ux * s + vx * t, ay + uy * s + vy * t)
+
+    def quad(s0, t0, s1, t1, style):
+        return ('poly', [P(s0, t0), P(s1, t0), P(s1, t1), P(s0, t1)], style)
+
+    out = [quad(0, 0, L, D, 'solid'),                  # the sofa
+           quad(0, 0, L, 190, 'soft'),                 # its back
+           quad(L * 0.16, D, L * 0.84, D + foot, 'soft')]   # footrests, out
+    for f in (1 / 3, 2 / 3):                           # the two seat divisions
+        a_, b_ = P(L * f, 270), P(L * f, D - 80)
+        out.append(('line', a_[0], a_[1], b_[0], b_[1], 'light'))
+
+    out.append(quad(L, 0, L + box, D, 'solid'))        # the planter box
+    out.append(quad(L + 90, 90, L + box - 90, D - 90, 'green'))
+    cx, cy = P(L + box / 2, D / 2)                     # and the canopy over it
+    rad = box * 0.9
+    out.append(('circle', cx, cy, rad, 'dash'))
+    for k in range(6):
+        a_ = math.radians(k * 60 + 15)
+        out.append(('circle', cx + math.cos(a_) * rad * 0.5,
+                    cy + math.sin(a_) * rad * 0.5, rad * 0.34, 'dash'))
+    return out
+
+
 def great_room_planter():
     """The kitchen's bump, mirrored, as a planted box in the great room.
 

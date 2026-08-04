@@ -1175,21 +1175,47 @@ sofas meeting at a right angle, with a **planter box filling the angle between
 their two ends and a tall tree growing out of it**. In a U the corner is the
 awkward bit nobody sits in; here it is the thing you look at.
 
-**The great room has no seating in it, on instruction.** Every sofa, recliner,
-side table and the rug came out; only the **tree** stays, moved to the room's
-south-west shoulder — off the axis and off every route, its canopy wholly
-inside the room. A single planted thing in an empty room reads as intent;
-anywhere nearer the middle it would have read as left behind.
+**One piece, on the diagonal.** A 2-seat recliner sofa set at **45°** with its
+planter built on to the end of it, facing north-east down the room at the
+fountain.
 
-What is left is the room itself: **6250 mm (20′-6″)** wide at the deck,
-**8220 mm (27′-0″)** at the waist, running open from the gallery apse to the
-grass and the fountain with **nothing standing on the axis at all** — front
-door, portal, fountain, parapet in one clear line. The two 2-seat recliners
-out on the grass are now the only seats in the combined room.
+| | |
+|---|---|
+| sofa | 1600 × 900 mm (5′-3″ × 3′-0″), footrests +280 mm (11″) |
+| planter, butted to its south-east end | 900 mm (3′-0″) square |
+| tree canopy | 1620 mm (5′-4″) across, drawn dashed — it is overhead |
+| the assembly on the diagonal | 2404 × 2421 mm (7′-11″ square) |
 
-Seating for the great room is an open question again, deliberately — the room
-is a blank held by one tree, and whatever furniture comes next starts from
-zero rather than from the last arrangement.
+**The angle is the point.** The room has nothing else in it: a single piece set
+square to the walls would read as a leftover, while one turned across them
+makes the empty floor look chosen. And **the planter is not a separate
+object** — it shares the sofa's back line and its depth and butts its end, so
+the two are one L of joinery: a sofa with a tree growing out of the end of it.
+
+It is drawn in `retrofit.great_room_sofa()` rather than as a symbol, because
+nothing else in this plan is turned off the orthogonal and the symbol library
+has no rotation in it.
+
+Clearances: **481 mm (1′-7″)** from the nearest footrest tip to the deck glass;
+**1496 mm (4′-11″)** west to the pod screen — the family-room portal's approach
+is clear; **3266 mm (10′-9″)** east; **2038 mm (6′-8″)** south to the apse
+crown.
+
+**What it costs:** the assembly crosses the gallery portal's lane (X 11715–
+12765) between Y 3795 and 5447, so the walk from the front door to the deck
+now swings east round the planter rather than running dead straight. There is
+**3266 mm (10′-9″)** of clear floor on that side to do it in.
+
+### A collar of flowering plants round the fountain
+
+Twelve small pots, **300 mm (12″)** across, on an **800 mm (2′-7″)** radius —
+so they occupy 650–950 mm from the centre and the bowl's 600 mm rim stays
+clear to sit on. The water is then seen *through* a ring of colour rather than
+over bare grass.
+
+**Small and high on purpose:** flowering indoor stock, not shrubs. Anything
+with a spread would close the ring into a hedge and hide the bowl — which is
+the one thing on the deck the whole room is aimed at.
 
 **The corner is on the west, and that is the one real choice here.** The great
 room already has a planter on its south-east wall — the one that answers the

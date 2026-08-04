@@ -254,6 +254,30 @@ def symbol(kind, a, b, c, d):
         out.append(_rr(cx - r * 0.66, y0, cx - 30, y1, 'soft'))
         out.append(_rr(cx + 30, y0, cx + r * 0.66, y1, 'soft'))
         return out
+    if kind == 'swing':
+        # A door leaf drawn open, hinged at (a, b) and swinging to (a, d).
+        # Most doors on this drawing are just gaps in a wall, because the swing
+        # does not change the plan.  This one does: it is what makes the two
+        # halves of the parents' suite separately heatable, so it is drawn.
+        r = min(w, h)
+        arc = [(a + r * math.cos(math.radians(t)), b + r * math.sin(math.radians(t)))
+               for t in range(0, 91, 5)]
+        return [('poly', [(a, b)] + arc, 'light'),
+                ('line', a, b, a, b + r, 'solid')]
+    if kind.startswith('murphy'):
+        # A WALL BED.  The cabinet is what is really there — solid, 400 deep,
+        # closed 51 weeks of the year.  The bed is drawn DASHED in the position
+        # it takes when it is folded down, because that is the thing you need to
+        # see the room around, and it is not there in plan the rest of the time.
+        L = 1900                                   # the bed, folded down
+        out = [_rr(a, b, c, d, 'solid')]
+        if kind.endswith('-e'):
+            out += [_rr(c, b, c + L, d, 'dash'),
+                    _rr(c, b + 90, c + 320, d - 90, 'dash')]        # the pillow end
+        else:
+            out += [_rr(a - L, b, a, d, 'dash'),
+                    _rr(a - 320, b + 90, a, d - 90, 'dash')]
+        return out
     if kind.startswith('bed'):
         out = [_rr(a, b, c, d, 'solid')]
         hb = 200
@@ -266,11 +290,6 @@ def symbol(kind, a, b, c, d):
             out.append(_rr(c - hb, b - 90, c, d + 90, 'soft'))
         else:
             out.append(_rr(a, b - 90, a + hb, d + 90, 'soft'))
-        return out
-    if kind == 'murphy':
-        out = [_rr(a, b, c, d, 'solid'), _rr(a + 80, b + 90, c - 80, d - 90, 'soft')]
-        out.append(_rr(a, b, a + 2000, d, 'dash') if c - a < d - b
-                   else _rr(a, b, c, b + 2000, 'dash'))
         return out
     if kind == 'plant':
         r = min(w, h) / 2

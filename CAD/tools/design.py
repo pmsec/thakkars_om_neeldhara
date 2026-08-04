@@ -287,6 +287,25 @@ NEW_WALLS = [
     # top of the west side, and this is only the straight tail of it, from
     # where the sweep has finished turning down to the outer wall.  The door is
     # a gap in that tail, hard against the curve.  See retrofit.mb_wall().
+    # ------------------------- the PARENTS' partition
+    # The suite is two rooms now: the parents' bed north of this line, and the
+    # dressing zone with the grandmother's wall bed south of it.
+    #
+    # Its NORTH FACE LANDS ON Y 5875, which is exactly the crown of the bath's
+    # arch — the northernmost point the sweep reaches, at X 3165.  So the
+    # partition does not cut across the room arbitrarily: it continues a line
+    # the bath already draws, and the two read as one boundary.
+    #
+    # It runs west to the end wall and east to X 2621, where the arch's own
+    # outer face has come back down to meet the partition's south face at 6075.
+    # Beyond that the arch is the wall.
+    #
+    # IT IS A REAL WALL WITH A REAL DOOR, not a screen with a gap.  A gap would
+    # give privacy and nothing else; the whole point of it is that the two sides
+    # can hold different temperatures, and that needs something that shuts.  The
+    # door is 900, at the east end, on the direct line from the foot of the bed
+    # to the bath.
+    (-450, 5975, 2621, 5975, 200, [(2171, 3071)]),
     (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR]),
     (M(MB_XW - T_MB / 2), MB_YW, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR_E]),
     # The bath's east side is the enclosure to the builder's main service duct.
@@ -497,34 +516,48 @@ GLAZING = [
 #   (kind, x0, y0, x1, y1, label)
 
 _ONCE = [
-    # ------------------------- the PARENTS' wardrobes and dressing console
-    # On the west end wall, square opposite the bath door — which opens west
-    # out of the bath at Y 7015-7815, so this run faces it across the room with
-    # 2095 between.  It runs the bath's own length, 2820, and stops dead on the
-    # window's north jamb at Y 8945, so the 600 window there stays open.
+    # ------------------------- the PARENTS' suite, in two zones
+    # THE OLD WEST-WALL CUPBOARD RUN IS GONE.  The west wall now carries the
+    # parents' bed at the north end and the grandmother's wall bed at the south,
+    # and the cupboards move on to the partition between them.
     #
-    # THREE UNITS, all of them cupboards, and the run goes the whole way down to
-    # the column's south edge at 8945 — stopping 100 short of the laundry basket
-    # in the corner, so the wall reads as one continuous run of joinery ending on
-    # a low basket rather than as two short pieces with a gap.
+    # THE PARENTS' BED, head on the west wall, facing east down the room and out
+    # through the pod slider.  1800 x 2000 plus a 200 headboard.  It sits clear
+    # of the 600 window at Y 1350-1950 above it and leaves 675 to the partition
+    # below.  A side table each side, 500 x 450, on the same headboard line.
+    ('joinery',   -450, 2400, -250, 5200, "headboard  ·  2800 x 200"),
+    ('bed-w',     -250, 2900, 1750, 4700, "bed  ·  1800 x 2000, head on the west wall"),
+    ('counter-r', -250, 2400, 250, 2900, "side table  ·  500 x 500"),
+    ('counter-r', -250, 4700, 250, 5200, "side table  ·  500 x 500"),
+
+    # THE CUPBOARDS GO ON THE PARTITION, facing SOUTH into the dressing zone —
+    # which is the whole trick of this layout.  The bath opens into that zone,
+    # so you come out of it, take clothes out of the cupboard and dress with the
+    # partition between you and the bed.  One element, two jobs: it separates
+    # the two sleeping zones and it is the changing screen.
     #
-    # THE BACK STEPS, THE FRONT DOES NOT.  The builder leaves a 230 x 1200 column
-    # over Y 7745-8945 whose face stands 80 proud of the wall.  Only the unit
-    # that sits ON that column has to be held off at X -370; the two north of it
-    # have nothing behind them but wall, so they go back to the wall face at
-    # -450 and are 680 deep instead of 600.
+    # 2170 x 600, west of the door.  That is 650 less than the 2820 the west
+    # wall carried, and it is the real cost of this layout — see the note in
+    # ROUND1.md.  SLIDING doors, not hinged: with the wall bed down there is
+    # 1070 in front of them, which is enough to stand in but not to swing a 750
+    # leaf through.
+    ('hanging',   -450, 6075, 1720, 6675, "cupboards  ·  2170 x 600, sliding"),
+
+    # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
+    # A cabinet 400 deep that is shut fifty-one weeks of the year, and a single
+    # bed that folds down out of it when she is here.  Not a sofa bed: nothing
+    # to unfold nightly, nothing to make up twice.
     #
-    # The alternative was to set the whole run at -370 and pack out behind, which
-    # is tidier to build and leaves a sealed 80 x 1620 cavity you can never open,
-    # never clean and never use.  Better to give that 80 to the cupboard: behind
-    # a hanging rail it is exactly the depth a shoe box or a deep shelf wants.
-    #
-    # Every door still lines through on X 230, so the run reads as one flat face
-    # whatever the carcass is doing behind it.  The joint lands on Y 7745, the
-    # column's north edge, so no single unit has a stepped back.
-    ('hanging',   -450, 6125, 230, 6935, "wardrobe 1  ·  810 x 680, hanging"),
-    ('hanging',   -450, 6935, 230, 7745, "wardrobe 2  ·  810 x 680, hanging"),
-    ('hanging',   -370, 7745, 230, 8945, "wardrobe 3  ·  1200 x 600, over the column"),
+    # It sits EXACTLY ON THE COLUMN — the builder's 230 x 1200 at Y 7745-8945,
+    # whose face stands 80 proud of the wall.  The cabinet is 1200 long and 400
+    # deep off that proud face, so the column is behind it with no void, and the
+    # cabinet stops dead on the 600 window's north jamb at 8945.
+    # The door in the partition, hinged on its west jamb and swinging SOUTH into
+    # the dressing zone, where there is 1070 of floor for it.  Open, the leaf
+    # stands on the end of the cupboard run and blocks nothing.
+    ('swing',     1721, 6075, 2621, 6975, "door  ·  900, into the dressing zone"),
+    ('murphy-e',  -370, 7745, 30, 8945,
+     "wall bed  ·  single 1200 x 1900, shown folded down"),
     # THE BASKET GOES IN THE CORNER, hard into the angle where the west window
     # and the south window meet — back on the south wall at Y 9545, end on the
     # west wall at X -450.  It lies ALONG THE SOUTH WALL, 700 x 500: turned the

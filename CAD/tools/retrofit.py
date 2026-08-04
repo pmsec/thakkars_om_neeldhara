@@ -145,9 +145,11 @@ def poly_rooms():
     bath, suite = suite_polys()
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     suite_note = 'one room  ·  bed + dressing, joinery to be designed'
+    par_note = ('two zones  ·  bed north of the partition, '
+                'dressing + wall bed south of it')
     bath_note = 'arched wall  ·  1930 clear'
     return [
-        ('MASTER SUITE', 'PARENTS', suite, suite_note, (1150, 4200)),
+        ('MASTER SUITE', 'PARENTS', suite, par_note, (3100, 3500)),
         # not the mirror of the parents' anchor any more: that point is inside
         # Karan's bed.  His label sits in the open floor west of it.
         ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note, (21300, 4400)),

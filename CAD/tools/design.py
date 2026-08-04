@@ -720,18 +720,27 @@ _ONCE = [
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room
     # ------------------------- parents' pod: the sitting group
-    # The pod's north half had nothing in it but the glass roof over the bay.
-    # A two-seater with its back to the west facing east, and two recliners
-    # facing it back — one group across the middle of the bay, with the deck
-    # sliders behind the recliners' shoulders and the dining table beyond the
-    # sofa's south end.
+    # First drawn as three boxes marooned in the middle of the room facing each
+    # other across nothing.  It was clumsy because it had no focus and nothing
+    # to sit against — furniture in a row is not a group.
     #
-    # The sofa sits 633 clear of the suite's sliding partition rather than on
-    # it, so the way in from the parents' bedroom passes round its north end
-    # (480) or its south (900) instead of into its back.
-    ('sofa-w',    5100, 3100, 5950, 4800, "two-seater  ·  1700 x 850, facing east"),
-    ('recliner-e', 7100, 3050, 8050, 3950, "recliner  ·  950 x 900, facing west"),
-    ('recliner-e', 7100, 4150, 8050, 5050, "recliner  ·  950 x 900, facing west"),
+    # It is composed now, the same way Karan's terrace pod is: a U OPEN TO THE
+    # DECK, round a centre table.  The two-seater has its back to the dining end
+    # and faces north through the slider; a recliner sits at each end facing in,
+    # so the three of them and the table close three sides and leave the fourth
+    # open to the view.  That is the whole difference — the room's own opening
+    # is what the group is arranged on, instead of being ignored.
+    #
+    # It clears everything without being pushed against anything:
+    #   680 from the recliners north to the deck slider
+    #   450 from the sofa's back south to the dining table
+    #   433 behind the west recliner, and the suite's sliding partition still
+    #       reads clear over Y 2620-3300 and 4200-6175, so the way through from
+    #       the bedroom is never blocked
+    ('sofa-s',    5800, 4450, 7500, 5250, "two-seater  ·  1700 x 800, facing the deck"),
+    ('recliner-w', 4900, 3300, 5700, 4200, "recliner  ·  800 x 900, facing east"),
+    ('recliner-e', 7500, 3300, 8300, 4200, "recliner  ·  800 x 900, facing west"),
+    ('table',     6275, 3300, 7025, 4050, "centre table  ·  750 round"),
 
     # ------------------------------------------------- parents' pod: dining
     # NOT A ROUND TABLE.  It was a 1400 round, and a round table in a pod only

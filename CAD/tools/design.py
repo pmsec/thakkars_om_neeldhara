@@ -845,9 +845,13 @@ _ONCE = [
     # The polygon is in retrofit.kitchen_counter() — it has a curved end struck
     # off the apse, so it cannot be a rectangle.
     #
-    # What that produces at the turn is an ordinary L-kitchen BLIND CORNER,
-    # 600 x 1200, at X 8725-9325.  It wants a carousel or a magic-corner pull
-    # out; it is not a place for a sink or a hob.
+    # What that produces at the turn is an ordinary L-kitchen BLIND CORNER.
+    # The block where the two legs stack is 600 x 1200, but only half of it is
+    # blind: the lower leg's half faces north into the room and opens fine.
+    # The upper leg's half — 600 x 600 at X 8725-9325 / Y 7925-8525 — has its
+    # front on the line where the lower leg's carcass begins, so it can have no
+    # door of its own.  A MAGIC CORNER serves it, drawn in
+    # retrofit.magic_corner().  It is not a place for a sink or a hob.
     ('sink',     8100, 8670, 8660, 8980,
      'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
     ('shelves',  6900, 8525, 8000, 8725,

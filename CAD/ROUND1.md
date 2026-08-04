@@ -1149,11 +1149,37 @@ The aisle in front of leg 2 is **1850 (6′-1″)** against 1250 in front of leg
 and there is still **1086 (3′-7″)** of clear floor at the gallery's service
 door.
 
-**What it produces at the turn is an ordinary L-kitchen blind corner**, 600 ×
-1200 mm (2′-0″ × 3′-11″) at X 8725–9325. It wants a carousel or a magic-corner
-pull-out; it is not a place for a sink or a hob. **The sink has moved** west
-out of it, to X 8100–8660 — which also puts it 1400 mm (4′-7″) nearer the
-stack than it was.
+**What it produces at the turn is an ordinary L-kitchen blind corner.** It is
+not a place for a sink or a hob, so **the sink has moved** west out of it, to
+X 8100–8660 — which also puts it 1400 mm (4′-7″) nearer the stack than it was.
+
+### The blind corner, and the magic corner that serves it
+
+**A correction first, because the number was wrong when it was first said.**
+The block where the two legs of run B stack is 600 × 1200 mm (2′-0″ × 3′-11″) —
+but only *half* of that is blind. The lower leg's half, Y 8525–9125, faces
+north into the room and opens perfectly well. What is blind is the upper leg's
+half: **600 × 600 mm (2′-0″ × 2′-0″)** at X 8725–9325 / Y 7925–8525. Its own
+front sits on Y 8525, and Y 8525 is exactly where the lower leg's carcass
+begins — so a door there would open into the back of another cupboard.
+
+So it has no door. The only way in is sideways, through the **500 mm (1′-8″)**
+door of the unit east of it at X 9325–9825, and past arm's reach is the corner
+nobody ever sees again.
+
+**A magic corner solves it.** Two tiers of wire trays: the front pair rides on
+the door, and when you swing it open the rear pair slides out from the blind
+600 and follows it into the room. Roughly **0.36 m² (4 sq ft)** of floor-level
+storage goes from unreachable to in-your-hand.
+
+It is **drawn**, not just noted — and drawn in *both states*, the way the
+sliding panels are: the trays stowed in the corner, the same trays standing
+out in the floor in front of the door, and the path between them. The floor
+they swing into is clear, because the lower leg's worktop stops at X 9325.
+
+A carousel (lazy Susan) is the cheaper fitting but it does not work here: it
+needs a bi-fold door on the corner itself, and this layout runs one leg
+straight past the other instead.
 
 ### The south wall is one unbroken L too
 

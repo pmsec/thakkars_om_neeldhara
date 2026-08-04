@@ -247,6 +247,8 @@ def main():
         prim(p)
     for p in R.hob_counter():          # the hob run + the appliance corner, one L
         prim(p)
+    for p in R.magic_corner():         # run B's blind corner, shown stowed + out
+        prim(p)
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)

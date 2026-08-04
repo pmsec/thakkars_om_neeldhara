@@ -644,6 +644,58 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     return [('poly', pts, 'solid')]
 
 
+def magic_corner():
+    """The blind corner of run B, and the pull-out that gets into it.
+
+    A CORRECTION FIRST, because the number was wrong when it was first said.
+    The block where the two legs of run B stack is 600 x 1200 — but only half
+    of that is blind.  The lower leg's half, Y 8525-9125, faces north into the
+    room and opens perfectly well.  What is blind is the UPPER leg's half:
+    600 x 600 at X 8725-9325 / Y 7925-8525.  Its own front is on Y 8525, and
+    Y 8525 is exactly where the lower leg's carcass begins, so a door there
+    would open into the back of another cupboard.
+
+    So it has no door.  The only way in is sideways, through the unit east of
+    it, and beyond the reach of an arm that is the far corner nobody sees.
+
+    Drawn the way the sliding panels are drawn — in BOTH states, so the plan
+    explains itself and the joinery schedule cannot quietly leave it out:
+
+      * the blind carcass and the 500 door unit that serves it, dashed
+      * the rear trays STOWED, in the blind corner
+      * the same trays SWUNG OUT, standing in the floor in front of the door
+      * the path between the two
+
+    The floor they swing into is clear: the lower leg's worktop stops at
+    X 9325, so X 9325-9825 / Y 8525-9125 is open.
+    """
+    BX0, BX1 = 8725, 9325           # the blind carcass
+    DX0, DX1 = 9325, 9825           # the unit whose door is the only way in
+    Y0, Y1 = D.KIT_S, D.BAY_N       # 7925 / 8525 — the upper leg's two faces
+    out = [('rect', BX0, Y0, BX1, Y1, 'dash'),
+           ('rect', DX0, Y0, DX1, Y1, 'dash'),
+           ('rect', BX0 + 40, Y0 + 40, BX1 - 40, Y1 - 40, 'light')]   # stowed
+    # the same trays, out in the room
+    ox0, oy0 = DX0 + 20, Y1 + 40
+    out.append(('rect', ox0, oy0, ox0 + 520, oy0 + 520, 'dash'))
+    # and the path they take, with an arrowhead on the end
+    a = (BX0 + BX1) / 2, (Y0 + Y1) / 2
+    b = ox0 + 260, oy0 + 260
+    ctl = DX1 - 40, Y1 - 300
+    path = [(((1 - t) ** 2) * a[0] + 2 * (1 - t) * t * ctl[0] + t * t * b[0],
+             ((1 - t) ** 2) * a[1] + 2 * (1 - t) * t * ctl[1] + t * t * b[1])
+            for t in np.linspace(0, 1, 26)]
+    for p, q in zip(path, path[1:]):
+        out.append(('line', p[0], p[1], q[0], q[1], 'light'))
+    ux, uy = b[0] - path[-2][0], b[1] - path[-2][1]
+    n = math.hypot(ux, uy) or 1
+    ux, uy = ux / n * 110, uy / n * 110
+    for s_ in (0.5, -0.5):
+        out.append(('line', b[0], b[1], b[0] - ux + s_ * uy, b[1] - uy - s_ * ux,
+                    'light'))
+    return out
+
+
 def hob_counter(r=200):
     """The hob run and the appliance corner, as ONE L.
 

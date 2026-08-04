@@ -1155,30 +1155,35 @@ pull-out; it is not a place for a sink or a hob. **The sink has moved** west
 out of it, to X 8100–8660 — which also puts it 1400 mm (4′-7″) nearer the
 stack than it was.
 
-### The hob run and the appliance corner are one L too
+### The south wall is one unbroken L too
 
-They were two counters 400 mm (1′-4″) apart. The 400 was not doing anything —
-it came from setting the hob counter 400 in from each jamb of its window, and
-what it read as was a slot of floor too narrow to stand in and too shallow to
-store in. Joined, the run goes **2200 mm (7′-3″)** along the south wall to the
-gallery leg and then turns **675 mm (2′-3″)** north up it.
+It used to be three pieces with two **400 mm (1′-4″)** gaps in it — fridge,
+gap, hob counter, gap, appliance corner. Neither gap was wanted: both came
+from setting the hob counter 400 in from each jamb of its window, and what
+they read as was two slots of floor too narrow to stand in and too shallow to
+store in.
+
+The run is now continuous from the fridge's side at X 7800 to the gallery leg —
+**2600 mm (8′-6″)** — and then turns **675 mm (2′-3″)** north up it.
 
 | | worktop |
 |---|---|
-| two counters, 400 apart | 1.49 m² (16 sq ft) |
-| **one L** | **1.68 m² (18 sq ft)** |
+| three pieces, two 400 gaps | 1.49 m² (16 sq ft) |
+| **one unbroken L** | **1.94 m² (21 sq ft)** |
 
-The hob has not moved off its window. Every corner that stands in the room is
-eased 200 mm (8″) like the rest of the kitchen; the L's inside corner is left
-square, because that is where two worktops are mitred and a mason does not
-scoop a curve out of an internal angle.
+**Closing the western gap is not just worktop — it fixes a real defect.** The
+hob sits at X 8500–9100 and had only **300 mm (1′-0″)** of counter to its left,
+which is not enough to set a hot pan down on. It has **700 mm (2′-4″)** now,
+and 700 to its right before the corner. The hob itself has not moved; it is
+still centred on its window at 8800.
 
-**Kitchen worktop, both runs together: 4.33 m² (47 sq ft).**
+Every corner that stands in the room is eased 200 mm (8″) like the rest of the
+kitchen. Two are not: the L's inside corner, where two worktops are mitred and
+a mason does not scoop a curve out of an internal angle; and the west end,
+which butts the fridge — 700 deep, so it stands 100 mm (4″) proud of the
+worktop and that end face is never seen.
 
-Still open, and not taken: there is another **400 mm (1′-4″)** slot between the
-fridge and the west end of this L. It could be closed the same way — but the
-fridge stands 100 mm (4″) proud of the counter and its door has to swing, so
-that 400 is at least doing something. Say the word if you want it filled.
+**Kitchen worktop, both runs together: 4.59 m² (49 sq ft).**
 
 ---
 

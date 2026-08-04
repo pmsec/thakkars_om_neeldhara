@@ -647,18 +647,26 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
 def hob_counter(r=200):
     """The hob run and the appliance corner, as ONE L.
 
-    They were two counters 400 apart, and the 400 was not doing anything — it
-    was left over from centring the hob on its window and it read as a slot of
-    floor you could not use for anything.  Joined, the run goes from the fridge
-    all the way to the gallery leg and then turns north up it, and the worktop
-    gains the 400 x 600 outright.
+    It used to be two counters 400 apart, and a third 400 between the western
+    one and the fridge.  Neither gap was doing anything — both came from
+    setting the hob counter 400 in from each jamb of its window — and what they
+    read as was two slots of floor too narrow to stand in and too shallow to
+    store in.  The run is now UNBROKEN from the fridge's side at X 7800 to the
+    gallery leg, and then turns north up it.
+
+    Closing the western 400 is not just worktop.  The hob sits at 8500-9100 and
+    had only 300 of counter to its left, which is not enough to put a hot pan
+    down on; it has 700 now.  The hob itself has not moved — it is still
+    centred on the window at 8800.
 
     Every corner that stands in the room is eased 200, like the rest of the
-    kitchen.  The one at X 9800 / Y 10375 is not: that is the L's inside
+    kitchen.  Two are not.  The one at X 9800 / Y 10375 is the L's inside
     corner, where two worktops are mitred, and a mason does not scoop a curve
-    out of an internal angle.
+    out of an internal angle.  The west end is square because it butts the
+    fridge, which is 700 deep and therefore stands 100 proud of the worktop —
+    that end face is never seen.
     """
-    W, E = 8200, D.GAL_W            # the hob run's west end, the gallery leg
+    W, E = 7800, D.GAL_W            # the fridge's east face, the gallery leg
     N, S = 10375, D.BAY_S           # 600 deep on the south wall
     LW, LN = 9800, 9700             # the leg: its west face, its north end
 
@@ -667,16 +675,13 @@ def hob_counter(r=200):
                  cy + math.sin(math.radians(t)) * r)
                 for t in np.linspace(t0, t1, n)]
 
-    pts = [(W + r, N), (LW, N), (LW, LN + r)]          # front, then the inside
+    pts = [(W, N), (LW, N), (LW, LN + r)]              # front, then the inside
     pts += arc(LW + r, LN + r, 180, 270)               # corner, left square
     pts += [(E - r, LN)]
     pts += arc(E - r, LN + r, 270, 360)
     pts += [(E, S - r)]
     pts += arc(E - r, S - r, 0, 90)
-    pts += [(W + r, S)]
-    pts += arc(W + r, S - r, 90, 180)
-    pts += [(W, N + r)]
-    pts += arc(W + r, N + r, 180, 270)
+    pts += [(W, S)]
     return [('poly', pts, 'solid')]
 
 

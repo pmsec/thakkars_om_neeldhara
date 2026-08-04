@@ -852,13 +852,16 @@ _ONCE = [
      'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
     ('shelves',  6900, 8525, 8000, 8725,
      'serving hatch, 1100 — opens into the parents pod'),
-    # --- the window run and the appliance corner, ONE L
-    # They used to be two counters 400 apart, and the 400 was left over from
-    # centring the hob on its window rather than wanted for anything — a slot
-    # of floor too narrow to stand in and too shallow to store in.  Joined,
-    # the run goes from the fridge to the gallery leg and turns north up it,
-    # and the worktop takes the 400 x 600 outright.  The polygon is in
-    # retrofit.hob_counter(); the hob itself has not moved off its window.
+    # --- the window run and the appliance corner, ONE UNBROKEN L
+    # Three pieces with two 400 gaps between them, and neither gap was wanted:
+    # both came from setting the hob counter 400 in from each jamb of its
+    # window.  The run is now continuous from the fridge's side at X 7800 to
+    # the gallery leg, then north up it.  The polygon is in
+    # retrofit.hob_counter(); the hob has not moved off its window at 8800.
+    #
+    # The western 400 mattered more than the eastern one: the hob had 300 of
+    # counter to its left, which is not enough to set a hot pan down on.  It
+    # has 700 now, against 1300 on its right.
     ('under',    8430, 10455, 9170, 10895, 'integrated dishwasher, under the hob'),
     ('hob',      8500, 10525, 9100, 10825, ''),
     # --- the fridge, west of the hob run, flush with the wall.  It sits clear

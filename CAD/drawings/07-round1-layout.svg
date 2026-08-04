@@ -862,6 +862,14 @@
 <polygon points="2099.5,1172.8 2137.2,1172.8 2137.2,1195.8 2099.5,1195.8" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <line x1="2112.1" y1="1172.8" x2="2112.1" y2="1195.8" stroke="#9a9184" stroke-width="0.8"/>
 <line x1="2124.6" y1="1172.8" x2="2124.6" y2="1195.8" stroke="#9a9184" stroke-width="0.8"/>
+<polygon points="2036.2,1502.9 2074.2,1478.2 2066.3,1489.4 2049.6,1500.2" fill="#f4e7c9" stroke="#a8862f" stroke-width="1.1"/>
+<polygon points="2053.8,1497.3 2062.0,1492.0 2069.4,1506.5 2064.0,1510.0" fill="#f4e7c9" stroke="#a8862f" stroke-width="1.1"/>
+<circle cx="2068.5" cy="1511.0" r="10.5" fill="#f4e7c9" stroke="#a8862f" stroke-width="1.1"/>
+<circle cx="2068.5" cy="1511.0" r="4.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<polygon points="2271.4,1478.2 2309.5,1502.9 2296.0,1500.2 2279.4,1489.4" fill="#f4e7c9" stroke="#a8862f" stroke-width="1.1"/>
+<polygon points="2283.7,1492.0 2291.9,1497.3 2281.7,1510.0 2276.3,1506.5" fill="#f4e7c9" stroke="#a8862f" stroke-width="1.1"/>
+<circle cx="2277.2" cy="1511.0" r="10.5" fill="#f4e7c9" stroke="#a8862f" stroke-width="1.1"/>
+<circle cx="2277.2" cy="1511.0" r="4.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="2873.0" y="1671.1" width="201.7" height="31.0" fill="#c8332b" stroke="#7c1610" stroke-width="1.0"/>
 <rect x="3832.1" y="2175.6" width="161.9" height="31.0" fill="#c8332b" stroke="#7c1610" stroke-width="1.0"/>
 <rect x="3743.1" y="1690.6" width="161.9" height="31.0" fill="#c8332b" stroke="#7c1610" stroke-width="1.0"/>

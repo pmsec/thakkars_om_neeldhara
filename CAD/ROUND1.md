@@ -1231,6 +1231,39 @@ to the great room, and at 2070 mm (6′-9″) it is twice the width of the arche
 portal at the end of it. Nothing on this route narrows below the door it leads
 to.
 
+### Two wall lights on the apse, flanking the arch
+
+Art-deco sconces on the apse's inner face, one each side of the great-room
+portal.
+
+| | mm | ft |
+|---|---|---|
+| struck at | 237° and 303° on the inner face | |
+| wall points | (11363, 7975) and (13117, 7975) | |
+| curved wall to the nearest portal jamb | 393 | 1′-3″ |
+| curved wall to the leg behind them | 1602 | 5′-3″ |
+| backplate, along the curve | 337 | 1′-1″ |
+| clear of the jamb, backplate edge | 225 | 9″ |
+| **projection off the wall face** | **190** | **7″** |
+
+**They were drawn centred on the blank arcs first and that was wrong.** The
+apse's inner face is broken by the portal, which takes 251°–289° of it, and by
+the two legs it springs from at 180° and 360°. Centring on what is left put
+them at 215.5° and 324.5° — 998 mm of curved wall from each end, perfectly
+defensible, and down near the springings where they light the corners of a
+room nobody stands in. Moved up, they are **a pair either side of the arch**,
+which is what a lamp beside a door is for.
+
+Symmetric about the home's axis, like the portal, the fountain and the front
+door already are.
+
+**The projection is the number that matters on site.** 190 mm (7″) off the
+wall face is what decides whether a shoulder catches one; at about 2 m up it
+clears everything. It is the dimension to give the fitting supplier.
+
+They are on a **new `PROP-LIGHT` layer**, not on the furniture layer — a light
+fitting is not joinery and the architect will want it switchable on its own.
+
 ### The west half is an L with the tree in its corner
 
 This is the arrangement from the original interior reference, finally built:

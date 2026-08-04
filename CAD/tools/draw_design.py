@@ -238,7 +238,8 @@ def main():
              'plank': ('#e7dac6', 'none', 0),
              'board': ('none', '#cfb896', 0.7),
              'stone': ('#e3e3e0', '#c9c8c2', 0.9),
-             'joint': ('none', '#d5d4cf', 0.7)}
+             'joint': ('none', '#d5d4cf', 0.7),
+             'sconce': ('#f4e7c9', '#a8862f', 1.1)}
 
     def prim(p):
         st = p[-1]
@@ -307,6 +308,8 @@ def main():
     for p in R.rocking_chair(12100, 3550, face=(10123 - 12100, 3932 - 3550)):
         prim(p)                        # the one that closes the L, west half
     for p in R.console_top():          # lamps, books and a bowl on the console
+        prim(p)
+    for p in R.apse_sconces():         # the two wall lights on the apse
         prim(p)
     gx, gy, gr, gt, _g = D.GALLERY
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:

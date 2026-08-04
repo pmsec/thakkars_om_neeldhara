@@ -1045,6 +1045,46 @@ def wood_floor(board=190, island=False):
 # floor to seat two people who now have a pair of rocking chairs instead.
 
 
+def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
+    """The two wall lights on the entry gallery's apse.
+
+    THEY FLANK THE PORTAL rather than centring on the wall.  The apse's inner
+    face is broken by the great-room opening, which takes 251 to 289 degrees
+    of it, and by the two legs it springs off at 180 and 360.  Centred on the
+    blank arcs the sconces fell at 215.5 and 324.5 — a defensible position,
+    998 of curved wall from each end, and the wrong one: down near the
+    springings they light the corners of a room nobody stands in.
+
+    At 237 and 303 they are a PAIR EITHER SIDE OF THE ARCH, 393 of curved
+    wall off each jamb and 1602 off each leg, which is what a lamp beside a
+    door is for.  Symmetric about the home's axis, like the portal, the
+    fountain and the front door already are.
+
+    Drawn as a plan symbol for a wall fitting: a backplate on the curve, a
+    tapered arm off it and the lamp at the end, 190 out from the wall face.
+    That projection is the number that matters on site — it is what decides
+    whether a shoulder catches it, and 190 at 2 m up clears everything.
+    """
+    RI = D.GAL_R - D.T_GAL / 2
+    out = []
+    for a in (237.0, 303.0):
+        def P(deg, r):
+            t = math.radians(deg)
+            return (D.MID + r * math.cos(t), D.GAL_CY + r * math.sin(t))
+
+        pts = [P(a - half, RI), P(a + half, RI)]                 # the backplate
+        pts += [P(a + half * 0.45, RI - plate), P(a - half * 0.45, RI - plate)]
+        out.append(('poly', pts, 'sconce'))
+        arm_ = [P(a - half * 0.22, RI - plate), P(a + half * 0.22, RI - plate),
+                P(a + half * 0.16, RI - plate - arm),
+                P(a - half * 0.16, RI - plate - arm)]
+        out.append(('poly', arm_, 'sconce'))                     # the arm
+        c = P(a, RI - reach)
+        out.append(('circle', c[0], c[1], 78, 'sconce'))          # and the lamp
+        out.append(('circle', c[0], c[1], 34, 'light'))
+    return out
+
+
 def console_top(a=10878, b=5537, c=12478, d=5887):
     """What stands on the console behind the sofa.
 

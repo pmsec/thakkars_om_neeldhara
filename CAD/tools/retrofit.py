@@ -1048,17 +1048,21 @@ def wood_floor(board=190, island=False):
 def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
     """The two wall lights on the entry gallery's apse.
 
-    THEY FLANK THE PORTAL rather than centring on the wall.  The apse's inner
-    face is broken by the great-room opening, which takes 251 to 289 degrees
-    of it, and by the two legs it springs off at 180 and 360.  Centred on the
-    blank arcs the sconces fell at 215.5 and 324.5 — a defensible position,
-    998 of curved wall from each end, and the wrong one: down near the
-    springings they light the corners of a room nobody stands in.
+    ONE AT THE CENTRE OF EACH ARC.  The apse's inner face is broken by the
+    great-room opening, which takes 251 to 289 degrees of it, and by the two
+    legs it springs off at 180 and 360.  That leaves two arcs of 1995, and
+    each sconce sits at the middle of its own — 998 of curved wall to the
+    portal's jamb one way and 998 to the leg the other, on both halves.
 
-    At 237 and 303 they are a PAIR EITHER SIDE OF THE ARCH, 393 of curved
-    wall off each jamb and 1602 off each leg, which is what a lamp beside a
-    door is for.  Symmetric about the home's axis, like the portal, the
-    fountain and the front door already are.
+    They were pushed up to 237 and 303 for one round, to flank the arch the
+    way a lamp flanks a door.  That was reasoning about a door instead of
+    looking at the wall: this is not a door in a flat wall, it is a curved
+    face with two blank stretches in it, and a fitting halfway along a stretch
+    of wall is simply where a fitting goes.  Crowded up against the opening
+    they left 1602 of unlit wall behind them and 393 in front.
+
+    Symmetric about the home's axis, like the portal, the fountain and the
+    front door already are.
 
     Drawn as a plan symbol for a wall fitting: a backplate on the curve, a
     tapered arm off it and the lamp at the end, 190 out from the wall face.
@@ -1067,7 +1071,7 @@ def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
     """
     RI = D.GAL_R - D.T_GAL / 2
     out = []
-    for a in (237.0, 303.0):
+    for a in (215.5, 324.5):
         def P(deg, r):
             t = math.radians(deg)
             return (D.MID + r * math.cos(t), D.GAL_CY + r * math.sin(t))

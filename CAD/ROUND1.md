@@ -1250,21 +1250,25 @@ portal.
 
 | | mm | ft |
 |---|---|---|
-| struck at | 237° and 303° on the inner face | |
-| wall points | (11363, 7975) and (13117, 7975) | |
-| curved wall to the nearest portal jamb | 393 | 1′-3″ |
-| curved wall to the leg behind them | 1602 | 5′-3″ |
+| struck at | 215.5° and 324.5° on the inner face | |
+| wall points | (10929, 8390) and (13551, 8390) | |
+| each blank arc, leg to portal jamb | 1995 | 6′-7″ |
+| **curved wall to the jamb, and to the leg** | **998 each way** | **3′-3″** |
 | backplate, along the curve | 337 | 1′-1″ |
-| clear of the jamb, backplate edge | 225 | 9″ |
 | **projection off the wall face** | **190** | **7″** |
 
-**They were drawn centred on the blank arcs first and that was wrong.** The
-apse's inner face is broken by the portal, which takes 251°–289° of it, and by
-the two legs it springs from at 180° and 360°. Centring on what is left put
-them at 215.5° and 324.5° — 998 mm of curved wall from each end, perfectly
-defensible, and down near the springings where they light the corners of a
-room nobody stands in. Moved up, they are **a pair either side of the arch**,
-which is what a lamp beside a door is for.
+**One at the centre of each arc.** The apse's inner face is broken by the
+portal, which takes 251°–289° of it, and by the two legs it springs from at
+180° and 360°. That leaves two blank arcs of 1995 mm (6′-7″), and each sconce
+sits at the middle of its own — equidistant from the jamb one way and the leg
+the other, on both halves.
+
+**They were pushed up to flank the arch for one round, and that was wrong.**
+The reasoning was about a door — a lamp goes beside a doorway — but this is
+not a door in a flat wall. It is a curved face with two blank stretches in it,
+and a fitting halfway along a stretch of wall is simply where a fitting goes.
+Crowded up against the opening they left 1602 mm (5′-3″) of unlit wall behind
+them and 393 mm (1′-3″) in front.
 
 Symmetric about the home's axis, like the portal, the fountain and the front
 door already are.

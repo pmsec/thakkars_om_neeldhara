@@ -917,26 +917,34 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    # ONE BENCH SOFA AND FOUR RECLINERS, and no centre table.  The L and the
-    # tree in its corner are the same idea as before; what has changed is what
-    # the two arms are made of.  The long arm was a 2800 three-in-a-row and is
-    # now four separate 800 recliners, each one facing the deck on its own.
-    # The short arm was a 1700 sofa and is now the 2000 bench.
+    # ONE BENCH SOFA AND FOUR RECLINERS, ROUND THREE SIDES OF A RUG — not four
+    # in a row.  A row of recliners is a departure lounge: everyone faces the
+    # same way and nobody faces anyone.  This is a conversation group that
+    # still gives every seat the deck:
     #
-    # THE CENTRE TABLE IS GONE.  It was 1400 x 1200 — nearly twice a normal
-    # coffee table's depth — and about 4 sq ft of its top was out of reach from
-    # either seat.  Nothing replaces it: what is between the seats now is 3800
-    # x 2050 of clear floor, which is the point of a room this size.
+    #   WEST    the 2000 bench, turned in, the tree at its south end
+    #   SOUTH   two recliners side by side facing NORTH — the deck straight
+    #           ahead of their footrests, the whole room's width of glass
+    #   EAST    two recliners facing WEST, across the rug at the bench
     #
-    # The row is 4 x 800 with 150 between, 3650 overall, centred on X 12240 —
-    # so it is centred on the home, not on the room, and the gallery's arched
-    # portal comes out on that same line.
-    ('recliner-s', 10800, 5600, 11600, 6500, "recliner  ·  800 x 900, facing the deck"),
-    ('recliner-s', 11750, 5600, 12550, 6500, "recliner  ·  800 x 900, facing the deck"),
-    ('recliner-s', 12700, 5600, 13500, 6500, "recliner  ·  800 x 900, facing the deck"),
-    ('recliner-s', 13650, 5600, 14450, 6500, "recliner  ·  800 x 900, facing the deck"),
+    # So the two south chairs look at the deck, the two east chairs and the
+    # bench look at each other, and anyone can swivel a recliner a quarter
+    # turn to join either camp — which is what recliners are for.
+    #
+    # NO CENTRE TABLE, as asked.  A side table in the crook of each pair and
+    # one at the bench's free end: every seat has a surface at its elbow, and
+    # the middle of the rug stays floor.
+    #
+    # The south pair's backs stand 985 off the apse crown, so the way out of
+    # the front door is what it was.  The middle of the group — bench front to
+    # the east pair's footrests — is 2710 of clear rug.
+    ('recliner-s', 11000, 5600, 11800, 6500, "recliner  ·  800 x 900, facing the deck"),
+    ('recliner-s', 12250, 5600, 13050, 6500, "recliner  ·  800 x 900, facing the deck"),
+    ('sidetable',  11800, 5950, 12250, 6450, "side table  ·  between the south pair"),
+    ('recliner-e', 13600, 3550, 14400, 4450, "recliner  ·  800 x 900, facing the bench"),
+    ('recliner-e', 13600, 4900, 14400, 5800, "recliner  ·  800 x 900, facing the bench"),
+    ('sidetable',  13950, 4450, 14400, 4900, "side table  ·  between the east pair"),
     ('sofa-w',     9850, 3550, 10650, 5550, "bench sofa  ·  2000 x 800, turned in"),
-    ('sidetable', 14450, 5600, 14950, 6100, "side table  ·  at the row's free end"),
     ('sidetable',  9850, 3050, 10350, 3550, "side table  ·  at the bench's free end"),
     # Last in the list so the canopy draws over the two sofas, which is where
     # it actually is: 1710 across, oversailing each of them by about 380.

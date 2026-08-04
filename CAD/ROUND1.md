@@ -1175,27 +1175,36 @@ sofas meeting at a right angle, with a **planter box filling the angle between
 their two ends and a tall tree growing out of it**. In a U the corner is the
 awkward bit nobody sits in; here it is the thing you look at.
 
-**One bench sofa and four recliners** — not a sofa in a row. The L and the tree
-in its corner are the same idea; what changed is what the two arms are made of.
+**One bench sofa and four recliners round three sides of a rug** — not four in
+a row. A row of recliners is a departure lounge: everyone faces the same way
+and nobody faces anyone. This is a conversation group that still gives every
+seat the deck:
 
-| | |
-|---|---|
-| four recliners, facing the deck | 800 × 900 mm (2′-7″ × 2′-11″) each |
-| the row, 4 × 800 with 150 between | 3650 mm (11′-12″), centred on X 12240 |
-| bench sofa, back west, turned in | 2000 × 800 mm (6′-7″ × 2′-7″) |
-| planter box in the angle | 950 mm (3′-1″) square |
-| tree canopy | 1710 mm (5′-7″) across |
-| two side tables, at the free ends | 500 mm (1′-8″) square |
+* **WEST** — the 2000 × 800 mm (6′-7″ × 2′-7″) bench, turned in, the tree at
+  its south end
+* **SOUTH** — two recliners side by side facing **north**: the deck straight
+  ahead of their footrests, the whole width of the glass
+* **EAST** — two recliners facing **west**, across the rug at the bench
 
-**No centre table.** The one that was there was 1400 × 1200 mm (4′-7″ × 3′-11″)
-— nearly twice a normal coffee table's depth — and about 0.36 m² (4 sq ft) of
-its top was out of arm's reach from either seat. Nothing replaces it: what sits
-between the bench and the row is **3800 × 2050 mm (12′-6″ × 6′-9″)** of clear
-floor, 7.8 m² (84 sq ft) of it.
+The two south chairs look at the deck; the east pair and the bench look at
+each other; and anyone can swivel a recliner a quarter turn to join either
+camp — which is what recliners are for. Six to seven seats.
 
-The whole group is now **5.88 m² (63 sq ft)** of furniture — **16%** of the
-room, down from 7.36 m² (79 sq ft). Six to seven seats: the bench takes two or
-three, and each recliner is its own chair facing the deck.
+**No centre table**, as asked. A side table sits in the crook of each recliner
+pair and one at the bench's free end — every seat has a surface at its elbow —
+and the middle of the rug stays floor: **2710 mm (8′-11″)** clear from the
+bench's front to the east pair's footrests.
+
+**The rug is not a rectangle, and the notch is the point.** 3650 × 2650 mm
+(12′-0″ × 8′-8″), 9.46 m² (102 sq ft), a 120 mm woven border inside the edge.
+It tucks 300–400 under every seat's front feet — the classic rule — but its
+south-west corner is cut away flush around the tree's planter box, because a
+rug does not run under a masonry box full of wet soil.
+
+Furniture 6.06 m² (65 sq ft), **16% of the room**. The south pair's backs stand
+**985 mm (3′-3″)** off the apse crown, so the way out of the front door is what
+it was; **1005 mm (3′-4″)** north of the east pair to the deck glass; **1435 mm
+(4′-8″)** east and **1208 mm (4′-0″)** west to the two pod screens.
 
 **The corner is on the west, and that is the one real choice here.** The great
 room already has a planter on its south-east wall — the one that answers the

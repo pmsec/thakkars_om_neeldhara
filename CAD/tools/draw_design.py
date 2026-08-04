@@ -258,6 +258,8 @@ def main():
             s.o.append(f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" '
                        f'stroke-width="{lw}"{dash}/>')
 
+    for p in R.kitchen_counter():      # run B, turning the corner of the bump
+        prim(p)
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)

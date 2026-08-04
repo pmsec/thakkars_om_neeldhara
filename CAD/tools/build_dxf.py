@@ -243,6 +243,8 @@ def main():
         elif p[0] == 'poly':
             poly(msp, p[1], lyr)
 
+    for p in R.kitchen_counter():      # run B, turning the corner of the bump
+        prim(p)
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)

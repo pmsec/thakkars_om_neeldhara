@@ -229,13 +229,13 @@ asking it to match the column. Finish it in wood if you want the same effect.
 
 | | m² | sq ft |
 |---|---|---|
-| GREAT ROOM | 38.5 | 415 |
+| GREAT ROOM | 37.8 | 407 |
 | ALL-WEATHER DECK (net of the two voids) | 35.8 | 385 |
 | MASTER SUITE — parents | 32.5 | 350 |
 | MASTER SUITE — karan | 32.5 | 350 |
 | FAMILY ROOM | 21.3 | 230 |
 | MUSIC + WORK DEN | 21.3 | 230 |
-| KITCHEN (one room with the utility) | 11.1 | 119 |
+| KITCHEN (one room with the utility) | 11.7 | 126 |
 | ENTRY GALLERY | 9.4 | 101 |
 | PARENTS' BATH | 6.5 | 69 |
 | KARAN'S BATH | 6.5 | 69 |
@@ -245,10 +245,10 @@ asking it to match the column. Finish it in wood if you want the same effect.
 | STORE | 2.4 | 26 |
 | **total of named rooms** | **232.6** | **2504** |
 
-The great room is 415 sq ft against A-101's 474, and reads 6250 across the
+The great room is 407 sq ft against A-101's 474, and reads 6250 across the
 removed party wall at the deck, 7280 at the waist and 7280 at the pods — the
 pod glazing turns once at the top and then runs straight. It gives 2.1 m² back
-to the entry gallery's apse and another 0.7 to the kitchen's bump, both of
+to the entry gallery's apse and another 1.6 to the kitchen's bump, both of
 which project into it.
 
 ---
@@ -1078,10 +1078,10 @@ sit anywhere in it.
 ## The kitchen steps into the great room
 
 The kitchen was **10.5 m² / 113 sq ft** — the one room in the home with no
-slack in it. Its north wall now steps **300 north**, into the great room, over
+slack in it. Its north wall now steps **600 north**, into the great room, over
 the whole stretch it is free to move: from **X 8600**, where the pod glazing
-lands, east to where the gallery apse comes through at **10 867**. That is
-2267 of wall, and it takes the kitchen to **11.1 m² / 119 sq ft**.
+lands, east to where the gallery apse comes through at **11 210**. That is
+2610 of wall, and it takes the kitchen to **11.7 m² / 126 sq ft**.
 
 The step starts exactly on the glazing and not a millimetre west of it, for a
 reason that is not tidiness: **west of 8600 the same wall is the family pod's
@@ -1095,34 +1095,64 @@ the parapet to the kitchen.
 The east side **cannot** take a bump. Behind that wall are help's room (4.4 m²)
 and the guest WC (3.0 m²), and both are already at their minimum. So what
 answers the kitchen across the great room is not a room but a thing standing in
-front of the wall: a **planter, 300 deep**, on the same two lines, with the
+front of the wall: a **planter, 600 deep**, on the same two lines, with the
 same curved end where it dies into the apse. From the middle of the room the
 two read as a pair.
 
-**It is not the full mirror, and it cannot be.** The bump runs 2267; its mirror
+**It is not the full mirror, and it cannot be.** The bump runs 2610; its mirror
 would run past X 15 000, where the guest WC's apse springs and its door stands.
 The planter stops there — **880 short** — and that missing 880 is exactly the
 WC door, which is the one place on this wall where symmetry was never
 available.
 
-### 300 and not 600
+### 600, because that is one counter deep
 
-I drew 600 as well. It gives the kitchen **11.7 m² / 126 sq ft**, seven square
-feet more, and it costs the great room 1.6 m² instead of 0.7. The real cost is
-not the area though — it is the apse. The arch's crown is at Y 7485; at a 600
-bump the wall comes to 7800, so only **315** of apse projects past the two
-flanking walls and it stops reading as an apse from inside the great room. At
-300 it clears them by 615 and still reads. Both renders exist — say the word
-and 600 is a one-line change.
+300 was drawn first and rejected, and the reason is the counter, not the floor.
+A 300 recess behind a 600 worktop is a slot no arm reaches into — dead space,
+and the complaint that started this round.
 
-### What the 300 actually buys
+At **600** the counter can turn the corner and follow the wall. And the number
+does something better than fit: the front of the upper leg lands **exactly** on
+the back of the lower one, both on BAY_N at Y 8525. The two faces line up
+rather than nearly lining up, and the run reads as one worktop that steps.
 
-Be clear-eyed: 6 sq ft of floor is not what fixes a small kitchen. What the
-bump really creates is a **300 × 2100 alcove** on the north wall — which is
-exactly the depth of a tall pull-out larder, and 2100 of it is a serious amount
-of dry storage. Taking it needs run B re-planned rather than just deepened
-(a larder cannot stand behind a worktop), and that is a separate round. Say
-the word.
+The kitchen is **11.7 m² / 126 sq ft**; the great room gives up 1.6 m² and is
+**37.8 m² / 407 sq ft**.
+
+**What it costs is the apse.** The arch's crown is at Y 7485, so with the wall
+at 7800 only **315** of it projects past the walls either side, and it barely
+reads as an apse from inside the great room. That is the trade, made knowingly.
+
+### Run B turns the corner
+
+The old run went straight past the bump — 2650 long, 600 deep, ignoring the
+fact that the wall behind its eastern end had stepped away. It now follows the
+wall: along the old line to the return, round it, and on along the new wall
+until the apse cuts it off.
+
+| | worktop |
+|---|---|
+| straight run B | 1.59 m² |
+| **turning the corner** | **2.65 m²** |
+
+Two thirds more, and no dead space behind any of it.
+
+* **leg 1** — 2425 (7′-11″) from the kitchen's west face to the step, its nose
+  eased 300 so nobody turns a sharp corner into it
+* **leg 2** — 2321 (7′-7″) along its back, against the new wall
+* **the end is struck off the apse.** The front edge meets the arch at Y 8525,
+  the back edge 463 further east at 7925, and the end face is the arc between
+  them. A square end would have to stop at the nearer of the two and throw
+  away half a metre of worktop for the sake of being a rectangle.
+
+The aisle in front of leg 2 is **1850 (6′-1″)** against 1250 in front of leg 1,
+and there is still **1086 (3′-7″)** of clear floor at the gallery's service
+door.
+
+**What it produces at the turn is an ordinary L-kitchen blind corner**, 600 ×
+1200 at X 8725–9325. It wants a carousel or a magic-corner pull-out; it is not
+a place for a sink or a hob. **The sink has moved** west out of it, to X
+8100–8660 — which also puts it 1400 nearer the stack than it was.
 
 ---
 

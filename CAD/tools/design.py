@@ -257,10 +257,16 @@ _BRK_E = M(_BRK_W)
 # glazing: the screen comes down the deck, lands on the bump's north-west
 # corner, and the line reads as one from the parapet to the kitchen.
 #
-# 300 and not more.  Past about 400 the bump starts to read as a room pushed
-# into the great room rather than a thickening of its south wall, and the great
-# room's south-west corner is the one place the eye reads that wall as straight.
-KIT_BUMP = 300                       # how far north the wall goes
+# 600, which is ONE COUNTER DEEP, and that is the whole reason for the number.
+# At 600 the counter can turn the corner and run along the new wall, and the
+# front of the upper leg lands exactly on the back of the lower one at BAY_N —
+# the two faces line up instead of nearly lining up.  At 300 it could not: a
+# 300 recess behind a 600 counter is a slot you cannot reach into.
+#
+# What it costs is the apse.  The arch's crown is at Y 7485, so at 600 only 315
+# of it projects past the walls either side and it barely reads as an apse from
+# inside the great room.  That is the trade, and it was made knowingly.
+KIT_BUMP = 600                       # how far north the wall goes
 KIT_BUMP_W = 8600                    # west end — where the pod glazing lands
 KIT_N = BODY_S - KIT_BUMP            # 8100, the bump's NORTH face
 KIT_S = KIT_N + 125                  # 8225, its face inside the kitchen
@@ -829,9 +835,21 @@ _ONCE = [
     # Run B stops 850 short of the gallery: the apse springs vertically off the
     # column, so the only stretch of gallery wall the kitchen can have a door
     # in is right beside that column — and this counter used to run into it.
-    ('counter-re', 6900, 8575, 9550, 9175,
-     'run B  ·  600 deep, end rounded off  ·  850 clear to the gallery door'),
-    ('sink',     8930, 8700, 9490, 9010, 'sink, east end'),
+    # RUN B TURNS THE CORNER.  It used to run straight past the bump, 2650 long
+    # and 600 deep, ignoring the fact that the wall behind its eastern end had
+    # stepped 600 away — which left a 600 slot behind it that no arm reaches
+    # over a worktop.  It now follows the wall: along the old line to the
+    # return, round it, and on along the new wall until the apse cuts it off.
+    # 2.65 m2 of worktop against 1.59 — two thirds more — and no dead space
+    # anywhere behind it.
+    # The polygon is in retrofit.kitchen_counter() — it has a curved end struck
+    # off the apse, so it cannot be a rectangle.
+    #
+    # What that produces at the turn is an ordinary L-kitchen BLIND CORNER,
+    # 600 x 1200, at X 8725-9325.  It wants a carousel or a magic-corner pull
+    # out; it is not a place for a sink or a hob.
+    ('sink',     8100, 8670, 8660, 8980,
+     'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
     ('shelves',  6900, 8525, 8000, 8725,
      'serving hatch, 1100 — opens into the parents pod'),
     # --- the window run: hob only, integrated dishwasher under it

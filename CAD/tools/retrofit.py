@@ -604,6 +604,46 @@ def wc_door(leaf=60):
             + [wc_pt(u, leaf / 2) for u in reversed(us)]]
 
 
+def kitchen_counter(dep=600, r_end=300, r_ease=200):
+    """Run B, turning the corner of the kitchen's bump.
+
+    The bump is 600 deep and the counter is 600 deep, and that is not a
+    coincidence — it is the reason the bump is 600.  It makes the front of the
+    upper leg land EXACTLY on the back of the lower one at BAY_N, so the two
+    legs meet on one line and the run reads as a single worktop that steps,
+    rather than as two counters that nearly line up.
+
+    Its east end is struck off the apse, like everything else that runs into
+    that arch: the front edge meets it at BAY_N, the back edge 463 further east
+    at KIT_S, and the end face is the arc between them.  A square end there
+    would have to stop at the nearer of the two and throw away half a metre of
+    worktop for the sake of being a rectangle.
+
+    Clockwise from the eased west end: front edge east, round the corner of the
+    step, along the upper leg, round the apse, back west along the wall.
+    """
+    kw = 6900                       # the kitchen's west face
+    y0, y1 = D.BAY_N, D.KIT_S       # the two wall faces the counter backs on
+    xr = D.KIT_BUMP_W + 125         # 8725 — the return's face, the inside corner
+    xc = xr + dep                   # 9325 — the front edge's corner
+
+    def arc(cx, cy, r, t0, t1, n=18):
+        return [(cx + math.cos(math.radians(t)) * r,
+                 cy + math.sin(math.radians(t)) * r)
+                for t in np.linspace(t0, t1, n)]
+
+    pts = [(kw + r_ease, y0 + dep), (xc - r_end, y0 + dep)]
+    pts += arc(xc - r_end, y0 + dep - r_end, r_end, 90, 0)      # the step's nose
+    pts += [(xc, y1 + dep), (D.gal_cross(y1 + dep), y1 + dep)]
+    pts += _gal_arc(D.GAL_RO, D._ang(D.gal_cross(y1 + dep), y1 + dep),
+                    D._ang(D.gal_cross(y1), y1), 24)            # the apse end
+    pts += [(xr, y1), (xr, y0), (kw + r_ease, y0)]
+    pts += arc(kw + r_ease, y0 + r_ease, r_ease, 270, 180)      # west end, eased
+    pts += [(kw, y0 + dep - r_ease)]
+    pts += arc(kw + r_ease, y0 + dep - r_ease, r_ease, 180, 90)
+    return [('poly', pts, 'solid')]
+
+
 def great_room_planter():
     """The kitchen's bump, mirrored, as a planted box in the great room.
 

@@ -1098,6 +1098,31 @@ sit anywhere in it.
 
 Both came off the reference sheet.
 
+### The whole deck is real grass
+
+Not two bays of it set into a hard deck — grass end to end, from the planted
+strip's south face at Y 190 to the glazing line at 2470, all 15 420 of it. The
+only things it goes round are the two retained voids, which are holes in the
+slab.
+
+| | m² | sq ft |
+|---|---|---|
+| grass, as two bays | 10.53 | 113 |
+| **grass, the whole deck** | **31.06** | **334** |
+| plus the planted strip | 5.24 | 56 |
+| **green, total** | **36.30** | **391** |
+
+**Two things this needs and has not got, both worth settling before it is
+priced:**
+
+1. **The suites' sliding glass panels park on the deck**, on a track at
+   X 4540–4600 and its mirror. A track cannot run through turf — it wants a
+   hard strip, and that strip will be visible in the lawn.
+2. **Grass wears where people walk**, and the way out of the great room crosses
+   it. A paved threshold in front of the slider is the usual answer. It is
+   **not drawn**, because it is not what was asked for — but it is the first
+   thing a landscaper will raise.
+
 ### The parapet edge stays inside
 
 The 340 mm (1′-2″) band along the parapet is a **grass strip inside it**, planted,

@@ -757,9 +757,30 @@ _ONCE = [
     # leaves the builder's envelope and this is not the thing to start with.
     ('planter',  POD_W0, DECK_N, M(POD_W0), DECK_N + 340,
      'grass strip  ·  340, inside the parapet, planted  ·  trellis over, creepers to 1.5 m'),
-    ('grass',    4700, 320, 7360, 2300, 'workout bay on real grass'),
+    # THE WHOLE DECK IS REAL GRASS, not two bays of it in a hard deck.  It runs
+    # from the planted strip's south face at Y 190 to the glazing line at 2470,
+    # end to end — 15 420 of it — and the only things it goes round are the two
+    # retained voids, which are holes in the slab.  Five rectangles rather than
+    # one because of those two holes; the striping picks up again either side.
+    #
+    # 31.1 m2 / 334 sq ft of it, against 10.5 / 113 as two bays — and with the
+    # planted strip that is 36.3 / 391 of green on a 35.8 m2 deck, the overlap
+    # being the strip, which is measured inside the deck and planted on top.
+    #
+    # TWO THINGS THIS NEEDS AND HAS NOT GOT YET, both worth settling before it
+    # is priced:
+    #   * the suites' sliding glass panels park on the deck on a track at
+    #     X 4540-4600 and its mirror.  A track cannot run through turf; it
+    #     wants a hard strip, and that strip will be visible.
+    #   * grass wears where people walk, and the way out of the great room
+    #     crosses it.  A paved threshold in front of the slider is the usual
+    #     answer and is NOT drawn, because it is not what was asked for.
+    ('grass',    POD_W0, DECK_N + 340, 7500, DECK_S, 'real grass, the whole deck'),
+    ('grass',    7500, DECK_N + 340, 9115, 1200, 'real grass, north of the void'),
+    ('grass',    9115, DECK_N + 340, 15365, DECK_S, 'real grass, between the voids'),
+    ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
+    ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
     ('gym',      4760, 340, 5460, 2280, 'all-in-one strength trainer'),
-    ('grass',    17120, 320, 19780, 2300, 'spa deck on real grass'),
     ('spa',      17930, 400, 19680, 2150, '4-seat spa'),
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room

@@ -852,16 +852,19 @@ _ONCE = [
      'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
     ('shelves',  6900, 8525, 8000, 8725,
      'serving hatch, 1100 — opens into the parents pod'),
-    # --- the window run: hob only, integrated dishwasher under it
-    ('counter-r', 8200, 10375, 9400, 10975,
-     'hob counter  ·  centred on the window, 400 clear each side'),
+    # --- the window run and the appliance corner, ONE L
+    # They used to be two counters 400 apart, and the 400 was left over from
+    # centring the hob on its window rather than wanted for anything — a slot
+    # of floor too narrow to stand in and too shallow to store in.  Joined,
+    # the run goes from the fridge to the gallery leg and turns north up it,
+    # and the worktop takes the 400 x 600 outright.  The polygon is in
+    # retrofit.hob_counter(); the hob itself has not moved off its window.
     ('under',    8430, 10455, 9170, 10895, 'integrated dishwasher, under the hob'),
     ('hob',      8500, 10525, 9100, 10825, ''),
     # --- the fridge, west of the hob run, flush with the wall.  It sits clear
     #     of the window, which starts at 7800, so nothing stands in front of it.
     ('appliance', 7000, 10275, 7800, 10975, 'fridge  ·  flush with the wall'),
-    # --- the appliance corner, flush with the entry gallery column
-    ('counter-r', 9800, 9700, 10400, 10975, 'appliance corner  ·  600 deep'),
+    # --- the appliance corner — the L's north leg, flush with the gallery column
     ('under',    9860, 9770, 10340, 10190, 'microwave'),
     ('under',    9860, 10250, 10340, 10600, 'air fryer  ·  toaster'),
     ('under',    9860, 10660, 10340, 10920, 'coffee  ·  soda maker'),

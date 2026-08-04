@@ -644,6 +644,42 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     return [('poly', pts, 'solid')]
 
 
+def hob_counter(r=200):
+    """The hob run and the appliance corner, as ONE L.
+
+    They were two counters 400 apart, and the 400 was not doing anything — it
+    was left over from centring the hob on its window and it read as a slot of
+    floor you could not use for anything.  Joined, the run goes from the fridge
+    all the way to the gallery leg and then turns north up it, and the worktop
+    gains the 400 x 600 outright.
+
+    Every corner that stands in the room is eased 200, like the rest of the
+    kitchen.  The one at X 9800 / Y 10375 is not: that is the L's inside
+    corner, where two worktops are mitred, and a mason does not scoop a curve
+    out of an internal angle.
+    """
+    W, E = 8200, D.GAL_W            # the hob run's west end, the gallery leg
+    N, S = 10375, D.BAY_S           # 600 deep on the south wall
+    LW, LN = 9800, 9700             # the leg: its west face, its north end
+
+    def arc(cx, cy, t0, t1, n=10):
+        return [(cx + math.cos(math.radians(t)) * r,
+                 cy + math.sin(math.radians(t)) * r)
+                for t in np.linspace(t0, t1, n)]
+
+    pts = [(W + r, N), (LW, N), (LW, LN + r)]          # front, then the inside
+    pts += arc(LW + r, LN + r, 180, 270)               # corner, left square
+    pts += [(E - r, LN)]
+    pts += arc(E - r, LN + r, 270, 360)
+    pts += [(E, S - r)]
+    pts += arc(E - r, S - r, 0, 90)
+    pts += [(W + r, S)]
+    pts += arc(W + r, S - r, 90, 180)
+    pts += [(W, N + r)]
+    pts += arc(W + r, N + r, 180, 270)
+    return [('poly', pts, 'solid')]
+
+
 def great_room_planter():
     """The kitchen's bump, mirrored, as a planted box in the great room.
 

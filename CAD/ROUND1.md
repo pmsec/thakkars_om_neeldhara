@@ -1150,9 +1150,35 @@ and there is still **1086 (3′-7″)** of clear floor at the gallery's service
 door.
 
 **What it produces at the turn is an ordinary L-kitchen blind corner**, 600 ×
-1200 at X 8725–9325. It wants a carousel or a magic-corner pull-out; it is not
-a place for a sink or a hob. **The sink has moved** west out of it, to X
-8100–8660 — which also puts it 1400 nearer the stack than it was.
+1200 mm (2′-0″ × 3′-11″) at X 8725–9325. It wants a carousel or a magic-corner
+pull-out; it is not a place for a sink or a hob. **The sink has moved** west
+out of it, to X 8100–8660 — which also puts it 1400 mm (4′-7″) nearer the
+stack than it was.
+
+### The hob run and the appliance corner are one L too
+
+They were two counters 400 mm (1′-4″) apart. The 400 was not doing anything —
+it came from setting the hob counter 400 in from each jamb of its window, and
+what it read as was a slot of floor too narrow to stand in and too shallow to
+store in. Joined, the run goes **2200 mm (7′-3″)** along the south wall to the
+gallery leg and then turns **675 mm (2′-3″)** north up it.
+
+| | worktop |
+|---|---|
+| two counters, 400 apart | 1.49 m² (16 sq ft) |
+| **one L** | **1.68 m² (18 sq ft)** |
+
+The hob has not moved off its window. Every corner that stands in the room is
+eased 200 mm (8″) like the rest of the kitchen; the L's inside corner is left
+square, because that is where two worktops are mitred and a mason does not
+scoop a curve out of an internal angle.
+
+**Kitchen worktop, both runs together: 4.33 m² (47 sq ft).**
+
+Still open, and not taken: there is another **400 mm (1′-4″)** slot between the
+fridge and the west end of this L. It could be closed the same way — but the
+fridge stands 100 mm (4″) proud of the counter and its door has to swing, so
+that 400 is at least doing something. Say the word if you want it filled.
 
 ---
 

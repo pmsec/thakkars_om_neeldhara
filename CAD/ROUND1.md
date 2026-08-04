@@ -826,12 +826,16 @@ deck and to the great room:
 * **sofa 1700 × 800 mm (5′-7″ × 2′-8″)**, back to the dining end, facing north
   through the slider
 * **one recliner 800 × 900 mm (2′-8″ × 3′-0″)** at the west end, turned in
-* **a 600 mm (2′-0″) square corner table** in the angle of the L — 250 mm
-  (10″) on to the recliner's foot and 250 mm (10″) off the sofa, sitting
-  *between* the two seats rather than against one of them, which is the whole
-  point of a corner table when the seats are at right angles
-* **a 500 mm (1′-8″) square side table** butted to the sofa's east arm, the
-  way a side table actually gets used
+* **and no tables at all.** The round centre table went first, then the three
+  that replaced it — the one on the terrace line, the corner table in the
+  angle of the L, and the one on the sofa's arm
+
+**Being straight about the tables:** there is now nowhere in this group to put
+a cup down. The nearest surface is the dining table, 1130 mm (3′-8″) south of
+the sofa's back. The floor it buys is real — the pod reads as one open room
+rather than a furnished corner — but a side table is a thing you notice the
+absence of rather than the presence of, and any of them goes back in one line
+whenever it is wanted.
 
 **The deck line is completely clear.** The round centre table stood in the
 slider and left **575 mm (1′-11″)** to get out; the 500 side table that
@@ -847,17 +851,17 @@ the chair did not move — the sofa did.
 
 * **600 mm (2′-0″)** from the recliner's east face to the sofa
 * **360 mm (1′-2″)** from the tip of its footrest, reclined
-* **161 mm (6″)** from the side table's south-east corner to the pod glazing,
-  which is what caps the eastward move at 300
+* **641 mm (2′-1″)** east of the sofa to the pod glazing — with nothing
+  standing beside it any more, the sofa could go further east still if the gap
+  wants opening
 
 Measured: **1150 mm (3′-9″)** in front of the sofa, **1130 mm (3′-8″)** behind
 it to the dining table.
 
-**What it costs.** The recliner still stands 370 mm (1′-3″) off the suite's
-sliding partition, over Y 3120–4020 of its 3555 mm (11′-8″) opening.
-Everything else is now 920 mm (3′-0″) or more off it, so the way through from
-the bedroom is the **2155 mm (7′-1″)** south of the chair plus the 500 mm
-(1′-8″) north of it — better than it was, and the end you come out at anyway.
+**What it costs.** The recliner stands 370 mm (1′-3″) off the suite's sliding
+partition, over Y 3120–4020 of its 3555 mm (11′-8″) opening. Nothing else is
+near it at all now, so the way through from the bedroom is the **2155 mm
+(7′-1″)** south of the chair plus the 500 mm (1′-8″) north of it.
 
 ### What this layout costs
 

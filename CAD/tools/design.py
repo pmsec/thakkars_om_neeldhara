@@ -735,15 +735,26 @@ _ONCE = [
     # gone the group is an L rather than a U: closed on the west and the south,
     # open to the deck on the north and to the great room on the east.
     #
+    # THE WHOLE GROUP THEN MOVED 680 NORTH, hard up to the deck line: the
+    # recliner and the table now sit ON Y 2620, the pod's north wall, and the
+    # sofa follows so its 400 to the table is kept.  That buys 1130 behind the
+    # sofa down to the dining table, against 450 before.
+    #
+    # It costs the way out.  The deck slider runs X 4650-7500 and the recliner
+    # and the table now stand in it, leaving 250, 575 and 475 between them —
+    # so the widest way through to the deck is 575, where it used to be the
+    # whole 2850.  Karan asked for the move and the number is here rather than
+    # buried; sliding the table 300 east would open the middle gap to 875.
+    #
     # It clears everything without being pushed against anything:
     #   680 from the recliners north to the deck slider
     #   450 from the sofa's back south to the dining table
     #   433 behind the west recliner, and the suite's sliding partition still
     #       reads clear over Y 2620-3300 and 4200-6175, so the way through from
     #       the bedroom is never blocked
-    ('sofa-s',    5800, 4450, 7500, 5250, "two-seater  ·  1700 x 800, facing the deck"),
-    ('recliner-w', 4900, 3300, 5700, 4200, "recliner  ·  800 x 900, facing east"),
-    ('table',     6275, 3300, 7025, 4050, "centre table  ·  750 round"),
+    ('sofa-s',    5800, 3770, 7500, 4570, "two-seater  ·  1700 x 800, facing the deck"),
+    ('recliner-w', 4900, 2620, 5700, 3520, "recliner  ·  800 x 900, facing east"),
+    ('table',     6275, 2620, 7025, 3370, "centre table  ·  750 round"),
 
     # ------------------------------------------------- parents' pod: dining
     # NOT A ROUND TABLE.  It was a 1400 round, and a round table in a pod only

@@ -229,13 +229,13 @@ asking it to match the column. Finish it in wood if you want the same effect.
 
 | | m² | sq ft |
 |---|---|---|
-| GREAT ROOM | 41.4 | 445 |
+| GREAT ROOM | 38.5 | 415 |
 | ALL-WEATHER DECK (net of the two voids) | 35.8 | 385 |
 | MASTER SUITE — parents | 32.5 | 350 |
 | MASTER SUITE — karan | 32.5 | 350 |
-| FAMILY ROOM | 20.2 | 218 |
-| MUSIC + WORK DEN | 20.2 | 218 |
-| KITCHEN (one room with the utility) | 10.5 | 113 |
+| FAMILY ROOM | 21.3 | 230 |
+| MUSIC + WORK DEN | 21.3 | 230 |
+| KITCHEN (one room with the utility) | 11.1 | 119 |
 | ENTRY GALLERY | 9.4 | 101 |
 | PARENTS' BATH | 6.5 | 69 |
 | KARAN'S BATH | 6.5 | 69 |
@@ -243,12 +243,13 @@ asking it to match the column. Finish it in wood if you want the same effect.
 | TERRACE ×2 | 3.7 each | 40 each |
 | GUEST / SERVICE WC | 3.0 | 33 |
 | STORE | 2.4 | 26 |
-| **total of named rooms** | **232.7** | **2504** |
+| **total of named rooms** | **232.6** | **2504** |
 
-The great room is 422 sq ft against A-101's 474, and reads 6250 across the
+The great room is 415 sq ft against A-101's 474, and reads 6250 across the
 removed party wall at the deck, 7280 at the waist and 7280 at the pods — the
-pod glazing turns once at the top and then runs straight. It gives 2.1 m² back to the entry
-gallery's apse, which projects into it.
+pod glazing turns once at the top and then runs straight. It gives 2.1 m² back
+to the entry gallery's apse and another 0.7 to the kitchen's bump, both of
+which project into it.
 
 ---
 
@@ -1071,6 +1072,57 @@ pod's width varied along its length, so where you put the table mattered — thi
 same table had **178** on the glass side when it moved north far enough to seat
 an eighth. Past a straight screen the pod is a constant 2894 and the table can
 sit anywhere in it.
+
+---
+
+## The kitchen steps into the great room
+
+The kitchen was **10.5 m² / 113 sq ft** — the one room in the home with no
+slack in it. Its north wall now steps **300 north**, into the great room, over
+the whole stretch it is free to move: from **X 8600**, where the pod glazing
+lands, east to where the gallery apse comes through at **10 867**. That is
+2267 of wall, and it takes the kitchen to **11.1 m² / 119 sq ft**.
+
+The step starts exactly on the glazing and not a millimetre west of it, for a
+reason that is not tidiness: **west of 8600 the same wall is the family pod's
+south wall**, and moving it there would eat the pod. Landing on the glazing
+line also buys the drawing something — the screen comes down off the deck,
+dies on the bump's north-west corner, and wall and glass read as one line from
+the parapet to the kitchen.
+
+### And a planter answers it across the room
+
+The east side **cannot** take a bump. Behind that wall are help's room (4.4 m²)
+and the guest WC (3.0 m²), and both are already at their minimum. So what
+answers the kitchen across the great room is not a room but a thing standing in
+front of the wall: a **planter, 300 deep**, on the same two lines, with the
+same curved end where it dies into the apse. From the middle of the room the
+two read as a pair.
+
+**It is not the full mirror, and it cannot be.** The bump runs 2267; its mirror
+would run past X 15 000, where the guest WC's apse springs and its door stands.
+The planter stops there — **880 short** — and that missing 880 is exactly the
+WC door, which is the one place on this wall where symmetry was never
+available.
+
+### 300 and not 600
+
+I drew 600 as well. It gives the kitchen **11.7 m² / 126 sq ft**, seven square
+feet more, and it costs the great room 1.6 m² instead of 0.7. The real cost is
+not the area though — it is the apse. The arch's crown is at Y 7485; at a 600
+bump the wall comes to 7800, so only **315** of apse projects past the two
+flanking walls and it stops reading as an apse from inside the great room. At
+300 it clears them by 615 and still reads. Both renders exist — say the word
+and 600 is a one-line change.
+
+### What the 300 actually buys
+
+Be clear-eyed: 6 sq ft of floor is not what fixes a small kitchen. What the
+bump really creates is a **300 × 2100 alcove** on the north wall — which is
+exactly the depth of a tall pull-out larder, and 2100 of it is a serious amount
+of dry storage. Taking it needs run B re-planned rather than just deepened
+(a larder cannot stand behind a worktop), and that is a separate round. Say
+the word.
 
 ---
 

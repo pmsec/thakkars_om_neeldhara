@@ -248,6 +248,25 @@ def gal_cross(y, r=None):
 _BRK_W = gal_cross(BODY_S) or GAL_DOOR_W
 _BRK_E = M(_BRK_W)
 
+# --------------------------------------------- the kitchen's bump north
+# The kitchen was 10.5 m2 and it is the one room in the home with no slack in
+# it, so its north wall steps INTO the great room over the whole stretch it is
+# free to — from the pod glazing's landing at X 8600 east to where the gallery
+# apse comes through.  West of 8600 the same wall is the family pod's south
+# wall and moving it would eat the pod, so the step starts exactly on the
+# glazing: the screen comes down the deck, lands on the bump's north-west
+# corner, and the line reads as one from the parapet to the kitchen.
+#
+# 300 and not more.  Past about 400 the bump starts to read as a room pushed
+# into the great room rather than a thickening of its south wall, and the great
+# room's south-west corner is the one place the eye reads that wall as straight.
+KIT_BUMP = 300                       # how far north the wall goes
+KIT_BUMP_W = 8600                    # west end — where the pod glazing lands
+KIT_N = BODY_S - KIT_BUMP            # 8100, the bump's NORTH face
+KIT_S = KIT_N + 125                  # 8225, its face inside the kitchen
+# Where the bump dies into the apse, taken on its north face like _BRK_W above.
+_BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
+
 # ------------------------------------------ the guest WC's arched wall
 # The guest WC is an arch on plan too: a quarter ELLIPSE struck from the
 # north-east corner of the service bay, springing off the great-room wall and
@@ -315,7 +334,13 @@ NEW_WALLS = [
     #     the far side; between those two points the apse's own curved wall is
     #     the boundary, so there is nothing for this one to do.  The serving
     #     hatch and help's room door are gaps in it.
-    (6900, 8462.5, _BRK_W, 8462.5, 125, [(0, 1100)]),   # serving hatch only
+    #     It is in three pieces now, because the kitchen steps north over its
+    #     eastern half: the old line as far as the pod glazing (carrying the
+    #     serving hatch), a 300 return standing on the glazing's own line, and
+    #     the bump's north wall running on to the apse.
+    (6900, 8462.5, KIT_BUMP_W + 125, 8462.5, 125, [(0, 1100)]),   # hatch only
+    (KIT_BUMP_W + 62.5, KIT_N, KIT_BUMP_W + 62.5, BAY_N, 125, []),
+    (KIT_BUMP_W, KIT_N + 62.5, _BRK_K, KIT_N + 62.5, 125, []),
     # Help's room has no door on to the great room any more — it is reached
     # from the entry gallery, and through it the WC.  The one opening left in
     # this run is the guest WC's.  The apse springs at 15000 and the pod glazing
@@ -369,6 +394,11 @@ _D1 = 540 - _D0
 # is the corner each of the two flanking rooms runs up to.
 _BN0 = _ang(gal_cross(BAY_N), BAY_N) if gal_cross(BAY_N) else 270
 _BN1 = 540 - _BN0
+# The kitchen's corner is not on that line any more — its wall steps north and
+# meets the apse higher up, at KIT_S.  The two are 11 degrees apart and both
+# are needed: _BN0 still sets help's room's corner and the arch's two service
+# doors, _BN0K sets the kitchen's floor.
+_BN0K = _ang(gal_cross(KIT_S), KIT_S) if gal_cross(KIT_S) else _BN0
 
 # centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east).
 # The first gap wraps past 0 and kills everything below the springings.

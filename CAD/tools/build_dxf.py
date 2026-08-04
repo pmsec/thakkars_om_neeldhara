@@ -213,8 +213,11 @@ def main():
         poly(msp, q, 'PROP-SCREEN')
 
     # --------------------------------------------------------------- glazing
-    for Pc in (D.POD_W, D.POD_E):
-        ts = np.linspace(0, 1, 120)
+    # The west screen stops on the kitchen bump's corner, the east one on the
+    # great-room wall — see the note in draw_design.
+    for Pc, y_end in ((D.POD_W, D.KIT_N), (D.POD_E, D.BODY_S)):
+        ts = np.array([tt for tt in np.linspace(0, 1, 120)
+                       if R.bez(Pc, tt)[1] <= y_end])
         pts = [R.bez(Pc, tt) for tt in ts]
         a, b = D.POD_PORTAL
         for m in (ts < a, ts > b):
@@ -263,6 +266,8 @@ def main():
     for p in R.wc_out_door():
         prim(p)
     for p in R.corner_units():
+        prim(p)
+    for p in R.great_room_planter():   # answers the kitchen's bump across the room
         prim(p)
     gx, gy, gr, gt, _g = D.GALLERY
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:

@@ -194,8 +194,12 @@ def main():
         s.line(x1, y1, x2, y2, '#3b3833', 3.4)
 
     # ---------------------------------------------------------- pod glazing
-    for P in (D.POD_W, D.POD_E):
-        ts = np.linspace(0, 1, 220)
+    # The west screen stops 300 short of the east one: the kitchen's bump
+    # starts on this line, so the glass lands on the bump's corner and the
+    # wall carries the line the rest of the way down.
+    for P, y_end in ((D.POD_W, D.KIT_N), (D.POD_E, D.BODY_S)):
+        ts = np.array([t for t in np.linspace(0, 1, 220)
+                       if bez(P, t)[1] <= y_end])
         pts = [bez(P, t) for t in ts]
         a, b = D.POD_PORTAL
         s.path([p for p, t in zip(pts, ts) if t < a], GLAS, 5.0)
@@ -277,6 +281,8 @@ def main():
     for p in R.wc_out_door():
         prim(p)
     for p in R.corner_units():
+        prim(p)
+    for p in R.great_room_planter():   # answers the kitchen's bump across the room
         prim(p)
     gx, gy, gr, gt, _g = D.GALLERY
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:

@@ -118,21 +118,30 @@ def pod_polys():
            + [(bez_x(D.POD_W, D.BODY_S), D.BODY_S), (D.DUCT_W1 + 150, D.BODY_S),
               (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
     den = [(2 * D.MID - x, y) for x, y in fam]
-    great = west_curve + gal_apse() + list(reversed(east_curve))
+    # The great room's south edge is not one straight line any more: the
+    # kitchen's bump takes a 300 bite out of its western half, from the pod
+    # glazing across to the apse.  Nothing comes out of the eastern half — the
+    # planter that answers the bump is furniture standing on this floor, not a
+    # room taken out of it, so the boundary there stays on BODY_S.
+    great = (west_curve + [(D.KIT_BUMP_W, D.KIT_N)]
+             + gal_apse() + list(reversed(east_curve)))
     return fam, den, great
 
 
 def gal_apse():
     """The gallery's apse, as it bites into the great room's south edge.
 
+    Lopsided, and it has to be: the kitchen's bump meets the arch at KIT_N on
+    the west while help's room still meets it at BODY_S on the east, so the
+    two ends of this arc are 300 apart in y.
+
     Empty when the arch stays south of the great room, which is what a
     shallower one would do."""
     ro = D.GAL_RO
-    if D.GAL_CY - ro >= D.BODY_S:
+    if D.GAL_CY - ro >= D.KIT_N:
         return []
-    x = D.gal_cross(D.BODY_S)
-    a0 = D._ang(x, D.BODY_S)
-    return _gal_arc(ro, a0, 540 - a0)
+    return _gal_arc(ro, D._ang(D.gal_cross(D.KIT_N), D.KIT_N),
+                    540 - D._ang(D.gal_cross(D.BODY_S), D.BODY_S))
 
 
 def poly_rooms():
@@ -595,6 +604,29 @@ def wc_door(leaf=60):
             + [wc_pt(u, leaf / 2) for u in reversed(us)]]
 
 
+def great_room_planter():
+    """The kitchen's bump, mirrored, as a planted box in the great room.
+
+    The east side of the great room cannot take a bump — behind that wall are
+    help's room and the guest WC, and both are already at their minimum — so
+    what answers the kitchen across the room is not a room but a thing standing
+    in front of the wall.  Same 300 projection, same two lines at KIT_N and
+    BODY_S, and the same curved end where it dies into the apse, so the two
+    read as a pair from the middle of the room.
+
+    It is NOT the full mirror and cannot be.  The bump runs 2267 from the
+    glazing to the apse; its mirror would run past X 15000, where the guest
+    WC's apse springs and its door stands.  So the planter stops there, 880
+    short, and the missing 880 is exactly the WC door — which is the one place
+    on this wall symmetry was never available.
+    """
+    a0 = 540 - D._ang(D.gal_cross(D.KIT_N), D.KIT_N)
+    a1 = 540 - D._ang(D.gal_cross(D.BODY_S), D.BODY_S)
+    box = _gal_arc(D.GAL_RO, a0, a1) + [(D.WC_SPRING, D.BODY_S),
+                                        (D.WC_SPRING, D.KIT_N)]
+    return [('poly', box, 'green')]
+
+
 def _gal_arc(r, a0, a1, n=60):
     cx, cy = D.GAL_CX, D.GAL_CY
     return [(cx + math.cos(math.radians(a)) * r, cy + math.sin(math.radians(a)) * r)
@@ -621,8 +653,10 @@ def lobby_polys():
     sw = D.STORE_W - D.T_THIN / 2          # store's west face, 16345
     iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
-    # the kitchen now includes the builder's dry balcony — one room, one area
-    kitchen = ([(kw, D.BAY_N)] + _gal_arc(ro, D._BN0, D._A0)
+    # the kitchen now includes the builder's dry balcony — one room, one area,
+    # and since this round it steps north over its eastern half as well
+    kitchen = ([(kw, D.BAY_N), (D.KIT_BUMP_W + 125, D.BAY_N),
+                (D.KIT_BUMP_W + 125, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._A0)
                + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
                   (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)

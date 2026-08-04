@@ -287,35 +287,6 @@ NEW_WALLS = [
     # top of the west side, and this is only the straight tail of it, from
     # where the sweep has finished turning down to the outer wall.  The door is
     # a gap in that tail, hard against the curve.  See retrofit.mb_wall().
-    # ------------------------- the PARENTS' partition
-    # The suite is two rooms now: the parents' bed north of this line, and the
-    # dressing zone with the grandmother's wall bed south of it.
-    #
-    # Its NORTH FACE LANDS ON Y 5875, which is exactly the crown of the bath's
-    # arch — the northernmost point the sweep reaches, at X 3165.  So the
-    # partition does not cut across the room arbitrarily: it continues a line
-    # the bath already draws, and the two read as one boundary.
-    #
-    # It runs west to the end wall and east to X 2621, where the arch's own
-    # outer face has come back down to meet the partition's south face at 6075.
-    # Beyond that the arch is the wall.
-    #
-    # IT IS A REAL WALL WITH A REAL DOOR, not a screen with a gap.  A gap would
-    # give privacy and nothing else; the whole point of it is that the two sides
-    # can hold different temperatures, and that needs something that shuts.
-    #
-    # THE DOOR IS WHERE THE ARCH LETS IT BE.  It was first drawn at the far east
-    # end, X 1721-2621, which is wrong twice over: the bath's sweep comes back
-    # west to X 2325 just below the partition, so the passage south of that end
-    # of the opening is only 292 deep before it meets the arch, and a 900 leaf
-    # hinged at 1721 fouls the arch by 161.
-    #
-    # It moves west to X 1400-2300.  The opening now stops 25 short of the
-    # arch's westernmost point so the passage is clear, and the leaf, hinged on
-    # the WEST jamb and swinging south into the dressing zone, misses the arch
-    # by 137 at its closest.  That is the whole width the arch allows: hinge it
-    # at 1500 instead and the margin falls to 44.
-    (-450, 5975, 2621, 5975, 200, [(1850, 2750)]),
     (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR]),
     (M(MB_XW - T_MB / 2), MB_YW, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR_E]),
     # The bath's east side is the enclosure to the builder's main service duct.
@@ -540,18 +511,39 @@ _ONCE = [
     ('counter-r', -250, 2400, 250, 2900, "side table  ·  500 x 500"),
     ('counter-r', -250, 4700, 250, 5200, "side table  ·  500 x 500"),
 
-    # THE CUPBOARDS GO ON THE PARTITION, facing SOUTH into the dressing zone —
-    # which is the whole trick of this layout.  The bath opens into that zone,
-    # so you come out of it, take clothes out of the cupboard and dress with the
-    # partition between you and the bed.  One element, two jobs: it separates
-    # the two sleeping zones and it is the changing screen.
+    # ------------------------- THE PARTITION: JOINERY, THEN TINTED GLASS
+    # It is not a masonry wall any more.  The line is the same — its north face
+    # lands on Y 5875, which is exactly the crown of the bath's arch, the
+    # northernmost point that sweep reaches — but it is now built of two things,
+    # and the door problem disappears with the wall.
     #
-    # 1850 x 600, west of the door.  That is 970 less than the 2820 the west
-    # wall carried, and it is the real cost of this layout — see the note in
-    # ROUND1.md.  SLIDING doors, not hinged: with the wall bed down there is
-    # 920 in front of them, which is enough to stand in but not to swing a 750
-    # leaf through.
-    ('hanging',   -450, 6075, 1400, 6675, "cupboards  ·  1850 x 600, sliding"),
+    #   X -450 to 1400   a full-height joinery block, 720 deep
+    #   X 1400 to 2732   BROWN TINTED GLASS, the same as Karan's dressing screen
+    #
+    # THE GLASS IS THE DOOR.  One leaf, 1332, sliding west into a pocket formed
+    # in the BACK of the cupboards — the block is 720 deep because it is a 120
+    # cavity in front of a 600 cupboard, not a 720 cupboard.  Nothing swings, so
+    # nothing can foul the arch: the first version had a 900 hinged leaf that
+    # struck the sweep 161 short of closing, and a 321 stub of wall left over
+    # beside it that did no work.
+    #
+    # Shut, the two zones are separately heatable, which is the whole reason the
+    # partition exists.  Open, the leaf is inside the cupboards and the suite is
+    # one room again.
+    #
+    # The glass dies into the arch at X 2732, where the sweep's outer face comes
+    # back to the partition's own south face at Y 5995.  It is scribed to the
+    # curve; there is no gap to see or feel air through.
+    #
+    # ABOVE THE CUPBOARDS IT IS GLASS TOO — tinted from 2100 up to the ceiling,
+    # the whole length, exactly as Karan's screen is wood below and glass above.
+    # Solid to the ceiling would make the dressing zone a cell.
+    ('joinery',   -450, 5875, 1400, 5995,
+     "sliding pocket  ·  120, in the back of the cupboards"),
+    ('hanging',   -450, 5995, 1400, 6595, "cupboards  ·  1850 x 600, sliding"),
+    ('tint',      1400, 5875, 2732, 5995,
+     "sliding screen  ·  brown tinted glass, 1332, shown SHUT"),
+    ('under',     68, 5875, 1400, 5995, "the same leaf open, pocketed"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a single
@@ -562,10 +554,6 @@ _ONCE = [
     # whose face stands 80 proud of the wall.  The cabinet is 1200 long and 400
     # deep off that proud face, so the column is behind it with no void, and the
     # cabinet stops dead on the 600 window's north jamb at 8945.
-    # The leaf, hinged on the west jamb and swinging SOUTH into the dressing
-    # zone.  Open, it stands on the east end of the cupboard run and blocks
-    # nothing; shut, it is what makes the two halves separately heatable.
-    ('swing',     1400, 6075, 2300, 6975, "door  ·  900, into the dressing zone"),
     ('murphy-e',  -370, 7745, 30, 8945,
      "wall bed  ·  single 1200 x 1900, shown folded down"),
     # A MIRROR ON THE BATH WALL AND NOTHING ELSE — no console under it.  It is in

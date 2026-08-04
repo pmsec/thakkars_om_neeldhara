@@ -254,6 +254,8 @@ def symbol(kind, a, b, c, d):
         out.append(_rr(cx - r * 0.66, y0, cx - 30, y1, 'soft'))
         out.append(_rr(cx + 30, y0, cx + r * 0.66, y1, 'soft'))
         return out
+    if kind == 'tint':
+        return [_rr(a, b, c, d, 'tint')]
     if kind == 'swing':
         # A door leaf drawn open, hinged at (a, b) and swinging to (a, d).
         # Most doors on this drawing are just gaps in a wall, because the swing

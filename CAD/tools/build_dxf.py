@@ -253,6 +253,8 @@ def main():
 
     for p in R.wood_floor():           # great room + deck bay, one board grid
         prim(p)
+    for p in R.terrace_pieces():       # grass, a tree and a jhoola on each
+        prim(p)
     for p in R.great_room_rug():       # full width, under everything else
         prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump

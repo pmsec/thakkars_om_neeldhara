@@ -1089,6 +1089,74 @@ def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
     return out
 
 
+def terrace_pieces():
+    """Both terraces: real grass, a tree in the middle, a jhoola beside it.
+
+    EACH TERRACE IS 3100 x 1200, and that shallow 1200 is what decides
+    everything here.  A tree in the centre and a swing beside it is the most
+    the depth will take, and only if the tree's planter comes down to 700.
+
+      grass    the whole terrace, wall to wall.  It is outdoors under a high
+               glass roof, so it grows; the deck is already turfed and this
+               makes the two read as the same kind of place.
+      tree     a 700 planter on the centre line, canopy drawn dashed at 1900.
+               A 5-7 foot areca or a short coconut — a real tree, in a real
+               planter, because the terrace is a slab and nothing roots in it.
+      jhoola   a single seat, 950 x 700 with 150 of travel each way.  A double
+               would need 1900 across and there is 1200 either side of the
+               tree, so a single is not a compromise, it is what fits.
+      seat     a single sofa on the far side, facing the tree.
+
+    THE SWING FACES NORTH, out at the view, and its travel is 150 rather than
+    the 500 the great room's had.  On a 1200 deep terrace anything more puts a
+    foot through the parapet rail on one swing and the slider on the next.
+
+    Karan's terrace already had two single sofas facing each other across a 750
+    round table.  The table is gone — the tree stands where it stood, which is
+    what the middle of that terrace was always for — and the east single is now
+    the jhoola.  The parents' terrace, which was empty, gets the same kit
+    mirrored so the two ends of the home read alike.
+    """
+    out = []
+    for sx, flip in ((0, 1), (D.M(0), -1)):
+        def X(v):
+            return sx + flip * v if flip > 0 else sx - v
+
+        # the grass, wall to wall
+        a, c = sorted((X(-350), X(2750)))
+        out.append(('rect', a, 0, c, 1200, 'green'))
+        for i in range(1, 5):
+            gx = a + (c - a) * i / 5.0
+            out.append(('line', gx, 60, gx, 1140, 'green'))
+
+        cx, cy = X(1200), 600                          # the tree, centre line
+        out.append(('circle', cx, cy, 350, 'solid'))
+        out.append(('circle', cx, cy, 265, 'green'))
+        # THE CANOPY IS 1200 ACROSS AND NOT 1900.  A 5-7 foot areca spreads
+        # about a metre, and anything wider would have been drawn spilling
+        # through the slider into the bedroom — a canopy cannot pass glass.
+        out.append(('circle', cx, cy, 600, 'dash'))
+        for k in range(7):
+            ang = math.radians(k * 360 / 7.0 + 12)
+            out.append(('circle', cx + math.cos(ang) * 300,
+                        cy + math.sin(ang) * 300, 210, 'dash'))
+
+        # THE JHOOLA IS 900 ACROSS AND NOT 1040, and that is set by the bay it
+        # sits in rather than by the swing.  The tree holds the centre line at
+        # 1200, which leaves exactly 1200 either side of it; a 900 frame in a
+        # 1200 bay leaves 150 to the end wall and 150 to the planter, and the
+        # 1040 it started at left 55 to the wall.
+        s0, s1 = sorted((X(-75), X(575)))
+        for dy in (-150, 150):                         # travel first, so the
+            out.append(('rect', s0, 375 + dy, s1, 825 + dy, 'dash'))
+        for side in (-405, 405):                       # its two A-frames
+            f0, f1 = sorted((X(250 + side - 45), X(250 + side + 45)))
+            out.append(('rect', f0, 250, f1, 950, 'solid'))
+        out.append(('rect', s0, 375, s1, 825, 'solid'))          # then the seat
+        out.append(('rect', s0, 375, s1, 505, 'soft'))           # and its back
+    return out
+
+
 def great_room_rug(shape='cloud', cx=12240, cy=4287, W=5622, H=2500, n=360):
     """The great room's rug — full width, symmetric in the room, cloud-shaped.
 

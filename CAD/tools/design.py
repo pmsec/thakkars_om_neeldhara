@@ -184,7 +184,7 @@ TAB_W, TAB_D, TAB_GAP = 550, 450, 50
 # for an empty room and wrong for a full one.
 ROOMS = [
     ("TERRACE", "PARENTS", [(-350, 0, SUITE_W_E, 1200)],
-     "under high glass roof", None),
+     "real grass under a high glass roof", (1200, 1980)),
     # Karan's terrace is furnished now — bench, two singles and a table — and
     # the middle of it is exactly where the table is.  The label drops into the
     # gap between the bench and the bed instead, and loses its note to fit.
@@ -661,6 +661,9 @@ _ONCE = [
     ('mirror',    2310, 8605, 2400, 9545,
      "mirror  ·  940 on the bath wall, no console"),
 
+    ('sofa-e',   1750, 200, 2550, 1000,
+     'single sofa  ·  800, facing west at the tree  ·  200 clear each side'),
+
     # ------------------------------- Karan's terrace: the conversation pod
     # Not chairs stood in the terrace.  A BENCH SOFA inside the room with its
     # back to the bed, facing north through the slider, and a single sofa at
@@ -674,9 +677,13 @@ _ONCE = [
     ('sofa',     22280, 1400, 24280, 2200, 'bench sofa  ·  2000 x 800, back to the bed'),
     # The two singles, 800 each, facing each other across the table.  100 clear
     # at each end of the terrace and 200 top and bottom of its 1200 depth.
-    ('sofa-w',   21830, 200, 22630, 1000, 'single sofa  ·  800, facing east'),
-    ('sofa-e',   23930, 200, 24730, 1000, 'single sofa  ·  800, facing west'),
-    ('table',    22905, 265, 23655, 1015, 'centre table  ·  750 round'),
+    # THE CENTRE TABLE IS GONE AND A TREE STANDS WHERE IT STOOD.  The middle
+    # of this terrace was always the thing the two singles looked at; a 750
+    # round table is a poor answer to that and a real tree is a good one.
+    # The east single became the jhoola.  Both are drawn in
+    # retrofit.terrace_pieces(), which does the same on the parents' terrace.
+    ('sofa-w',   21930, 200, 22730, 1000,
+     'single sofa  ·  800, facing east at the tree  ·  200 clear each side'),
 
     # The reading chair and its ottoman came out of this corner.  The bed moved
     # south into the floor they were standing on, and two pieces of loose

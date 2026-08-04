@@ -1400,6 +1400,50 @@ Bézier is not uniform — the same span of t buys more door low down the curve
 than high up — so setting both to 0.18 of t would have given two different
 doors. Solved instead for the t-range that reproduces the original 823 mm.
 
+### Both terraces: real grass, a tree in the middle, a jhoola beside it
+
+Each terrace is **3100 × 1200 mm (10′-2″ × 3′-11″)**, 3.72 m² (40 sq ft), and
+that shallow 1200 decides everything on it.
+
+| west to east | mm | ft |
+|---|---|---|
+| jhoola, frame | 900 × 700 | 2′-11″ × 2′-4″ |
+| gap | 150 | 6″ |
+| **tree planter, on the centre line** | **700 round** | **2′-4″** |
+| gap | 150 | 6″ |
+| single sofa, facing the tree | 800 × 800 | 2′-7″ |
+| ends, each | 150 / 200 | 6″ / 8″ |
+
+**Real grass, wall to wall.** It is outdoors under a high glass roof, so it
+grows; the deck is already turfed and this makes the two read as the same kind
+of place.
+
+**The tree is real and it is planted in a planter**, because the terrace is a
+slab and nothing roots in it. A 5–7 foot areca or a short coconut, in a 700 mm
+tub on the terrace's exact centre line — X 1200 and its mirror at 23280 — so it
+is what you see from the bed through the slider.
+
+**The canopy is drawn at 1200 mm (3′-11″), not 1900.** An areca that height
+spreads about a metre, and anything wider would have been drawn spilling
+through the slider into the bedroom. A canopy cannot pass glass.
+
+**A single-seat jhoola, not a double.** A double needs 1900 mm across and the
+tree leaves 1200 either side of itself, so a single is not a compromise — it is
+what fits. Its travel is **150 mm (6″)** each way rather than the 500 mm the
+great room's had: on a 1200 mm deep terrace anything more puts a foot through
+the parapet on one swing and the slider on the next.
+
+**The frame is 900 mm and not 1040**, and that is set by the bay rather than by
+the swing. The tree holds the centre, which leaves exactly 1200 either side; a
+900 frame in a 1200 bay leaves 150 to the end wall and 150 to the planter. At
+1040 it left 55 mm to the wall.
+
+**Karan's terrace lost its centre table.** The middle of that terrace was always
+the thing the two singles looked at, and a 750 mm round table is a poor answer
+to that where a real tree is a good one. The east single became the jhoola; the
+west single stays, facing the tree. The parents' terrace, which was empty, gets
+the same kit mirrored, so the two ends of the home read alike.
+
 ### The rug comes back, with a leaf border — and an armchair with it
 
 The rug is a **cloud, 5622 × 2500 mm (18′-5″ × 8′-2″)**, with a border band

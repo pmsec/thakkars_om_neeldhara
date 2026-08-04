@@ -558,28 +558,17 @@ _ONCE = [
     ('swing',     1721, 6075, 2621, 6975, "door  ·  900, into the dressing zone"),
     ('murphy-e',  -370, 7745, 30, 8945,
      "wall bed  ·  single 1200 x 1900, shown folded down"),
-    # THE BASKET GOES IN THE CORNER, hard into the angle where the west window
-    # and the south window meet — back on the south wall at Y 9545, end on the
-    # west wall at X -450.  It lies ALONG THE SOUTH WALL, 700 x 500: turned the
-    # other way it would need 700 of the west wall and there are only 600
-    # between the column's south edge and the corner.
+    # A MIRROR ON THE BATH WALL AND NOTHING ELSE — no console under it.  It is in
+    # the corner where the bath wall meets the south window, so you face east
+    # into it with the window on your right: side light on your face, which is
+    # the whole reason for putting it here rather than on the window wall, where
+    # you would stand with the light behind you.
     #
-    # It stands in front of the bottom of the 600 west window, which a 500-high
-    # open basket may do — the sill is well above it — and it lines through with
-    # the cupboards to 20, which is a joiner's tolerance.
-    ('basket',    -450, 9045, 250, 9545, "laundry basket  ·  700 x 500, in the corner"),
-    # The dressing console moves to the corner where the bath wall meets the
-    # south window, and it goes on the BATH WALL, not under the window.  On the
-    # window wall the mirror would cover 940 of a 3200 window and you would sit
-    # with the light behind the glass, lighting the back of your own head.  On
-    # the bath wall you face east into it with the south window on your right —
-    # side light on your face, which is the whole point of putting it here.
-    # Hard into the corner now: its back is ON the bath wall at X 2400 and its
-    # end is ON the south wall at Y 9545, so it is jammed into the angle with
-    # nothing behind it and nothing beside it.  It was 75 short of the bath
-    # wall, which read as a gap rather than a corner.
-    ('console-e', 1950, 8605, 2400, 9545,
-     "dressing console  ·  940 x 450, mirror on the bath wall"),
+    # The console that used to stand under it is gone.  With the wall bed down
+    # this corner is the bed's, and a console here would be furniture you have
+    # to edge round for the sake of a surface the cupboards already provide.
+    ('mirror',    2310, 8605, 2400, 9545,
+     "mirror  ·  940 on the bath wall, no console"),
 
     # ------------------------------- Karan's terrace: the conversation pod
     # Not chairs stood in the terrace.  A BENCH SOFA inside the room with its

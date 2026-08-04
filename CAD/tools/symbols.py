@@ -269,7 +269,7 @@ def symbol(kind, a, b, c, d):
         # closed 51 weeks of the year.  The bed is drawn DASHED in the position
         # it takes when it is folded down, because that is the thing you need to
         # see the room around, and it is not there in plan the rest of the time.
-        L = 1900                                   # the bed, folded down
+        L = 2000                                   # the bed, folded down
         out = [_rr(a, b, c, d, 'solid')]
         if kind.endswith('-e'):
             out += [_rr(c, b, c + L, d, 'dash'),

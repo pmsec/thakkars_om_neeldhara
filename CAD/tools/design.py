@@ -920,20 +920,34 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    # THE GREAT ROOM HAS ONE PIECE IN IT: a 2-seat recliner sofa SQUARE TO THE
-    # ROOM with its planter built on to the east end, the sofa centred on
-    # X 12240 so it faces the fountain straight down the home's own axis.
-    # Drawn in retrofit.great_room_sofa(); the 45 degree version it replaces
-    # is one argument away.
+    # THE GREAT ROOM IS TWO PAIRS AND A RUG, not one group with strays in it.
     #
-    # The tree is no longer a free-standing box on the south-west shoulder —
-    # it shares the sofa's back line and depth and butts its south-east end,
-    # so the two are one L of joinery: a sofa with a tree growing out of the
-    # end of it.
+    #   east half   the 2-seat recliner sofa, square to the room, with its
+    #               planter and tree built on to the east end, paired with the
+    #               east deck recliner at 3261 across the slider line.  A
+    #               console on its back line and a rug under it.
+    #   west half   the rocking chair on the diagonal, paired with the jhoola
+    #               at 2380 — the closest two seats in the room — both facing
+    #               north up the length of it.
     #
-    # Everything else in the room is still floor.
-    # Last in the list so the canopy draws over the two sofas, which is where
-    # it actually is: 1710 across, oversailing each of them by about 380.
+    # The pieces themselves are in retrofit: great_room_sofa(), rocking_chair()
+    # and jhoola().  The rug and the console are the only two here, because
+    # they are plain rectangles that the symbol library already draws.
+    #
+    # THE RUG IS 3000 x 2000 — a stock size, not a number invented to fit — and
+    # the WHOLE assembly stands on it, sofa and planter alike, 250 clear each
+    # side and 820 in front of the extended footrests.  It was drawn once at
+    # 2400 x 1700 stopping on the planter's west face, to keep a soil box off
+    # a rug, and it read as a rug sliding out from under the sofa to one side.
+    # A liner under the planter is a cheaper answer than an off-centre rug.
+    #
+    # Its south edge is the sofa's own back line at 5037, so THE CONSOLE
+    # STANDS ON THE BOARDS: a console with two legs on a rug and two off rocks
+    # every time you put a glass down on it.
+    ('rug',     12057, 3037, 15057, 5037,
+     'rug  ·  3000 x 2000, the whole sofa + planter on it, 250 each side'),
+    ('joinery', 12307, 5037, 13907, 5387,
+     "console  ·  1600 x 350, on the sofa's back line, lamps"),
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

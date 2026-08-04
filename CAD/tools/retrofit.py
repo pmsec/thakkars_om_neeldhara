@@ -949,6 +949,57 @@ def wood_floor(board=190):
     return out
 
 
+def jhoola(w=1900, d=1000, seat_w=1500, seat_d=700, swing=500,
+           x0=9700, y0=6200):
+    """A jhoola in the great room's south-west quadrant, facing north.
+
+    ON ITS OWN FRAME, not hung from the roof.  It was drawn for the deck
+    first, which is where a jhoola belongs, and it does not fit: between the
+    two voids the deck has the fountain in the middle of it and a recliner
+    against each void, and the two gaps that leaves are 1625 each against a
+    frame of 1900.  Nothing on that deck was going to move for a swing.
+
+    The great room's south band, on the other hand, was 18 m2 of nothing —
+    the half of the room you arrive into from the front door, furnished with
+    absolutely nothing at all.
+
+    WHERE IT SITS IS SET BY TWO LINES.  Its east edge stops at 11600 because
+    the gallery portal's lane starts at 11715 and that is the walk in from
+    the front door; and it sits far enough west of that to leave 1098 to the
+    pod glazing on the other side, so the piece is in a bay rather than
+    jammed into a corner.
+
+    WHAT IT GAINS IS A SECOND CONVERSATION.  Its seat centre is 2380 from the
+    rocking chair's — a better distance than anything else in this room — so
+    the two of them make a pair in the west half, facing the same way up the
+    room, while the sofa and the east deck recliner make the other pair in
+    the east half.  The room stops being one group with strays in it.
+
+    Swing travel is drawn dashed at 500 fore and aft, which is normal use
+    rather than a child standing up on it.  Aft it leaves 250 to the kitchen
+    bump's wall at 7800; forward, 913 to the rocking chair.
+    """
+    x1, y1 = x0 + w, y0 + d
+    cx = (x0 + x1) / 2
+    sx0, sx1 = cx - seat_w / 2, cx + seat_w / 2
+    sy0, sy1 = y0 + (d - seat_d) / 2, y1 - (d - seat_d) / 2
+
+    def rect(a, b, c, e, st):
+        return ('poly', [(a, b), (c, b), (c, e), (a, e)], st)
+
+    out = [rect(x0, y0, x0 + 90, y1, 'solid'),          # the two A-frames,
+           rect(x1 - 90, y0, x1, y1, 'solid')]          # feet splayed fore-aft
+    out.append(('line', x0 + 45, (y0 + y1) / 2, x1 - 45, (y0 + y1) / 2, 'dash'))
+    out.append(rect(sx0, sy0, sx1, sy1, 'solid'))       # the seat
+    out.append(rect(sx0, sy1 - 140, sx1, sy1, 'soft'))  # its back, on the south
+    for x in (sx0 + 60, sx1 - 60):                      # the four chains
+        for y in (sy0 + 50, sy1 - 50):
+            out.append(('circle', x, y, 34, 'light'))
+    for dy in (-swing, swing):                          # and the travel
+        out.append(rect(sx0, sy0 + dy, sx1, sy1 + dy, 'dash'))
+    return out
+
+
 def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250):
     """The great room's rocking chair, turned to face the east deck recliner.
 

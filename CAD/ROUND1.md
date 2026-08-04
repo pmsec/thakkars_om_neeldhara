@@ -1275,6 +1275,54 @@ The canopy is drawn **dashed**, because it is overhead — it oversails the
 planter box by about **360 mm (1′-2″)** on every side, which is the whole
 reason for a tree there rather than a pot.
 
+### A jhoola, a console and a rug — and the room becomes two pairs
+
+The great room's south band was **18 m² (194 sq ft) of nothing** — the half you
+arrive into from the front door, furnished with absolutely nothing. It now
+holds a jhoola.
+
+| | mm | ft |
+|---|---|---|
+| jhoola frame | 1900 × 1000 | 6′-3″ × 3′-3″ |
+| seat | 1500 × 700 | 4′-11″ × 2′-4″ |
+| swing travel, fore and aft | 500 each way | 1′-8″ |
+| **seat centre → rocking chair's** | **2380** | **7′-10″** |
+| rug | 3000 × 2000 | 9′-10″ × 6′-7″ |
+| console, on the sofa's back line | 1600 × 350 | 5′-3″ × 1′-2″ |
+
+**It is on its own frame, not hung from the roof.** It was drawn for the deck
+first, which is where a jhoola belongs, and it does not fit: between the voids
+the deck has the fountain in the middle and a recliner against each void, and
+the two gaps that leaves are **1625 mm (5′-4″)** each against a frame of 1900.
+Nothing on that deck was going to move for a swing. Hanging it from the glass
+roof would in any case need the structural engineer, not a fabricator.
+
+**Its position is set by two lines.** The east edge stops at X 11600 because
+the gallery portal's lane starts at 11715 and that is the walk in from the
+front door — **115 mm (5″)** clear. West of it there is **1096 mm (3′-7″)** to
+the pod glazing, so it sits in a bay rather than jammed into a corner. Aft
+travel leaves **250 mm (10″)** to the kitchen bump's wall; forward travel
+leaves **913 mm (3′-0″)** to the rocking chair.
+
+**What it actually gains is a second conversation.** At **2380 mm (7′-10″)**
+the jhoola and the rocking chair are the closest two seats in this home — a
+better distance than anything else in the room — and they face the same way,
+up the length of it. So the great room now reads as **two pairs**: sofa and
+east deck recliner in the east half at 3261 mm (10′-8″), jhoola and rocking
+chair in the west half at 2380 mm (7′-10″). It stops being one group with
+strays around it.
+
+**The rug is 3000 × 2000 — a stock size, not a number invented to fit** — and
+the whole assembly stands on it, sofa and planter alike, 250 mm (10″) clear
+each side and 820 mm (2′-8″) in front of the extended footrests. It was drawn
+once at 2400 × 1700 stopping short of the planter, to keep a soil box off a
+rug, and it read as a rug sliding out from under the sofa to one side. A liner
+under the planter is a cheaper answer than an off-centre rug.
+
+**The console stands on the boards, not the rug.** Its north face is the
+sofa's own back line at Y 5037, which is also the rug's south edge — a console
+with two legs on a rug and two off rocks every time a glass goes down on it.
+
 ### A rocking chair on the diagonal, aimed at the east recliner
 
 The west half of the great room had nothing in it at all. It now has one

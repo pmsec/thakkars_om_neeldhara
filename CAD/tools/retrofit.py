@@ -835,7 +835,7 @@ def fountain_plants(n=12, ring=800, pot=150):
     return out
 
 
-def great_room_sofa(ax=10190, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
+def great_room_sofa(ax=11440, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 
     SQUARE TO THE ROOM, not diagonal.  It was set out at 45 degrees for one
@@ -844,19 +844,20 @@ def great_room_sofa(ax=10190, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     the tree's box across the middle of the floor at an angle nothing else in
     the plan shares.
 
-    WHAT SITS ON THE HOME'S AXIS IS THE TREE.  ax 10190 is not a round number
-    and it is not arbitrary: it is the one position where the planter box's
-    centre lands on X 12240, the line that already runs front door, gallery
-    portal, fountain, parapet.  Walk out of the gallery and the tree is what
-    you are looking at, dead ahead — the axis ends on something, instead of
-    ending on the back of a sofa.
+    ax 11440 CENTRES THE SOFA ON X 12240, and what that buys is not symmetry
+    for its own sake — it is the seating group.  The two deck recliners sit
+    against the void walls at X 9565 and 14915, 2675 either side of the
+    centreline and immovably so, because the voids set them.  Centred, the
+    sofa is 3811 from EACH of them.  Off centre it is not: parked 1250 west
+    for a round it read 3066 to the west recliner and 4772 to the east, and
+    4772 is a shout, not a conversation.  Any move off 12240 buys one seat
+    what it takes from the other, and takes more than it gives.
 
-    The sofa was centred on that axis for one round instead.  It could not
-    stay: with the tree built on to its east end the whole assembly then sat
-    900 east of centre, crowding the east pod, and the axis was blocked by a
-    sofa back either way.  Moving the piece 1250 west turns an unavoidable
-    obstruction into a deliberate terminus and leaves 1517 clear between the
-    sofa's west end and the west pod's glazing — two people pass abreast.
+    The cost is that the tree, built on to the east end, no longer terminates
+    the home's axis — it sits at 13490, 1250 east of it.  That was a real
+    idea and it is being given up on purpose: an axis is something you look
+    along, a conversation is something you sit in, and the room only has to
+    do one of those well.
 
     The planter is not a separate object.  It shares the sofa's back line and
     its depth and butts its east end, so the two are built as one L of joinery

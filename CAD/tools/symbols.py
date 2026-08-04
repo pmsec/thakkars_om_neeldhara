@@ -53,6 +53,21 @@ def symbol(kind, a, b, c, d):
         for i in range(n + 1):
             out.append(('circle', a + w * i / n, cy, min(118, h / 2 - 10), 'green'))
         return out
+    if kind == 'treebox':
+        # A built-in planter box with a tall tree growing out of it, in the
+        # corner where two sofas meet.  Three things, in the order a section
+        # would read them: the box itself, which is masonry and so is drawn
+        # solid like joinery; the planting inside it; and the CANOPY, dashed,
+        # because it is overhead — it oversails both sofas, which is the whole
+        # reason for putting a tree there rather than a pot.
+        out = [_rr(a, b, c, d, 'solid'), _rr(a + 90, b + 90, c - 90, d - 90, 'green')]
+        r = min(w, h) * 0.9
+        out.append(('circle', cx, cy, r, 'dash'))
+        for k in range(6):
+            ang = math.radians(k * 60 + 15)
+            out.append(('circle', cx + math.cos(ang) * r * 0.5,
+                        cy + math.sin(ang) * r * 0.5, r * 0.34, 'dash'))
+        return out
     if kind == 'spa':
         out = [_rr(a, b, c, d, 'water')]
         out.append(_rr(a + 140, b + 140, c - 140, d - 140, 'water'))

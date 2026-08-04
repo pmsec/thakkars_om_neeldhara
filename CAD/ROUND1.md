@@ -1119,30 +1119,41 @@ north edge to the glass line.
 They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
 each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
 
-### The great room: a U opening north to the deck
+### The great room: an L of two sofas with a tree in the corner
 
-407 sq ft of empty floor gets the reference's arrangement — sofa across the
-bottom, a single sofa turned in at each end, a centre table between them, and
-**a side table at every seat**. All centred on X 12240.
+Not a U of loose chairs — **an L**, from the interior reference: two continuous
+sofas meeting at a right angle, with a **planter box filling the angle between
+their two ends and a tall tree growing out of it**. In a U the corner is the
+awkward bit nobody sits in; here it is the thing you look at.
 
 | | |
 |---|---|
-| sofa | 2400 × 900 mm (7′-10″ × 3′-0″) |
-| two single sofas, turned in | 800 × 900 mm (2′-8″ × 3′-0″) each |
-| centre table | 1400 × 800 mm (4′-7″ × 2′-8″) |
-| four side tables | 500 mm (1′-8″) square |
-| group overall | 3600 × 2900 mm (11′-10″ × 9′-6″) |
+| long sofa, back south, facing the deck | 2800 × 950 mm (9′-2″ × 3′-1″) |
+| short sofa, back west, turned in | 1700 × 950 mm (5′-7″ × 3′-1″) |
+| planter box in the angle | 950 mm (3′-1″) square |
+| tree canopy | 1710 mm (5′-7″) across |
+| centre table, low | 1400 × 1200 mm (4′-7″ × 3′-11″) |
+| two side tables, at the free ends | 500 mm (1′-8″) square |
 
-**The one thing that sets the depth is the entry gallery's apse.** Its crown is
-at Y 7485 and the arched portal into this room is *in* it, X 11715–12765 — so
-the sofa's back cannot go near it. At Y 6500 there is **985 mm (3′-3″)**
-between the two, which is the passage you come out of the front door into, and
-it widens fast: the apse falls away to Y 7930 by the sofa's west end, so the
-corners have **1430 mm (4′-8″)**.
+**The corner is on the west, and that is the one real choice here.** The great
+room already has a planter on its south-east wall — the one that answers the
+kitchen's bump — so putting the tree on the east would stack all the greenery
+down one side of the room. West balances it.
 
-North of the group there is **1055 mm (3′-6″)** of clear deck line, and the two
-pod portals in the glazed screens are **1736 mm (5′-8″)** clear at both ends —
-the ways into the family room and the den are untouched.
+**What sets the depth is the entry gallery's apse.** Its crown is at Y 7485 and
+the arched portal into this room is *in* it, X 11715–12765 — so the long sofa's
+back cannot go near it. At Y 6550 there is **935 mm (3′-1″)** between the two,
+which is the passage you come out of the front door into, widening to **1434 mm
+(4′-8″)** at the sofa's west end as the apse falls away.
+
+The rest: **450 mm (1′-6″)** from the centre table to the long sofa and **700 mm
+(2′-4″)** to the short one; **1430 mm (4′-8″)** west of the group to the pod
+glazing and **1600 mm (5′-3″)** east; **1355 mm (4′-5″)** from the short sofa's
+north end up to the deck glass, of which the side table takes 500.
+
+The canopy is drawn **dashed**, because it is overhead — it oversails each sofa
+by about **380 mm (1′-3″)**, which is the whole reason for a tree there rather
+than a pot.
 
 ### A drawing that disagreed with itself
 

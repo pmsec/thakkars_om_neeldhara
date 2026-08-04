@@ -875,17 +875,30 @@ _ONCE = [
     # North of the group there is 1055 of clear deck line, and the two pod
     # portals in the glazed screens are 1736 clear at both ends — the ways into
     # the family room and the den are not touched.
-    ('sofa-s',    11040, 5600, 13440, 6500, "sofa  ·  2400 x 900, facing the deck"),
-    ('sidetable', 10540, 5600, 11040, 6100, "side table  ·  500 square, on the arm"),
-    ('sidetable', 13440, 5600, 13940, 6100, "side table  ·  500 square, on the arm"),
-    ('counter-r', 11540, 4300, 12940, 5100, "centre table  ·  1400 x 800"),
+    # AN L OF TWO SOFAS WITH A TREE IN THE CORNER WHERE THEY MEET — 2800 along
+    # the south facing the deck, 1700 turned in on the west, and a 950 square
+    # planter box filling the angle between their two ends.  Not a U of loose
+    # chairs: the seats are continuous and the corner, which in a U is the
+    # awkward bit nobody sits in, is the thing you look at.
+    #
+    # THE CORNER IS ON THE WEST, and that is the one real choice here.  The
+    # great room already has a planter on its SOUTH-EAST wall — the one that
+    # answers the kitchen's bump — so putting the tree on the east would stack
+    # all the greenery down one side of the room.  West balances it.
+    #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
-    # a seat with no side to it.  These are single sofas turned in, the same
-    # piece as the two on Karan's terrace.
-    ('sofa-w',    10440, 4200, 11240, 5100, "single sofa  ·  800, turned in, facing east"),
-    ('sofa-e',    13240, 4200, 14040, 5100, "single sofa  ·  800, turned in, facing west"),
-    ('sidetable', 10440, 3600, 10940, 4100, "side table  ·  500 square"),
-    ('sidetable', 13540, 3600, 14040, 4100, "side table  ·  500 square"),
+    # a seat with no side to it.
+    ('sofa-s',    10980, 5600, 13780, 6550, "sofa  ·  2800 x 950, facing the deck"),
+    ('sofa-w',    10030, 3900, 10980, 5600, "sofa  ·  1700 x 950, turned in"),
+    # 1400 x 1200 rather than 1400 square: at 1400 deep its north edge ran 150
+    # past the end of the short sofa and the group stopped closing.
+    ('counter-r', 11680, 3950, 13080, 5150, "centre table  ·  1400 x 1200, low"),
+    ('sidetable', 13780, 5600, 14280, 6100, "side table  ·  at the long sofa's free end"),
+    ('sidetable', 10030, 3400, 10530, 3900, "side table  ·  at the short sofa's free end"),
+    # Last in the list so the canopy draws over the two sofas, which is where
+    # it actually is: 1710 across, oversailing each of them by about 380.
+    ('treebox',   10030, 5600, 10980, 6550,
+     "planter box  ·  950 square, a tall tree in the corner of the L"),
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

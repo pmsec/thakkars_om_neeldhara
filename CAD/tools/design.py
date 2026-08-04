@@ -502,6 +502,25 @@ _ONCE = [
     # parents' bed at the north end and the grandmother's wall bed at the south,
     # and the cupboards move on to the partition between them.
     #
+    # ------------------------- the STUDY DESK, in the bedroom's north-east corner
+    # Karan's father's desk, in the one corner of the suite that has two solid
+    # walls and nothing else wanting them: the sealed shaft's south wall above
+    # it at Y 1350, and the pod wall on its east at X 4405.  Both are blank —
+    # the terrace slider stops at X 2750 and the pod's own opening does not
+    # start until Y 2620 — so an L of desk fits into the corner without taking
+    # a window, a door or a route.
+    #
+    # CABINETS OVER, drawn dashed because they are over and not in plan: 350
+    # deep, the full length of both legs, hung above the working surface.
+    #
+    # The east leg stops at Y 2620, dead on the north jamb of the pod's sliding
+    # partition, so the desk never stands in that opening.
+    ('counter',   3005, 1350, 4405, 1950, "study desk  ·  1400 x 600"),
+    ('counter',   3805, 1950, 4405, 2620, "study desk, return  ·  600 x 670"),
+    ('under',     3005, 1350, 4405, 1700, "cabinets over  ·  350 deep"),
+    ('under',     3805, 1950, 4155, 2620, "cabinets over  ·  350 deep"),
+    ('swivel',    3155, 2030, 3705, 2580, "desk chair  ·  550, swivel"),
+
     # THE PARENTS' BED IS KARAN'S BED MIRRORED — the same bed, the same
     # headboard treatment, the same side tables, handed the other way so the
     # head is square on the WEST wall and the rounded foot faces east down the
@@ -700,6 +719,20 @@ _ONCE = [
     ('spa',      17930, 400, 19680, 2150, '4-seat spa'),
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room
+    # ------------------------- parents' pod: the sitting group
+    # The pod's north half had nothing in it but the glass roof over the bay.
+    # A two-seater with its back to the west facing east, and two recliners
+    # facing it back — one group across the middle of the bay, with the deck
+    # sliders behind the recliners' shoulders and the dining table beyond the
+    # sofa's south end.
+    #
+    # The sofa sits 633 clear of the suite's sliding partition rather than on
+    # it, so the way in from the parents' bedroom passes round its north end
+    # (480) or its south (900) instead of into its back.
+    ('sofa-w',    5100, 3100, 5950, 4800, "two-seater  ·  1700 x 850, facing east"),
+    ('recliner-e', 7100, 3050, 8050, 3950, "recliner  ·  950 x 900, facing west"),
+    ('recliner-e', 7100, 4150, 8050, 5050, "recliner  ·  950 x 900, facing west"),
+
     # ------------------------------------------------- parents' pod: dining
     # NOT A ROUND TABLE.  It was a 1400 round, and a round table in a pod only
     # 2894 wide is the wrong shape for the room: the seat facing the glass and

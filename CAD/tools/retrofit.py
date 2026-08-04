@@ -424,9 +424,10 @@ def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42,
     face rather than a knife point.  No wall cabinet — that belongs on a
     straight tail and this one has none.
 
-    The SOUTH piece, u 0.618 to the tail, sits in the grandmother's zone and is
-    what narrows the way in past it: 742 at the screen line, 525 by the time the
-    arch turns vertical.  Deleting it is a one-line change if that is too tight."""
+    THERE IS NO SOUTH PIECE.  The console stops at the slot.  A return below it
+    would sit in the grandmother's zone and narrow the way in past it to 525 by
+    the time the arch turns vertical, which is not a doorway.  So the curl runs
+    from the pod wall over the crown, meets the leaf, and ends."""
     h = D.T_MB / 2
     u0 = mb_u_at_wall(-h)
 
@@ -441,12 +442,9 @@ def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42,
             lo = m
         else:
             hi = m
-    out = []
-    for ua, ub, uf in ((u0, u_a, hi), (u_b, 1.0, u_b)):
-        back = [mb_pt(u, -h) for u in np.linspace(ua, ub, n)]
-        front = [mb_pt(u, -h - d(u)) for u in np.linspace(uf, ub, n)]
-        out.append(('poly', back + list(reversed(front)), 'solid'))
-    return out
+    back = [mb_pt(u, -h) for u in np.linspace(u0, u_a, n)]
+    front = [mb_pt(u, -h - d(u)) for u in np.linspace(hi, u_a, n)]
+    return [('poly', back + list(reversed(front)), 'solid')]
 
 
 def suite_screen():

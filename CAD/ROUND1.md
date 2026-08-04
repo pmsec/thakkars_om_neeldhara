@@ -789,10 +789,38 @@ the slot and stops against the arch. The two ends of the slot are found rather
 than chosen: u 0.264 and u 0.618 are the first and last sections of the console
 whose 400 depth touches the leaf's line with 20 of tolerance either side.
 
-The piece left **south** of the slot sits in the grandmother's zone and narrows
-the way in past it — 704 at the screen line, **525** by the time the arch turns
-vertical. That is a squeeze, and it is the one thing in this suite worth
-deleting if it turns out to matter.
+**There is no piece south of the slot.** The console stops there. A return below
+it would have sat in the grandmother's zone and narrowed the way in to 525 by
+the time the arch turns vertical, which is not a doorway. So the curl runs from
+the pod wall over the crown, meets the leaf, and ends.
+
+### A study desk in the north-east corner
+
+Karan's father's desk, in the one corner of the suite with two solid walls and
+nothing else wanting them — the sealed shaft's south wall above it at Y 1350 and
+the pod wall on its east at X 4405. Both are blank: the terrace slider stops at
+X 2750 and the pod's own opening does not start until Y 2620.
+
+| | mm | ft |
+|---|---|---|
+| desk, north leg | 1400 × 600 | 4'-7" × 2'-0" |
+| desk, return | 600 × 670 | 2'-0" × 2'-2" |
+| cabinets over, both legs | 350 deep | 1'-2" |
+| chair | 550 swivel | 1'-10" |
+
+The return stops dead on Y 2620, the north jamb of the pod's sliding partition,
+so the desk never stands in that opening.
+
+### The parents' pod gets a sitting group
+
+Its north half had nothing in it but the glass roof over the bay. A **two-seater
+1700 × 850** with its back to the west facing east, and **two recliners 950 × 900**
+facing it back, with 1150 between them.
+
+The sofa sits **633 clear of the suite's sliding partition** rather than on it,
+so the way in from the bedroom passes round its north end (480) or its south
+(900) instead of into its back. 650 from the recliners down to the dining
+table.
 
 ### What this layout costs
 

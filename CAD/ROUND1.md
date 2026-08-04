@@ -1175,36 +1175,40 @@ sofas meeting at a right angle, with a **planter box filling the angle between
 their two ends and a tall tree growing out of it**. In a U the corner is the
 awkward bit nobody sits in; here it is the thing you look at.
 
-**One bench sofa and four recliners round three sides of a rug** — not four in
-a row. A row of recliners is a departure lounge: everyone faces the same way
-and nobody faces anyone. This is a conversation group that still gives every
-seat the deck:
+**The group sits in the south-west quadrant, not the middle of the room.**
+Centred on the floor it made the great room read as a hall with furniture in
+it; pushed into the corner made by the west pod screen and the kitchen bump,
+everything north and east of it becomes **one unbroken sweep of about 22 m²
+(236 sq ft)** — deck glass to apse, group's edge to the east pod screen — on
+top of the open deck band. The group's whole zone is 11 m² (119 sq ft), 29% of
+the room, in one corner.
 
-* **WEST** — the 2000 × 800 mm (6′-7″ × 2′-7″) bench, turned in, the tree at
-  its south end
-* **SOUTH** — two recliners side by side facing **north**: the deck straight
-  ahead of their footrests, the whole width of the glass
-* **EAST** — two recliners facing **west**, across the rug at the bench
+The composition is the approved one, translated rather than rethought:
 
-The two south chairs look at the deck; the east pair and the bench look at
-each other; and anyone can swivel a recliner a quarter turn to join either
-camp — which is what recliners are for. Six to seven seats.
+* **WEST** — the 2000 × 800 mm (6′-7″ × 2′-7″) bench against the screen,
+  facing east
+* **SOUTH** — the tree, then two recliners facing **north**: the deck straight
+  ahead of their footrests across the open middle
+* **MIDDLE** — two recliners facing **west** at the bench, **860 mm (2′-10″)**
+  across the rug — a close conversation pair
 
-**No centre table**, as asked. A side table sits in the crook of each recliner
-pair and one at the bench's free end — every seat has a surface at its elbow —
-and the middle of the rug stays floor: **2710 mm (8′-11″)** clear from the
-bench's front to the east pair's footrests.
+Side tables in the crook of each pair and at the bench's free end; no centre
+table. Six to seven seats.
 
-**The rug is not a rectangle, and the notch is the point.** 3650 × 2650 mm
-(12′-0″ × 8′-8″), 9.46 m² (102 sq ft), a 120 mm woven border inside the edge.
-It tucks 300–400 under every seat's front feet — the classic rule — but its
-south-west corner is cut away flush around the tree's planter box, because a
-rug does not run under a masonry box full of wet soil.
+**The tree keeps its corner but floats off the walls** — 450 mm (1′-6″) off
+the glass, 950 mm (3′-1″) off the kitchen bump — because its 1710 mm (5′-7″)
+canopy has to stay inside the room: hard in the corner it would oversail the
+pod screen and the kitchen wall, and a tree grows through neither.
 
-Furniture 6.06 m² (65 sq ft), **16% of the room**. The south pair's backs stand
-**985 mm (3′-3″)** off the apse crown, so the way out of the front door is what
-it was; **1005 mm (3′-4″)** north of the east pair to the deck glass; **1435 mm
-(4′-8″)** east and **1208 mm (4′-0″)** west to the two pod screens.
+The rug is 3050 × 2150 mm (10′-0″ × 7′-1″), 6.38 m² (69 sq ft), notched round
+the planter box as before.
+
+**What it costs, plainly:** the south pair's backs are **635 mm (2′-1″)** from
+the apse crown, against 985 before — still a corridor, and only at the single
+point of the crown — and the east recliner noses **485 mm (1′-7″)** into the
+portal's west half, so the way out of the front door angles slightly east
+across open floor rather than running dead straight. The portal's east half is
+fully clear.
 
 **The corner is on the west, and that is the one real choice here.** The great
 room already has a planter on its south-east wall — the one that answers the

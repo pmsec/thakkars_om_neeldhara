@@ -917,39 +917,44 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    # ONE BENCH SOFA AND FOUR RECLINERS, ROUND THREE SIDES OF A RUG — not four
-    # in a row.  A row of recliners is a departure lounge: everyone faces the
-    # same way and nobody faces anyone.  This is a conversation group that
-    # still gives every seat the deck:
+    # THE GROUP LEAVES THE MIDDLE OF THE ROOM.  It stood centred on the floor
+    # and the room read as a hall with furniture in it; it now sits in the
+    # SOUTH-WEST QUADRANT, against the two edges that exist there — the west
+    # pod screen and the kitchen bump — and everything north and east of it is
+    # ONE UNBROKEN SWEEP of floor: from the deck glass to the apse and from
+    # the group's edge to the east pod screen, about 19 m2 of it, plus the
+    # whole deck band.  The same six-seven seats, a quarter of the room's
+    # floor further out of the way.
     #
-    #   WEST    the 2000 bench, turned in, the tree at its south end
-    #   SOUTH   two recliners side by side facing NORTH — the deck straight
-    #           ahead of their footrests, the whole room's width of glass
-    #   EAST    two recliners facing WEST, across the rug at the bench
+    # The composition is the one already approved, translated, not rethought:
+    #   WEST    the 2000 bench against the screen, turned in, facing east
+    #   SOUTH   the tree, then two recliners facing NORTH — the deck straight
+    #           ahead of their footrests across the open middle
+    #   MIDDLE  two recliners facing WEST at the bench, close across the rug
     #
-    # So the two south chairs look at the deck, the two east chairs and the
-    # bench look at each other, and anyone can swivel a recliner a quarter
-    # turn to join either camp — which is what recliners are for.
+    # The tree keeps its corner — the angle between the bench's south end and
+    # the recliner row — but the box floats 450 off the glass and 950 off the
+    # kitchen bump, because its 1710 canopy has to stay inside the room: hard
+    # in the corner it would oversail the pod screen and the kitchen wall,
+    # and a tree does not grow through either.
     #
-    # NO CENTRE TABLE, as asked.  A side table in the crook of each pair and
-    # one at the bench's free end: every seat has a surface at its elbow, and
-    # the middle of the rug stays floor.
-    #
-    # The south pair's backs stand 985 off the apse crown, so the way out of
-    # the front door is what it was.  The middle of the group — bench front to
-    # the east pair's footrests — is 2710 of clear rug.
-    ('recliner-s', 11000, 5600, 11800, 6500, "recliner  ·  800 x 900, facing the deck"),
-    ('recliner-s', 12250, 5600, 13050, 6500, "recliner  ·  800 x 900, facing the deck"),
-    ('sidetable',  11800, 5950, 12250, 6450, "side table  ·  between the south pair"),
-    ('recliner-e', 13600, 3550, 14400, 4450, "recliner  ·  800 x 900, facing the bench"),
-    ('recliner-e', 13600, 4900, 14400, 5800, "recliner  ·  800 x 900, facing the bench"),
-    ('sidetable',  13950, 4450, 14400, 4900, "side table  ·  between the east pair"),
-    ('sofa-w',     9850, 3550, 10650, 5550, "bench sofa  ·  2000 x 800, turned in"),
-    ('sidetable',  9850, 3050, 10350, 3550, "side table  ·  at the bench's free end"),
+    # WHAT IT COSTS, plainly: the south pair's backs are 635 from the apse
+    # crown, against 985 before — still a corridor, and only at the crown —
+    # and the east recliner noses 485 into the portal's west half, so the way
+    # out of the front door angles slightly east across open floor rather
+    # than running dead straight.  The east half of the portal is clear.
+    ('sofa-w',     9000, 3900, 9800, 5900, "bench sofa  ·  2000 x 800, on the screen"),
+    ('sidetable',  9000, 3400, 9500, 3900, "side table  ·  at the bench's free end"),
+    ('recliner-s', 10150, 5950, 10950, 6850, "recliner  ·  800 x 900, facing the deck"),
+    ('sidetable',  10950, 6300, 11400, 6800, "side table  ·  between the south pair"),
+    ('recliner-s', 11400, 5950, 12200, 6850, "recliner  ·  800 x 900, facing the deck"),
+    ('recliner-e', 10900, 3400, 11700, 4300, "recliner  ·  800 x 900, facing the bench"),
+    ('recliner-e', 10900, 4750, 11700, 5650, "recliner  ·  800 x 900, facing the bench"),
+    ('sidetable',  11250, 4300, 11700, 4750, "side table  ·  between the east pair"),
     # Last in the list so the canopy draws over the two sofas, which is where
     # it actually is: 1710 across, oversailing each of them by about 380.
-    ('treebox',    9850, 5550, 10800, 6500,
-     "planter box  ·  950 square, a tall tree in the corner of the L"),
+    ('treebox',    9050, 5900, 10000, 6850,
+     "planter box  ·  950 square, the tree in the group's south-west corner"),
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

@@ -10,6 +10,8 @@ import math
 import os
 import sys
 
+ISLAND = "--island" in sys.argv
+
 import fitz
 import numpy as np
 
@@ -234,7 +236,9 @@ def main():
              'tint': ('#e2cfae', '#8a6440', 1.0),
              'wood': ('#b9884f', '#6b4426', 1.2),
              'plank': ('#e7dac6', 'none', 0),
-             'board': ('none', '#cfb896', 0.7)}
+             'board': ('none', '#cfb896', 0.7),
+             'stone': ('#e3e3e0', '#c9c8c2', 0.9),
+             'joint': ('none', '#d5d4cf', 0.7)}
 
     def prim(p):
         st = p[-1]
@@ -260,7 +264,7 @@ def main():
             s.o.append(f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" '
                        f'stroke-width="{lw}"{dash}/>')
 
-    for p in R.wood_floor():           # great room + deck bay, one board grid
+    for p in R.wood_floor(island=ISLAND):  # great room + deck bay, one board grid
         prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)

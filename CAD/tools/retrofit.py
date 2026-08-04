@@ -879,11 +879,11 @@ def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
         a_, b_ = P(L * f, 270), P(L * f, D - 80)
         out.append(('line', a_[0], a_[1], b_[0], b_[1], 'light'))
 
-    out.append(quad(L, 0, L + box, D, 'solid'))        # the planter box
-    out.append(quad(L + 90, 90, L + box - 90, D - 90, 'green'))
-    cx, cy = P(L + box / 2, D / 2)                     # and the canopy over it
-    rad = box * 0.9
-    out.append(('circle', cx, cy, rad, 'dash'))
+    cx, cy = P(L + box / 2, D / 2)                     # the planter — a DRUM
+    out.append(('circle', cx, cy, box / 2, 'solid'))   # not a box.  Its west
+    out.append(('circle', cx, cy, box / 2 - 90, 'green'))   # face is tangent
+    rad = box * 0.9                                    # to the sofa's east end
+    out.append(('circle', cx, cy, rad, 'dash'))        # and the canopy over it
     for k in range(6):
         a_ = math.radians(k * 60 + 15)
         out.append(('circle', cx + math.cos(a_) * rad * 0.5,
@@ -891,7 +891,50 @@ def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     return out
 
 
-def wood_floor(board=190):
+def floor_island(n=400):
+    """The timber island's outline — a closed curve through set control points.
+
+    ONLY USED WHEN wood_floor(island=True).  It is the 'flowy floor' option:
+    timber where you sit, stone where you walk, and one long organic curve
+    between the two instead of a straight threshold anywhere.
+
+    Its north edge is the deck slider itself, X 9115 to 15365 on Y 2620, so
+    the island is NOT a separate pool — it is the great room's end of the same
+    boarded floor that runs out on to the deck.  From there the boundary
+    sweeps out to within a few hundred of each pod's glazing at mid-room,
+    where the furniture is, and pulls back to a soft south edge that undulates
+    around Y 6000-6500, north of the entry gallery's apse.
+
+    THAT SOUTH EDGE IS THE IDEA.  You come in through the apse on to stone,
+    cross a stone apron, and step on to timber where the room is lived in.
+    The line between them is the one drawn element in this plan that is purely
+    a curve — no radius, no centre, no tangent to anything.
+
+    Catmull-Rom through the control points, so the curve passes THROUGH each
+    one rather than near it, and the shape can be tuned by moving a point.
+    """
+    K = [(9115, 2620), (9020, 3200), (8930, 4000), (8880, 5000),
+         (9500, 6100), (11050, 6480), (12240, 6180), (13600, 6520),
+         (15000, 6150), (15600, 5000), (15550, 4000), (15460, 3200),
+         (15365, 2620)]
+    out = []
+    for i in range(len(K) - 1):
+        p0 = K[max(i - 1, 0)]
+        p1, p2 = K[i], K[i + 1]
+        p3 = K[min(i + 2, len(K) - 1)]
+        for j in range(n // (len(K) - 1)):
+            t = j / (n / (len(K) - 1))
+            t2, t3 = t * t, t * t * t
+            out.append(tuple(
+                0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t
+                       + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2
+                       + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)
+                for k in (0, 1)))
+    out.append(K[-1])
+    return out
+
+
+def wood_floor(board=190, island=False):
     """One wooden floor for the great room and the deck bay in front of it.
 
     The great room and the deck between the two voids are one room with a
@@ -922,14 +965,29 @@ def wood_floor(board=190):
     from matplotlib.path import Path
 
     _f, _d, great = pod_polys()
-    room = Path(great)
+    timber = floor_island() if island else great
+    room = Path(timber)
 
     N_DECK, S_DECK = D.DECK_N + 340, D.DECK_S
     W_DECK, E_DECK = 9115, 15365                  # between the two voids
 
-    out = [('poly', great, 'plank'),
-           ('poly', [(W_DECK, N_DECK), (E_DECK, N_DECK),
-                     (E_DECK, S_DECK), (W_DECK, S_DECK)], 'plank')]
+    out = []
+    if island:                                     # stone under the whole
+        out.append(('poly', great, 'stone'))       # room, timber on top of it
+        for y in np.arange(D.BODY_N + 900, D.BODY_S, 900):
+            seg = [(x, y) for x in np.arange(8600, 15900, 40.0)]
+            ok = Path(great).contains_points(seg)
+            run = None
+            for (x, _y), o in zip(seg + [seg[-1]], list(ok) + [False]):
+                if o and run is None:
+                    run = x
+                elif not o and run is not None:
+                    if x - run > 200:
+                        out.append(('line', run, y, x, y, 'joint'))
+                    run = None
+    out.append(('poly', timber, 'plank'))
+    out.append(('poly', [(W_DECK, N_DECK), (E_DECK, N_DECK),
+                         (E_DECK, S_DECK), (W_DECK, S_DECK)], 'plank'))
 
     xs = [x for x in np.arange(D.MID - board / 2, D.END_W, -board) if x > 8500]
     xs += [x for x in np.arange(D.MID + board / 2, D.END_E, board) if x < 16000]

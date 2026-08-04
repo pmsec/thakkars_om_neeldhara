@@ -818,8 +818,8 @@
 <polygon points="2216.4,971.8 2363.2,971.8 2363.2,934.1 2216.4,934.1" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <line x1="2253.8" y1="1056.8" x2="2253.8" y2="982.6" stroke="#9a9184" stroke-width="0.8"/>
 <line x1="2325.8" y1="1056.8" x2="2325.8" y2="982.6" stroke="#9a9184" stroke-width="0.8"/>
-<polygon points="2397.7,1093.2 2519.1,1093.2 2519.1,971.8 2397.7,971.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<polygon points="2409.9,1081.1 2507.0,1081.1 2507.0,984.0 2409.9,984.0" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
+<circle cx="2458.4" cy="1032.5" r="60.7" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2458.4" cy="1032.5" r="48.6" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
 <circle cx="2458.4" cy="1032.5" r="109.3" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
 <circle cx="2511.2" cy="1046.7" r="37.2" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
 <circle cx="2472.6" cy="1085.3" r="37.2" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>

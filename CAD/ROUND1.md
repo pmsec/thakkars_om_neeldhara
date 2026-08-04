@@ -1508,11 +1508,29 @@ actually flush — which drew a sofa's back as a cushion floating behind it, and
 a recliner's footrest as a separate object. So a back band rounds the two
 corners on its far side and stays square where it meets the seat.
 
-**A console 350 mm (1′-2″) deep is a shelf, not a surface**, and the lamps set
+**One lamp, not two.** A pair at the ends made the console read as a mantel —
+symmetrical, formal, and with the middle left to be filled. One lamp at one
+end with everything else running away from it reads as a shelf someone uses.
+
+| west to east | mm | ft |
+|---|---|---|
+| table lamp | 260 shade | 10″ |
+| succulent | 140 pot | 5½″ |
+| succulent | 110 pot | 4⅓″ |
+| stack of books | 280 × 160 | 11″ × 6″ |
+| bowl | 180 | 7″ |
+
+**The plants sit next to the lamp** because that is the end of the console the
+light actually reaches — a plant at the far end of an unlit 1600 mm run is a
+plant in the dark.
+
+**A console 350 mm (1′-2″) deep is a shelf, not a surface**, and the lamp sets
 the limit: a 260 mm (10″) shade leaves 45 mm (2″) either side and nothing
-wider will sit square. Bowl before books, not after — the bowl and a lamp
-shade are both circles of much the same size, and side by side they read as a
-pair of lamps that has slipped.
+wider will sit square. The bowl at 180 mm and the books at 160 mm deep come
+off the same constraint rather than off a catalogue.
+
+Spacing is 150 mm (6″) after the lamp and 90 mm (4″) between everything else,
+so the five read as one run with the lamp set slightly apart from the group.
 
 **The console stands on the boards, not the rug.** Its north face is the
 sofa's own back line at Y 5037, which is also the rug's south edge: a console

@@ -1108,21 +1108,24 @@ def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
 def console_top(a=10878, b=5537, c=12478, d=5887):
     """What stands on the console behind the sofa.
 
-    A console 350 deep is a shelf, not a surface — everything on it has to be
-    slim, and the lamps set the limit: a 260 shade leaves 45 either side of it
-    and nothing wider will sit square.  A pair of them, one near each arched
-    end, with a bowl and a stack of books between, spaced at 113, 115 and 122
-    so the run reads as evenly filled rather than as four objects that landed
-    where they landed.  Bowl before books and not after: the bowl and a lamp
-    shade are both circles of much the same size, and set side by side they
-    read as a pair of lamps that has slipped.
+    ONE LAMP, not two.  A pair at the ends made the console read as a mantel —
+    symmetrical, formal, and with the middle left to be filled.  One lamp at
+    one end and everything else running away from it reads as a shelf someone
+    uses.
 
-    The console itself is a STADIUM — both ends struck as full half-rounds off
-    its own 350 depth.  That is the house rule, not a flourish: the baths are
-    arches, the gallery is an apse, the dining table is a superellipse, the
-    den's work console is bullnosed both ends, and run B's nose is eased 300.
-    Nothing that stands free in this home has a square corner on it, and this
-    piece stands free on both ends with a sofa in front of it.
+    Then two small succulents, a stack of books and a bowl, in that order west
+    to east.  The plants go NEXT TO THE LAMP because that is the end of the
+    console the light actually reaches; a plant at the far end of an unlit
+    1600 run is a plant in the dark.
+
+    A CONSOLE 350 DEEP IS A SHELF, NOT A SURFACE, and the lamp sets the limit:
+    a 260 shade leaves 45 either side and nothing wider will sit square.  The
+    bowl at 180 and the books at 160 deep are chosen off the same constraint
+    rather than off a catalogue.
+
+    Spacing is 150 after the lamp and 90 between everything else, so the five
+    objects read as one run with the lamp set slightly apart from the group
+    rather than as five things that landed where they landed.
     """
     # The console turns with the sofa, so this lays out along whichever of
     # the two is the long side and puts the objects on that line.  Written
@@ -1130,34 +1133,31 @@ def console_top(a=10878, b=5537, c=12478, d=5887):
     # that drift apart the first time one of them is edited.
     horiz = (c - a) >= (d - b)
     lo, mid = (a, (b + d) / 2) if horiz else (b, (a + c) / 2)
-    end = (c - a) if horiz else (d - b)
 
     def Q(u, v):
         return (lo + u, mid + v) if horiz else (mid + v, lo + u)
 
-    out = []
-    for u in (250, end - 250):                         # the two table lamps
-        out.append(('circle', *Q(u, 0), 130, 'solid'))
-        out.append(('circle', *Q(u, 0), 42, 'light'))
-    out.append(('circle', *Q(598, 0), 105, 'solid'))    # a bowl,
-    out.append(('circle', *Q(598, 0), 60, 'light'))
-    out.append(('poly', [Q(818, -85), Q(1098, -85),
-                         Q(1098, 85), Q(818, 85)], 'soft'))
-    for k in (1, 2):                                   # and a stack of books
-        out.append(('line', *Q(818 + 280 * k / 3, -85),
-                    *Q(818 + 280 * k / 3, 85), 'light'))
+    out = [('circle', *Q(250, 0), 130, 'solid'),       # the one table lamp
+           ('circle', *Q(250, 0), 42, 'light')]
+
+    for u, r in ((600, 70), (815, 55)):                # two small succulents
+        out.append(('circle', *Q(u, 0), r, 'solid'))
+        out.append(('circle', *Q(u, 0), r - 22, 'green'))
+        for k in range(5):                             # the rosette in each
+            t = math.radians(k * 72 + 18)
+            out.append(('circle', *Q(u + math.cos(t) * (r - 40),
+                                     math.sin(t) * (r - 40)),
+                        max(r * 0.24, 12), 'green'))
+
+    out.append(('poly', [Q(960, -80), Q(1240, -80),    # a stack of books
+                         Q(1240, 80), Q(960, 80)], 'soft'))
+    for k in (1, 2):
+        out.append(('line', *Q(960 + 280 * k / 3, -80),
+                    *Q(960 + 280 * k / 3, 80), 'light'))
+
+    out.append(('circle', *Q(1420, 0), 90, 'solid'))   # and a bowl
+    out.append(('circle', *Q(1420, 0), 50, 'light'))
     return out
-
-
-# THE PARALLEL PAIR IS GONE.  rocking_chairs() built two chairs on one shared
-# aim, computed from the midpoint between them, because a chair that aims
-# itself from its own seat centre cannot have a twin — move the twin sideways
-# and it points somewhere else.  The pair stood in the great room's east half
-# and came out with that half: the room's seating is the L now, and the single
-# chair that closes it is drawn by rocking_chair() direct from the draw loop.
-#
-# The technique is worth remembering if a pair is ever wanted again: aim once
-# from the midpoint, pass the same vector to both.
 
 
 def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250, face=None):

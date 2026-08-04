@@ -404,6 +404,51 @@ def arch_console(dep=400, dep_end=250, n=140, over=900, over_d=250,
             ('rect', xb - over_d, ys - over, xb, ys, 'dash')]
 
 
+def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42,
+                     u_a=0.264, u_b=0.618):
+    """The parents' version of the same curl round the bath's arch.
+
+    Karan's runs the whole sweep and dies into his dressing screen at Y 7675.
+    This one is CUT BY THE SLIDING SCREEN that divides the parents from the
+    grandmother: the leaf shuts on the line Y 5875-5995 and the console crosses
+    that line, so a slot runs through it and the leaf slides into the slot and
+    stops against the arch.
+
+    The two ends of the slot are found rather than guessed — u 0.264 and 0.618
+    are the first and last sections of the console whose 400 depth touches the
+    leaf's line with 20 of tolerance either side.  Between them there is nothing
+    but the leaf.
+
+    Everything else is Karan's: struck as an offset of the sweep's own outer
+    face, 400 deep, tapering to 250 at the pod wall and stopping there in a 431
+    face rather than a knife point.  No wall cabinet — that belongs on a
+    straight tail and this one has none.
+
+    The SOUTH piece, u 0.618 to the tail, sits in the grandmother's zone and is
+    what narrows the way in past it: 742 at the screen line, 525 by the time the
+    arch turns vertical.  Deleting it is a one-line change if that is too tight."""
+    h = D.T_MB / 2
+    u0 = mb_u_at_wall(-h)
+
+    def d(u):
+        t = min(1.0, (u - u0) / grow)
+        return dep_end + (dep - dep_end) * t * t * (3 - 2 * t)
+
+    lo, hi = -1.6, 0.0
+    for _ in range(60):
+        m = (lo + hi) / 2
+        if mb_pt(m, -h - d(m))[0] > D.MB_XE:
+            lo = m
+        else:
+            hi = m
+    out = []
+    for ua, ub, uf in ((u0, u_a, hi), (u_b, 1.0, u_b)):
+        back = [mb_pt(u, -h) for u in np.linspace(ua, ub, n)]
+        front = [mb_pt(u, -h - d(u)) for u in np.linspace(uf, ub, n)]
+        out.append(('poly', back + list(reversed(front)), 'solid'))
+    return out
+
+
 def suite_screen():
     """Karan's dressing screen — brown tinted glass, in the EAST frame.
 

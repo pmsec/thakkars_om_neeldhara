@@ -771,18 +771,27 @@ _ONCE = [
     # gone the group is an L rather than a U: closed on the west and the south,
     # open to the deck on the north and to the great room on the east.
     #
-    # THE ROUND CENTRE TABLE IS GONE, and with it the problem it caused.  It
-    # stood in the deck slider and left only 575 to get out; the only thing on
-    # that line now is one 500 side table, so the way through to the deck is
-    # 2100 — most of it back.
+    # THE ROUND CENTRE TABLE IS GONE, and so is the 500 side table that used to
+    # stand on the terrace line at the recliner's left hand.  NOTHING IS ON
+    # THAT LINE NOW: the pod's 2850 deck slider is clear end to end, against
+    # 575 when the round table stood in it.
     #
-    # THREE TABLES INSTEAD OF ONE, each doing a job:
-    #   a 500 square at the recliner's left hand, its north face ON Y 2620 so it
-    #     is flush with the terrace line and the group sets out from there
-    #   a 600 SQUARE CORNER TABLE in the angle of the L, touching the recliner's
-    #     foot and 100 off the sofa's west end — the piece that ties the two
-    #     seats together now that there is no centre table to do it
-    #   a 500 square at the sofa's right hand, 100 off it
+    # TWO TABLES, each doing a job:
+    #   a 600 SQUARE CORNER TABLE in the angle of the L, 250 on to the
+    #     recliner's foot and 250 off the sofa's west end — it sits BETWEEN the
+    #     two seats rather than against one of them, which is the whole point
+    #     of a corner table when the seats are at right angles
+    #   a 500 square at the sofa's right hand, butted to it the way a side
+    #     table actually gets used
+    #
+    # THE SOFA GROUP MOVED 300 EAST, because the recliner's footrest was
+    # finishing 60 off the sofa's west arm and reading as touching it.  East is
+    # the only direction that was free: the recliner cannot go west, since what
+    # is behind it is not a wall but the suite's sliding partition and its
+    # track, and it cannot go north without standing in the deck slider —
+    # which is exactly what was just cleared.  The chair has not moved.
+    #   600 from the recliner's east face to the sofa
+    #   360 from the tip of its footrest, reclined
     #
     # The recliner's footrest used to be drawn south whichever way the chair was
     # turned; it goes east now, which is where this one faces.
@@ -790,23 +799,19 @@ _ONCE = [
     # Measured, all of it:
     #   1150 in front of the sofa, deck line to its north face
     #   1130 behind it, its back to the north end of the dining table
-    #    500 from the recliner's north face up to the deck line
-    #   2100 of the pod's 2850 slider left open — the side table takes the
-    #        west 500 of it and nothing else stands on that line
+    #    161 from the east side table to the pod glazing, which is what caps
+    #        the eastward move at 300
+    #   2850 of deck slider, all of it
     #
-    # WHAT IT COSTS, said plainly: the group sits 370 off the suite's sliding
-    # partition, and it stands against 1400 of that partition's 3555 opening —
-    # the side table over Y 2620-3120 and the recliner over 3120-4020.  The
-    # full-width way through from the bedroom is the 1555 south of them, Y 4620
-    # to 6175, which is a door-and-a-half wide and is the end you come out at
-    # anyway.  Pulling the group 300 east would clear the whole opening and
-    # break the side table off the terrace line, which was the instruction.
-    ('counter-r', 4900, 2620, 5400, 3120,
-     "side table  ·  500 square, flush with the terrace line"),
+    # WHAT IT COSTS: the recliner still stands 370 off the suite's sliding
+    # partition, over Y 3120-4020 of its 3555 opening.  Everything else is now
+    # 920 or more off it, so the way through from the bedroom is the 2155 south
+    # of the chair plus the 500 north of it — better than it was, and the end
+    # you come out at anyway.
     ('recliner-w', 4900, 3120, 5700, 4020, "recliner  ·  800 x 900, facing east"),
-    ('counter-r', 5300, 4020, 5900, 4620, "corner table  ·  600 square"),
-    ('sofa-s',    6000, 3770, 7700, 4570, "sofa  ·  1700 x 800, facing the deck"),
-    ('counter-r', 7800, 3770, 8300, 4270, "side table  ·  500 square"),
+    ('counter-r', 5450, 4020, 6050, 4620, "corner table  ·  600 square, between the two"),
+    ('sofa-s',    6300, 3770, 8000, 4570, "sofa  ·  1700 x 800, facing the deck"),
+    ('counter-r', 8000, 3770, 8500, 4270, "side table  ·  500 square, on the sofa's arm"),
 
     # ------------------------------------------------- parents' pod: dining
     # NOT A ROUND TABLE.  It was a 1400 round, and a round table in a pod only

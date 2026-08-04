@@ -1204,6 +1204,33 @@ north edge to the glass line.
 They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
 each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
 
+### The entry gallery gets a console and a sofa
+
+The U had two long faces and nothing against either of them. Its legs run
+Y 9325–11125 with **3220 mm (10′-7″)** between their inner faces, which is
+enough for a piece on each side and still a lane wider than the arch at the
+far end of it.
+
+| | mm | ft |
+|---|---|---|
+| console, against the west leg | 1400 × 350 | 4′-7″ × 1′-2″ |
+| sofa, against the east leg, 2-seat facing west | 1600 × 800 | 5′-3″ × 2′-7″ |
+| **clear lane between them** | **2070** | **6′-9″** |
+| the great-room portal it leads to | 1050 | 3′-5″ |
+| floor taken, of the gallery's 9.4 m² | 1.77 m² | 19 sq ft |
+
+**Both are centred on the legs' own 1800 mm**, so they read as a pair rather
+than as two things that happened to fit — 200 mm (8″) of leg showing past the
+console's south end, 100 mm (4″) past the sofa's.
+
+**The mirror goes on the leg above the console** — `console-w` draws it — since
+the one thing an entry hall is actually for is the last look before you leave.
+
+**The lane is the check that matters.** It carries the walk from the front door
+to the great room, and at 2070 mm (6′-9″) it is twice the width of the arched
+portal at the end of it. Nothing on this route narrows below the door it leads
+to.
+
 ### The west half is an L with the tree in its corner
 
 This is the arrangement from the original interior reference, finally built:

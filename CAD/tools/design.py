@@ -1104,6 +1104,26 @@ _ONCE = [
     # the room.  700 deep from that wall, 620 wide, and it clears the apse: the
     # arc's inner face is at 16439 on this pan's south line.
     ('wc-e',     16730, 9390, 17430, 10010, ''),
+    # ------------------------------------------------------ the entry gallery
+    # THE U HAS TWO LONG FACES AND NOTHING WAS AGAINST EITHER OF THEM.  Its
+    # legs run Y 9325-11125 with 3220 between their inner faces, so both can
+    # take a piece 800 deep and still leave a lane wider than the arch at the
+    # far end of it.
+    #
+    # Console west, sofa east, both centred on the legs' own 1800 so they read
+    # as a pair rather than as two things that happened to fit.  The mirror
+    # goes on the leg above the console — 'console-w' draws it — because the
+    # one thing an entry hall is actually for is the last look before you
+    # leave.
+    #
+    # WHAT THE LANE BETWEEN THEM HAS TO CARRY is the walk from the front door
+    # to the great room: 2070 clear, against the arched portal's own 1050 at
+    # the far end of it.  Nothing narrows below the door it leads to.
+    ('console-w', 10630, 9525, 10980, 10925,
+     'console  ·  1400 x 350, against the U\'s west leg  ·  mirror over'),
+    ('sofa-e',    13050, 9425, 13850, 11025,
+     'sofa  ·  1600 x 800, 2-seat, against the U\'s east leg, facing west'),
+
 ]
 
 # Drawn on both halves of the home.
@@ -1129,6 +1149,7 @@ _MIRROR = [
     # is too short for anything hung and too shallow for anything deep.  It is
     # exactly a bin, and a bin has to go somewhere.
     ('bin',      2475, 6715, 2775, 7015, ''),
+
 ]
 
 _FLIP = {'bed-e': 'bed-w', 'bed-w': 'bed-e', 'bed-n': 'bed-n', 'bed-s': 'bed-s',
@@ -1137,8 +1158,11 @@ FURNITURE = (list(_ONCE) + list(_MIRROR)
              + [(_FLIP.get(k, k), M(c), b, M(a), d, lab)
                 for k, a, b, c, d, lab in _MIRROR])
 
-# The entry gallery is left empty — its curved console and bench come back
-# when the joinery is designed properly.
+# GALLERY_FURNITURE holds pieces set out in POLAR coordinates, for anything
+# that follows the apse's curve.  Nothing does yet: the gallery's console and
+# sofa are both straight runs against the U's straight legs, so they live in
+# _ONCE with everything else rectangular.  Curved joinery in the apse itself
+# comes back when it is designed properly.
 GALLERY_FURNITURE = []
 
 # The lift core and landing beyond the entry hall — shown for reference only.

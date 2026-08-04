@@ -1175,36 +1175,21 @@ sofas meeting at a right angle, with a **planter box filling the angle between
 their two ends and a tall tree growing out of it**. In a U the corner is the
 awkward bit nobody sits in; here it is the thing you look at.
 
-**The great room and the deck in front of it are designed as one room.** The
-deck sits under the high glass roof, the 6250 mm (20′-6″) slider between the
-voids opens the whole width, and the combined space is 6250 × ~7300 mm
-(20′-6″ × 24′-0″) — with the **fountain sitting exactly on its centre axis**:
-front door, gallery portal, fountain, parapet, all on X 12240.
+**The great room has no seating in it, on instruction.** Every sofa, recliner,
+side table and the rug came out; only the **tree** stays, moved to the room's
+south-west shoulder — off the axis and off every route, its canopy wholly
+inside the room. A single planted thing in an empty room reads as intent;
+anywhere nearer the middle it would have read as left behind.
 
-So the seating is **a U on that axis, opening north onto the garden**:
+What is left is the room itself: **6250 mm (20′-6″)** wide at the deck,
+**8220 mm (27′-0″)** at the waist, running open from the gallery apse to the
+grass and the fountain with **nothing standing on the axis at all** — front
+door, portal, fountain, parapet in one clear line. The two 2-seat recliners
+out on the grass are now the only seats in the combined room.
 
-* the **bench across the bottom**, facing the fountain straight down the axis
-  — **3940 mm (12′-11″)** from its front to the fountain's rim
-* **two recliners up each side**, turned inward, facing each other across the
-  rug, the garden in every seat's half-view
-* the **two 2-seat recliners on the grass**, backing the voids and facing the
-  fountain, become the same composition's outer wings — slider open, the whole
-  thing reads as one court of seats around the water, **ten or eleven of them**
-
-The U's mouth is **2380 mm (7′-10″)** wide and opens straight onto the lawn —
-from any seat you walk north between the chairs onto the grass without
-turning. The tree keeps the sofa-corner idea at the bench's west arm, its
-canopy 70 mm clear of the kitchen bump. The rug — 3780 × 2900 mm (12′-5″ ×
-9′-6″) — is symmetric on the axis like the seats and stops 855 mm (2′-10″)
-short of the glass line: the rug is the room's half of the composition, the
-grass is the garden's.
-
-**Circulation, since the bench stands on the axis:** out of the front door you
-round the U's **east flank — 1620 mm (5′-4″)** clear to the pod screen, the
-widest corridor in the room — or the west flank at 1530 mm (5′-0″) past the
-tree. Both pod portals face open floor, the side chairs 1550–1600 mm off each
-screen. The family-portal mistake of the previous round (a bench in front of
-the doorway) is gone with the bench's move to the axis.
+Seating for the great room is an open question again, deliberately — the room
+is a blank held by one tree, and whatever furniture comes next starts from
+zero rather than from the last arrangement.
 
 **The corner is on the west, and that is the one real choice here.** The great
 room already has a planter on its south-east wall — the one that answers the

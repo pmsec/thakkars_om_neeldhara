@@ -258,8 +258,6 @@ def main():
             s.o.append(f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" '
                        f'stroke-width="{lw}"{dash}/>')
 
-    for p in R.great_room_carpet():    # the rug goes down before the furniture
-        prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)
     for p in R.hob_counter():          # the hob run + the appliance corner, one L

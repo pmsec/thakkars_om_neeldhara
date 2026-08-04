@@ -917,45 +917,22 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    # THE GREAT ROOM AND THE DECK IN FRONT OF IT ARE DESIGNED AS ONE ROOM —
-    # the deck is under the high glass roof, the 6250 slider between the voids
-    # opens the whole width, and the combined space is 6250 wide by about 7300
-    # deep with a FOUNTAIN sitting exactly on its centre axis: front door,
-    # gallery portal, fountain, parapet, all on X 12240.
+    # THE GREAT ROOM HAS NO SEATING IN IT, on instruction — every sofa,
+    # recliner, side table and the rug came out, and only the TREE stays.
+    # What is left is the room itself: 6250 wide at the deck, 8220 at the
+    # waist, running open from the gallery apse to the grass and the fountain
+    # with nothing standing on the axis at all.  The two 2-seat recliners out
+    # on the grass are now the only seats in the combined room.
     #
-    # So the seating is a U ON THAT AXIS, OPENING NORTH ONTO THE GARDEN:
-    #   the bench across the bottom, facing the fountain straight down the
-    #     axis, 3940 from its front to the fountain's rim
-    #   two recliners up each side, turned inward, facing each other across
-    #     the rug — with the garden in every seat's half-view
-    #   the two 2-SEAT RECLINERS ON THE GRASS, backing the voids and facing
-    #     the fountain, are the same composition's outer wings — with the
-    #     slider open the whole thing reads as one court of seats around the
-    #     water, ten or eleven of them
-    #
-    # The U's mouth is 2380 wide and opens straight onto the grass: from any
-    # seat you walk north between the chairs onto the lawn without turning.
-    # The tree keeps the sofa-corner idea at the bench's west arm, floating
-    # 70 clear of the kitchen bump so its canopy stays inside the room.
-    #
-    # CIRCULATION, since the bench stands on the axis: out of the front door
-    # you round the U's east flank — 1620 clear to the east pod screen, the
-    # widest corridor in the room — or the west flank at 1530 past the tree.
-    # Both pod portals (Y 3872-4692) face open floor: the side chairs stop
-    # 1550-1600 off each screen.
-    ('sofa-s',    11240, 5700, 13240, 6500, "bench sofa  ·  2000 x 800, facing the fountain"),
-    ('sidetable', 10640, 5700, 11140, 6200, "side table  ·  at the bench's west arm"),
-    ('sidetable', 13340, 5700, 13840, 6200, "side table  ·  at the bench's east arm"),
-    ('recliner-w', 10250, 3300, 11050, 4200, "recliner  ·  800 x 900, facing east"),
-    ('sidetable', 10250, 4200, 10750, 4650, "side table  ·  between the west pair"),
-    ('recliner-w', 10250, 4650, 11050, 5550, "recliner  ·  800 x 900, facing east"),
-    ('recliner-e', 13430, 3300, 14230, 4200, "recliner  ·  800 x 900, facing west"),
-    ('sidetable', 13730, 4200, 14230, 4650, "side table  ·  between the east pair"),
-    ('recliner-e', 13430, 4650, 14230, 5550, "recliner  ·  800 x 900, facing west"),
+    # The tree moved to the room's south-west shoulder, off the axis and off
+    # every route — 1530 to the west pod portal's approach, clear of the
+    # kitchen bump by 450, canopy wholly inside the room.  A single planted
+    # thing in an empty room reads as intent; anywhere nearer the middle it
+    # would read as left behind.
     # Last in the list so the canopy draws over the two sofas, which is where
     # it actually is: 1710 across, oversailing each of them by about 380.
     ('treebox',   10140, 6400, 11090, 7350,
-     "planter box  ·  950 square, the tree at the bench's west arm"),
+     "planter box  ·  950 square, the tree on the room's south-west shoulder"),
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

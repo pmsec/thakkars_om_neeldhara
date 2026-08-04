@@ -1204,76 +1204,53 @@ north edge to the glass line.
 They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
 each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
 
-### The great room: one sofa, square to the room, paired with the east recliner
+### The great room: the run turned 90° left, facing across the room
 
-The room has **one piece** in it: a 2-seat recliner sofa with a **planter box
-built on to its east end and a tall tree growing out of it** — the idea from
-the interior reference, where the sofa and the planting are one run of joinery
-rather than a sofa with a pot beside it.
+The sofa, its planter and tree, the console and the rug are **one run**, and it
+has been turned a quarter turn anticlockwise. It stood east–west with the sofa
+facing the deck; it now stands **north–south with the sofa facing west**.
 
 | | |
 |---|---|
-| sofa | 1600 × 900 mm (5′-3″ × 3′-0″), footrests +280 mm (11″) |
-| planter, butted to its east end | 900 mm (3′-0″) square |
-| tree canopy | 1620 mm (5′-4″) across, drawn dashed — it is overhead |
-| the whole assembly | 2500 × 1180 mm (8′-2″ × 3′-10″) |
-
-**It was set out at 45° for one round, and it has been turned back.** A single
-piece on the slant in an otherwise empty room does not read as deliberate; it
-reads as knocked askew. Square to the walls it reads as placed.
-
-**Where it sits along the room is set by the den's doorway.** The piece was
-asked to run east until its east face landed on **X 15365**, the line the east
-deck recliner's back sits on. It cannot go that far: the arched portal into
-Karan's den is in the east pod screen at **Y 3872–4692**, and the screen there
-stands at 15807. A planter face on 15365 would leave **442 mm (1′-5″)** to walk
-through, across the approach to a doorway — and a sofa parked in front of a
-door is the one mistake this drawing has already made once, in an earlier
-round, in front of the family-room portal.
-
-So it runs east until the den's approach is **1000 mm (3′-3″)** and stops. The
-planter's east face is at 14807, **558 mm (1′-10″) short of the drawn line**.
-That 558 is the whole of the difference, and it does not come down.
+| run | X 13107–14007, Y 3337–5837 |
+| planter and tree, at the north end | Y 3337–4237 |
+| sofa, south of it | Y 4237–5837 |
+| footrest tips, projecting west | X 12827 |
+| console, on the back — now the east face | X 14007–14357, Y 4237–5837 |
+| rug | 2000 × 3000 mm (6′-7″ × 9′-10″), same stock size on its side |
 
 Clearances round it:
 
 | | mm | ft |
 |---|---|---|
-| footrest tips → deck glass | 1312 | 4′-4″ |
-| sofa back → apse crown | 2448 | 8′-0″ |
-| west end → west pod glazing | 3634 | 11′-11″ |
-| **planter east face → east pod glazing** | **1000** | **3′-3″** |
-| canopy edge → east pod glazing | 594 | 1′-11″ |
+| planter north end → deck glass | 717 | 2′-4″ |
+| sofa south end → apse crown | 1648 | 5′-5″ |
+| console east face → east pod glazing | 1459 | 4′-9″ |
+| run east face → den's portal screen | 1769 | 5′-10″ |
+| rug west edge → the rocking chairs | 654 | 2′-2″ |
 
-The canopy's 594 mm is overhead foliage against an open arch, not a floor
-clearance — nothing passes at that height.
+**One thing the turn gives back: the front door's walk is clear.** The gallery
+portal's lane runs X 11715–12765, and every previous arrangement of this run
+sat across it — the walk from the front door out to the deck had to go round
+the sofa. Turned, the footrest tips stop at **X 12827**, which clears the lane
+by **62 mm (2″)**. Tight, but on the right side of the line, and it is the
+first version of this room you can walk straight through.
 
-**What the move costs is the other half of the seating group.** The two deck
-recliners are pinned against the void walls at X 9565 and 14915, so the sofa's
-distance to each is decided entirely by where it sits between them:
+**And one thing it costs: the sofa no longer faces the deck.** It looks west,
+across the room. What it looks at is the pair of rocking chairs:
 
 | | mm | ft |
 |---|---|---|
-| sofa ↔ **east** recliner | **3261** | **10′-8″** |
-| sofa ↔ west recliner | 4463 | 14′-8″ |
+| sofa ↔ **near** rocking chair | **2858** | **9′-5″** |
+| sofa ↔ far rocking chair | 3822 | 12′-6″ |
+| sofa ↔ east deck recliner | 3444 | 11′-4″ |
 
-Centred on X 12240 it read **3811 mm (12′-6″)** to both — balanced, and both
-of them slightly long. This is a deliberate trade of one balanced group for one
-close pair: the east recliner and the sofa now hold a proper conversation, and
-**the west recliner becomes a place to sit and look at the fountain** rather
-than a seat in the group.
-
-The sofa no longer faces the fountain square, either — its centre is at
-X 13107, so the bowl is off to the west. The tree ends up at 14357.
-
-It is drawn in `retrofit.great_room_sofa()` rather than as symbols, because the
-planter shares the sofa's back line and depth and butts its end — they are one
-piece, not two. `deg` is kept as an argument, at 0, so the 45° version is one
-number away if it is ever wanted back.
-
-The canopy is drawn **dashed**, because it is overhead — it oversails the
-planter box by about **360 mm (1′-2″)** on every side, which is the whole
-reason for a tree there rather than a pot.
+2858 mm (9′-5″) is the best conversation distance in this room. **But the
+chairs are still aimed 28° north of east — away from the sofa** — so as drawn
+the sofa looks at the back of the near one. That is one number away: re-aim
+`rocking_chairs()` at the sofa instead of the east deck recliner and the three
+become a proper group. It has not been done, because it undoes the reason the
+chairs were turned off square in the first place.
 
 ### Two rocking chairs, parallel, and a console with things on it
 

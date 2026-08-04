@@ -922,10 +922,13 @@ _ONCE = [
     # a seat with no side to it.
     # THE GREAT ROOM IS TWO PAIRS AND A RUG, not one group with strays in it.
     #
-    #   east half   the 2-seat recliner sofa, square to the room, with its
-    #               planter and tree built on to the east end, paired with the
-    #               east deck recliner at 3261 across the slider line.  A
-    #               console on its back line and a rug under it.
+    #   east half   the run TURNED 90 DEGREES LEFT — it stands north-south
+    #               now with the planter at its north end, the sofa south of
+    #               it and the sofa FACING WEST, across the room at the pair
+    #               of rocking chairs rather than out at the deck.  The
+    #               console is on its back, which is now the east face, and
+    #               the rug turned with it: 2000 x 3000 instead of 3000 x
+    #               2000, the same stock size on its side.
     #   west half   TWO rocking chairs, genuinely parallel, 1500 apart with
     #               800 of clear floor between them, both on the same 28.0
     #               degree line at the east recliner.
@@ -944,9 +947,9 @@ _ONCE = [
     # Its south edge is the sofa's own back line at 5037, so THE CONSOLE
     # STANDS ON THE BOARDS: a console with two legs on a rug and two off rocks
     # every time you put a glass down on it.
-    ('rug',     12057, 3037, 15057, 5037,
-     'rug  ·  3000 x 2000, the whole sofa + planter on it, 250 each side'),
-    ('counter-e', 12307, 5037, 13907, 5387,
+    ('rug',     12007, 3087, 14007, 6087,
+     'rug  ·  2000 x 3000, the whole sofa + planter on it, 250 each end'),
+    ('counter-e', 14007, 4237, 14357, 5837,
      "console  ·  1600 x 350, four corners eased 90, on the sofa's back line  ·  "
      "two lamps, books and a bowl on it"),
 

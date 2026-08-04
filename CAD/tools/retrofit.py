@@ -823,7 +823,7 @@ def great_room_carpet():
 # fountain is a finish, settled with whoever plants it, off this drawing.
 
 
-def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
+def great_room_sofa(ax=14007, ay=5837, deg=-90, L=1600, D=900, foot=280, box=900):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 
     SQUARE TO THE ROOM, not diagonal.  It was set out at 45 degrees for one
@@ -1037,7 +1037,7 @@ def wood_floor(board=190, island=False):
 # floor to seat two people who now have a pair of rocking chairs instead.
 
 
-def console_top(a=12307, b=5037, c=13907, d=5387):
+def console_top(a=14007, b=4237, c=14357, d=5837):
     """What stands on the console behind the sofa.
 
     A console 350 deep is a shelf, not a surface — everything on it has to be
@@ -1056,18 +1056,28 @@ def console_top(a=12307, b=5037, c=13907, d=5387):
     Nothing that stands free in this home has a square corner on it, and this
     piece stands free on both ends with a sofa in front of it.
     """
-    cy = (b + d) / 2
+    # The console turns with the sofa, so this lays out along whichever of
+    # the two is the long side and puts the objects on that line.  Written
+    # once, in run coordinates, and mapped — the alternative is two copies
+    # that drift apart the first time one of them is edited.
+    horiz = (c - a) >= (d - b)
+    lo, mid = (a, (b + d) / 2) if horiz else (b, (a + c) / 2)
+    end = (c - a) if horiz else (d - b)
+
+    def Q(u, v):
+        return (lo + u, mid + v) if horiz else (mid + v, lo + u)
+
     out = []
-    for x in (a + 250, c - 250):                       # the two table lamps
-        out.append(('circle', x, cy, 130, 'solid'))
-        out.append(('circle', x, cy, 42, 'light'))
-    out.append(('circle', a + 598, cy, 105, 'solid'))   # a bowl,
-    out.append(('circle', a + 598, cy, 60, 'light'))
-    out.append(('poly', [(a + 818, cy - 85), (a + 1098, cy - 85),
-                         (a + 1098, cy + 85), (a + 818, cy + 85)], 'soft'))
+    for u in (250, end - 250):                         # the two table lamps
+        out.append(('circle', *Q(u, 0), 130, 'solid'))
+        out.append(('circle', *Q(u, 0), 42, 'light'))
+    out.append(('circle', *Q(598, 0), 105, 'solid'))    # a bowl,
+    out.append(('circle', *Q(598, 0), 60, 'light'))
+    out.append(('poly', [Q(818, -85), Q(1098, -85),
+                         Q(1098, 85), Q(818, 85)], 'soft'))
     for k in (1, 2):                                   # and a stack of books
-        x = a + 818 + 280 * k / 3
-        out.append(('line', x, cy - 85, x, cy + 85, 'light'))
+        out.append(('line', *Q(818 + 280 * k / 3, -85),
+                    *Q(818 + 280 * k / 3, 85), 'light'))
     return out
 
 

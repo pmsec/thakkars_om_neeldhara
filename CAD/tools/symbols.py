@@ -19,6 +19,25 @@ import math
 
 MID = 12240
 
+# How far a recliner's footrest projects when it is DEPLOYED, in mm.  600 is
+# the middle of the real range (450-650) and is what every recliner in the
+# plan gets unless it is named below.
+FOOT = 600
+
+# The two that cannot have the full 600, keyed by the north-west corner of the
+# seat box.  450 is the LOW END OF THE REAL RANGE, not a fudge — these are the
+# two chairs that would have to be specified as short-throw units.
+#
+#   (4900, 3120)  the parents' pod recliner.  Its sofa starts at X 6300 and
+#                 the seat's east face is on 5700, so 600 lands the footrest
+#                 exactly on the sofa's arm.  450 leaves 150.
+#   (9673, 3532)  the great room's single recliner.  Its footrest and the
+#                 great-room sofa's deploy into the same corner of the room
+#                 at right angles; at 600 and 600 they overlap by 39.  The
+#                 sofa keeps its full 600 because two people sit on it, and
+#                 this chair takes the 450, which leaves 111 between them.
+FOOT_EXCEPT = {(4900, 3120): 450, (9673, 3532): 450}
+
 
 def _rr(x0, y0, x1, y1, style='solid'):
     return ('rect', x0, y0, x1, y1, style)
@@ -232,12 +251,19 @@ def symbol(kind, a, b, c, d):
     if kind == 'wc':
         return [('circle', cx, cy - h * 0.05, min(w, h) * 0.38, 'solid'),
                 _rr(cx - w * 0.22, d - h * 0.28, cx + w * 0.22, d, 'soft')]
-    if kind == 'wc-e':                     # the same pan, turned to face west,
-        return [('circle', cx - w * 0.05, cy, min(w, h) * 0.38, 'solid'),
-                _rr(c - w * 0.28, cy - h * 0.22, c, cy + h * 0.22, 'soft')]
+    # A WC PAN IS LONGER THAN IT IS WIDE, and the circle these used to be drew
+    # it the other way round: a 620 box gave a 471 disc, wider across than a
+    # real pan is and shorter front to back than one with a cistern behind it.
+    # Now an oval pan with the cistern as a band on the wall — 390 across and
+    # 680 nose to wall, which is what a close-coupled pan measures.
+    if kind == 'wc-e':                     # pan faces west, cistern east
+        return [('poly', _rrect(a, cy - h * 0.46, c - w * 0.27,
+                                cy + h * 0.46, h * 0.46), 'solid'),
+                _rr(c - w * 0.27, cy - h * 0.5, c, cy + h * 0.5, 'soft')]
     if kind == 'wc-w':                     # and its mirror, facing east
-        return [('circle', cx + w * 0.05, cy, min(w, h) * 0.38, 'solid'),
-                _rr(a, cy - h * 0.22, a + w * 0.28, cy + h * 0.22, 'soft')]
+        return [('poly', _rrect(a + w * 0.27, cy - h * 0.46, c,
+                                cy + h * 0.46, h * 0.46), 'solid'),
+                _rr(a, cy - h * 0.5, a + w * 0.27, cy + h * 0.5, 'soft')]
     if kind == 'basin':
         return [_rr(a, b, c, d, 'solid'),
                 ('circle', cx, cy, min(w, h) * 0.30, 'light')]
@@ -322,14 +348,22 @@ def symbol(kind, a, b, c, d):
             # the footrest, out the way the chair FACES — it used to be drawn
             # south whichever way the recliner was turned, which put it through
             # whatever stood in front of an east or west facing one
+            #
+            # IT IS AN ABSOLUTE 600, NOT A FRACTION OF THE CHAIR.  Drawn as
+            # 30 per cent of the box it came out at 240-270, and a deployed
+            # footrest does not project 270 — it projects 450-650 depending on
+            # the mechanism.  Under-drawing it hides exactly the clash it
+            # exists to show, which is the whole reason a recliner is drawn
+            # differently from an armchair in the first place.
+            P = FOOT_EXCEPT.get((a, b), FOOT)
             if side == 's':
-                out.append(_e(a + w * 0.16, b - h * 0.3, a + w * 0.84, b, 'soft', OUT['n']))
+                out.append(_e(a + w * 0.16, b - P, a + w * 0.84, b, 'soft', OUT['n']))
             elif side == 'n':
-                out.append(_e(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft', OUT['s']))
+                out.append(_e(a + w * 0.16, d, a + w * 0.84, d + P, 'soft', OUT['s']))
             elif side == 'w':
-                out.append(_e(c, b + h * 0.16, c + w * 0.3, b + h * 0.84, 'soft', OUT['e']))
+                out.append(_e(c, b + h * 0.16, c + P, b + h * 0.84, 'soft', OUT['e']))
             else:
-                out.append(_e(a - w * 0.3, b + h * 0.16, a, b + h * 0.84, 'soft', OUT['w']))
+                out.append(_e(a - P, b + h * 0.16, a, b + h * 0.84, 'soft', OUT['w']))
         return out
     if kind == 'bed-rw':      # the same bed mirrored — head square on the WEST
         r = min(w, h) * 0.33

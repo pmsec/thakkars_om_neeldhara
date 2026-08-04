@@ -732,7 +732,7 @@ _ONCE = [
     # head, so the bed sits flush on the headboard instead of leaving two
     # crescent gaps behind the pillows.
     ('bed-rr',   HB_X - BED_L, BED_Y0, HB_X, BED_Y1,
-     "king 1800 x 2000  ·  foot corners 594, head square on the headboard"),
+     "king 1930 x 2032  ·  foot corners 594, head square on the headboard"),
     ('counter-r', HB_X - TAB_D, BED_Y0 - TAB_GAP - TAB_W, HB_X, BED_Y0 - TAB_GAP,
      "side table  ·  550 x 450"),
     ('counter-r', HB_X - TAB_D, BED_Y1 + TAB_GAP, HB_X, BED_Y1 + TAB_GAP + TAB_W,
@@ -800,7 +800,7 @@ _ONCE = [
     # retrofit.wood_floor().  The grass picks up again beyond each void.
     ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
     ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
-    ('gym',      4760, 340, 5460, 2280, 'all-in-one strength trainer'),
+    ('gym',      4760, 340, 5960, 2340, 'all-in-one strength trainer  ·  1200 x 2000'),
     ('spa',      17930, 400, 19680, 2150, '4-seat spa'),
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room
@@ -894,19 +894,25 @@ _ONCE = [
     # lean on.  They face each other across the fountain at 11640-12840, 1355
     # from each footrest to its rim.
     #
-    # 1345 wide and not 1400: the deck's south glazing runs at Y 2545 between
-    # the two voids, and a seat that oversails it is inside the great room.
-    # So they run Y 1200-2545 — the void's own north edge to the glass line.
+    # 1600 LONG, NOT 1345.  They ran Y 1200-2545 for several rounds — the
+    # void's own north edge down to the glass line — which looked tidy on the
+    # sheet and gave 672 a seat.  A two-seat recliner sofa is 1500-1700 over
+    # all, 750-850 a seat; 672 is a bench, not a recliner, and the arms would
+    # touch a sitter's hips.  The south end cannot move — the deck's glazing
+    # runs at Y 2545 and a seat that oversails it is inside the great room —
+    # so the 255 was taken off the NORTH end instead, to Y 945.  Nothing is
+    # north of them but open deck and their own side tables.
     #
     # Each has a small table at its NORTH arm, which is the only free side: the
-    # void is behind, the fountain in front, and the parapet planter 510 north
-    # of the table.
-    ('recliner-w', 9115, 1200, 10015, 2545,
-     "2-seat recliner  ·  1345 x 900, back on the void, facing the fountain"),
-    ('sidetable',  9115, 700, 9565, 1200, "side table  ·  450 x 500"),
-    ('recliner-e', 14465, 1200, 15365, 2545,
-     "2-seat recliner  ·  1345 x 900, back on the void, facing the fountain"),
-    ('sidetable',  14915, 700, 15365, 1200, "side table  ·  450 x 500"),
+    # void is behind, the fountain in front, the parapet planter beyond.  The
+    # tables came north with the seats and lost 50 of depth to keep a foot of
+    # planted strip showing north of them: 450 square on Y 495-945.
+    ('recliner-w', 9115, 945, 10015, 2545,
+     "2-seat recliner  ·  1600 x 900, back on the void, facing the fountain"),
+    ('sidetable',  9115, 495, 9565, 945, "side table  ·  450 square"),
+    ('recliner-e', 14465, 945, 15365, 2545,
+     "2-seat recliner  ·  1600 x 900, back on the void, facing the fountain"),
+    ('sidetable',  14915, 495, 15365, 945, "side table  ·  450 square"),
 
     # ------------------------------------------------- the great room: living
     # The great room was 407 sq ft of empty floor.  It gets the reference
@@ -1069,7 +1075,7 @@ _ONCE = [
     # front on the line where the lower leg's carcass begins, so it can have no
     # door of its own.  A MAGIC CORNER serves it, drawn in
     # retrofit.magic_corner().  It is not a place for a sink or a hob.
-    ('sink',     8100, 8670, 8660, 8980,
+    ('sink',     8060, 8600, 8660, 9050,
      'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
     ('shelves',  6900, 8525, 8000, 8725,
      'serving hatch, 1100 — opens into the parents pod'),
@@ -1083,8 +1089,8 @@ _ONCE = [
     # The western 400 mattered more than the eastern one: the hob had 300 of
     # counter to its left, which is not enough to set a hot pan down on.  It
     # has 700 now, against 1300 on its right.
-    ('under',    8430, 10455, 9170, 10895, 'integrated dishwasher, under the hob'),
-    ('hob',      8500, 10525, 9100, 10825, ''),
+    ('under',    8500, 10390, 9100, 10960, 'integrated dishwasher  ·  600 x 570'),
+    ('hob',      8500, 10420, 9100, 10930, 'hob  ·  600 x 510, 45 clear front and back'),
     # --- the fridge, west of the hob run, flush with the wall.  It sits clear
     #     of the window, which starts at 7800, so nothing stands in front of it.
     ('appliance', 7000, 10275, 7800, 10975, 'fridge  ·  flush with the wall'),
@@ -1116,11 +1122,11 @@ _ONCE = [
     # into that wall.  The basin is not here: it is set into a curved console
     # struck off the apse itself, immediately inside the door — see
     # retrofit.wc_console().
-    ('shower',   16530, 8575, 17430, 9325, ''),   # 900 x 750
+    ('shower',   16530, 8425, 17430, 9325, ''),   # 900 x 900
     # Turned a quarter, so its back is on the duct wall rather than floating in
     # the room.  700 deep from that wall, 620 wide, and it clears the apse: the
     # arc's inner face is at 16439 on this pan's south line.
-    ('wc-e',     16730, 9390, 17430, 10010, ''),
+    ('wc-e',     16750, 9430, 17430, 9820, ''),  # 680 x 390
     # ------------------------------------------------------ the entry gallery
     # THE U HAS TWO LONG FACES AND NOTHING WAS AGAINST EITHER OF THEM.  Its
     # legs run Y 9325-11125 with 3220 between their inner faces, so both can
@@ -1167,7 +1173,7 @@ _MIRROR = [
     # soil stack is in the builder's main service duct, so the pan goes on the
     # duct wall, and the shower takes the whole south end because at 1930 clear
     # a full-width wet zone is simpler than a cubicle with a gap beside it.
-    ('wc-e',     3805, 7620, 4405, 8240, ''),      # 600 off the duct wall
+    ('wc-e',     3725, 7625, 4405, 8015, ''),   # 680 x 390      # 600 off the duct wall
     # 4325, not the wall at 4405: the builder leaves a 230 x 1000 column on
     # the duct's corner and 80 of it stands in this corner of the room.
     ('shower',   2475, 8595, 4325, 9545, 'walk-in, 1850 x 950'),

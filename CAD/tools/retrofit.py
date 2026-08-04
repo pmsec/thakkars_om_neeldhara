@@ -823,7 +823,7 @@ def great_room_carpet():
 # fountain is a finish, settled with whoever plants it, off this drawing.
 
 
-def great_room_sofa(ax=12478, ay=5537, deg=0, L=1600, D=900, foot=280,
+def great_room_sofa(ax=12478, ay=5537, deg=0, L=1600, D=900, foot=600,
                     box=900, flip=True, gap=305):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 

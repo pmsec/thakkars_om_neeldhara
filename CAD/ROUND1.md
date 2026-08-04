@@ -850,7 +850,9 @@ it cannot go north without standing in the slider that was just cleared. So
 the chair did not move — the sofa did.
 
 * **600 mm (2′-0″)** from the recliner's east face to the sofa
-* **360 mm (1′-2″)** from the tip of its footrest, reclined
+* **150 mm (6″)** from the tip of its footrest, reclined — this chair is one
+  of the two specified as a **short-throw 450 mm (1′-6″)** unit rather than
+  the 600 mm (2′-0″) everything else gets; see *Real-world sizing* below
 * **641 mm (2′-1″)** east of the sofa to the pod glazing — with nothing
   standing beside it any more, the sofa could go further east still if the gap
   wants opening
@@ -2031,6 +2033,79 @@ need. Beside the serving hatch it is also next to the kitchen.
 * **the gallery corners** — the corners the apse leaves behind it are open to
   the kitchen and to help's room through the builder's own 800 clear above each
   column, so they are floor in those rooms rather than waste
+
+## Real-world sizing — the audit and what came of it
+
+Every drawn object was measured against what the thing is in a catalogue.
+Most of the plan was already right. Three groups were not, and this pass
+fixed them; a fourth was left alone deliberately.
+
+### Fixed — the plan was drawing things smaller than they are made
+
+| item | was | now |
+|---|---|---|
+| kitchen hob | 600 × 300 mm (2′-0″ × 1′-0″) | **600 × 510 mm (2′-0″ × 1′-8″)** |
+| kitchen sink | 560 × 310 mm (1′-10″ × 1′-0″) | **600 × 450 mm (2′-0″ × 1′-6″)** |
+| dishwasher | 740 × 440 mm (2′-5″ × 1′-5″) | **600 × 570 mm (2′-0″ × 1′-10″)** |
+| guest WC shower | 900 × 750 mm (3′-0″ × 2′-6″) | **900 × 900 mm (3′-0″ square)** |
+| multi-gym | 700 × 1940 mm (2′-4″ × 6′-4″) | **1200 × 2000 mm (3′-11″ × 6′-7″)** |
+| WC pan, all three | a 620 mm (2′-0″) circle | **680 × 390 mm (2′-3″ × 1′-3″)**, pan and cistern |
+| deck 2-seat recliners | 1345 × 900 mm (4′-5″ × 3′-0″) | **1600 × 900 mm (5′-3″ × 3′-0″)** |
+| recliner footrests | 240–270 mm (10″–11″) | **600 mm (2′-0″)**, two at 450 mm (1′-6″) |
+
+Karan's bed label read *1800 × 2000* against geometry that was already
+2032 × 1930. The geometry was right; the label now says **1930 × 2032 mm
+(6′-4″ × 6′-8″)**, which is a king.
+
+The **WC pan** was a circle, which is a floor drain, not a WC. It is now an
+oval pan with a cistern band behind it, sized 680 × 390 mm (2′-3″ × 1′-3″) —
+the real footprint of a back-to-wall pan. All three change together, so the
+guest WC, the parents' bath and Karan's bath all read the same.
+
+The **deck recliners** were the largest error. They ran Y 1200–2545, which
+looked tidy — the void's north edge down to the glass line — and gave each of
+two seats **672 mm (2′-2″)**. A two-seater is 1500–1700 mm (4′-11″–5′-7″)
+over all. The south end could not move, because the deck's glazing is at Y
+2545 and a seat over that line is inside the great room, so the 255 mm
+(10″) came off the north end instead: **Y 945–2545, 1600 mm (5′-3″), 800 mm
+(2′-8″) a seat.** Their arm tables came north with them and lost 50 mm (2″)
+of depth — **450 mm (1′-6″) square** now — so a foot of planted strip still
+shows north of them.
+
+### The footrests, and the two chairs that cannot have the full throw
+
+A footrest was being drawn at 30 per cent of the chair — 240–270 mm (10″–11″).
+A deployed footrest projects **450–650 mm (1′-6″–2′-2″)**. Under-drawing it
+hides exactly the clash it exists to show, so it is now an absolute **600 mm
+(2′-0″)** everywhere, with two named exceptions at **450 mm (1′-6″)**, the low
+end of the real range:
+
+* **the parents' pod recliner.** Its sofa starts at X 6300 and the seat's east
+  face is on 5700. At 600 mm the footrest lands on the sofa's arm. At 450 mm
+  it clears by **150 mm (6″)**.
+* **the great room's single recliner.** Its footrest and the great-room sofa's
+  deploy into the same corner at right angles; at 600 mm and 600 mm they
+  overlap by 39 mm (1½″). The sofa keeps its full 600 mm because two people
+  sit on it, and this chair takes the 450 mm, which leaves **111 mm (4″)**
+  between the two tips.
+
+Everything else clears with room to spare — the worst of the rest is **300 mm
+(1′-0″)**, in Karan's pod, to the table between the two chairs.
+
+### Left alone on purpose
+
+Marginal cases were not touched: the 800 mm (2′-8″) sofa depths, the 550 mm
+(1′-10″) desk chair in the parents' pod, the 1750 mm (5′-9″) spa. All are
+inside the real range, at the shallow end.
+
+### Not a gap — the basins were always there
+
+An earlier read of this drawing reported no washbasin anywhere. That was
+wrong. There is one in every bathroom; they are not in `design.py`'s furniture
+list because they are part of the curved joinery drawn in `retrofit.py` —
+`mb_console()` gives both master baths a 1743 mm (5′-9″) vanity with a 400 mm
+(1′-4″) bowl, and `wc_console()` gives the guest WC a 1015 mm (3′-4″) console
+with a 344 mm (1′-2″) bowl.
 
 ## Open for the next round
 

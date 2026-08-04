@@ -232,7 +232,9 @@ def main():
              'glass': ('#dde7ea', GLAS, 1.0), 'green': ('#cdd9c2', '#93a884', 1.0),
              'water': ('#dfeef2', '#8ab0bd', 1.1),
              'tint': ('#e2cfae', '#8a6440', 1.0),
-             'wood': ('#b9884f', '#6b4426', 1.2)}
+             'wood': ('#b9884f', '#6b4426', 1.2),
+             'plank': ('#e7dac6', 'none', 0),
+             'board': ('none', '#cfb896', 0.7)}
 
     def prim(p):
         st = p[-1]
@@ -258,6 +260,8 @@ def main():
             s.o.append(f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" '
                        f'stroke-width="{lw}"{dash}/>')
 
+    for p in R.wood_floor():           # great room + deck bay, one board grid
+        prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)
     for p in R.hob_counter():          # the hob run + the appliance corner, one L

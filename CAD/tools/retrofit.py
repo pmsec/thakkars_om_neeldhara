@@ -891,6 +891,64 @@ def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     return out
 
 
+def wood_floor(board=190):
+    """One wooden floor for the great room and the deck bay in front of it.
+
+    The great room and the deck between the two voids are one room with a
+    glass line across the middle of it — that has been the working assumption
+    since the seating was laid out, and the floor is what makes it true.  Two
+    finishes meeting at the slider would read as inside and outside no matter
+    what the seating did.
+
+    THE BOARDS ARE ON ONE GRID, and that is the whole of the detail.  They run
+    NORTH-SOUTH, across the slider rather than along it, so every board starts
+    on the deck and finishes in the great room; and every board line in both
+    halves comes off the same set-out, centred on X 12240, so a board on the
+    deck is the SAME board on the other side of the glass.  Boards laid to two
+    separate grids and butted at a threshold read as two floors joined, which
+    is exactly the thing this is meant to stop.
+
+    190 is a normal engineered-oak width, and 12240 falls on a board centre.
+
+    What stays grass: everything on the deck beyond the voids, west of 9115
+    and east of 15365, and the 340 planted strip along the parapet.  The lawn
+    was never the point of the deck bay in front of the great room — the point
+    of that bay is that the room walks out on to it.
+
+    The great room's outline is not a rectangle — its sides are the pod
+    Beziers and its south end is the apse and the kitchen's bump — so each
+    board is clipped against the real room polygon rather than a bounding box.
+    """
+    from matplotlib.path import Path
+
+    _f, _d, great = pod_polys()
+    room = Path(great)
+
+    N_DECK, S_DECK = D.DECK_N + 340, D.DECK_S
+    W_DECK, E_DECK = 9115, 15365                  # between the two voids
+
+    out = [('poly', great, 'plank'),
+           ('poly', [(W_DECK, N_DECK), (E_DECK, N_DECK),
+                     (E_DECK, S_DECK), (W_DECK, S_DECK)], 'plank')]
+
+    xs = [x for x in np.arange(D.MID - board / 2, D.END_W, -board) if x > 8500]
+    xs += [x for x in np.arange(D.MID + board / 2, D.END_E, board) if x < 16000]
+    for x in sorted(xs):
+        if W_DECK < x < E_DECK:                    # the deck half of the board
+            out.append(('line', x, N_DECK, x, S_DECK, 'board'))
+        ys = np.arange(D.BODY_N, D.BODY_S, 40.0)   # and the great room half,
+        inside = room.contains_points([(x, y) for y in ys])   # clipped to it
+        run = None
+        for y, ok in zip(list(ys) + [ys[-1]], list(inside) + [False]):
+            if ok and run is None:
+                run = y
+            elif not ok and run is not None:
+                if y - run > 200:
+                    out.append(('line', x, run, x, y, 'board'))
+                run = None
+    return out
+
+
 def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250):
     """The great room's rocking chair, turned to face the east deck recliner.
 

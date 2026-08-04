@@ -16,6 +16,7 @@ Layers added
     PROP-KEEP         shafts, ducts and voids that must stay clear
     PROP-GLAZ         glazing, sliding glass and the pod portals
     PROP-SCREEN       the entry gallery U — 75 wood screen
+    PROP-FLOOR        the great room / deck floor boards
     PROP-FURN         fixed joinery and layout furniture
     PROP-TEXT         room names and areas
     PROP-DIM          the set-out dimensions
@@ -66,6 +67,7 @@ LAYERS = [
     ('PROP-KEEP', 6, 'DASHED'),              # magenta
     ('PROP-GLAZ', 4, 'CONTINUOUS'),          # cyan
     ('PROP-SCREEN', 32, 'CONTINUOUS'),       # brown — the wood drum
+    ('PROP-FLOOR', 41, 'CONTINUOUS'),     # the great room / deck boards
     ('PROP-FURN', 9, 'CONTINUOUS'),
     ('PROP-TEXT', 3, 'CONTINUOUS'),          # green
     ('PROP-DIM', 2, 'CONTINUOUS'),           # yellow
@@ -233,7 +235,9 @@ def main():
     # -------------------------------------------------------------- furniture
     def prim(p):
         lyr = ('PROP-GLAZ' if p[-1] in ('glass', 'tint')
-               else 'PROP-SCREEN' if p[-1] == 'wood' else 'PROP-FURN')
+               else 'PROP-SCREEN' if p[-1] == 'wood'
+               else 'PROP-FLOOR' if p[-1] in ('plank', 'board')
+               else 'PROP-FURN')
         if p[0] == 'rect':
             box(msp, p[1], p[2], p[3], p[4], lyr)
         elif p[0] == 'circle':
@@ -243,6 +247,8 @@ def main():
         elif p[0] == 'poly':
             poly(msp, p[1], lyr)
 
+    for p in R.wood_floor():           # great room + deck bay, one board grid
+        prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)
     for p in R.hob_counter():          # the hob run + the appliance corner, one L

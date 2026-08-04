@@ -777,7 +777,10 @@ _ONCE = [
     #     answer and is NOT drawn, because it is not what was asked for.
     ('grass',    POD_W0, DECK_N + 340, 7500, DECK_S, 'real grass, the whole deck'),
     ('grass',    7500, DECK_N + 340, 9115, 1200, 'real grass, north of the void'),
-    ('grass',    9115, DECK_N + 340, 15365, DECK_S, 'real grass, between the voids'),
+    # NOTHING BETWEEN THE VOIDS.  X 9115-15365 is the bay the great room walks
+    # out on to, and it is boarded, not grassed — the same floor as the room
+    # inside, on the same board grid, run through the slider.  See
+    # retrofit.wood_floor().  The grass picks up again beyond each void.
     ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
     ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
     ('gym',      4760, 340, 5460, 2280, 'all-in-one strength trainer'),

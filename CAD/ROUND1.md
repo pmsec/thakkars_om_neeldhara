@@ -1098,19 +1098,54 @@ sit anywhere in it.
 
 Both came off the reference sheet.
 
-### The whole deck is real grass
+### One wooden floor, run through the slider
 
-Not two bays of it set into a hard deck — grass end to end, from the planted
-strip's south face at Y 190 to the glazing line at 2470, all 15 420 of it. The
-only things it goes round are the two retained voids, which are holes in the
-slab.
+The great room and the deck bay in front of it are **boarded as one floor**.
+That has been the working assumption since the seating was laid out — the two
+treated as a single room with a glass line across the middle of it — and the
+floor is what makes it true. Two finishes meeting at the slider would read as
+inside and outside no matter what the furniture did.
 
 | | m² | sq ft |
 |---|---|---|
-| grass, as two bays | 10.53 | 113 |
-| **grass, the whole deck** | **31.06** | **334** |
+| great room | 37.80 | 407 |
+| deck bay between the voids, 6250 × 2280 | 14.25 | 153 |
+| **one boarded floor** | **52.05** | **560** |
+
+**The boards are on one grid, and that is the whole of the detail.** They run
+**north–south, across the slider rather than along it**, so every board starts
+on the deck and finishes in the great room. And both halves come off the same
+set-out, centred on X 12240 — so a board on the deck is *the same board* on
+the other side of the glass. Boards laid to two separate grids and butted at a
+threshold read as two floors joined, which is exactly what this is meant to
+stop. 190 mm (7½″) is a normal engineered-oak width and 12240 falls on a board
+centre.
+
+Because the great room is not a rectangle — its sides are the pod curves and
+its south end is the apse and the kitchen's bump — every board is clipped
+against the real room outline rather than a bounding box.
+
+**Two things this needs specified, and they are not the same product:**
+
+1. **The deck half cannot be interior engineered oak.** It is covered by the
+   high glass roof but it is still outdoors — sun through glass, blown rain,
+   temperature swing. It wants an outdoor-rated board of the same 190 mm width:
+   thermally modified ash, teak, or a high-density composite. Same width, same
+   grid, different spec, and the joint at the slider is where they meet.
+2. **The fountain now stands on timber.** It sits at X 11640–12840, entirely
+   within the boarded bay. It needs a stone or tray base under it — a
+   recirculating bowl on boards will mark them.
+
+### The grass that is left
+
+Grass picks up again beyond each void — the deck's two ends — plus the planted
+strip along the parapet.
+
+| | m² | sq ft |
+|---|---|---|
+| grass, beyond the voids | 16.81 | 181 |
 | plus the planted strip | 5.24 | 56 |
-| **green, total** | **36.30** | **391** |
+| **green, total** | **22.05** | **237** |
 
 **Two things this needs and has not got, both worth settling before it is
 priced:**
@@ -1118,10 +1153,11 @@ priced:**
 1. **The suites' sliding glass panels park on the deck**, on a track at
    X 4540–4600 and its mirror. A track cannot run through turf — it wants a
    hard strip, and that strip will be visible in the lawn.
-2. **Grass wears where people walk**, and the way out of the great room crosses
-   it. A paved threshold in front of the slider is the usual answer. It is
-   **not drawn**, because it is not what was asked for — but it is the first
-   thing a landscaper will raise.
+2. ~~Grass wears where people walk, and the way out of the great room crosses
+   it.~~ **Settled by the boarding.** The route out of the great room now
+   lands on timber, not turf, all the way from the slider to the parapet
+   strip. This was the first thing a landscaper would have raised and it no
+   longer arises.
 
 ### The parapet edge stays inside
 

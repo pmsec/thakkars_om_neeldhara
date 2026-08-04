@@ -1204,53 +1204,54 @@ north edge to the glass line.
 They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
 each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
 
-### The great room: the run turned 90° left, facing across the room
+### The great room: one sofa, square to the room, paired with the east recliner
 
-The sofa, its planter and tree, the console and the rug are **one run**, and it
-has been turned a quarter turn anticlockwise. It stood east–west with the sofa
-facing the deck; it now stands **north–south with the sofa facing west**.
+The room's east half holds **one run**: a 2-seat recliner sofa with a planter
+box and tall tree built on to its east end, a console on its back line and a
+rug under the whole assembly. The sofa faces north, out through the slider at
+the deck.
 
 | | |
 |---|---|
-| run | X 13107–14007, Y 3337–5837 |
-| planter and tree, at the north end | Y 3337–4237 |
-| sofa, south of it | Y 4237–5837 |
-| footrest tips, projecting west | X 12827 |
-| console, on the back — now the east face | X 14007–14357, Y 4237–5837 |
-| rug | 2000 × 3000 mm (6′-7″ × 9′-10″), same stock size on its side |
+| sofa | 1600 × 900 mm (5′-3″ × 3′-0″), footrests +280 mm (11″) |
+| planter, butted to its east end | 900 mm (3′-0″) square, corners eased 120 mm |
+| tree canopy | 1620 mm (5′-4″) across, drawn dashed — it is overhead |
+| console, on the sofa's back line | 1600 × 350 mm (5′-3″ × 1′-2″) |
+| rug | 3000 × 2000 mm (9′-10″ × 6′-7″) |
 
 Clearances round it:
 
 | | mm | ft |
 |---|---|---|
-| planter north end → deck glass | 717 | 2′-4″ |
-| sofa south end → apse crown | 1648 | 5′-5″ |
-| console east face → east pod glazing | 1459 | 4′-9″ |
-| run east face → den's portal screen | 1769 | 5′-10″ |
-| rug west edge → the rocking chairs | 654 | 2′-2″ |
+| footrest tips → deck glass | 1312 | 4′-4″ |
+| sofa back → apse crown | 2448 | 8′-0″ |
+| west end → west pod glazing | 3634 | 11′-11″ |
+| **planter east face → east pod glazing** | **1000** | **3′-3″** |
+| canopy edge → east pod glazing | 594 | 1′-11″ |
 
-**One thing the turn gives back: the front door's walk is clear.** The gallery
-portal's lane runs X 11715–12765, and every previous arrangement of this run
-sat across it — the walk from the front door out to the deck had to go round
-the sofa. Turned, the footrest tips stop at **X 12827**, which clears the lane
-by **62 mm (2″)**. Tight, but on the right side of the line, and it is the
-first version of this room you can walk straight through.
-
-**And one thing it costs: the sofa no longer faces the deck.** It looks west,
-across the room. What it looks at is the pair of rocking chairs:
+**Where it sits along the room is set by the den's doorway.** The run was asked
+to go east until its face landed on X 15365, the line the east deck recliner's
+back sits on. It cannot: the arched portal into Karan's den is in the east pod
+screen at **Y 3872–4692**, and the screen there stands at 15807. A planter face
+on 15365 would leave **442 mm (1′-5″)** to walk through, across a doorway's
+approach. So it runs east until that approach is **1000 mm (3′-3″)** and stops,
+**558 mm (1′-10″)** short of the line.
 
 | | mm | ft |
 |---|---|---|
-| sofa ↔ **near** rocking chair | **2858** | **9′-5″** |
-| sofa ↔ far rocking chair | 3822 | 12′-6″ |
-| sofa ↔ east deck recliner | 3444 | 11′-4″ |
+| sofa ↔ **east** deck recliner | **3261** | **10′-8″** |
+| sofa ↔ west deck recliner | 4463 | 14′-8″ |
 
-2858 mm (9′-5″) is the best conversation distance in this room. **But the
-chairs are still aimed 28° north of east — away from the sofa** — so as drawn
-the sofa looks at the back of the near one. That is one number away: re-aim
-`rocking_chairs()` at the sofa instead of the east deck recliner and the three
-become a proper group. It has not been done, because it undoes the reason the
-chairs were turned off square in the first place.
+The east recliner and the sofa hold a proper conversation across the slider
+line. The west recliner is out of that group — it is a place to sit and look at
+the fountain rather than a seat in it.
+
+**It was turned a quarter turn left for one round, and turned back.** Standing
+north–south facing west it was the only version of this room whose floor you
+could walk straight through from the front door: the footrest tips stopped at
+X 12827 and cleared the gallery portal's lane by **62 mm (2″)**, where every
+other arrangement sits across it. That is a real thing to have given up. What
+it cost was the sofa's view of the deck, which is what the room is for.
 
 ### Two rocking chairs, parallel, and a console with things on it
 

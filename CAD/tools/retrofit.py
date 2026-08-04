@@ -167,9 +167,10 @@ def poly_rooms():
         ('GUEST / SERVICE WC', '', wc, '', (16620, 9760)),
         ('STORE', '', store, '', (18200, 10250)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
-        # not the mirror of the family room's anchor any more: that point is
-        # on the drummer's throne.  It goes north, into the open half.
-        ('MUSIC + WORK DEN', '', den, pod_note, (18300, 4100)),
+        # not the mirror of the family room's anchor: that point is on the
+        # drummer's throne, and the open north half is the sofa's now.  What is
+        # left is the band between the sofa's back and the kit.
+        ('MUSIC + WORK DEN', '', den, pod_note, (18600, 5100)),
         ('GREAT ROOM', '', great,
          'party wall removed  ·  6250 at the deck, 8220 at the waist, 7280 at the pods',
          (D.MID, 3450)),

@@ -857,14 +857,33 @@ _ONCE = [
     #
     # 700 and not 600: a 27-inch screen on a stand plus a keyboard in front of
     # it does not fit on 600 without the screen overhanging the back edge.
-    ('counter',  15880, 4800, 16580, 7000,
-     "work console  ·  2200 x 700, back on the pod screen"),
+    # BOTH ENDS BULLNOSED, 350 — the house does not do square corners on
+    # anything that stands free.  The baths are arches, the gallery is an apse,
+    # the dining table is a superellipse, run B's nose is eased 300 and its far
+    # end is struck off the apse.  This console floats along the glass with
+    # neither end against anything, so both get the full half-width round and
+    # it reads as a piece of the same drawing.  It costs 0.05 m2 of top.
+    ('counter-b', 15880, 4800, 16580, 7000,
+     "work console  ·  2200 x 700, back on the pod screen, both ends bullnosed"),
     # The screen faces EAST, because with the desk's back on the glass there is
     # only one side to sit at.  You work looking west, through the screen and
     # the pod glazing into the great room.  300 of the 700 goes to the monitor
     # and its foot; the 400 in front of it is the keyboard.
-    ('screen-w', 15920, 5050, 16220, 5730, "monitor  ·  27 inch, facing east"),
-    ('swivel',   16620, 5090, 17220, 5690, "desk chair  ·  600, swivel"),
+    ('screen-w', 15920, 5150, 16220, 5830, "monitor  ·  27 inch, facing east"),
+    ('swivel',   16620, 5190, 17220, 5790, "desk chair  ·  600, swivel"),
+
+    # ------------------------------- Karan's pod: the sitting group
+    # The parents' pod group, mirrored exactly: a sofa with its back to the
+    # south facing north through the deck slider, and a recliner at the far end
+    # turned in — an L closed on two sides and open to the deck and the great
+    # room.  Same sizes, same set-out, mirrored about X 12240, so the two pods
+    # read as a pair across the home rather than as two different rooms.
+    #
+    # It clears what is already in this pod: 16 off the mandir and pantry units
+    # in the north-west corner, 230 from the sofa's back to the work console,
+    # and 620 from the recliner's footrest to the sofa.
+    ('sofa-s',    16480, 3770, 18180, 4570, "sofa  ·  1700 x 800, facing the deck"),
+    ('recliner-e', 18780, 3120, 19580, 4020, "recliner  ·  800 x 900, facing west"),
     # The kit itself is circles struck off one centre — see retrofit.drum_kit().
     # 255 from its westernmost cymbal to the console's front edge, 150 to the
     # duct wall, 140 to the great-room wall, and open pod behind the drummer.

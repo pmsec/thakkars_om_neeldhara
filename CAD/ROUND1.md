@@ -1153,6 +1153,35 @@ one side to sit at — you work looking west, through the screen and the pod
 glazing into the great room. 300 mm (1′-0″) of the 700 goes to the monitor and
 its foot; the 400 mm (1′-4″) in front of it is the keyboard.
 
+**Both ends are bullnosed, 350 mm (1′-2″).** This house does not do square
+corners on anything that stands free — the baths are arches, the gallery is an
+apse, the dining table is a superellipse, run B's nose is eased 300 and its far
+end is struck off the apse. The console floats along the glass with neither end
+against anything, so both get the full half-width round. It costs **0.05 m²
+(0.6 sq ft)** of top: 1.49 m² (16 sq ft) instead of 1.54.
+
+### And the same sitting group as the parents' pod
+
+The parents' pod arrangement, **mirrored exactly** about the home's centreline:
+a **sofa 1700 × 800 mm (5′-7″ × 2′-8″)** with its back to the south facing
+north through the deck slider, and a **recliner 800 × 900 mm (2′-8″ × 3′-0″)**
+at the far end turned in. Same sizes, same set-out, so the two pods read as a
+pair across the home rather than as two different rooms.
+
+Every clearance is therefore the parents' pod's, reflected:
+
+* **600 mm (2′-0″)** from the recliner's east face to the sofa, **360 mm
+  (1′-2″)** from the tip of its footrest reclined
+* **1150 mm (3′-9″)** in front of the sofa to the deck line
+* **370 mm (1′-3″)** behind the recliner to the suite's sliding partition
+* Karan's deck slider — **2850 mm (9′-4″)** — is clear end to end, like his
+  parents'
+
+What is new is what it has to miss in this pod, and it does: **230 mm (9″)**
+from the sofa's back to the north end of the work console, and **16 mm (¾″)**
+between the sofa's north-west corner and the mandir and pantry units in the
+corner behind it. Tight, but it is a corner of a room, not a route.
+
 ---
 
 ## The kitchen steps into the great room

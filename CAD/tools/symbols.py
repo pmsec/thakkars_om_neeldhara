@@ -107,6 +107,11 @@ def symbol(kind, a, b, c, d):
         return [('poly', pts, 'solid')]
     if kind == 'counter-r':
         return [('poly', _rrect(a, b, c, d, 200), 'solid')]
+    if kind == 'counter-b':
+        # bullnosed at BOTH ends — a stadium.  For a run that floats in a room
+        # with neither end against anything, which is the only case where a
+        # square corner in this house has nothing to be square against.
+        return [('poly', _rrect(a, b, c, d, min(w, h) / 2), 'solid')]
     if kind == 'basket':
         return [('poly', _rrect(a, b, c, d, 90), 'solid'),
                 ('poly', _rrect(a + 70, b + 70, c - 70, d - 70, 70), 'soft')]

@@ -1239,6 +1239,47 @@ The canopy is drawn **dashed**, because it is overhead — it oversails the
 planter box by about **360 mm (1′-2″)** on every side, which is the whole
 reason for a tree there rather than a pot.
 
+### A rocking chair on the diagonal, aimed at the east recliner
+
+The west half of the great room had nothing in it at all. It now has one
+piece: a rocking chair, **turned off square** — the only thing in this plan
+that is.
+
+| | mm | ft |
+|---|---|---|
+| seat | 700 × 750 | 2′-4″ × 2′-6″ |
+| footprint incl. rockers | 700 × 1030 | 2′-4″ × 3′-5″ |
+| rock travel, shown dashed | 250 | 10″ |
+| aim | 28.7° north of east | |
+| **to the east recliner's seat centre** | **5114** | **16′-9″** |
+
+**The angle is a sightline, not a composition.** It is computed from the two
+positions rather than typed, so moving either end re-aims the chair instead
+of leaving it pointing at where the seat used to be.
+
+**And the sightline was checked, not assumed.** Run across the room it clears
+the sofa's extended footrests by **555 mm (1′-10″)**, the planter box by
+**1712 mm (5′-7″)** and the tree canopy by **1599 mm (5′-3″)** — all to the
+north — then crosses the deck slider at X 13688, well inside the 6250 mm
+opening, and lands on the recliner. Nothing on that line stands above knee
+height.
+
+**At 5114 mm (16′-9″) this is a view, not a conversation** — too far to talk
+across without raising a voice, and that is the right use for it. The chair
+looks down the long diagonal of the room, out over the deck and past the
+fountain, and the recliner is where the eye stops.
+
+**Where it sits is set by the family room's door**, the same rule the sofa's
+east end answers to at the other pod. The portal in the west pod screen runs
+Y 3872–4692 and the chair sits across the way out of it; on the marked spot it
+left **810 mm (2′-8″)** to get past, so it moved **200 mm (8″) east** to leave
+**1010 mm (3′-4″)**.
+
+The rockers are drawn running past the seat both ways — 130 mm (5″) behind and
+150 mm (6″) in front — because that is the real floor footprint of a rocker
+and it is what decides how much room it needs. The dashed outline is the seat
+rocked back; keep that end clear.
+
 ### The fountain's planting is out of scope, on purpose
 
 The bowl is drawn. What grows on it is not, and that is a decision rather than

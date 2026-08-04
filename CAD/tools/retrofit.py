@@ -891,6 +891,60 @@ def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     return out
 
 
+def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250):
+    """The great room's rocking chair, turned to face the east deck recliner.
+
+    It stands alone in the west half of the room, where there is nothing else
+    at all, and it is TURNED OFF SQUARE ON PURPOSE — the one piece in this
+    plan that is.  The reason is not composition, it is a sightline: aimed at
+    the east recliner's seat centre at (14915, 1872), 5114 away on a diagonal
+    28.7 degrees north of east.  The angle is COMPUTED from the two positions
+    rather than typed, so moving either end re-aims the chair instead of
+    leaving it pointing at where the seat used to be.
+
+    THE SIGHTLINE WAS CHECKED, not assumed.  Running it across the room it
+    clears the sofa's extended footrests by 555, the planter box by 1712 and
+    the tree canopy by 1599, all to the north, then crosses the deck slider at
+    X 13688 — well inside the 6250 opening — and lands on the recliner.
+    Nothing on that line stands above knee height.
+
+    cx 10430 IS SET BY THE FAMILY ROOM'S DOOR.  The portal in the west pod
+    screen runs Y 3872-4692 and the chair sits square across its way out; at
+    the marked spot it left 810 to get past, so it moved 200 east to leave
+    1010.  Same rule the sofa's east end answers to at the other pod.
+
+    At 5114 this is a VIEW, not a conversation: too far to talk across without
+    raising a voice.  That is the right use for it.  The chair looks down the
+    long diagonal of the room and out over the deck, past the fountain, and
+    the recliner is what the eye stops on.
+
+    Drawn as raw polygons because the symbol library has no rotation in it.
+    The rockers run past the seat both ways — 130 behind the back, 150 in
+    front — because that is the actual floor footprint of a rocker and it is
+    the thing that decides how much room it needs.  The dashed outline is the
+    seat rocked back 250, which is the travel; keep that end clear.
+    """
+    tx, ty = 14915 - cx, 1872.5 - cy                   # aim at the recliner
+    n = math.hypot(tx, ty)
+    vx, vy = tx / n, ty / n                            # out of the back
+    ux, uy = -vy, vx                                   # across the piece
+
+    def P(s, t):
+        return (cx + ux * s + vx * t, cy + uy * s + vy * t)
+
+    def quad(s0, t0, s1, t1, style):
+        return ('poly', [P(s0, t0), P(s1, t0), P(s1, t1), P(s0, t1)], style)
+
+    out = []
+    for side in (-1, 1):                               # the two rockers
+        s = side * (W / 2 - 70)
+        out.append(quad(s - 35, -D / 2 - 130, s + 35, D / 2 + 150, 'light'))
+    out.append(quad(-W / 2, -D / 2, W / 2, D / 2, 'solid'))
+    out.append(quad(-W / 2, -D / 2, W / 2, -D / 2 + 140, 'soft'))   # the back
+    out.append(quad(-W / 2, -D / 2 - rock, W / 2, D / 2 - rock, 'dash'))
+    return out
+
+
 def great_room_planter():
     """The kitchen's bump, mirrored, as a planted box in the great room.
 

@@ -917,16 +917,30 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    ('sofa-s',    10980, 5600, 13780, 6550, "sofa  ·  2800 x 950, facing the deck"),
-    ('sofa-w',    10030, 3900, 10980, 5600, "sofa  ·  1700 x 950, turned in"),
-    # 1400 x 1200 rather than 1400 square: at 1400 deep its north edge ran 150
-    # past the end of the short sofa and the group stopped closing.
-    ('counter-r', 11680, 3950, 13080, 5150, "centre table  ·  1400 x 1200, low"),
-    ('sidetable', 13780, 5600, 14280, 6100, "side table  ·  at the long sofa's free end"),
-    ('sidetable', 10030, 3400, 10530, 3900, "side table  ·  at the short sofa's free end"),
+    # ONE BENCH SOFA AND FOUR RECLINERS, and no centre table.  The L and the
+    # tree in its corner are the same idea as before; what has changed is what
+    # the two arms are made of.  The long arm was a 2800 three-in-a-row and is
+    # now four separate 800 recliners, each one facing the deck on its own.
+    # The short arm was a 1700 sofa and is now the 2000 bench.
+    #
+    # THE CENTRE TABLE IS GONE.  It was 1400 x 1200 — nearly twice a normal
+    # coffee table's depth — and about 4 sq ft of its top was out of reach from
+    # either seat.  Nothing replaces it: what is between the seats now is 3800
+    # x 2050 of clear floor, which is the point of a room this size.
+    #
+    # The row is 4 x 800 with 150 between, 3650 overall, centred on X 12240 —
+    # so it is centred on the home, not on the room, and the gallery's arched
+    # portal comes out on that same line.
+    ('recliner-s', 10800, 5600, 11600, 6500, "recliner  ·  800 x 900, facing the deck"),
+    ('recliner-s', 11750, 5600, 12550, 6500, "recliner  ·  800 x 900, facing the deck"),
+    ('recliner-s', 12700, 5600, 13500, 6500, "recliner  ·  800 x 900, facing the deck"),
+    ('recliner-s', 13650, 5600, 14450, 6500, "recliner  ·  800 x 900, facing the deck"),
+    ('sofa-w',     9850, 3550, 10650, 5550, "bench sofa  ·  2000 x 800, turned in"),
+    ('sidetable', 14450, 5600, 14950, 6100, "side table  ·  at the row's free end"),
+    ('sidetable',  9850, 3050, 10350, 3550, "side table  ·  at the bench's free end"),
     # Last in the list so the canopy draws over the two sofas, which is where
     # it actually is: 1710 across, oversailing each of them by about 380.
-    ('treebox',   10030, 5600, 10980, 6550,
+    ('treebox',    9850, 5550, 10800, 6500,
      "planter box  ·  950 square, a tall tree in the corner of the L"),
 
     # ---------------------------------------- Karan's pod: the music + work den

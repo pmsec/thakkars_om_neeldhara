@@ -203,7 +203,7 @@ def main():
         ts = np.array([t for t in np.linspace(0, 1, 220)
                        if bez(P, t)[1] <= y_end])
         pts = [bez(P, t) for t in ts]
-        a, b = D.POD_PORTAL
+        a, b = D.POD_PORTAL_W if P is D.POD_W else D.POD_PORTAL_E
         s.path([p for p, t in zip(pts, ts) if t < a], GLAS, 5.0)
         s.path([p for p, t in zip(pts, ts) if t > b], GLAS, 5.0)
         s.path([p for p, t in zip(pts, ts) if a <= t <= b], GLAS, 1.6, dash='9 7')

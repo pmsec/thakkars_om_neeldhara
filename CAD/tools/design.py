@@ -478,7 +478,17 @@ SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
 # only decides where the line between them sits.
 POD_W = ((9115, BODY_N), (8608, 3708), (8600, 3800), (8600, BODY_S))
 POD_E = ((M(9115), BODY_N), (M(8608), 3708), (M(8600), 3800), (M(8600), BODY_S))
-POD_PORTAL = (0.42, 0.60)                 # arched opening, as a t-range
+# The arched openings in the two pod screens, as t-ranges on each Bezier.
+# THEY ARE NO LONGER THE SAME, and that is not an oversight.  The parents'
+# door moved 828 south, out from behind the family room's sofa and into the
+# gap between that sitting group and the dining table.  The den's could not
+# follow it: Karan's work console runs Y 4800-7000 hard against the east
+# screen, so a door any lower there opens into the back of it.  Both keep the
+# same 823 clear opening, struck as equal arc lengths rather than equal
+# t-spans — the curve is not uniform, so equal t would not be equal door.
+POD_PORTAL_W = (0.6015, 0.7263)           # Y 4700-5523, the parents' pod
+POD_PORTAL_E = (0.42, 0.60)               # Y 3872-4692, the den — pinned
+POD_PORTAL = POD_PORTAL_E                 # kept for anything reading the old name
 
 # straight glazing runs: (x1, y1, x2, y2, kind)
 GLAZING = [
@@ -952,9 +962,9 @@ _ONCE = [
     # Its south edge is the sofa's own back line at 5037, so THE CONSOLE
     # STANDS ON THE BOARDS: a console with two legs on a rug and two off rocks
     # every time you put a glass down on it.
-    ('rug',     12057, 3037, 15057, 5037,
+    ('rug',     9423, 3037, 12423, 5037,
      'rug  ·  3000 x 2000, the whole sofa + planter on it, 250 each side'),
-    ('counter-e', 12307, 5037, 13907, 5387,
+    ('counter-e', 10573, 5037, 12173, 5387,
      "console  ·  1600 x 350, four corners eased 90, on the sofa's back line  ·  "
      "two lamps, books and a bowl on it"),
 

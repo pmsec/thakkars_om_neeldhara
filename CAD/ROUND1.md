@@ -1204,54 +1204,64 @@ north edge to the glass line.
 They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
 each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
 
-### The great room: one sofa, square to the room, paired with the east recliner
+### The two halves swapped, and the parents' door moved south
 
-The room's east half holds **one run**: a 2-seat recliner sofa with a planter
-box and tall tree built on to its east end, a console on its back line and a
-rug under the whole assembly. The sofa faces north, out through the slider at
-the deck.
+The run — sofa, planter, tree, console and rug — is now in the **west** half,
+and the pair of rocking chairs in the **east**. The run kept its character in
+the move: the tree is still on the outboard end, against a pod screen, which
+meant flipping the run so the planter reads west of the sofa rather than east.
 
 | | |
 |---|---|
-| sofa | 1600 × 900 mm (5′-3″ × 3′-0″), footrests +280 mm (11″) |
-| planter, butted to its east end | 900 mm (3′-0″) square, corners eased 120 mm |
-| tree canopy | 1620 mm (5′-4″) across, drawn dashed — it is overhead |
-| console, on the sofa's back line | 1600 × 350 mm (5′-3″ × 1′-2″) |
-| rug | 3000 × 2000 mm (9′-10″ × 6′-7″) |
-
-Clearances round it:
+| planter and tree | X 9673–10573 |
+| sofa | X 10573–12173, Y 4137–5037 |
+| console, on the back line | X 10573–12173, Y 5037–5387 |
+| rug | X 9423–12423, 3000 × 2000 mm (9′-10″ × 6′-7″) |
+| rocking chairs, pair centre | (14080, 4275), aimed at the **west** recliner |
 
 | | mm | ft |
 |---|---|---|
-| footrest tips → deck glass | 1312 | 4′-4″ |
-| sofa back → apse crown | 2448 | 8′-0″ |
-| west end → west pod glazing | 3634 | 11′-11″ |
-| **planter east face → east pod glazing** | **1000** | **3′-3″** |
-| canopy edge → east pod glazing | 594 | 1′-11″ |
+| planter west face → west pod glazing | 1000 | 3′-3″ |
+| planter west face → the moved door's approach | 1038 | 3′-5″ |
+| canopy edge → west pod glazing | 594 | 1′-11″ |
+| chairs → east pod glazing | 452 | 1′-6″ |
+| chairs → den's portal approach | 924 | 3′-0″ |
+| chairs → deck glass | 479 | 1′-7″ |
+| sofa ↔ **west** deck recliner | 3261 | 10′-8″ |
+| sofa ↔ east deck recliner | 4463 | 14′-8″ |
 
-**Where it sits along the room is set by the den's doorway.** The run was asked
-to go east until its face landed on X 15365, the line the east deck recliner's
-back sits on. It cannot: the arched portal into Karan's den is in the east pod
-screen at **Y 3872–4692**, and the screen there stands at 15807. A planter face
-on 15365 would leave **442 mm (1′-5″)** to walk through, across a doorway's
-approach. So it runs east until that approach is **1000 mm (3′-3″)** and stops,
-**558 mm (1′-10″)** short of the line.
+Every number the run answered to on the east side it now answers to on the
+west, at the same values — 1000 mm (3′-3″) to a pod, 3261 mm (10′-8″) to the
+recliner it pairs with. **The chairs come off worse than the run did**: their
+452 mm (1′-6″) to the east glazing is against the 1096 mm (3′-7″) they had on
+the west side, because the east pod's curve is the mirror of the one they were
+solved against and their axis no longer suits it.
 
-| | mm | ft |
+### The parents' pod door moved 828 mm south — and only that one
+
+| | before | after |
 |---|---|---|
-| sofa ↔ **east** deck recliner | **3261** | **10′-8″** |
-| sofa ↔ west deck recliner | 4463 | 14′-8″ |
+| parents' pod door | Y 3872–4692 | **Y 4700–5523** |
+| den's door | Y 3872–4692 | unchanged |
+| clear opening, both | 823 mm (2′-8″) | 823 mm (2′-8″) |
 
-The east recliner and the sofa hold a proper conversation across the slider
-line. The west recliner is out of that group — it is a place to sit and look at
-the fountain rather than a seat in it.
+**It lands in the gap between the family room's two zones.** The sitting group
+ends at Y 4570 and the dining table starts at 5700; the door now occupies
+4700–5523 — **130 mm (5″)** clear above, **177 mm (7″)** below. It used to open
+behind the sofa. It now arrives between the sitting group and the table, which
+is where you would want to enter that room from.
 
-**It was turned a quarter turn left for one round, and turned back.** Standing
-north–south facing west it was the only version of this room whose floor you
-could walk straight through from the front door: the footrest tips stopped at
-X 12827 and cleared the gallery portal's lane by **62 mm (2″)**, where every
-other arrangement sits across it. That is a real thing to have given up. What
-it cost was the sofa's view of the deck, which is what the room is for.
+**The den's door could not follow it, and that is a hard constraint rather than
+a choice.** Karan's work console runs **Y 4800–7000 hard against the east pod
+screen** — a door any lower there opens into the back of it. So `POD_PORTAL`
+has become `POD_PORTAL_W` and `POD_PORTAL_E`, and the two pods are no longer
+mirror images at this one point. It is the first deliberate asymmetry in the
+pods and it is recorded here so nobody "fixes" it later.
+
+**Both openings are struck as equal arc lengths, not equal t-spans.** The
+Bézier is not uniform — the same span of t buys more door low down the curve
+than high up — so setting both to 0.18 of t would have given two different
+doors. Solved instead for the t-range that reproduces the original 823 mm.
 
 ### Two rocking chairs, parallel, and a console with things on it
 

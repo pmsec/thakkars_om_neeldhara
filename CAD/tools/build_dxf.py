@@ -221,7 +221,7 @@ def main():
         ts = np.array([tt for tt in np.linspace(0, 1, 120)
                        if R.bez(Pc, tt)[1] <= y_end])
         pts = [R.bez(Pc, tt) for tt in ts]
-        a, b = D.POD_PORTAL
+        a, b = D.POD_PORTAL_W if P is D.POD_W else D.POD_PORTAL_E
         for m in (ts < a, ts > b):
             seg = [p for p, keep_ in zip(pts, m) if keep_]
             if len(seg) > 1:

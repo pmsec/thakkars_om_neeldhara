@@ -823,7 +823,8 @@ def great_room_carpet():
 # fountain is a finish, settled with whoever plants it, off this drawing.
 
 
-def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
+def great_room_sofa(ax=12173, ay=5037, deg=0, L=1600, D=900, foot=280,
+                    box=900, flip=True):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 
     SQUARE TO THE ROOM, not diagonal.  It was set out at 45 degrees for one
@@ -863,8 +864,9 @@ def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     45 degree version is one number away if it is ever wanted back.
     """
     r = math.radians(deg)
-    ux, uy = math.cos(r), math.sin(r)          # along the piece, to the SE
-    vx, vy = math.sin(r), -math.cos(r)         # out of the back, to the NE
+    f = -1 if flip else 1                      # which way the run reads
+    ux, uy = f * math.cos(r), f * math.sin(r)  # along the piece
+    vx, vy = math.sin(r), -math.cos(r)         # out of the back
 
     def P(s, t):
         return (ax + ux * s + vx * t, ay + uy * s + vy * t)
@@ -1037,7 +1039,7 @@ def wood_floor(board=190, island=False):
 # floor to seat two people who now have a pair of rocking chairs instead.
 
 
-def console_top(a=12307, b=5037, c=13907, d=5387):
+def console_top(a=10573, b=5037, c=12173, d=5387):
     """What stands on the console behind the sofa.
 
     A console 350 deep is a shelf, not a surface — everything on it has to be
@@ -1081,7 +1083,7 @@ def console_top(a=12307, b=5037, c=13907, d=5387):
     return out
 
 
-def rocking_chairs(px=10400, py=4275, s=1500):
+def rocking_chairs(px=14080, py=4275, s=1500, aim=(9565, 1872.5)):
     """THE PAIR.  Two rocking chairs, genuinely parallel, side by side.
 
     Parallel is a real constraint and it is why this function exists.  A chair
@@ -1118,7 +1120,7 @@ def rocking_chairs(px=10400, py=4275, s=1500):
     east of the fountain to the parapet planting.  One view into the room, one
     straight out of it, from two chairs sitting side by side.
     """
-    fx, fy = 14915 - px, 1872.5 - py
+    fx, fy = aim[0] - px, aim[1] - py
     n = math.hypot(fx, fy)
     ux, uy = -fy / n, fx / n                           # across the pair
     return (rocking_chair(px - s / 2 * ux, py - s / 2 * uy, face=(fx, fy))

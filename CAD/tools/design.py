@@ -917,44 +917,47 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    # THE GROUP LEAVES THE MIDDLE OF THE ROOM.  It stood centred on the floor
-    # and the room read as a hall with furniture in it; it now sits in the
-    # SOUTH-WEST QUADRANT, against the two edges that exist there — the west
-    # pod screen and the kitchen bump — and everything north and east of it is
-    # ONE UNBROKEN SWEEP of floor: from the deck glass to the apse and from
-    # the group's edge to the east pod screen, about 19 m2 of it, plus the
-    # whole deck band.  The same six-seven seats, a quarter of the room's
-    # floor further out of the way.
+    # THE GROUP IS SPREAD, NOT STACKED — two loose clusters at opposite ends
+    # of the room, and open floor running between them.
     #
-    # The composition is the one already approved, translated, not rethought:
-    #   WEST    the 2000 bench against the screen, turned in, facing east
-    #   SOUTH   the tree, then two recliners facing NORTH — the deck straight
-    #           ahead of their footrests across the open middle
-    #   MIDDLE  two recliners facing WEST at the bench, close across the rug
+    # SOUTH-WEST, the main cluster: the bench on the screen facing east, the
+    # tree toward the kitchen-bump corner, one recliner facing the deck beside
+    # it, and one recliner facing the bench across the rug — 1110 between
+    # them, a conversation with air in it.
     #
-    # The tree keeps its corner — the angle between the bench's south end and
-    # the recliner row — but the box floats 450 off the glass and 950 off the
-    # kitchen bump, because its 1710 canopy has to stay inside the room: hard
-    # in the corner it would oversail the pod screen and the kitchen wall,
-    # and a tree does not grow through either.
+    # NORTH-EAST, a loose pair by the den's glass: one recliner facing the
+    # deck, one facing back west into the room, staggered so neither touches
+    # the other.  They read as two chairs that drifted to the light, not as a
+    # second sofa set.
     #
-    # WHAT IT COSTS, plainly: the south pair's backs are 635 from the apse
-    # crown, against 985 before — still a corridor, and only at the crown —
-    # and the east recliner noses 485 into the portal's west half, so the way
-    # out of the front door angles slightly east across open floor rather
-    # than running dead straight.  The east half of the portal is clear.
-    ('sofa-w',     9000, 3900, 9800, 5900, "bench sofa  ·  2000 x 800, on the screen"),
-    ('sidetable',  9000, 3400, 9500, 3900, "side table  ·  at the bench's free end"),
-    ('recliner-s', 10150, 5950, 10950, 6850, "recliner  ·  800 x 900, facing the deck"),
-    ('sidetable',  10950, 6300, 11400, 6800, "side table  ·  between the south pair"),
-    ('recliner-s', 11400, 5950, 12200, 6850, "recliner  ·  800 x 900, facing the deck"),
-    ('recliner-e', 10900, 3400, 11700, 4300, "recliner  ·  800 x 900, facing the bench"),
-    ('recliner-e', 10900, 4750, 11700, 5650, "recliner  ·  800 x 900, facing the bench"),
-    ('sidetable',  11250, 4300, 11700, 4750, "side table  ·  between the east pair"),
+    # AND A CORRECTION, because the last round shipped with a real mistake in
+    # it: the bench stood at Y 3900-5900, directly in front of the family-room
+    # portal (Y 3872-4692), 350 off the glass — a sofa across a doorway.  It
+    # now starts at Y 4750, 58 south of the portal's jamb, and the way into
+    # the family room is clear again.  Both pod portals were re-checked this
+    # round; the NE pair is set out 1000 apart specifically so the den's
+    # portal keeps a straight approach between them.
+    #
+    # The tree sits toward the bump corner but floats off both walls — its
+    # 1710 canopy stays inside the room: 70 clear of the kitchen bump, well
+    # off the glass, oversailing only its own recliner.
+    #
+    # The gallery portal's lane (X 11715-12765) is now CLEAR for its whole
+    # width: the nearest chairs stop at 11950, west of the west jamb... east
+    # of nothing.  Straight out of the front door to the deck, no weaving.
+    ('sofa-w',     9000, 4750, 9800, 6750, "bench sofa  ·  2000 x 800, on the screen"),
+    ('sidetable',  9000, 4250, 9500, 4750, "side table  ·  at the bench's free end"),
+    ('recliner-e', 11150, 5000, 11950, 5900, "recliner  ·  800 x 900, facing the bench"),
+    ('sidetable',  11150, 5950, 11650, 6400, "side table  ·  serving both recliners"),
+    ('recliner-s', 11150, 6450, 11950, 7350, "recliner  ·  800 x 900, facing the deck"),
+    ('recliner-s', 14200, 3100, 15000, 4000, "recliner  ·  800 x 900, facing the deck"),
+    ('sidetable',  13700, 3200, 14200, 3700, "side table  ·  at its west arm"),
+    ('recliner-e', 14550, 5000, 15350, 5900, "recliner  ·  800 x 900, facing the room"),
+    ('sidetable',  14550, 5900, 15050, 6400, "side table  ·  at its south arm"),
     # Last in the list so the canopy draws over the two sofas, which is where
     # it actually is: 1710 across, oversailing each of them by about 380.
-    ('treebox',    9050, 5900, 10000, 6850,
-     "planter box  ·  950 square, the tree in the group's south-west corner"),
+    ('treebox',   10050, 6400, 11000, 7350,
+     "planter box  ·  950 square, the tree toward the kitchen-bump corner"),
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

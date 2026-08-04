@@ -801,19 +801,16 @@ def hob_counter(r=200):
 def great_room_carpet():
     """The rug under the great room's sitting group.
 
-    NOT A RECTANGLE — it has a notch, and the notch is the point.  The classic
-    rule is front feet on the rug: it tucks 300-400 under the bench, the two
-    south recliners and the two east recliners, so the group reads as standing
-    on it rather than around it.  But the tree's planter box is masonry with
-    wet soil in it, and a rug does not run under a planted box — so the rug's
-    south-west corner is cut away around it, flush with its two faces.
+    A plain rectangle again — the spread-out layout put the tree's planter
+    east of the rug rather than in its corner, so the notch that used to be
+    cut round the box is no longer needed.  Front feet on the rug still: it
+    tucks under the bench's front and the middle recliner's footrest, and the
+    deck-facing recliner addresses its south edge.
 
-    3650 x 2650 overall, a 120 woven border inside the edge.
+    1750 x 2200, a 120 woven border inside the edge.
     """
-    o = [(9600, 3300), (11750, 3300), (11750, 6350),
-         (10000, 6350), (10000, 5900), (9600, 5900)]
-    i = [(9720, 3420), (11630, 3420), (11630, 6230),
-         (10120, 6230), (10120, 5780), (9720, 5780)]
+    o = [(9600, 4200), (11350, 4200), (11350, 6400), (9600, 6400)]
+    i = [(9720, 4320), (11230, 4320), (11230, 6280), (9720, 6280)]
     return [('poly', o, 'soft'), ('poly', i, 'light')]
 
 

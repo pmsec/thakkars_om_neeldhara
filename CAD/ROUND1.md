@@ -1175,40 +1175,32 @@ sofas meeting at a right angle, with a **planter box filling the angle between
 their two ends and a tall tree growing out of it**. In a U the corner is the
 awkward bit nobody sits in; here it is the thing you look at.
 
-**The group sits in the south-west quadrant, not the middle of the room.**
-Centred on the floor it made the great room read as a hall with furniture in
-it; pushed into the corner made by the west pod screen and the kitchen bump,
-everything north and east of it becomes **one unbroken sweep of about 22 m²
-(236 sq ft)** — deck glass to apse, group's edge to the east pod screen — on
-top of the open deck band. The group's whole zone is 11 m² (119 sq ft), 29% of
-the room, in one corner.
+**Two loose clusters at opposite ends of the room, open floor running between
+them** — the group is spread, not stacked.
 
-The composition is the approved one, translated rather than rethought:
+**South-west, the main cluster:** the 2000 × 800 mm (6′-7″ × 2′-7″) bench on
+the screen facing east; the tree toward the kitchen-bump corner; one recliner
+facing the deck beside it; one recliner facing the bench across the rug —
+**1110 mm (3′-8″)** between them, a conversation with air in it. The rug is a
+plain 2200 × 1750 mm (7′-3″ × 5′-9″) rectangle now; the planter sits east of
+it, so the notch went.
 
-* **WEST** — the 2000 × 800 mm (6′-7″ × 2′-7″) bench against the screen,
-  facing east
-* **SOUTH** — the tree, then two recliners facing **north**: the deck straight
-  ahead of their footrests across the open middle
-* **MIDDLE** — two recliners facing **west** at the bench, **860 mm (2′-10″)**
-  across the rug — a close conversation pair
+**North-east, a loose pair by the den's glass:** one recliner facing the deck,
+one facing back west into the room, staggered so neither touches the other.
+They read as two chairs that drifted to the light, not as a second sofa set —
+and they are set **1000 mm (3′-3″)** apart on purpose, so the den portal keeps
+a straight approach between them.
 
-Side tables in the crook of each pair and at the bench's free end; no centre
-table. Six to seven seats.
+Between the two clusters: **2250 mm (7′-5″)** of clear floor, and the **gallery
+portal's lane is now clear for its whole width** — straight out of the front
+door to the deck, no weaving. Side tables at the bench's free end, between the
+south-west recliners, and at each north-east chair. Six to seven seats.
 
-**The tree keeps its corner but floats off the walls** — 450 mm (1′-6″) off
-the glass, 950 mm (3′-1″) off the kitchen bump — because its 1710 mm (5′-7″)
-canopy has to stay inside the room: hard in the corner it would oversail the
-pod screen and the kitchen wall, and a tree grows through neither.
-
-The rug is 3050 × 2150 mm (10′-0″ × 7′-1″), 6.38 m² (69 sq ft), notched round
-the planter box as before.
-
-**What it costs, plainly:** the south pair's backs are **635 mm (2′-1″)** from
-the apse crown, against 985 before — still a corridor, and only at the single
-point of the crown — and the east recliner noses **485 mm (1′-7″)** into the
-portal's west half, so the way out of the front door angles slightly east
-across open floor rather than running dead straight. The portal's east half is
-fully clear.
+**And a correction, because the last round shipped with a real mistake:** the
+bench stood at Y 3900–5900 — directly in front of the family-room portal
+(Y 3872–4692), 350 mm (1′-2″) off the glass. A sofa across a doorway. It now
+starts at Y 4750, **58 mm (2″)** south of the portal jamb, and the way into the
+family room is clear. Both pod portals are re-checked in this layout.
 
 **The corner is on the west, and that is the one real choice here.** The great
 room already has a planter on its south-east wall — the one that answers the

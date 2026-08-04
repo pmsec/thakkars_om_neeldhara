@@ -835,23 +835,29 @@ def fountain_plants(n=12, ring=800, pot=150):
     return out
 
 
-def great_room_sofa(ax=10183, ay=3679, deg=45, L=1600, D=900, foot=280, box=900):
-    """The great room's 2-seat recliner sofa, ON THE DIAGONAL, with its planter
-    built on to it.
+def great_room_sofa(ax=11440, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
+    """The great room's 2-seat recliner sofa, with its planter built on to it.
 
-    Set out on a 45 degree line because that is how it was drawn and because
-    the room has nothing else in it: a single piece square to the walls would
-    read as a leftover, while one turned across them makes the empty floor
-    look chosen.  It faces NORTH-EAST — down the room, through the slider, at
-    the fountain.
+    SQUARE TO THE ROOM, not diagonal.  It was set out at 45 degrees for one
+    round and turned back: a single piece on the slant in an otherwise empty
+    room does not read as deliberate, it reads as knocked askew, and it put
+    the tree's box across the middle of the floor at an angle nothing else in
+    the plan shares.
+
+    Straightened, it does something the diagonal could not — the SOFA IS
+    CENTRED ON X 12240, the home's own axis, so it faces the fountain dead on
+    down the line that already runs front door, gallery portal, fountain,
+    parapet.  The tree sits off that axis on the east end, which is right: it
+    is an accent, not a symmetrical element.
 
     The planter is not a separate object.  It shares the sofa's back line and
-    its depth and butts its south-east end, so the two are built as one L of
-    joinery — a sofa with a tree growing out of the end of it.  The tree keeps
-    its 1620 canopy, drawn dashed because it is overhead.
+    its depth and butts its east end, so the two are built as one L of joinery
+    — a sofa with a tree growing out of the end of it.  The tree keeps its
+    1620 canopy, drawn dashed because it is overhead.
 
-    (ax, ay) is the north-west end of the BACK line; s runs along the piece,
-    t out from the back towards the front.
+    (ax, ay) is the west end of the BACK line; s runs along the piece, t out
+    from the back towards the front.  deg is kept as an argument, at 0, so the
+    45 degree version is one number away if it is ever wanted back.
     """
     r = math.radians(deg)
     ux, uy = math.cos(r), math.sin(r)          # along the piece, to the SE

@@ -917,11 +917,11 @@ _ONCE = [
     #
     # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
     # a seat with no side to it.
-    # THE GREAT ROOM HAS ONE PIECE IN IT: a 2-seat recliner sofa set on a 45
-    # degree diagonal with its planter built on to the end of it, facing
-    # north-east down the room at the fountain.  It is drawn in
-    # retrofit.great_room_sofa() because nothing else in this plan is turned
-    # off the orthogonal and the symbol library has no rotation in it.
+    # THE GREAT ROOM HAS ONE PIECE IN IT: a 2-seat recliner sofa SQUARE TO THE
+    # ROOM with its planter built on to the east end, the sofa centred on
+    # X 12240 so it faces the fountain straight down the home's own axis.
+    # Drawn in retrofit.great_room_sofa(); the 45 degree version it replaces
+    # is one argument away.
     #
     # The tree is no longer a free-standing box on the south-west shoulder —
     # it shares the sofa's back line and depth and butts its south-east end,

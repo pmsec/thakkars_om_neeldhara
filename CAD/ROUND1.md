@@ -1168,43 +1168,54 @@ north edge to the glass line.
 They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
 each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
 
-### The great room: an L of two sofas with a tree in the corner
+### The great room: one sofa, square to the room, on the home's own axis
 
-Not a U of loose chairs — **an L**, from the interior reference: two continuous
-sofas meeting at a right angle, with a **planter box filling the angle between
-their two ends and a tall tree growing out of it**. In a U the corner is the
-awkward bit nobody sits in; here it is the thing you look at.
-
-**One piece, on the diagonal.** A 2-seat recliner sofa set at **45°** with its
-planter built on to the end of it, facing north-east down the room at the
-fountain.
+The room has **one piece** in it: a 2-seat recliner sofa with a **planter box
+built on to its east end and a tall tree growing out of it** — the idea from
+the interior reference, where the sofa and the planting are one run of joinery
+rather than a sofa with a pot beside it.
 
 | | |
 |---|---|
 | sofa | 1600 × 900 mm (5′-3″ × 3′-0″), footrests +280 mm (11″) |
-| planter, butted to its south-east end | 900 mm (3′-0″) square |
+| planter, butted to its east end | 900 mm (3′-0″) square |
 | tree canopy | 1620 mm (5′-4″) across, drawn dashed — it is overhead |
-| the assembly on the diagonal | 2404 × 2421 mm (7′-11″ square) |
+| the whole assembly | 2500 × 1180 mm (8′-2″ × 3′-10″) |
 
-**The angle is the point.** The room has nothing else in it: a single piece set
-square to the walls would read as a leftover, while one turned across them
-makes the empty floor look chosen. And **the planter is not a separate
-object** — it shares the sofa's back line and its depth and butts its end, so
-the two are one L of joinery: a sofa with a tree growing out of the end of it.
+**It was set out at 45° for one round, and it has been turned back.** A single
+piece on the slant in an otherwise empty room does not read as deliberate; it
+reads as knocked askew. Square to the walls it reads as placed.
 
-It is drawn in `retrofit.great_room_sofa()` rather than as a symbol, because
-nothing else in this plan is turned off the orthogonal and the symbol library
-has no rotation in it.
+**And straightening it buys something the diagonal could not have.** The sofa
+is **centred on X 12240 — the home's own centreline**, the axis that already
+runs front door → gallery portal → fountain → parapet. Sit in it and the
+fountain is dead ahead, 2097 mm (6′-11″) from the footrest tips to the bowl's
+rim, with the deck and the great room reading as the single room they are.
+The tree sits **off** that axis, on the east end, which is what makes it an
+accent rather than a second centrepiece.
 
-Clearances: **481 mm (1′-7″)** from the nearest footrest tip to the deck glass;
-**1496 mm (4′-11″)** west to the pod screen — the family-room portal's approach
-is clear; **3266 mm (10′-9″)** east; **2038 mm (6′-8″)** south to the apse
-crown.
+Clearances round it:
 
-**What it costs:** the assembly crosses the gallery portal's lane (X 11715–
-12765) between Y 3795 and 5447, so the walk from the front door to the deck
-now swings east round the planter rather than running dead straight. There is
-**3266 mm (10′-9″)** of clear floor on that side to do it in.
+| | mm | ft |
+|---|---|---|
+| footrest tips → deck glass | 1312 | 4′-4″ |
+| sofa back → apse crown | 2448 | 8′-0″ |
+| west end → west pod glazing | 2767 | 9′-1″ |
+| planter east face → east pod glazing | 1867 | 6′-2″ |
+| canopy edge → east pod glazing | 1461 | 4′-10″ |
+
+**What it costs:** the sofa sits across the gallery portal's lane (X 11715–
+12765), so the walk from the front door out to the deck goes round it — 2767 mm
+(9′-1″) of clear floor on the west side, 1867 mm (6′-2″) on the east.
+
+It is drawn in `retrofit.great_room_sofa()` rather than as symbols, because the
+planter shares the sofa's back line and depth and butts its end — they are one
+piece, not two. `deg` is kept as an argument, at 0, so the 45° version is one
+number away if it is ever wanted back.
+
+The canopy is drawn **dashed**, because it is overhead — it oversails the
+planter box by about **360 mm (1′-2″)** on every side, which is the whole
+reason for a tree there rather than a pot.
 
 ### A collar of flowering plants round the fountain
 
@@ -1216,26 +1227,6 @@ over bare grass.
 **Small and high on purpose:** flowering indoor stock, not shrubs. Anything
 with a spread would close the ring into a hedge and hide the bowl — which is
 the one thing on the deck the whole room is aimed at.
-
-**The corner is on the west, and that is the one real choice here.** The great
-room already has a planter on its south-east wall — the one that answers the
-kitchen's bump — so putting the tree on the east would stack all the greenery
-down one side of the room. West balances it.
-
-**What sets the depth is the entry gallery's apse.** Its crown is at Y 7485 and
-the arched portal into this room is *in* it, X 11715–12765 — so the long sofa's
-back cannot go near it. At Y 6550 there is **935 mm (3′-1″)** between the two,
-which is the passage you come out of the front door into, widening to **1434 mm
-(4′-8″)** at the sofa's west end as the apse falls away.
-
-The rest: **450 mm (1′-6″)** from the centre table to the long sofa and **700 mm
-(2′-4″)** to the short one; **1430 mm (4′-8″)** west of the group to the pod
-glazing and **1600 mm (5′-3″)** east; **1355 mm (4′-5″)** from the short sofa's
-north end up to the deck glass, of which the side table takes 500.
-
-The canopy is drawn **dashed**, because it is overhead — it oversails each sofa
-by about **380 mm (1′-3″)**, which is the whole reason for a tree there rather
-than a pot.
 
 ### A drawing that disagreed with itself
 

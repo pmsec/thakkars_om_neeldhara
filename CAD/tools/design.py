@@ -503,27 +503,30 @@ _ONCE = [
     # 2095 between.  It runs the bath's own length, 2820, and stops dead on the
     # window's north jamb at Y 8945, so the 600 window there stays open.
     #
-    # The run now goes back HARD ON THE WALL, X -450.  It used to be held off at
-    # X -370 — the proud face of the builder's 230 x 1200 column — because the
-    # run crossed that column and had to be scribed to it.  It does not cross it
-    # any more: it stops on the column's north edge at 7745 and the basket takes
-    # the column's own 1200.  So the setback bought nothing and cost 80 of floor
-    # the whole way.  The whole run moves 80 west onto the wall face.
+    # THREE UNITS OF 940, all of them cupboards.  The run goes the whole way
+    # down to the column's south edge at 8945 and stops 100 short of the laundry
+    # basket in the corner, so the wall reads as one continuous run of joinery
+    # ending on a low basket rather than as two short pieces with a gap.
     #
-    # Three units of 940.  The last one — the one against the window — is NOT a
-    # cupboard: it is the dressing console, 450 deep instead of 600, with the
-    # mirror on the wall behind it.  So nothing full height stands against the
-    # glass, and the one place in the room you sit to look at yourself is the
-    # one place that gets daylight to do it by.
-    # The run now STOPS on the column's north edge at Y 7745, and the 1200 the
-    # column occupies below it is the laundry basket's — so the basket sits in
-    # the one stretch of this wall that is 80 shallower than the rest anyway.
-    ('hanging',   -450, 6125, 150, 6935, "wardrobe 1  ·  810 x 600, hanging"),
-    ('hanging',   -450, 6935, 150, 7745, "wardrobe 2  ·  810 x 600, hanging"),
-    # The basket cannot follow them west — it stands on the column, so its back
-    # is on the column's face at -350 and only its FRONT lines through with the
-    # wardrobes at 150.  It is 20 off the column, which is a joiner's tolerance.
-    ('basket',    -350, 7995, 150, 8695, "laundry basket  ·  700 x 500"),
+    # Set off X -370, not the wall face at -450: the builder leaves a 230 x 1200
+    # column on this wall over Y 7745-8945 whose face stands 80 proud, and the
+    # run crosses it.  Scribed to the column and packed out behind, so the whole
+    # 2820 is one flush line rather than 600 deep for two thirds and 520 for the
+    # rest.  That 80 is the price of a run that goes the full length; it is not
+    # recoverable while the cupboards cross the column.
+    ('hanging',   -370, 6125, 230, 7065, "wardrobe 1  ·  940 x 600, hanging"),
+    ('hanging',   -370, 7065, 230, 8005, "wardrobe 2  ·  940 x 600, hanging"),
+    ('hanging',   -370, 8005, 230, 8945, "wardrobe 3  ·  940 x 600, hanging"),
+    # THE BASKET GOES IN THE CORNER, hard into the angle where the west window
+    # and the south window meet — back on the south wall at Y 9545, end on the
+    # west wall at X -450.  It lies ALONG THE SOUTH WALL, 700 x 500: turned the
+    # other way it would need 700 of the west wall and there are only 600
+    # between the column's south edge and the corner.
+    #
+    # It stands in front of the bottom of the 600 west window, which a 500-high
+    # open basket may do — the sill is well above it — and it lines through with
+    # the cupboards to 20, which is a joiner's tolerance.
+    ('basket',    -450, 9045, 250, 9545, "laundry basket  ·  700 x 500, in the corner"),
     # The dressing console moves to the corner where the bath wall meets the
     # south window, and it goes on the BATH WALL, not under the window.  On the
     # window wall the mirror would cover 940 of a 3200 window and you would sit

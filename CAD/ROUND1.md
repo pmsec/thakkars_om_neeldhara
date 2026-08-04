@@ -697,28 +697,36 @@ of the bath at Y 7015–7815, so the run faces it across 2095 of floor.
 
 | | mm | ft |
 |---|---|---|
-| wardrobes, two of | 810 × 600 | 2'-8" × 1'-12" |
-| the run | 1620 | 5'-4" |
+| wardrobes, three of | 940 × 600 | 3'-1" × 1'-12" |
+| the run | 2820 | 9'-3" |
 | laundry basket | 700 × 500 | 2'-4" × 1'-8" |
 | dressing console | 940 × 450 | 3'-1" × 1'-6" |
 | window left open at the south | 600 | 1'-12" |
+| cupboard end to the basket | 100 | 0'-4" |
 
-**The run stops on the column, and the basket takes the column.** The builder
-leaves a 230 × 1200 column on this wall over Y 7745–8945 whose face stands 80
-proud — and unlike Karan's it sits in the *middle* of the usable wall, not at
-one end. The cupboards run down to its north edge and stop there; the 1200 the
-column occupies becomes the laundry basket's. So the one stretch of wall that
-is 80 shallower than the rest carries the one thing that does not care.
+**The run goes the full length and stops on the column's far edge.** Three units
+of 940, all of them cupboards, from Y 6125 down to **8945** — the column's south
+edge, which is also the 600 window's north jamb. The window stays clear and the
+wall reads as one continuous run of joinery ending on a low basket, rather than
+as two short pieces with a gap in the middle.
 
-**The cupboards go back hard on the wall, X −450.** They used to be held off at
-X −370, the column's proud face, because the run crossed the column and had to
-be scribed to it. It does not cross it any more — it stops on the column's north
-edge and the basket takes the column's own 1200 — so the setback bought nothing
-and cost **80 of floor the whole way**. The run moves 80 west onto the wall face.
+**The basket is in the corner**, hard into the angle where the west window and
+the south window meet — back on the south wall at Y 9545, end on the west wall
+at X −450, and 100 below the last cupboard.
 
-The basket cannot follow it: it stands on the column. Its back sits on the
-column's face and only its **front** lines through with the cupboards, 20 off —
-a joiner's tolerance, and invisible on an open basket.
+It lies **along the south wall**, 700 × 500. Turned the other way it would want
+700 of the west wall and there are only 600 between the column's south edge and
+the corner. It stands in front of the bottom of the 600 west window, which a
+500-high open basket may do, and it lines through with the cupboard fronts to
+**20** — a joiner's tolerance.
+
+**The 80 setback is back, and it is the price of the full run.** The cupboards
+sit on X −370, the proud face of the builder's 230 × 1200 column at Y 7745–8945,
+because the run crosses that column. Scribed to it and packed out behind, the
+whole 2820 is one flush line instead of 600 deep for two thirds and 520 for the
+rest. An earlier version stopped short of the column and sat on the wall face at
+−450, gaining 80 of floor — that is not recoverable while the cupboards run the
+full length, and the full length is worth more.
 
 ### The dressing console is in the corner, and on the bath wall
 

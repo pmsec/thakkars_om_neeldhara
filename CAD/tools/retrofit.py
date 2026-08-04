@@ -823,7 +823,7 @@ def great_room_carpet():
 # fountain is a finish, settled with whoever plants it, off this drawing.
 
 
-def great_room_sofa(ax=12173, ay=5037, deg=0, L=1600, D=900, foot=280,
+def great_room_sofa(ax=12173, ay=5537, deg=0, L=1600, D=900, foot=280,
                     box=900, flip=True):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 
@@ -1039,7 +1039,7 @@ def wood_floor(board=190, island=False):
 # floor to seat two people who now have a pair of rocking chairs instead.
 
 
-def console_top(a=10573, b=5037, c=12173, d=5387):
+def console_top(a=10573, b=5537, c=12173, d=5887):
     """What stands on the console behind the sofa.
 
     A console 350 deep is a shelf, not a surface — everything on it has to be

@@ -1204,6 +1204,51 @@ north edge to the glass line.
 They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
 each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
 
+### The west half is an L with the tree in its corner
+
+This is the arrangement from the original interior reference, finally built:
+**two seats meeting at a right angle with the planter filling the corner
+between them and the tree growing out of it.** In a U the corner is the bit
+nobody sits in; here it is the thing everyone looks at, and it doubles as the
+spacer that keeps the two legs off each other's knees.
+
+| | |
+|---|---|
+| planter and tree, the corner | X 9673–10573, Y 4637–5537 |
+| 2-seat sofa, the east leg, facing north | X 10573–12173, Y 4637–5537 |
+| single recliner, the west leg, facing east | X 9673–10573, Y 3837–4637 |
+| rocking chair, closing the group | centred (12100, 3700), aimed at the recliner |
+| console, on the sofa's back line | X 10573–12173, Y 5537–5887 |
+| rug | 3300 × 2500 mm (10′-10″ × 8′-2″) — the whole group on it |
+
+The run moved **500 mm (1′-8″) south** to make room for the fourth side. The
+console still clears the apse crown by **1598 mm (5′-3″)**.
+
+| conversation, seat centre to seat centre | mm | ft |
+|---|---|---|
+| **recliner ↔ rocking chair** — across the group | **2049** | **6′-9″** |
+| rocking chair ↔ nearest sofa seat | 1425 | 4′-8″ |
+| rocking chair ↔ far sofa seat | 1668 | 5′-6″ |
+| recliner ↔ nearest sofa seat, across the planter | 1351 | 4′-5″ |
+
+**2049 mm (6′-9″) across is the number that matters**, and it sits at the close
+end of the comfortable band rather than the middle of it. The two short ones
+are not a fault of the layout: they are adjacent seats in an L, and in both
+cases something sits between them — the planter in the corner, the sofa's own
+arm at the chair.
+
+**It is as spread as the space allows.** Two things pin it: the deck glass,
+**594 mm (1′-11″)** off the rocking chair's north edge, and the pair of rocking
+chairs in the east half, **348 mm (1′-2″)** off its east edge. If a looser
+group is wanted, moving that east pair further east is the only lever left.
+
+| | mm | ft |
+|---|---|---|
+| planter west face → west pod glazing | 1035 | 3′-5″ |
+| recliner west face → west pod glazing | 964 | 3′-2″ |
+| recliner north edge → deck glass | 1217 | 4′-0″ |
+| the parents' door, approach | 1038 | 3′-5″ |
+
 ### The two halves swapped, and the parents' door moved south
 
 The run — sofa, planter, tree, console and rug — is now in the **west** half,

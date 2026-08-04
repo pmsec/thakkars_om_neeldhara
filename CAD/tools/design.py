@@ -302,10 +302,20 @@ NEW_WALLS = [
     #
     # IT IS A REAL WALL WITH A REAL DOOR, not a screen with a gap.  A gap would
     # give privacy and nothing else; the whole point of it is that the two sides
-    # can hold different temperatures, and that needs something that shuts.  The
-    # door is 900, at the east end, on the direct line from the foot of the bed
-    # to the bath.
-    (-450, 5975, 2621, 5975, 200, [(2171, 3071)]),
+    # can hold different temperatures, and that needs something that shuts.
+    #
+    # THE DOOR IS WHERE THE ARCH LETS IT BE.  It was first drawn at the far east
+    # end, X 1721-2621, which is wrong twice over: the bath's sweep comes back
+    # west to X 2325 just below the partition, so the passage south of that end
+    # of the opening is only 292 deep before it meets the arch, and a 900 leaf
+    # hinged at 1721 fouls the arch by 161.
+    #
+    # It moves west to X 1400-2300.  The opening now stops 25 short of the
+    # arch's westernmost point so the passage is clear, and the leaf, hinged on
+    # the WEST jamb and swinging south into the dressing zone, misses the arch
+    # by 137 at its closest.  That is the whole width the arch allows: hinge it
+    # at 1500 instead and the margin falls to 44.
+    (-450, 5975, 2621, 5975, 200, [(1850, 2750)]),
     (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR]),
     (M(MB_XW - T_MB / 2), MB_YW, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR_E]),
     # The bath's east side is the enclosure to the builder's main service duct.
@@ -536,12 +546,12 @@ _ONCE = [
     # partition between you and the bed.  One element, two jobs: it separates
     # the two sleeping zones and it is the changing screen.
     #
-    # 2170 x 600, west of the door.  That is 650 less than the 2820 the west
+    # 1850 x 600, west of the door.  That is 970 less than the 2820 the west
     # wall carried, and it is the real cost of this layout — see the note in
     # ROUND1.md.  SLIDING doors, not hinged: with the wall bed down there is
-    # 1070 in front of them, which is enough to stand in but not to swing a 750
+    # 920 in front of them, which is enough to stand in but not to swing a 750
     # leaf through.
-    ('hanging',   -450, 6075, 1720, 6675, "cupboards  ·  2170 x 600, sliding"),
+    ('hanging',   -450, 6075, 1400, 6675, "cupboards  ·  1850 x 600, sliding"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a single
@@ -552,10 +562,10 @@ _ONCE = [
     # whose face stands 80 proud of the wall.  The cabinet is 1200 long and 400
     # deep off that proud face, so the column is behind it with no void, and the
     # cabinet stops dead on the 600 window's north jamb at 8945.
-    # The door in the partition, hinged on its west jamb and swinging SOUTH into
-    # the dressing zone, where there is 1070 of floor for it.  Open, the leaf
-    # stands on the end of the cupboard run and blocks nothing.
-    ('swing',     1721, 6075, 2621, 6975, "door  ·  900, into the dressing zone"),
+    # The leaf, hinged on the west jamb and swinging SOUTH into the dressing
+    # zone.  Open, it stands on the east end of the cupboard run and blocks
+    # nothing; shut, it is what makes the two halves separately heatable.
+    ('swing',     1400, 6075, 2300, 6975, "door  ·  900, into the dressing zone"),
     ('murphy-e',  -370, 7745, 30, 8945,
      "wall bed  ·  single 1200 x 1900, shown folded down"),
     # A MIRROR ON THE BATH WALL AND NOTHING ELSE — no console under it.  It is in

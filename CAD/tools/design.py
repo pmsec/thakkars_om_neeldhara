@@ -409,37 +409,39 @@ SCREEN_WALLS = [(a + T_GAL / 2, b, a + T_GAL / 2, d, T_GAL, [])
                 for a, b, c, d in GAL_LEGS]
 
 # --------------------------------------------------------------- pod glazing
-# quadratic Bezier, bowing away from the great room, as A-101 draws it
-# A CUBIC, not a quadratic.  A quadratic can only bow one way, so the width
-# the great room wants in the middle and the width the pod needs at the
-# serving hatch fight each other.  A cubic gives both: it waists in towards
-# the pod at mid-depth and swells back out at the bottom, where the dining
-# table sits.  Great room 42.3 m2 against 39.9 for the best quadratic that
-# still takes the table, and the table stays at the hatch.
+# ONE BEND AND THEN STRAIGHT.  It leaves the deck wall at 65 degrees, turns
+# through a single arc over the top 1708 — minimum radius 3036 — and then runs
+# dead straight for the remaining 3947 to the service-bay wall.  No inflection,
+# no reverse, no second bend.
 #
-# RE-DRAWN.  The control points were (6800, 4600) (9400, 6400) — the same idea,
-# badly conditioned: the radius of curvature tightened to 2037, ran effectively
-# straight at Y 6008 and bent again, and the curve met the deck wall at 41 deg
-# with a visible kink.  A curve reads as deliberate when its radius is constant
-# or changes smoothly one way; that one read as a wobble.  The re-fit holds the
-# minimum radius at 3036 and squares the springing up to 54 deg for 1.1 m2 of
-# great room.
+# It used to be a cubic S: a bow of 985 with the radius swinging from 2037 to
+# effectively straight and back, meeting the deck wall at 41 degrees with a
+# visible kink.  Three separate objections killed it, and they are worth
+# keeping written down because each one will come back:
 #
-# THREE THINGS PIN IT, and none of them has any slack:
-#  * the south end must land at 8600, which mirrors to 15880 on the service-bay
-#    wall.  The guest WC's apse springs at 15000 and this glazing lands at
-#    15880 — 880 of wall, and the WC door is 800 of it.  Move the landing west
-#    and the door is gone.
-#  * a single arc is impossible: an arc is widest at mid-span and the dining
-#    table is not at mid-span.  The best single arc leaves 0 at the chair
-#    nearest the glass.  The second bend is what gives the pod its width back
-#    exactly where the table is.
-#  * straightening the tail collapses the bow — forced to end at 8600 with a
-#    straight run in, the great room drops to 37.8 m2, barely better than a
-#    flat screen.  The tail has to bend.
-# Clearances at the dining table: 210 to the glass, 215 to the duct wall.
-POD_W = ((9115, BODY_N), (7352, 5047), (9206, 6285), (8600, BODY_S))
-POD_E = ((M(9115), BODY_N), (M(7352), 5047), (M(9206), 6285), (M(8600), BODY_S))
+#  * A CURVE AT 13% DEVIATION IS IN THE AMBIGUOUS ZONE.  Too curved to read as
+#    a straight wall, too shallow to read as a curve.  This one is at 8.8% and
+#    does not claim to be a curve at all: it is a splayed wall with an eased
+#    corner, which is a different and safer move.
+#  * IT WAS OFF-VOCABULARY.  Every other curve in this home is a tight complete
+#    arc you read instantly — the bath sweep is a 765 quarter circle, the entry
+#    apse a true 1725 semicircle, the guest WC a quarter ellipse.  A 3 m radius
+#    stretched over 6 m was the only shallow gesture in the plan and it looked
+#    weak beside them.
+#  * IT GAVE NEITHER POD A STRAIGHT WALL.  The den in particular wants one — a
+#    desk, a bookcase and a sideboard all want a flat back.  This gives each pod
+#    3947 of straight wall and a pod width that never varies by more than 2.
+#
+# THE SOUTH END LANDS AT 8600 AND CANNOT MOVE.  It mirrors to 15880 on the
+# service-bay wall; the guest WC's apse springs at 15000 and this glazing lands
+# at 15880, so there are 880 of wall there and the WC door is 800 of it.  Any
+# curve wanting a wider mouth at the bottom takes the door out.
+#
+# It costs 1.1 m2 of great room against the S — 40.3 down to 39.2 — and gives
+# 0.5 m2 back to each pod.  The three spaces together are unchanged: the curve
+# only decides where the line between them sits.
+POD_W = ((9115, BODY_N), (8608, 3708), (8600, 3800), (8600, BODY_S))
+POD_E = ((M(9115), BODY_N), (M(8608), 3708), (M(8600), 3800), (M(8600), BODY_S))
 POD_PORTAL = (0.42, 0.60)                 # arched opening, as a t-range
 
 # straight glazing runs: (x1, y1, x2, y2, kind)
@@ -640,10 +642,28 @@ _ONCE = [
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room
     # ------------------------------------------------- parents' pod: dining
-    # Round 1400, six chairs, at the serving hatch end of the pod.  It needs a
-    # 2900 clear circle; the pod's south end only gave 2295 until the glazing
-    # was straightened, which is why that curve changed.
-    ('dining',   6480, 6250, 7880, 7650, 'round 1400 dia, seats 6'),
+    # NOT A ROUND TABLE.  It was a 1400 round, and a round table in a pod only
+    # 2894 wide is the wrong shape for the room: the seat facing the glass and
+    # the seat facing the duct wall had 200 and 215 behind them, so neither
+    # chair could be pulled out.  A long table turned to run DOWN the pod uses
+    # the 5780 of depth instead of fighting the 2894 of width.
+    #
+    # 1100 x 2200, all four edges arched — see symbols.dining-se.  On the same
+    # footprint it carries 2.30 m2 of top against 1.90 for a true oval and 1.54
+    # for the 1400 round, because the edges bow OUT rather than the corners
+    # being cut IN.  Three chairs a side at 700 centres, 733 of rim each.
+    #
+    # 559 behind the chairs on BOTH sides — the glazing runs dead straight past
+    # this table now, so the pod's width does not vary along it and the table
+    # could sit anywhere in the run.  Under the old S curve this same table had
+    # 178 on the glass side.
+    #
+    # SEVEN, NOT EIGHT.  One occasional chair at the NORTH end, where 2270 of
+    # open pod stands behind it.  Nothing at the south end: that end is the
+    # serving stance at the hatch, 500 off the wall, and a chair there would sit
+    # in the hatch itself.
+    ('dining-se', 6603, 5700, 7703, 7900,
+     'superellipse 1100 x 2200  ·  six, seven with the north end chair'),
     # ------------------------------------------------------------- kitchen
     # Run B stops 850 short of the gallery: the apse springs vertically off the
     # column, so the only stretch of gallery wall the kitchen can have a door

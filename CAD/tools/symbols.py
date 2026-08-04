@@ -282,6 +282,35 @@ def symbol(kind, a, b, c, d):
         return out
     if kind == 'table':
         return [('circle', cx, cy, min(w, h) / 2, 'solid')]
+    if kind == 'dining-se':
+        # ALL FOUR EDGES ARCHED — a superellipse, |x/A|^n + |y/B|^n = 1 at n = 5.
+        # The two long edges bow so gently — 23 out of 1100 where the chairs sit,
+        # one in 48 — that a chair meets what reads as a straight edge, while the
+        # two ends arch enough to carry a seat.  It has no head, and it holds
+        # more top than a rectangle on the same footprint because the edges bow
+        # OUT instead of the corners being cut IN.
+        A, B, n = w / 2, h / 2, 5.0
+        pts = []
+        for i in range(241):
+            t = 2 * math.pi * i / 240
+            ct, st = math.cos(t), math.sin(t)
+            pts.append((cx + A * math.copysign(abs(ct) ** (2 / n), ct),
+                        cy + B * math.copysign(abs(st) ** (2 / n), st)))
+        out = [('poly', pts, 'solid')]
+
+        def edge(yy):                       # half-width of the top at this y
+            v = 1 - abs((yy - cy) / B) ** n
+            return A * (v ** (1 / n)) if v > 0 else 0.0
+        for k in (-1, 0, 1):                # three a side, on the flat run
+            sy = cy + k * 700
+            e = edge(sy)
+            out.append(_rr(cx - e - 350, sy - 230, cx - e + 110, sy + 230, 'solid'))
+            out.append(_rr(cx + e - 110, sy - 230, cx + e + 350, sy + 230, 'solid'))
+        # ONE occasional seventh, at the NORTH end only, drawn dashed.  There is
+        # no eighth: the south end is the serving stance at the hatch, and a
+        # chair there would sit in the hatch and have 500 to sit down in.
+        out.append(_rr(cx - 230, b - 810, cx + 230, b - 350, 'dash'))
+        return out
     if kind == 'dining':
         r = min(w, h) / 2
         out = [('circle', cx, cy, r, 'solid')]

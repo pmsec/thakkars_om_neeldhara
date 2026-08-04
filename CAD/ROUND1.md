@@ -245,9 +245,9 @@ asking it to match the column. Finish it in wood if you want the same effect.
 | STORE | 2.4 | 26 |
 | **total of named rooms** | **232.7** | **2504** |
 
-The great room is 434 sq ft against A-101's 474, and reads 6250 across the
-removed party wall at the deck, 7816 at the waist and 7280 at the pods — the
-pod glazing is a cubic now, not an arc. It gives 2.1 m² back to the entry
+The great room is 422 sq ft against A-101's 474, and reads 6250 across the
+removed party wall at the deck, 7280 at the waist and 7280 at the pods — the
+pod glazing turns once at the top and then runs straight. It gives 2.1 m² back to the entry
 gallery's apse, which projects into it.
 
 ---
@@ -846,72 +846,105 @@ and 755 past its foot to the store door. Cupboard on the west wall.
 
 ---
 
-## The pod glazing is an S
+## The pod glazing — one bend, then straight
 
-The tinted glass between the great room and each pod used to be a single bow.
-A single bow can only go one way: every millimetre of width the great room
-gained came out of the pod at exactly the depth the dining table wants. Pushed
-far enough to be worth having, it shoved the table 3.4 m off the serving hatch,
-which stops it being a serving hatch.
+The tinted glass between the great room and each pod leaves the deck wall at
+**65 degrees**, turns through a single arc over the top **1708** — minimum
+radius **3036** — and then runs **dead straight for the remaining 3947** to the
+service-bay wall. No inflection, no reverse, no second bend.
 
-A cubic decouples the two ends. Control points, west side — the east is the
-mirror:
+Control points, west side; the east is the mirror:
 
 ```
-(9115, 2620)  (7352, 5047)  (9206, 6285)  (8600, 8400)
+(9115, 2620)  (8608, 3708)  (8600, 3800)  (8600, 8400)
 ```
 
-It waists **into** the pod at mid-depth, where the pod has nothing but
-circulation, and swells back at the bottom, where the table sits. The great
-room gets its width in the middle and the pod keeps its width at the hatch.
+### It used to be an S, and here is why that went
 
-### It was re-drawn, and here is what was wrong with the first version
+The first version was a cubic with a **985 bow**, its radius swinging from 2037
+to effectively straight and back, meeting the deck wall at **41 degrees** with a
+visible kink. Three separate objections killed it, and each is worth keeping
+written down because each will come back:
 
-The original control points were `(6800, 4600) (9400, 6400)`. Same idea, badly
-conditioned:
+* **13% deviation over 6 m is the ambiguous zone.** Too curved to read as a
+  straight wall, too shallow to read as a curve — it read as *a wall that isn't
+  quite straight*. This one is at **8.8%** and does not claim to be a curve at
+  all: it is a splayed wall with an eased corner.
+* **It was off-vocabulary.** Every other curve in this home is a tight,
+  complete arc you read instantly — the bath sweep is a 765 quarter circle, the
+  entry apse a true 1725 semicircle, the guest WC a quarter ellipse. A 3 m
+  radius stretched over 6 m was the only shallow gesture in the plan, and the
+  eye calibrates on the confident ones.
+* **It gave neither pod a straight wall.** The den in particular wants one — a
+  desk, a bookcase and a sideboard all want a flat back. Each pod now has
+  **3947 of straight wall**, and a width that never varies by more than 2.
 
-| | first cubic | re-drawn |
+### The south end lands at 8600 and cannot move
+
+It mirrors to **15880** on the service-bay wall. The guest WC's apse springs at
+15000 and this glazing lands at 15880 — **880 of wall, and the WC door is 800 of
+it.** Any curve that wants a wider mouth at the bottom takes the door out. One
+earlier re-fit did exactly that, landing 240 inside the door opening.
+
+### What it costs, and what it does not
+
+| | great room | each pod | the three together |
+|---|---|---|---|
+| the original strong S | 445 sq ft | 218 | 881 |
+| the re-drawn S | 434 | 224 | 882 |
+| **one bend, then straight** | **422** | **230** | **882** |
+
+**The three spaces together never change.** The curve creates nothing and
+destroys nothing — it only decides where the line between the great room and
+the pods sits. Whole-home total is 2504 sq ft in every version.
+
+The great room's narrow point is **20'-6" in all of them** — that is set by the
+deck end, not by the curve. What the curve buys is the swell in the middle, and
+going straight takes 3 ft off it: 27'-0" on the strong S down to 23'-11" here.
+
+---
+
+## The dining table is not round
+
+It was a 1400 round, and a round table in a pod **2894 wide** is the wrong shape
+for the room. The seat facing the glass and the seat facing the duct wall had
+**200 and 215** behind them — neither chair could be pulled out to sit in.
+
+A long table turned to run **down** the pod uses its 5780 of depth instead of
+fighting its 2894 of width.
+
+**1100 × 2200 — 3'-7" × 7'-3" — with all four edges arched.** It is a
+superellipse, `|x/A|^n + |y/B|^n = 1` at n = 5. The long edges bow so gently
+where the chairs sit — **23 out of 1100, one in 48** — that a chair meets what
+reads as a straight edge, while the two ends arch enough to carry a seat.
+
+| on the same 1100 × 2200 footprint | top area |
+|---|---|
+| true oval | 1.90 m² |
+| rectangle, corners filleted 400 | 2.28 |
+| **superellipse** | **2.30** |
+| *(the 1400 round, for reference)* | *1.54* |
+
+It beats even the filleted rectangle because the edges bow **out** instead of
+the corners being cut **in** — and a true oval loses the table exactly where the
+outer diners sit, narrowing to 2'-11" under them.
+
+| | mm | ft |
 |---|---|---|
-| minimum radius of curvature | 2037 | **3036** |
-| angle it meets the deck wall | 41° | **54°** |
-| bow into the pod | 985 | 783 |
-| clear at the dining chair | 200 | **210** |
-| great room | 43.4 m² | 42.3 m² |
+| table | 1100 × 2200 | 3'-7" × 7'-3" |
+| rim per person, three a side | 733 | 2'-5" |
+| clear behind the chairs, **both** sides | 559 | 1'-10" |
+| table end to the hatch wall | 500 | 1'-8" |
 
-A curve reads as deliberate when its radius is constant or changes smoothly in
-one direction. The first one tightened to 2 m, ran nearly straight at Y 6008,
-then bent again — the eye catches that as a wobble even when it cannot name it,
-and there was a visible kink where it left the deck wall at 41°. Raising the
-minimum radius by half and squaring it up to the wall costs **1.1 m²** of great
-room and buys a curve that looks drawn rather than solved.
+**Seven, not eight.** One occasional chair at the **north** end, with open pod
+behind it. Nothing at the south end: that end is the serving stance at the
+hatch, and a chair there would sit in the hatch itself.
 
-### Three things pin it, and all three are tight
-
-**The south end cannot move.** It lands at X 8600, which mirrors to **15880** on
-the service-bay wall. The guest WC's apse springs at 15000 and the glazing lands
-at 15880 — 880 of wall, and the WC door is 800 of it. Move the glazing 300 west
-and the door is gone. A single arc, or any curve wanting a wider mouth at the
-bottom, breaks it.
-
-**A single arc cannot work here at all.** An arc's widest point is always at
-mid-span and the dining table is not at mid-span. The best single arc leaves
-**0** at the chair nearest the glass — touching. It is the second bend that
-hands width back to the pod exactly where the table is.
-
-**Straightening the tail costs the whole curve.** Forced to end at 8600 with a
-straight run in, the bow collapses to almost nothing: great room 37.8 m², which
-is barely better than a flat screen. The tail has to bend.
-
-Great room 39.9 → **42.3 m² (429 → 455 sq ft)** with the table still at the
-hatch: centre (7180, 6950), 210 from the chair back to the glass and 215 from
-the opposite chair to the duct wall.
-
-**The dining is the tightest thing in the plan.** Those two numbers mean you can
-sit down but you cannot walk behind a seated person on either side — you go
-round the north end of the table. Dropping the table from 1400 to 1200 round
-(six places at 628, which is a normal setting) takes them to 310 and 315 and is
-the single change that would make that room comfortable. It is independent of
-anything the glazing does.
+**This is also the clearest argument for the straight glazing.** Under the S the
+pod's width varied along its length, so where you put the table mattered — this
+same table had **178** on the glass side when it moved north far enough to seat
+an eighth. Past a straight screen the pod is a constant 2894 and the table can
+sit anywhere in it.
 
 ---
 
@@ -1033,10 +1066,10 @@ need. Beside the serving hatch it is also next to the kitchen.
 * **help's room, the guest WC and the store** — re-cut round the WC's elliptical
   apse. Help's room 4.4 m², WC 3.0, store 2.4; see the section above
 * all A-101 furniture — resolved, two pieces moved (see above)
-* **the dining table** — a round 1400 seating six, in the parents' pod at the
-  serving hatch, centred (7180, 6950). It fits because the pod glazing is a
-  cubic S — but only just: 210 from the chair back to the glass and 215 from
-  the opposite chair to the duct wall. See *The pod glazing is an S*
+* **the dining table** — a long table seating six, in the parents' pod at the
+  serving hatch — replaced by a 1100 × 2200 superellipse turned down the pod,
+  six seats and an occasional seventh, 1'-10" clear on both sides. See *The
+  dining table is not round*
 * **the kitchen and the utility are one space** — the wall between them is
   removed in full, so the builder's dry balcony reads as the kitchen's utility
   end. The kitchen is 10.5 m² / 113 sq ft

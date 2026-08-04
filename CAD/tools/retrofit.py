@@ -814,67 +814,13 @@ def great_room_carpet():
     return [('poly', o, 'soft'), ('poly', i, 'light')]
 
 
-def fountain_plants(n=12, r_bowl=600):
-    """Trailing flowers hung ON the fountain, off the lip of its bowl.
-
-    NOT pots standing on the grass around it.  That is what this was for one
-    round — twelve pots on an 800 radius, sitting on the lawn — and it is the
-    wrong thing: it makes a ring of objects near the fountain instead of
-    making the fountain itself flower.  What is wanted is the planter that
-    HOOKS OVER THE RIM, so the plant sits on the bowl and the growth falls
-    down the outside of it: petunia, calibrachoa, that kind of trailing stock.
-
-    So the geometry is hung off the rim, not spaced away from it:
-
-      the pots      twelve, straddling the 600 rim line, 520 to 680 from the
-                    centre and 150 across — half of each pot inside the lip,
-                    half hanging out over the drop
-      the growth    a fine ruffle from 535 out to 855, built as two offset
-                    rings of eighteen small overlapping lobes, because the
-                    trails knit into one mass long before they reach length
-
-    THE COLLAR ONLY REACHES 255 PAST THE RIM, and that is the whole point of
-    drawing it this way: a trailing plant hangs DOWN.  Seen in plan it does
-    not spread — it projects by about the arc it takes to fall off the lip,
-    a few hundred millimetres, however long it gets.  Drawn any fatter it
-    stops reading as something hung on the bowl and starts reading as a
-    flowerbed the bowl is standing in, which is the thing this replaced.
-
-    The pots draw over the growth, not under it.  In plan the foliage covers
-    the rim it hangs from, and if the pots went under it there would be
-    nothing left to show that they are pots at all.
-
-    Everything stays outside 520, so the water, the spouts and the pedestal
-    are untouched: from the great room you still read water first.
-    """
-    cx, cy = 12240, 1160
-    out = []
-
-    # the growth.  Two rings, the inner offset half a step, so the lobes of
-    # one sit in the gaps of the other and the ruffle closes up.
-    lobes = n + 6
-    lstep = 2 * math.pi / lobes
-    for k in range(lobes):                                     # trails, out
-        a = k * lstep
-        out.append(('circle', cx + math.cos(a) * 720,
-                    cy + math.sin(a) * 720, 135, 'green'))
-    for k in range(lobes):                                     # foliage, on
-        a = (k + 0.5) * lstep
-        out.append(('circle', cx + math.cos(a) * 640,
-                    cy + math.sin(a) * 640, 105, 'green'))
-
-    # the pots themselves, each an annular sector straddling the bowl's lip
-    step = 2 * math.pi / n
-    half = 75.0 / r_bowl                                       # ~150 across
-    for k in range(n):
-        a = k * step
-        pts = []
-        for r, lo, hi in ((680, -half, half), (520, half, -half)):
-            for j in range(4):
-                t = a + lo + (hi - lo) * j / 3.0
-                pts.append((cx + math.cos(t) * r, cy + math.sin(t) * r))
-        out.append(('poly', pts, 'solid'))
-    return out
+# The fountain's planting is DELIBERATELY NOT DRAWN.  It was, twice: pots
+# standing on the lawn around the bowl, then pots hooked over the rim with
+# trailing flowers falling down the outside.  Neither earned its place.  A
+# 1200 bowl is 1200 on the sheet however it is planted, so the collar told
+# the architect nothing he needs and cost the drawing the one thing the
+# fountain is there to read as — water on the home's axis.  Planting on the
+# fountain is a finish, settled with whoever plants it, off this drawing.
 
 
 def great_room_sofa(ax=11440, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):

@@ -1217,33 +1217,24 @@ The canopy is drawn **dashed**, because it is overhead — it oversails the
 planter box by about **360 mm (1′-2″)** on every side, which is the whole
 reason for a tree there rather than a pot.
 
-### Flowers hung on the fountain, off the lip of the bowl
+### The fountain's planting is out of scope, on purpose
 
-Not pots standing on the grass around it — **planters that hook over the rim**,
-so the plant sits on the bowl and the growth falls down the outside of it.
-Trailing stock: petunia, calibrachoa, that kind of thing.
+The bowl is drawn. What grows on it is not, and that is a decision rather than
+an omission.
 
-| | mm | ft |
-|---|---|---|
-| pots | twelve, straddling the 600 rim line | |
-| each pot | 520 → 680 from centre, 150 across | 6″ across |
-| the growth | a ruffle from 535 out to 855 | |
-| **projection past the rim** | **255** | **10″** |
+It was drawn twice. First as twelve 300 mm (12″) pots standing on the lawn on
+an 800 mm (2′-7″) radius; then, correctly, as pots hooked over the rim with
+trailing flowers falling down the outside. The second was the right *idea* and
+still the wrong *drawing*.
 
-**That last number is the whole reason for drawing it this way.** A trailing
-plant hangs *down*. Seen from above it barely spreads — it projects by about
-the arc it takes to fall off the lip, a few hundred millimetres, however long
-it eventually gets. Drawn any fatter it stops reading as something hung on the
-bowl and starts reading as a flowerbed the bowl is standing in.
+**A 1200 mm (3′-11″) bowl is 1200 mm on the sheet however it is planted.** The
+collar told the architect nothing he has to build to, and it cost the plan the
+one thing the fountain is there to read as — water, on the home's axis, seen
+from the great room. Every version of it made a wreath that competed with the
+bowl at exactly the scale the sheet is read at.
 
-Which is exactly what it was for one round: twelve 300 mm (12″) pots on an
-800 mm (2′-7″) radius, sitting on the lawn. That put a ring of objects *near*
-the fountain instead of making the fountain itself flower.
-
-Everything stays outside 520 mm, so the water, the spouts and the pedestal are
-untouched — from the great room you still read water first, through a ring of
-colour. The collar's north edge stops **115 mm (5″)** short of the parapet
-grass strip.
+So: **planting on the fountain is a finish**, settled with whoever plants it,
+against the real object. Off this drawing.
 
 ### A drawing that disagreed with itself
 

@@ -277,9 +277,9 @@ def main():
         prim(p)
     for p in R.great_room_planter():   # answers the kitchen's bump across the room
         prim(p)
-    for p in R.great_room_sofa():      # the diagonal 2-seater + its tree
+    for p in R.great_room_sofa():      # the 2-seater + the tree on its end
         prim(p)
-    for p in R.fountain_plants():      # the flowering collar round the bowl
+    for p in R.fountain_plants():      # trailing flowers hung off the bowl rim
         prim(p)
     gx, gy, gr, gt, _g = D.GALLERY
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:

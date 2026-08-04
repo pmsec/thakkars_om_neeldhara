@@ -1217,16 +1217,33 @@ The canopy is drawn **dashed**, because it is overhead — it oversails the
 planter box by about **360 mm (1′-2″)** on every side, which is the whole
 reason for a tree there rather than a pot.
 
-### A collar of flowering plants round the fountain
+### Flowers hung on the fountain, off the lip of the bowl
 
-Twelve small pots, **300 mm (12″)** across, on an **800 mm (2′-7″)** radius —
-so they occupy 650–950 mm from the centre and the bowl's 600 mm rim stays
-clear to sit on. The water is then seen *through* a ring of colour rather than
-over bare grass.
+Not pots standing on the grass around it — **planters that hook over the rim**,
+so the plant sits on the bowl and the growth falls down the outside of it.
+Trailing stock: petunia, calibrachoa, that kind of thing.
 
-**Small and high on purpose:** flowering indoor stock, not shrubs. Anything
-with a spread would close the ring into a hedge and hide the bowl — which is
-the one thing on the deck the whole room is aimed at.
+| | mm | ft |
+|---|---|---|
+| pots | twelve, straddling the 600 rim line | |
+| each pot | 520 → 680 from centre, 150 across | 6″ across |
+| the growth | a ruffle from 535 out to 855 | |
+| **projection past the rim** | **255** | **10″** |
+
+**That last number is the whole reason for drawing it this way.** A trailing
+plant hangs *down*. Seen from above it barely spreads — it projects by about
+the arc it takes to fall off the lip, a few hundred millimetres, however long
+it eventually gets. Drawn any fatter it stops reading as something hung on the
+bowl and starts reading as a flowerbed the bowl is standing in.
+
+Which is exactly what it was for one round: twelve 300 mm (12″) pots on an
+800 mm (2′-7″) radius, sitting on the lawn. That put a ring of objects *near*
+the fountain instead of making the fountain itself flower.
+
+Everything stays outside 520 mm, so the water, the spouts and the pedestal are
+untouched — from the great room you still read water first, through a ring of
+colour. The collar's north edge stops **115 mm (5″)** short of the parapet
+grass strip.
 
 ### A drawing that disagreed with itself
 

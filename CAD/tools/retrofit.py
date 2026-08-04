@@ -814,24 +814,66 @@ def great_room_carpet():
     return [('poly', o, 'soft'), ('poly', i, 'light')]
 
 
-def fountain_plants(n=12, ring=800, pot=150):
-    """A collar of small flowering plants round the fountain.
+def fountain_plants(n=12, r_bowl=600):
+    """Trailing flowers hung ON the fountain, off the lip of its bowl.
 
-    The fountain is a 1200 bowl in the middle of the lawn on the home's axis.
-    Twelve pots on an 800 radius put them just outside its rim — they occupy
-    650 to 950 from the centre, so the rim stays clear to sit on and the water
-    is seen through a ring of colour rather than over bare grass.
+    NOT pots standing on the grass around it.  That is what this was for one
+    round — twelve pots on an 800 radius, sitting on the lawn — and it is the
+    wrong thing: it makes a ring of objects near the fountain instead of
+    making the fountain itself flower.  What is wanted is the planter that
+    HOOKS OVER THE RIM, so the plant sits on the bowl and the growth falls
+    down the outside of it: petunia, calibrachoa, that kind of trailing stock.
 
-    Small and high: flowering indoor stock, not shrubs.  Anything with a spread
-    would close the ring into a hedge and hide the bowl, which is the one thing
-    on the deck the whole room is aimed at.
+    So the geometry is hung off the rim, not spaced away from it:
+
+      the pots      twelve, straddling the 600 rim line, 520 to 680 from the
+                    centre and 150 across — half of each pot inside the lip,
+                    half hanging out over the drop
+      the growth    a fine ruffle from 535 out to 855, built as two offset
+                    rings of eighteen small overlapping lobes, because the
+                    trails knit into one mass long before they reach length
+
+    THE COLLAR ONLY REACHES 255 PAST THE RIM, and that is the whole point of
+    drawing it this way: a trailing plant hangs DOWN.  Seen in plan it does
+    not spread — it projects by about the arc it takes to fall off the lip,
+    a few hundred millimetres, however long it gets.  Drawn any fatter it
+    stops reading as something hung on the bowl and starts reading as a
+    flowerbed the bowl is standing in, which is the thing this replaced.
+
+    The pots draw over the growth, not under it.  In plan the foliage covers
+    the rim it hangs from, and if the pots went under it there would be
+    nothing left to show that they are pots at all.
+
+    Everything stays outside 520, so the water, the spouts and the pedestal
+    are untouched: from the great room you still read water first.
     """
     cx, cy = 12240, 1160
     out = []
+
+    # the growth.  Two rings, the inner offset half a step, so the lobes of
+    # one sit in the gaps of the other and the ruffle closes up.
+    lobes = n + 6
+    lstep = 2 * math.pi / lobes
+    for k in range(lobes):                                     # trails, out
+        a = k * lstep
+        out.append(('circle', cx + math.cos(a) * 720,
+                    cy + math.sin(a) * 720, 135, 'green'))
+    for k in range(lobes):                                     # foliage, on
+        a = (k + 0.5) * lstep
+        out.append(('circle', cx + math.cos(a) * 640,
+                    cy + math.sin(a) * 640, 105, 'green'))
+
+    # the pots themselves, each an annular sector straddling the bowl's lip
+    step = 2 * math.pi / n
+    half = 75.0 / r_bowl                                       # ~150 across
     for k in range(n):
-        ang = math.radians(k * 360.0 / n + 15)
-        out.append(('circle', cx + math.cos(ang) * ring,
-                    cy + math.sin(ang) * ring, pot, 'green'))
+        a = k * step
+        pts = []
+        for r, lo, hi in ((680, -half, half), (520, half, -half)):
+            for j in range(4):
+                t = a + lo + (hi - lo) * j / 3.0
+                pts.append((cx + math.cos(t) * r, cy + math.sin(t) * r))
+        out.append(('poly', pts, 'solid'))
     return out
 
 

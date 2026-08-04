@@ -503,20 +503,28 @@ _ONCE = [
     # 2095 between.  It runs the bath's own length, 2820, and stops dead on the
     # window's north jamb at Y 8945, so the 600 window there stays open.
     #
-    # THREE UNITS OF 940, all of them cupboards.  The run goes the whole way
-    # down to the column's south edge at 8945 and stops 100 short of the laundry
-    # basket in the corner, so the wall reads as one continuous run of joinery
-    # ending on a low basket rather than as two short pieces with a gap.
+    # THREE UNITS, all of them cupboards, and the run goes the whole way down to
+    # the column's south edge at 8945 — stopping 100 short of the laundry basket
+    # in the corner, so the wall reads as one continuous run of joinery ending on
+    # a low basket rather than as two short pieces with a gap.
     #
-    # Set off X -370, not the wall face at -450: the builder leaves a 230 x 1200
-    # column on this wall over Y 7745-8945 whose face stands 80 proud, and the
-    # run crosses it.  Scribed to the column and packed out behind, so the whole
-    # 2820 is one flush line rather than 600 deep for two thirds and 520 for the
-    # rest.  That 80 is the price of a run that goes the full length; it is not
-    # recoverable while the cupboards cross the column.
-    ('hanging',   -370, 6125, 230, 7065, "wardrobe 1  ·  940 x 600, hanging"),
-    ('hanging',   -370, 7065, 230, 8005, "wardrobe 2  ·  940 x 600, hanging"),
-    ('hanging',   -370, 8005, 230, 8945, "wardrobe 3  ·  940 x 600, hanging"),
+    # THE BACK STEPS, THE FRONT DOES NOT.  The builder leaves a 230 x 1200 column
+    # over Y 7745-8945 whose face stands 80 proud of the wall.  Only the unit
+    # that sits ON that column has to be held off at X -370; the two north of it
+    # have nothing behind them but wall, so they go back to the wall face at
+    # -450 and are 680 deep instead of 600.
+    #
+    # The alternative was to set the whole run at -370 and pack out behind, which
+    # is tidier to build and leaves a sealed 80 x 1620 cavity you can never open,
+    # never clean and never use.  Better to give that 80 to the cupboard: behind
+    # a hanging rail it is exactly the depth a shoe box or a deep shelf wants.
+    #
+    # Every door still lines through on X 230, so the run reads as one flat face
+    # whatever the carcass is doing behind it.  The joint lands on Y 7745, the
+    # column's north edge, so no single unit has a stepped back.
+    ('hanging',   -450, 6125, 230, 6935, "wardrobe 1  ·  810 x 680, hanging"),
+    ('hanging',   -450, 6935, 230, 7745, "wardrobe 2  ·  810 x 680, hanging"),
+    ('hanging',   -370, 7745, 230, 8945, "wardrobe 3  ·  1200 x 600, over the column"),
     # THE BASKET GOES IN THE CORNER, hard into the angle where the west window
     # and the south window meet — back on the south wall at Y 9545, end on the
     # west wall at X -450.  It lies ALONG THE SOUTH WALL, 700 x 500: turned the

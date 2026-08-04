@@ -823,7 +823,7 @@ def great_room_carpet():
 # fountain is a finish, settled with whoever plants it, off this drawing.
 
 
-def great_room_sofa(ax=11440, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
+def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 
     SQUARE TO THE ROOM, not diagonal.  It was set out at 45 degrees for one
@@ -832,20 +832,26 @@ def great_room_sofa(ax=11440, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     the tree's box across the middle of the floor at an angle nothing else in
     the plan shares.
 
-    ax 11440 CENTRES THE SOFA ON X 12240, and what that buys is not symmetry
-    for its own sake — it is the seating group.  The two deck recliners sit
-    against the void walls at X 9565 and 14915, 2675 either side of the
-    centreline and immovably so, because the voids set them.  Centred, the
-    sofa is 3811 from EACH of them.  Off centre it is not: parked 1250 west
-    for a round it read 3066 to the west recliner and 4772 to the east, and
-    4772 is a shout, not a conversation.  Any move off 12240 buys one seat
-    what it takes from the other, and takes more than it gives.
+    ax 12307 IS SET BY THE DEN'S DOORWAY AND BY NOTHING ELSE.  The piece was
+    asked to move east until its east face landed on X 15365 — the line the
+    east deck recliner's back sits on.  It cannot go that far.  The arched
+    portal into Karan's den is in the east pod screen at Y 3872-4692, and the
+    screen there stands at 15807; a planter face on 15365 would leave 442 to
+    walk through, across the approach to a doorway.  A sofa parked in front
+    of a door is the one mistake this drawing has already made once.
 
-    The cost is that the tree, built on to the east end, no longer terminates
-    the home's axis — it sits at 13490, 1250 east of it.  That was a real
-    idea and it is being given up on purpose: an axis is something you look
-    along, a conversation is something you sit in, and the room only has to
-    do one of those well.
+    So the piece goes east until the den's approach is 1000 and stops: the
+    planter's east face is at 14807, 558 short of the line.  That 558 is the
+    whole of the difference and it is not negotiable downward.
+
+    What the move costs is the other half of the seating group.  The two deck
+    recliners are pinned against the void walls at X 9565 and 14915, so the
+    sofa's distance to each is decided entirely by where it sits between
+    them.  Here it reads 3261 to the east recliner — a good conversation —
+    and 4463 to the west one, which is out of the group.  Centred on 12240 it
+    read 3811 to both.  This is a deliberate trade of one balanced group for
+    one close pair, and the west recliner becomes a place to sit and look at
+    the fountain rather than a seat in the conversation.
 
     The planter is not a separate object.  It shares the sofa's back line and
     its depth and butts its east end, so the two are built as one L of joinery

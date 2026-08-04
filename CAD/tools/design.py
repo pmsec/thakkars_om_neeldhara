@@ -748,7 +748,15 @@ _ONCE = [
     ('console-s', 24135, 9015, 24930, 9465, "dresser  ·  795 x 450, mirror over"),
 
     # ---------------------------------------------------------------- deck
-    ('planter',  POD_W0, DECK_N, M(POD_W0), DECK_N + 340, 'planter + trellis on the parapet'),
+    # A GRASS STRIP, 340 wide, INSIDE the parapet and planted — the trellis is
+    # on the parapet above it and the creepers climb from this bed.  Hanging it
+    # outside instead would give the deck back 340 of depth over its whole
+    # 15 420, but the parapet is only 100 thick, so a planted steel trough
+    # cantilevered off it at the 14th floor is a structural question and a
+    # facade projection past the building line.  Nothing else in this drawing
+    # leaves the builder's envelope and this is not the thing to start with.
+    ('planter',  POD_W0, DECK_N, M(POD_W0), DECK_N + 340,
+     'grass strip  ·  340, inside the parapet, planted  ·  trellis over, creepers to 1.5 m'),
     ('grass',    4700, 320, 7360, 2300, 'workout bay on real grass'),
     ('gym',      4760, 340, 5460, 2280, 'all-in-one strength trainer'),
     ('grass',    17120, 320, 19780, 2300, 'spa deck on real grass'),

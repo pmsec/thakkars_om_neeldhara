@@ -1098,6 +1098,30 @@ sit anywhere in it.
 
 Both came off the reference sheet.
 
+### The parapet edge stays inside
+
+The 340 mm (1′-2″) band along the parapet is a **grass strip inside it**, planted,
+with the trellis on the parapet above and the creepers climbing from that bed.
+It is not a trough hung off the outside.
+
+Hanging it outboard was looked at, because it is worth real floor — **5.24 m²
+(56 sq ft)** across the whole deck, **2.12 m² (23 sq ft)** in the strip in front
+of the great room, and it would take the deck's clear depth from 2280 mm (7′-6″)
+to the full 2620 mm (8′-7″). Two things said no:
+
+* **The parapet is 100 mm (4″) thick.** Slab edge at Y −250, deck inner face at
+  Y −150. Cantilevering a planted, water-filled steel trough off 100 mm of
+  parapet at the 14th floor, with wind on it, is a structural engineer's
+  problem, not a fabricator's.
+* **It would project past the building line** — the only thing in this whole
+  drawing that would. Everything else stays inside the builder's envelope,
+  which is what makes the layer-state comparison work.
+
+**Worth knowing:** 340 mm (1′-2″) is thin for a bed that has to carry creepers
+to 1.5 m. 450 mm (1′-6″) would be a comfortable root run, and it would cost the
+deck another 110 mm (4″) of depth — 1.7 m² (18 sq ft) over the full length. Say
+the word if you want that trade.
+
 ### The deck: two recliners backing on to the voids
 
 The reference's own note is the instruction — *two 2-seat recliners back onto

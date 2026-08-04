@@ -48,10 +48,17 @@ def symbol(kind, a, b, c, d):
             out.append(('line', a + i * w / n, b + 60, a + i * w / n, d - 60, 'green'))
         return out
     if kind == 'planter':
+        # A GRASS STRIP INSIDE THE PARAPET, planted — not a trough hung off the
+        # outside of it.  Nothing in this drawing projects past the building
+        # line, and this was the only thing that was ever going to.
+        # Grass first, then the shrubs standing in it.
         out = [_rr(a, b, c, d, 'green')]
-        n = max(2, int(w // 620) or 2)
-        for i in range(n + 1):
-            out.append(('circle', a + w * i / n, cy, min(118, h / 2 - 10), 'green'))
+        n = max(2, int(w // 700))
+        for i in range(1, n):
+            out.append(('line', a + i * w / n, b + 50, a + i * w / n, d - 50, 'green'))
+        m = max(2, int(w // 1250) or 2)
+        for i in range(m + 1):
+            out.append(('circle', a + w * i / m, cy, min(118, h / 2 - 10), 'green'))
         return out
     if kind == 'treebox':
         # A built-in planter box with a tall tree growing out of it, in the

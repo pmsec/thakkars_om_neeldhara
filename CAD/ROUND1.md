@@ -1094,6 +1094,67 @@ sit anywhere in it.
 
 ---
 
+## The music + work den gets its two things
+
+The den was named for music and work and had neither in it. It now has both:
+a **work console** along the pod's glazed screen and an **electronic drum kit**
+in the south-east corner, where the great-room wall meets the service-duct wall.
+
+### The kit
+
+A Roland TD with **four toms and three cymbals** — a big configuration. Pads,
+rack and cymbal arms want **1790 mm (5′-10″)** across, and with the throne
+behind it the whole thing is **1890 mm (6′-2″)** front to back.
+
+It nests into the corner and **the drummer faces south**, into it. That is not
+a preference, it is the only orientation that works:
+
+* **Against the east wall facing west**, the drummer would sit at about X 17200
+  — 620 mm (2′-0″) off the console. They would be in each other's laps.
+* **On the diagonal**, which is how a lot of people set a kit into a corner, a
+  1790 × 1500 kit becomes a 2330 mm (7′-8″) square, and the bay is 2895 × 2225
+  (9′-6″ × 7′-4″). It does not go.
+
+Facing south, the drummer has **3750 mm (12′-4″)** of open pod behind them,
+**150 mm (6″)** from the left crash to the duct wall, and **140 mm (6″)** from
+the kick to the great-room wall. It is drawn right-handed — floor tom and ride
+on the room side, hi-hat against the east wall. Flip it about its centreline
+for a left-hander; nothing else moves.
+
+### The console is not where it was first marked
+
+Marked at the south end it would have run Y 6175–8400, in the bay that is only
+**2895 mm (9′-6″)** wide. The arithmetic does not work there:
+
+| | |
+|---|---|
+| kit | 1790 mm (5′-10″) |
+| a chair actually in use | 600 mm (2′-0″) |
+| console | 700 mm (2′-4″) |
+| **wanted** | **3090 mm (10′-2″)** |
+| **bay gives** | **2895 mm (9′-6″)** |
+
+195 mm (8″) short — so swivelling out of the desk chair would have put its back
+on the nearest cymbal.
+
+**Moved 1375 mm (4′-6″) north** it runs Y 4800–7000 instead. That puts the
+chair in the part of the pod that is **4070 mm (13′-4″)** wide rather than
+2895 mm (9′-6″), and hands the whole south bay to the drums. It costs nothing:
+same **700 mm (2′-4″)** depth, same **2200 mm (7′-3″)** of top, and it still
+starts **108 mm (4″)** south of the pod screen's portal at Y 4692, so the way
+in from the great room is untouched. The desk chair now sits **680 mm (2′-3″)**
+clear of the drummer's throne, and the kit's westernmost cymbal is **255 mm
+(10″)** off the console's front edge.
+
+**700 deep and not 600**: a 27-inch screen on a stand plus a keyboard in front
+of it does not fit on 600 without the screen overhanging the back edge. The
+screen faces **east**, because with the desk's back on the glass there is only
+one side to sit at — you work looking west, through the screen and the pod
+glazing into the great room. 300 mm (1′-0″) of the 700 goes to the monitor and
+its foot; the 400 mm (1′-4″) in front of it is the keyboard.
+
+---
+
 ## The kitchen steps into the great room
 
 The kitchen was **10.5 m² / 113 sq ft** — the one room in the home with no

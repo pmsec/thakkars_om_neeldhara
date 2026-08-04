@@ -443,6 +443,17 @@
 <line x1="1819.1" y1="1597.9" x2="1817.4" y2="1604.2" stroke="#9a9184" stroke-width="0.8"/>
 <line x1="1817.4" y1="1604.2" x2="1828.5" y2="1591.9" stroke="#9a9184" stroke-width="0.8"/>
 <line x1="1817.4" y1="1604.2" x2="1814.2" y2="1588.0" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2920.2" cy="1306.8" r="33.7" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
+<circle cx="2937.1" cy="1382.3" r="23.6" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2920.2" cy="1490.3" r="37.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2876.3" cy="1436.3" r="20.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2920.2" cy="1422.8" r="20.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2964.0" cy="1436.3" r="20.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2844.6" cy="1398.5" r="29.0" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2997.8" cy="1378.3" r="23.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2826.4" cy="1452.5" r="33.7" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2833.2" cy="1351.3" r="28.3" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="3005.8" cy="1455.2" r="28.3" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="927.1" y="595.9" width="188.9" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="1035.0" y="676.8" width="80.9" height="90.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="927.1" y="595.9" width="188.9" height="47.2" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
@@ -591,6 +602,11 @@
 <rect x="1546.0" y="1300.0" width="62.1" height="62.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="1366.8" y="1394.5" width="62.1" height="62.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="1544.4" y="1394.5" width="62.1" height="62.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="2663.9" y="1061.3" width="94.4" height="296.8" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="2669.3" y="1095.0" width="13.8" height="91.7" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="2683.0" y="1128.9" width="26.7" height="23.9" fill="none" stroke="#9a9184" stroke-width="0.8"/>
+<circle cx="2804.2" cy="1140.9" r="40.5" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="2804.2" cy="1132.0" r="25.1" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="1614.4" y="1583.3" width="75.5" height="41.8" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <circle cx="1652.1" cy="1604.2" r="15.1" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="1452.5" y="1563.8" width="148.4" height="27.0" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
@@ -742,9 +758,9 @@
 <text x="1405.3" y="1256.9" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">FAMILY ROOM</text>
 <text x="1405.3" y="1290.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">21.3 m²  ·  230 sq ft</text>
 <text x="1405.3" y="1317.6" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">one pod  ·  glass roof over the 3665 x 2280 bay</text>
-<text x="2940.4" y="1256.9" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">MUSIC + WORK DEN</text>
-<text x="2940.4" y="1290.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">21.3 m²  ·  230 sq ft</text>
-<text x="2940.4" y="1317.6" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">one pod  ·  glass roof over the 3665 x 2280 bay</text>
+<text x="2990.3" y="966.8" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">MUSIC + WORK DEN</text>
+<text x="2990.3" y="1000.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">21.3 m²  ·  230 sq ft</text>
+<text x="2990.3" y="1027.6" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">one pod  ·  glass roof over the 3665 x 2280 bay</text>
 <text x="2172.8" y="879.2" font-size="30" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="9">GREAT ROOM</text>
 <text x="2172.8" y="923.7" font-size="14" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">37.8 m²  ·  407 sq ft</text>
 <text x="2172.8" y="954.7" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">party wall removed  ·  6250 at the deck, 8220 at the waist, 7280 at the pods</text>

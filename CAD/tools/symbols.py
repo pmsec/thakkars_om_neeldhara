@@ -205,6 +205,20 @@ def symbol(kind, a, b, c, d):
         r = min(w, h) / 2
         return [('circle', cx, cy, r, 'solid'),          # the seat offset off
                 ('circle', cx, cy - r * 0.22, r * 0.62, 'soft')]   # centre leaves
+    if kind.split('-')[0] == 'screen':   # a monitor from above: panel and foot.
+        # Suffix is which side its BACK is on, like the sofas.
+        side = (kind.split('-') + ['n'])[1]
+        if side == 'n':
+            return [_rr(a, b, c, b + h * 0.34, 'solid'),
+                    _rr(cx - w * 0.13, b + h * 0.34, cx + w * 0.13, d, 'light')]
+        if side == 's':
+            return [_rr(a, d - h * 0.34, c, d, 'solid'),
+                    _rr(cx - w * 0.13, b, cx + w * 0.13, d - h * 0.34, 'light')]
+        if side == 'w':
+            return [_rr(a, b, a + w * 0.34, d, 'solid'),
+                    _rr(a + w * 0.34, cy - h * 0.13, c, cy + h * 0.13, 'light')]
+        return [_rr(c - w * 0.34, b, c, d, 'solid'),
+                _rr(a, cy - h * 0.13, c - w * 0.34, cy + h * 0.13, 'light')]
     if kind == 'ottoman':                                # the back as a crescent
         return [('poly', _rrect(a, b, c, d, min(w, h) * 0.28), 'soft')]
     if kind.split('-')[0] in ('sofa', 'recliner', 'chair'):

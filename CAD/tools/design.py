@@ -837,6 +837,38 @@ _ONCE = [
     # 500 off the wall, and the north end is the run up to the sitting group.
     ('dining-se', 6603, 5700, 7703, 7900,
      'superellipse 1100 x 2200  ·  six, seven with the north end chair'),
+    # ---------------------------------------- Karan's pod: the music + work den
+    # The den was empty floor.  It gets the two things it is named for: a work
+    # CONSOLE along the pod's glazed screen, and an ELECTRONIC DRUM KIT in the
+    # south-east corner where the great-room wall meets the service-duct wall.
+    #
+    # THE CONSOLE IS NOT WHERE IT WAS FIRST MARKED, and the reason is arithmetic
+    # rather than taste.  Marked at the south end it would have run Y 6175-8400,
+    # in the bay that is only 2895 wide — and a TD kit with four toms and three
+    # cymbals is 1790 across, a chair actually in use is 600, and the console is
+    # 700.  That is 3090 wanted against 2895 there, so swivelling out of the
+    # desk chair would have put its back on the nearest cymbal.
+    #
+    # Moved 1375 north it runs Y 4800-7000 instead, which puts the chair in the
+    # part of the pod that is 4070 wide rather than 2895, and hands the whole
+    # south bay to the drums.  It costs nothing: same 700 depth, same 2200 of
+    # top, and it still starts 108 south of the pod screen's portal at Y 4692
+    # so the way in from the great room is untouched.
+    #
+    # 700 and not 600: a 27-inch screen on a stand plus a keyboard in front of
+    # it does not fit on 600 without the screen overhanging the back edge.
+    ('counter',  15880, 4800, 16580, 7000,
+     "work console  ·  2200 x 700, back on the pod screen"),
+    # The screen faces EAST, because with the desk's back on the glass there is
+    # only one side to sit at.  You work looking west, through the screen and
+    # the pod glazing into the great room.  300 of the 700 goes to the monitor
+    # and its foot; the 400 in front of it is the keyboard.
+    ('screen-w', 15920, 5050, 16220, 5730, "monitor  ·  27 inch, facing east"),
+    ('swivel',   16620, 5090, 17220, 5690, "desk chair  ·  600, swivel"),
+    # The kit itself is circles struck off one centre — see retrofit.drum_kit().
+    # 255 from its westernmost cymbal to the console's front edge, 150 to the
+    # duct wall, 140 to the great-room wall, and open pod behind the drummer.
+
     # ------------------------------------------------------------- kitchen
     # Run B stops 850 short of the gallery: the apse springs vertically off the
     # column, so the only stretch of gallery wall the kitchen can have a door

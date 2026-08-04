@@ -167,7 +167,9 @@ def poly_rooms():
         ('GUEST / SERVICE WC', '', wc, '', (16620, 9760)),
         ('STORE', '', store, '', (18200, 10250)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
-        ('MUSIC + WORK DEN', '', den, pod_note, (D.M(6550), 6250)),
+        # not the mirror of the family room's anchor any more: that point is
+        # on the drummer's throne.  It goes north, into the open half.
+        ('MUSIC + WORK DEN', '', den, pod_note, (18300, 4100)),
         ('GREAT ROOM', '', great,
          'party wall removed  ·  6250 at the deck, 8220 at the waist, 7280 at the pods',
          (D.MID, 3450)),
@@ -642,6 +644,48 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     pts += [(kw, y0 + dep - r_ease)]
     pts += arc(kw + r_ease, y0 + dep - r_ease, r_ease, 180, 90)
     return [('poly', pts, 'solid')]
+
+
+def drum_kit(cx=17780, kick_y=7980):
+    """Karan's electronic kit, in the den's south-east corner.
+
+    A Roland TD with FOUR TOMS and THREE CYMBALS, which is a big configuration
+    — the pads and arms want about 1790 across and 1500 front to back, and the
+    throne another 500 behind that.  It nests into the corner made by the
+    great-room wall at Y 8400 and the service-duct wall at X 18775, and the
+    DRUMMER FACES SOUTH, into that corner, with the whole of the rest of the
+    pod open behind them.
+
+    Facing south is the only orientation that works.  Against the east wall
+    facing west the drummer would sit at about X 17200, which is 620 off the
+    console — they would be in each other's laps.  On the diagonal, which is
+    how a lot of people set a kit into a corner, a 1790 x 1500 kit turns into
+    a 2330 square and the bay is only 2895 x 2225.
+
+    Drawn right-handed: facing south, the drummer's right is WEST, so the
+    floor tom and the ride are on the room side and the hi-hat is against the
+    east wall.  Flip it about cx for a left-hander; nothing else moves.
+
+    cx is 17780 and not the bay's own centre, because a cymbal that touches a
+    wall rings against it.  At 17780 the left crash clears the duct wall by
+    150 and the kick clears the great-room wall by 140.
+    """
+    def pad(dx, dy, r, style='solid'):
+        return ('circle', cx + dx, kick_y + dy, r, style)
+
+    return [
+        pad(0, -1360, 250, 'soft'),      # throne
+        pad(125, -800, 175),             # snare, just off centre
+        pad(0, 0, 280),                  # kick, 140 off the great-room wall
+        pad(-325, -400, 150),            # rack tom 1
+        pad(0, -500, 150),               # rack tom 2
+        pad(325, -400, 150),             # rack tom 3
+        pad(-560, -680, 215),            # floor tom, drummer's right
+        pad(575, -830, 175, 'light'),    # hi-hat, drummer's left
+        pad(-695, -280, 250, 'light'),   # ride, over the floor tom
+        pad(-645, -1030, 210, 'light'),  # crash, right
+        pad(635, -260, 210, 'light'),    # crash, left
+    ]
 
 
 def magic_corner():

@@ -249,6 +249,8 @@ def main():
         prim(p)
     for p in R.magic_corner():         # run B's blind corner, shown stowed + out
         prim(p)
+    for p in R.drum_kit():             # Karan's e-kit, in the den's SE corner
+        prim(p)
     for kind, a, b, c, d, lab in D.FURNITURE:
         for p in SY.symbol(kind, a, b, c, d):
             prim(p)

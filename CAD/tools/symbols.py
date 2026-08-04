@@ -167,7 +167,14 @@ def symbol(kind, a, b, c, d):
         return [_rr(a, b, c, d, 'dash')]
     if kind in ('counter', 'island', 'joinery', 'appliance', 'shelves', 'console',
                 'console-s', 'console-w', 'console-e', 'bunk', 'mirror'):
-        out = [_rr(a, b, c, d, 'solid')]
+        # A CONSOLE gets its corners eased; a counter does not.  The house rule
+        # is that nothing standing FREE has a square corner, and a console in a
+        # hall stands free on every side while a counter is built into a run
+        # and has walls to be square against.  110, capped at 30 per cent of
+        # the short side so a shallow one does not turn into a stadium.
+        rr = min(110, min(w, h) * 0.3) if kind.split('-')[0] == 'console' else 0
+        out = [('poly', _rrect(a, b, c, d, rr), 'solid') if rr
+               else _rr(a, b, c, d, 'solid')]
         if kind == 'shelves':
             n = max(2, int(max(w, h) // 430))
             for i in range(1, n):
@@ -176,13 +183,13 @@ def symbol(kind, a, b, c, d):
                 else:
                     out.append(('line', a, b + i * h / n, c, b + i * h / n, 'light'))
         if kind == 'console':
-            out.append(_rr(a + 60, b, c - 60, b + 55, 'glass'))     # mirror over
+            out.append(_rr(a + rr + 40, b, c - rr - 40, b + 55, 'glass'))  # mirror
         if kind == 'console-s':                     # the same, wall on the south
-            out.append(_rr(a + 60, d - 55, c - 60, d, 'glass'))
+            out.append(_rr(a + rr + 40, d - 55, c - rr - 40, d, 'glass'))
         if kind == 'console-w':                     # and the same, wall west
-            out.append(_rr(a, b + 60, a + 55, d - 60, 'glass'))
+            out.append(_rr(a, b + rr + 40, a + 55, d - rr - 40, 'glass'))
         if kind == 'console-e':                     # and east
-            out.append(_rr(c - 55, b + 60, c, d - 60, 'glass'))
+            out.append(_rr(c - 55, b + rr + 40, c, d - rr - 40, 'glass'))
         if kind == 'bunk':
             out.append(_rr(a + 70, b + 70, c - 70, d - 70, 'soft'))
             out.append(('line', a, d - 360, c, d - 360, 'light'))

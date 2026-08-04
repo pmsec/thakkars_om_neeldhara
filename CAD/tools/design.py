@@ -1110,19 +1110,28 @@ _ONCE = [
     # take a piece 800 deep and still leave a lane wider than the arch at the
     # far end of it.
     #
-    # Console west, sofa east, both centred on the legs' own 1800 so they read
-    # as a pair rather than as two things that happened to fit.  The mirror
+    # Console west, TWO CHAIRS east, all centred on the legs' own 1800 so they
+    # read as a set rather than as things that happened to fit.  The mirror
     # goes on the leg above the console — 'console-w' draws it — because the
     # one thing an entry hall is actually for is the last look before you
     # leave.
     #
+    # A 2-SEAT SOFA WAS DRAWN THERE FIRST and taken out.  A hall is somewhere
+    # you sit for a minute to put a shoe on, not somewhere two people settle
+    # side by side; two chairs 200 apart do that job and leave the wall
+    # reading as a pair of pieces rather than one long lump.
+    #
     # WHAT THE LANE BETWEEN THEM HAS TO CARRY is the walk from the front door
-    # to the great room: 2070 clear, against the arched portal's own 1050 at
-    # the far end of it.  Nothing narrows below the door it leads to.
-    ('console-w', 10630, 9525, 10980, 10925,
-     'console  ·  1400 x 350, against the U\'s west leg  ·  mirror over'),
-    ('sofa-e',    13050, 9425, 13850, 11025,
-     'sofa  ·  1600 x 800, 2-seat, against the U\'s east leg, facing west'),
+    # to the great room: 2020 clear even with the console 100 deeper, against
+    # the arched portal's own 1050 at the far end of it.  Nothing on this
+    # route narrows below the door it leads to.
+    ('console-w', 10630, 9525, 11080, 10925,
+     'console  ·  1400 x 450, against the U\'s west leg, corners eased 110  ·  '
+     'mirror over'),
+    ('sofa-e',    13100, 9425, 13850, 10125,
+     'chair  ·  700 x 750, against the U\'s east leg, facing west'),
+    ('sofa-e',    13100, 10325, 13850, 11025,
+     'chair  ·  700 x 750, against the U\'s east leg, facing west'),
 
 ]
 

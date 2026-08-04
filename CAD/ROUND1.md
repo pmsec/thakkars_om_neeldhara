@@ -1213,23 +1213,35 @@ far end of it.
 
 | | mm | ft |
 |---|---|---|
-| console, against the west leg | 1400 × 350 | 4′-7″ × 1′-2″ |
-| sofa, against the east leg, 2-seat facing west | 1600 × 800 | 5′-3″ × 2′-7″ |
-| **clear lane between them** | **2070** | **6′-9″** |
+| console, against the west leg | 1400 × 450 | 4′-7″ × 1′-6″ |
+| console corners, eased | 110 | 4″ |
+| two chairs, against the east leg, facing west | 700 × 750 each | 2′-4″ × 2′-6″ |
+| gap between the chairs | 200 | 8″ |
+| **clear lane between console and chairs** | **2020** | **6′-8″** |
 | the great-room portal it leads to | 1050 | 3′-5″ |
-| floor taken, of the gallery's 9.4 m² | 1.77 m² | 19 sq ft |
 
-**Both are centred on the legs' own 1800 mm**, so they read as a pair rather
-than as two things that happened to fit — 200 mm (8″) of leg showing past the
-console's south end, 100 mm (4″) past the sofa's.
+**A 2-seat sofa was drawn there first and taken out.** A hall is somewhere you
+sit for a minute to put a shoe on, not somewhere two people settle side by
+side. Two chairs 200 mm apart do that job and leave the east leg reading as a
+pair of pieces rather than one long lump.
+
+**The console's corners are eased and a counter's are not**, and that is the
+house rule rather than a preference: nothing standing free has a square corner
+on it, and a console in a hall stands free on every side while a kitchen
+counter is built into a run and has walls to be square against. `symbol()`
+now applies 110 mm to the four `console*` kinds only, capped at 30 per cent of
+the short side so a shallow one cannot turn into a stadium.
+
+**Everything is centred on the legs' own 1800 mm**, so the two sides read as a
+set — 200 mm (8″) of leg past the console's ends, 100 mm (4″) past the chairs'.
 
 **The mirror goes on the leg above the console** — `console-w` draws it — since
 the one thing an entry hall is actually for is the last look before you leave.
 
 **The lane is the check that matters.** It carries the walk from the front door
-to the great room, and at 2070 mm (6′-9″) it is twice the width of the arched
-portal at the end of it. Nothing on this route narrows below the door it leads
-to.
+to the great room, and at 2020 mm (6′-8″) — even with the console 100 mm
+deeper — it is nearly twice the width of the arched portal at the end of it.
+Nothing on this route narrows below the door it leads to.
 
 ### Two wall lights on the apse, flanking the arch
 

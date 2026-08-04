@@ -1089,6 +1089,74 @@ def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
     return out
 
 
+def great_room_rug(shape='stadium', cx=12240, cy=4287, W=5622, H=2500,
+                   n=280):
+    """The great room's rug — full width, symmetric, and not a rectangle.
+
+    THE WIDTH IS SET BY THE ROOM, not by the furniture.  Across the rug's own
+    band the great room is 6623 clear between the two pod screens, and the two
+    screens are exact mirrors, so a rug centred on X 12240 with 500 off each
+    of them lands at 5622 without any fudging.  500 is enough boarded floor
+    left showing to read as a border on both sides.
+
+    Three shapes, all on the same envelope, all closed curves:
+
+      superellipse  |2u/W|^3 + |2v/H|^3 = 1.  The house's own curve family —
+                    the dining table is a superellipse at n = 5.  At 3 the
+                    long sides bow enough to see across 5622.
+      stadium       both short ends struck as half-rounds off H.  Echoes the
+                    entry gallery's apse and the bullnosed counters.
+      pebble        an ellipse modulated by two harmonics, so no two edges
+                    read the same.  The only piece in the plan with no axis
+                    of symmetry at all.
+
+    A rug is a finish: all three cost the same to make and none changes a
+    clearance, since the envelope is identical and only the edge differs.
+
+    WHAT A CURVED RUG COSTS IS CORNER COVER, and it is worth knowing before
+    choosing.  The seating already fills the envelope — the sofa's back sits
+    exactly on the rug's south line — so any edge that is not straight cuts
+    something.  Measured against every seat:
+
+      stadium       sofa and chair fully on; the recliner overhangs by 8 and
+                    the planter's outer corner by 306
+      superellipse  recliner fully on; sofa by 40, chair by 12, planter by 339
+      pebble        578 off the planter, and the fronts no longer all land on
+                    the rug, which is the one rule worth keeping
+
+    Stadium is the default on that basis: the two things people sit on are
+    fully on it, and what hangs over is a soil box, which is arguably better
+    off the rug anyway.  A rectangle is the only shape that holds every piece
+    — that is what it was before, and this is the trade for a shaped one.
+    """
+    out = []
+    if shape == 'stadium':
+        r = H / 2
+        a, b, c, d = cx - W / 2, cy - H / 2, cx + W / 2, cy + H / 2
+        for k in range(n // 2 + 1):                    # east end
+            t = math.radians(-90 + 180 * k / (n // 2))
+            out.append((c - r + math.cos(t) * r, cy + math.sin(t) * r))
+        for k in range(n // 2 + 1):                    # west end
+            t = math.radians(90 + 180 * k / (n // 2))
+            out.append((a + r + math.cos(t) * r, cy + math.sin(t) * r))
+        return [('poly', out, 'soft')]
+
+    for k in range(n):
+        t = 2 * math.pi * k / n
+        ct, st = math.cos(t), math.sin(t)
+        if shape == 'pebble':
+            # normalised by its own peak, so the wobble stays INSIDE the same
+            # envelope the other two use and the 500 border holds all round
+            m = (1 + 0.085 * math.cos(2 * t + 0.7)
+                   + 0.055 * math.cos(3 * t - 1.9)) / 1.1305
+            out.append((cx + W / 2 * ct * m, cy + H / 2 * st * m))
+        else:                                          # superellipse, n = 3
+            e = 2 / 3.0
+            out.append((cx + W / 2 * math.copysign(abs(ct) ** e, ct),
+                        cy + H / 2 * math.copysign(abs(st) ** e, st)))
+    return [('poly', out, 'soft')]
+
+
 def console_top(a=10878, b=5537, c=12478, d=5887):
     """What stands on the console behind the sofa.
 

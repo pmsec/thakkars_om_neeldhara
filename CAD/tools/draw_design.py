@@ -11,6 +11,8 @@ import os
 import sys
 
 ISLAND = "--island" in sys.argv
+RUG = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--rug=")),
+           "superellipse")
 
 import fitz
 import numpy as np
@@ -266,6 +268,8 @@ def main():
                        f'stroke-width="{lw}"{dash}/>')
 
     for p in R.wood_floor(island=ISLAND):  # great room + deck bay, one board grid
+        prim(p)
+    for p in R.great_room_rug(RUG):    # full width, under everything else
         prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)

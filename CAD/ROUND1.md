@@ -1400,6 +1400,44 @@ Bézier is not uniform — the same span of t buys more door low down the curve
 than high up — so setting both to 0.18 of t would have given two different
 doors. Solved instead for the t-range that reproduces the original 823 mm.
 
+### The group set out to standard, and what would not go
+
+The rocking chair moved to **(13080, 3500)** and the rug grew to **4600 × 2500
+mm (15′-1″ × 8′-2″)** so every seat sits fully on it.
+
+| seat to seat | mm | ft | |
+|---|---|---|---|
+| recliner ↔ rocking chair | **2988** | **9′-10″** | in band |
+| sofa west seat ↔ rocking chair | **2401** | **7′-11″** | in band |
+| recliner ↔ sofa east seat | 2271 | 7′-5″ | |
+| sofa east seat ↔ rocking chair | 1877 | 6′-2″ | |
+| recliner ↔ sofa west seat | 1633 | 5′-4″ | |
+| the sofa's own two seats | 800 | 2′-7″ | |
+
+**The standard is 2400–3000 mm (8–10 ft) between seats that FACE each other,
+3600 mm (11′-10″) as the outer limit for anyone in the group, and 450 mm
+(1′-6″) of clear floor minimum between a seat and whatever it faces.** All
+three are met: the two facing pairs are in the band, the widest pair in the
+group is 2988 mm, and the nearest clear floor is 656 mm (2′-2″).
+
+**Not every pair can be in the band, and it is worth writing down why.** The
+search was run over the chair's position and over the planter gap from 305 to
+860 mm. Nothing satisfies all six. Two pairs are fixed by the L's own geometry
+— with a 900 planter in the corner and equal gaps *g*, the recliner sits
+√2 × (850 + *g*) from the near sofa seat, so 2400 needs *g* = 847 mm, at which
+point the recliner is pushed into the deck glass. And the sofa's east seat is
+the corner of the group nearest the chair; a point 2400 from both it and the
+recliner lands at Y ≈ 2700, which is north of the glazing line.
+
+**That is a room-depth limit, not a layout mistake.** Between the deck glass at
+Y 2620 and the apse crown at 7485 there is 4865 mm (15′-11″), and a four-seat
+circle at 2400–3000 with a 1600 sofa and a corner planter does not fit in it.
+
+**What the standard actually governs is met.** The three short pairs are
+adjacent seats at 90° in an L and the two halves of one sofa — none of which
+the 2400 figure is written for — and none of them is below 1600 mm, which is
+where a group starts to feel crowded.
+
 ### The parallel pair came out
 
 Two rocking chairs stood in the great room's east half, drawn on one shared

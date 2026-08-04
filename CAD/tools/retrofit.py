@@ -835,7 +835,7 @@ def fountain_plants(n=12, ring=800, pot=150):
     return out
 
 
-def great_room_sofa(ax=11440, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
+def great_room_sofa(ax=10190, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 
     SQUARE TO THE ROOM, not diagonal.  It was set out at 45 degrees for one
@@ -844,11 +844,19 @@ def great_room_sofa(ax=11440, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     the tree's box across the middle of the floor at an angle nothing else in
     the plan shares.
 
-    Straightened, it does something the diagonal could not — the SOFA IS
-    CENTRED ON X 12240, the home's own axis, so it faces the fountain dead on
-    down the line that already runs front door, gallery portal, fountain,
-    parapet.  The tree sits off that axis on the east end, which is right: it
-    is an accent, not a symmetrical element.
+    WHAT SITS ON THE HOME'S AXIS IS THE TREE.  ax 10190 is not a round number
+    and it is not arbitrary: it is the one position where the planter box's
+    centre lands on X 12240, the line that already runs front door, gallery
+    portal, fountain, parapet.  Walk out of the gallery and the tree is what
+    you are looking at, dead ahead — the axis ends on something, instead of
+    ending on the back of a sofa.
+
+    The sofa was centred on that axis for one round instead.  It could not
+    stay: with the tree built on to its east end the whole assembly then sat
+    900 east of centre, crowding the east pod, and the axis was blocked by a
+    sofa back either way.  Moving the piece 1250 west turns an unavoidable
+    obstruction into a deliberate terminus and leaves 1517 clear between the
+    sofa's west end and the west pod's glazing — two people pass abreast.
 
     The planter is not a separate object.  It shares the sofa's back line and
     its depth and butts its east end, so the two are built as one L of joinery

@@ -1089,71 +1089,98 @@ def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
     return out
 
 
-def great_room_rug(shape='stadium', cx=12240, cy=4287, W=5622, H=2500,
-                   n=280):
-    """The great room's rug — full width, symmetric, and not a rectangle.
+def great_room_rug(shape='cloud', cx=12240, cy=4287, W=5622, H=2500, n=360):
+    """The great room's rug — full width, symmetric in the room, cloud-shaped.
 
     THE WIDTH IS SET BY THE ROOM, not by the furniture.  Across the rug's own
     band the great room is 6623 clear between the two pod screens, and the two
     screens are exact mirrors, so a rug centred on X 12240 with 500 off each
-    of them lands at 5622 without any fudging.  500 is enough boarded floor
-    left showing to read as a border on both sides.
+    of them lands at 5622 x 2500 without any fudging.  500 leaves enough
+    boarded floor showing to read as a border on both sides.
 
-    Three shapes, all on the same envelope, all closed curves:
+    THE OUTLINE IS DERIVED, NOT DRAWN.  A cloud shape struck from a formula
+    cuts the furniture — the seating fills this envelope and the sofa's back
+    sits exactly on the rug's south line, so a free curve loses corners.  So
+    the curve is built from what it has to hold:
 
-      superellipse  |2u/W|^3 + |2v/H|^3 = 1.  The house's own curve family —
-                    the dining table is a superellipse at n = 5.  At 3 the
-                    long sides bow enough to see across 5622.
-      stadium       both short ends struck as half-rounds off H.  Echoes the
-                    entry gallery's apse and the bullnosed counters.
-      pebble        an ellipse modulated by two harmonics, so no two edges
-                    read the same.  The only piece in the plan with no axis
-                    of symmetry at all.
+      1  work in normalised space, u = (x-cx)/(W/2), v = (y-cy)/(H/2), so the
+         envelope is a unit square and the anisotropy drops out
+      2  r_lo(t) — the furthest any piece of furniture reaches at that angle,
+         plus a 250 border, smoothed so the outline has no kinks in it
+      3  r_hi(t) — the envelope itself, the unit square
+      4  r(t) = r_lo + (r_hi - r_lo) * f(t), where f swings between 0 and 1 on
+         three harmonics
 
-    A rug is a finish: all three cost the same to make and none changes a
-    clearance, since the envelope is identical and only the edge differs.
+    So the rug BULGES where there is room and PULLS IN where the furniture
+    lets it, and it cannot cut a seat however the harmonics are set: r is
+    never below r_lo.  The lobes and the notch are real consequences of the
+    layout rather than decoration laid over it.
 
-    WHAT A CURVED RUG COSTS IS CORNER COVER, and it is worth knowing before
-    choosing.  The seating already fills the envelope — the sofa's back sits
-    exactly on the rug's south line — so any edge that is not straight cuts
-    something.  Measured against every seat:
-
-      stadium       sofa and chair fully on; the recliner overhangs by 8 and
-                    the planter's outer corner by 306
-      superellipse  recliner fully on; sofa by 40, chair by 12, planter by 339
-      pebble        578 off the planter, and the fronts no longer all land on
-                    the rug, which is the one rule worth keeping
-
-    Stadium is the default on that basis: the two things people sit on are
-    fully on it, and what hangs over is a soil box, which is arguably better
-    off the rug anyway.  A rectangle is the only shape that holds every piece
-    — that is what it was before, and this is the trade for a shaped one.
+    shape='ellipse' gives the plain version for comparison.
     """
-    out = []
-    if shape == 'stadium':
-        r = H / 2
-        a, b, c, d = cx - W / 2, cy - H / 2, cx + W / 2, cy + H / 2
-        for k in range(n // 2 + 1):                    # east end
-            t = math.radians(-90 + 180 * k / (n // 2))
-            out.append((c - r + math.cos(t) * r, cy + math.sin(t) * r))
-        for k in range(n // 2 + 1):                    # west end
-            t = math.radians(90 + 180 * k / (n // 2))
-            out.append((a + r + math.cos(t) * r, cy + math.sin(t) * r))
-        return [('poly', out, 'soft')]
+    o = great_room_sofa()
+    hold = ([(9673, 3532), (10573, 3532), (10573, 4332), (9673, 4332)]
+            + [e for e in o if e[0] == 'poly'][3][1]
+            + o[0][1] + o[1][1] + o[2][1]
+            + [q for e in rocking_chair(13080, 3500, face=(10123 - 13080,
+                                                           3932 - 3500))
+               for q in e[1]])
+    A, B = W / 2, H / 2
+    MARGIN = 250.0
 
+    def sq(t):                                         # the unit square
+        return 1.0 / max(abs(math.cos(t)), abs(math.sin(t)))
+
+    lo = [0.0] * n
+    for x, y in hold:                                  # what must be covered
+        u, v = (x - cx) / A, (y - cy) / B
+        k = int(round(math.degrees(math.atan2(v, u)) % 360 / 360 * n)) % n
+        lo[k] = max(lo[k], math.hypot(u, v))
+
+    sm = [max(lo[(k + d) % n] for d in range(-14, 15)) for k in range(n)]
+    for _ in range(30):                                # smooth out the kinks
+        sm = [(sm[(k - 1) % n] + 2 * sm[k] + sm[(k + 1) % n]) / 4 for k in range(n)]
+    # the border, but never past the envelope — on the south the rug's edge IS
+    # the sofa's back line, so there is no room for a border there and none is
+    # forced.  min() against the square is what keeps the rug inside the room.
+    sm = [min(sm[k] + MARGIN / A, sq(2 * math.pi * k / n)) for k in range(n)]
+
+    def brk(t):
+        return (0.62 * math.cos(2 * t) + 0.26 * math.cos(3 * t + math.pi / 2)
+                + 0.12 * math.cos(5 * t + math.pi / 2))
+    _b = [brk(2 * math.pi * k / n) for k in range(n)]
+    BMIN, BMAX = min(_b), max(_b)
+
+    rad = []
     for k in range(n):
         t = 2 * math.pi * k / n
-        ct, st = math.cos(t), math.sin(t)
-        if shape == 'pebble':
-            # normalised by its own peak, so the wobble stays INSIDE the same
-            # envelope the other two use and the 500 border holds all round
-            m = (1 + 0.085 * math.cos(2 * t + 0.7)
-                   + 0.055 * math.cos(3 * t - 1.9)) / 1.1305
-            out.append((cx + W / 2 * ct * m, cy + H / 2 * st * m))
-        else:                                          # superellipse, n = 3
-            e = 2 / 3.0
-            out.append((cx + W / 2 * math.copysign(abs(ct) ** e, ct),
-                        cy + H / 2 * math.copysign(abs(st) ** e, st)))
+        hi = sq(t)
+        if shape == 'ellipse':
+            rad.append(1.0)
+            continue
+        # PHASED SO BOTH ENDS ARE LOBES.  cos(2t) peaks at t = 0 and t = pi,
+        # due east and due west, so the rug reaches its envelope on both sides
+        # and the border reads the same 500 either way.  The odd harmonics
+        # carry a quarter-turn of phase, putting their zeros at those same two
+        # points, so they wobble the flanks without pulling the ends in.
+        f = (brk(t) - BMIN) / (BMAX - BMIN) * 0.78 + 0.22
+        rad.append(min(sm[k] + (hi - sm[k]) * f, hi))
+
+    # SMOOTH, THEN PUT IT BACK ABOVE THE BOUND, AND REPEAT.  Smoothing alone
+    # would shave the curve inside what it has to cover; clamping alone leaves
+    # the furniture's own corners showing as kinks in the rug.  Alternating the
+    # two converges on a curve that is smooth AND never cuts a seat.
+    if shape != 'ellipse':
+        for _ in range(90):
+            rad = [(rad[(k - 1) % n] + 2 * rad[k] + rad[(k + 1) % n]) / 4
+                   for k in range(n)]
+            rad = [min(max(rad[k], sm[k]), sq(2 * math.pi * k / n))
+                   for k in range(n)]
+
+    out = []
+    for k in range(n):
+        t = 2 * math.pi * k / n
+        out.append((cx + A * rad[k] * math.cos(t), cy + B * rad[k] * math.sin(t)))
     return [('poly', out, 'soft')]
 
 

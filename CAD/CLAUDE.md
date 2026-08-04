@@ -63,6 +63,24 @@ python3 draw_design.py                # PNG + SVG
 python3 build_dxf.py                  # only on "ship it"
 ```
 
+## How to quote a measurement — always both units
+
+**Every number Karan is given carries metric first and imperial in brackets
+after it. No exceptions, anywhere in chat.** The drawing and the source stay
+metric; this is about how the numbers are *said*.
+
+```
+lengths   350 mm (1'-2")            2321 mm (7'-7")        2.6 m (8'-6")
+areas     11.7 m² (126 sq ft)       2.65 m² (28.5 sq ft)
+```
+
+Round the imperial to the nearest inch for lengths and to whole square feet for
+areas — it is there to be read, not to be built from. Metric is the number that
+governs.
+
+This applies to prose, tables, bullet lists and captions alike. A table column
+headed `mm` still needs its sq ft / feet column beside it.
+
 ## Standing facts
 
 * The flats came from the builder as **bare shell — no internal walls**. Every

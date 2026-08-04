@@ -837,6 +837,56 @@ _ONCE = [
     # 500 off the wall, and the north end is the run up to the sitting group.
     ('dining-se', 6603, 5700, 7703, 7900,
      'superellipse 1100 x 2200  ·  six, seven with the north end chair'),
+    # ------------------------------------------------- the deck: the two recliners
+    # From the reference sheet: TWO 2-SEAT RECLINERS BACKING ON TO THE VOIDS,
+    # FACING THE FOUNTAIN AT THE DECK CENTRE.  Each one's back is on the void
+    # enclosure's inner face — 9115 on the west, 15365 on the east — so the
+    # thing the deck cannot use for anything else becomes the thing the seats
+    # lean on.  They face each other across the fountain at 11640-12840, 1355
+    # from each footrest to its rim.
+    #
+    # 1345 wide and not 1400: the deck's south glazing runs at Y 2545 between
+    # the two voids, and a seat that oversails it is inside the great room.
+    # So they run Y 1200-2545 — the void's own north edge to the glass line.
+    #
+    # Each has a small table at its NORTH arm, which is the only free side: the
+    # void is behind, the fountain in front, and the parapet planter 510 north
+    # of the table.
+    ('recliner-w', 9115, 1200, 10015, 2545,
+     "2-seat recliner  ·  1345 x 900, back on the void, facing the fountain"),
+    ('sidetable',  9115, 700, 9565, 1200, "side table  ·  450 x 500"),
+    ('recliner-e', 14465, 1200, 15365, 2545,
+     "2-seat recliner  ·  1345 x 900, back on the void, facing the fountain"),
+    ('sidetable',  14915, 700, 15365, 1200, "side table  ·  450 x 500"),
+
+    # ------------------------------------------------- the great room: living
+    # The great room was 407 sq ft of empty floor.  It gets the reference
+    # sheet's arrangement: a U OPENING NORTH TO THE DECK — sofa across the
+    # bottom, an armchair turned in at each end, a centre table between them,
+    # and a side table at every seat.  Everything is centred on X 12240.
+    #
+    # THE ONE THING THAT SETS THE DEPTH is the entry gallery's apse.  Its crown
+    # is at Y 7485 on the axis and the arched portal into this room is IN it,
+    # X 11715-12765 — so the sofa's back cannot go near it.  At Y 6500 there is
+    # 985 between the two, which is the passage you come out of the front door
+    # into.  It widens fast either side: the apse falls away to Y 7930 by the
+    # sofa's west end, so the corners have 1430.
+    #
+    # North of the group there is 1055 of clear deck line, and the two pod
+    # portals in the glazed screens are 1736 clear at both ends — the ways into
+    # the family room and the den are not touched.
+    ('sofa-s',    11040, 5600, 13440, 6500, "sofa  ·  2400 x 900, facing the deck"),
+    ('sidetable', 10540, 5600, 11040, 6100, "side table  ·  500 square, on the arm"),
+    ('sidetable', 13440, 5600, 13940, 6100, "side table  ·  500 square, on the arm"),
+    ('counter-r', 11540, 4300, 12940, 5100, "centre table  ·  1400 x 800"),
+    # 'sofa-w' / 'sofa-e' and not 'chair': the chair symbol is the dining one,
+    # a seat with no side to it.  These are single sofas turned in, the same
+    # piece as the two on Karan's terrace.
+    ('sofa-w',    10440, 4200, 11240, 5100, "single sofa  ·  800, turned in, facing east"),
+    ('sofa-e',    13240, 4200, 14040, 5100, "single sofa  ·  800, turned in, facing west"),
+    ('sidetable', 10440, 3600, 10940, 4100, "side table  ·  500 square"),
+    ('sidetable', 13540, 3600, 14040, 4100, "side table  ·  500 square"),
+
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work
     # CONSOLE along the pod's glazed screen, and an ELECTRONIC DRUM KIT in the

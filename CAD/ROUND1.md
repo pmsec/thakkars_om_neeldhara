@@ -1094,6 +1094,68 @@ sit anywhere in it.
 
 ---
 
+## The great room is furnished, and so is the deck
+
+Both came off the reference sheet.
+
+### The deck: two recliners backing on to the voids
+
+The reference's own note is the instruction — *two 2-seat recliners back onto
+the voids, facing the fountain at the deck centre* — and it is a good one,
+because it turns the one thing on the deck that cannot be used for anything
+into the thing the seats lean on.
+
+Each recliner's back is on a void enclosure's inner face — **X 9115** on the
+west, **X 15365** on the east. They face each other across the fountain, with
+**1355 mm (4′-5″)** from each footrest to its rim. Each has a small table at
+its **north** arm, which is the only free side: void behind, fountain in front,
+parapet planter 510 mm (1′-8″) beyond the table.
+
+**1345 mm (4′-5″) wide and not 1400**, and that is not a rounding. The deck's
+south glazing runs at **Y 2545** between the two voids, and a seat that
+oversails it is inside the great room. So they run Y 1200–2545 — the void's own
+north edge to the glass line.
+
+They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
+each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
+
+### The great room: a U opening north to the deck
+
+407 sq ft of empty floor gets the reference's arrangement — sofa across the
+bottom, a single sofa turned in at each end, a centre table between them, and
+**a side table at every seat**. All centred on X 12240.
+
+| | |
+|---|---|
+| sofa | 2400 × 900 mm (7′-10″ × 3′-0″) |
+| two single sofas, turned in | 800 × 900 mm (2′-8″ × 3′-0″) each |
+| centre table | 1400 × 800 mm (4′-7″ × 2′-8″) |
+| four side tables | 500 mm (1′-8″) square |
+| group overall | 3600 × 2900 mm (11′-10″ × 9′-6″) |
+
+**The one thing that sets the depth is the entry gallery's apse.** Its crown is
+at Y 7485 and the arched portal into this room is *in* it, X 11715–12765 — so
+the sofa's back cannot go near it. At Y 6500 there is **985 mm (3′-3″)**
+between the two, which is the passage you come out of the front door into, and
+it widens fast: the apse falls away to Y 7930 by the sofa's west end, so the
+corners have **1430 mm (4′-8″)**.
+
+North of the group there is **1055 mm (3′-6″)** of clear deck line, and the two
+pod portals in the glazed screens are **1736 mm (5′-8″)** clear at both ends —
+the ways into the family room and the den are untouched.
+
+### A drawing that disagreed with itself
+
+Caught while checking this render: the sheet printed the deck as **40.4 m² /
+435 sq ft** under a note reading *net of the two retained voids*, while
+`verify.py` printed **35.8 / 385**. The sheet was using the gross rectangle.
+
+There is now one implementation — `retrofit.rect_room_area()` — used by the
+render, the DXF and the audit alike. Same rule the dimensions already follow:
+compute it once, so the label and the geometry cannot disagree.
+
+---
+
 ## The music + work den gets its two things
 
 The den was named for music and work and had neither in it. It now has both:

@@ -312,7 +312,7 @@ def main():
         if not rects:
             continue
         big = max(rects, key=lambda r_: (r_[2] - r_[0]) * (r_[3] - r_[1]))
-        a = sum((c - x) * (d - y) for x, y, c, d in rects) / 1e6
+        a = R.rect_room_area(name, rects)
         lx_, ly_ = anchor or ((big[0] + big[2]) / 2, (big[1] + big[3]) / 2 - 300)
         label(lx_, ly_, name, sub, a, note)
     for name, sub, p, note, (lx_, ly_) in R.poly_rooms():

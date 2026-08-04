@@ -317,15 +317,12 @@ def main():
         prim(p)
 
     # --------------------------------------------------------------- labels
-    def area_of(rects):
-        return sum((c - a) * (d - b) for a, b, c, d in rects) / 1e6
-
     for name, sub, rects, note, anchor in D.ROOMS:
         if not rects:
             continue
         big = max(rects, key=lambda r_: (r_[2] - r_[0]) * (r_[3] - r_[1]))
         cx_, cy_ = anchor or ((big[0] + big[2]) / 2, (big[1] + big[3]) / 2)
-        A = area_of(rects)
+        A = R.rect_room_area(name, rects)
         s.text(cx_, cy_ - 150, name, 22 if A > 8 else 16, TXT, weight='bold', letter=1.4)
         if sub:
             s.text(cx_, cy_ + 90, sub, 14, '#2c5c61', letter=2.5)

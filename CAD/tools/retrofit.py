@@ -144,6 +144,22 @@ def gal_apse():
                     540 - D._ang(D.gal_cross(D.BODY_S), D.BODY_S))
 
 
+def rect_room_area(name, rects):
+    """Area of a rectangular room in m2, with the deck's holes taken out.
+
+    The two retained deck voids are holes in the deck, not floor.  They have to
+    come off in EVERY consumer or the drawing contradicts itself — and it did:
+    the sheet printed 40.4 m2 / 435 sq ft for the deck under a note that read
+    'net of the two retained voids', while verify.py printed 35.8 / 385.  Same
+    rule as the dimensions: one computation, so the label and the geometry
+    cannot disagree.
+    """
+    a = sum((c - x) * (d - y) for x, y, c, d in rects) / 1e6
+    if 'DECK' in name:
+        a -= sum((c - x) * (d - y) for x, y, c, d in D.VOID_KEEP) / 1e6
+    return a
+
+
 def poly_rooms():
     """Every room that is not a rectangle: (name, sub, polygon, note, label xy).
 
@@ -173,7 +189,7 @@ def poly_rooms():
         ('MUSIC + WORK DEN', '', den, pod_note, (18600, 5100)),
         ('GREAT ROOM', '', great,
          'party wall removed  ·  6250 at the deck, 8220 at the waist, 7280 at the pods',
-         (D.MID, 3450)),
+         (D.MID, 3000)),
         ('KITCHEN', '', kitchen,
          'kitchen and utility as one room  ·  the dry balcony is its utility end',
          (8700, 9500)),

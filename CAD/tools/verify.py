@@ -83,9 +83,7 @@ def main():
     for name, sub, rects, _, _anchor in D.ROOMS:
         if not rects:
             continue
-        a = sum((c - x) * (d - y) for x, y, c, d in rects) / 1e6
-        if 'DECK' in name:          # the two retained voids are holes in it
-            a -= sum((c - x) * (d - y) for x, y, c, d in D.VOID_KEEP) / 1e6
+        a = R.rect_room_area(name, rects)
         rows.append((f'{name} {sub}'.strip(), a))
     rows += [(n, R.poly_area(p)) for n, _s, p, _note, _xy in R.poly_rooms()]
     for n, a in sorted(rows, key=lambda r: -r[1]):

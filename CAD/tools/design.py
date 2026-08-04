@@ -962,13 +962,13 @@ _ONCE = [
     # Its south edge is the sofa's own back line at 5037, so THE CONSOLE
     # STANDS ON THE BOARDS: a console with two legs on a rug and two off rocks
     # every time you put a glass down on it.
-    ('rug',     9423, 3037, 12723, 5537,
+    ('rug',     9428, 3037, 12728, 5537,
      'rug  ·  3300 x 2500, the whole L on it — sofa, planter, recliner and '
      'the rocking chair that closes the group'),
-    ('recliner-w', 9673, 3837, 10573, 4637,
-     'recliner  ·  900 x 800, single, butted to the planter\'s north face  ·  '
-     'the L\'s west leg, facing east across the group'),
-    ('counter-e', 10573, 5537, 12173, 5887,
+    ('recliner-w', 9673, 3532, 10573, 4332,
+     'recliner  ·  900 x 800, single, standing 305 off the planter\'s north '
+     'face  ·  the L\'s west leg, facing east across the group'),
+    ('counter-e', 10878, 5537, 12478, 5887,
      "console  ·  1600 x 350, four corners eased 90, on the sofa's back line  ·  "
      "two lamps, books and a bowl on it"),
 

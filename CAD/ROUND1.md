@@ -1215,38 +1215,54 @@ spacer that keeps the two legs off each other's knees.
 | | |
 |---|---|
 | planter and tree, the corner | X 9673–10573, Y 4637–5537 |
-| 2-seat sofa, the east leg, facing north | X 10573–12173, Y 4637–5537 |
-| single recliner, the west leg, facing east | X 9673–10573, Y 3837–4637 |
-| rocking chair, closing the group | centred (12100, 3700), aimed at the recliner |
-| console, on the sofa's back line | X 10573–12173, Y 5537–5887 |
+| 2-seat sofa, the east leg, facing north | X 10878–12478, Y 4637–5537 |
+| single recliner, the west leg, facing east | X 9673–10573, Y 3532–4332 |
+| rocking chair, closing the group | centred (12100, 3550), aimed at the recliner |
+| console, on the sofa's back line | X 10878–12478, Y 5537–5887 |
 | rug | 3300 × 2500 mm (10′-10″ × 8′-2″) — the whole group on it |
 
-The run moved **500 mm (1′-8″) south** to make room for the fourth side. The
-console still clears the apse crown by **1598 mm (5′-3″)**.
+**NOTHING TOUCHES THE PLANTER.** Both seats stand **305 mm (1′-0″)** clear of
+it — the sofa off its east face, the recliner off its north.
+
+| | mm | ft |
+|---|---|---|
+| planter east face → sofa | 305 | 1′-0″ |
+| planter north face → recliner | 305 | 1′-0″ |
+
+They were flush for one round, drawn as one L of joinery. Flush was wrong: a
+soil box hard against an upholstered arm has nowhere to be wiped, nowhere for
+the planting to hang over the edge, and it reads as a lump on the end of the
+sofa rather than as the thing the seats are arranged around. Standing it off
+by a foot makes it an object again.
+
+The planter held its position and the two seats moved off it — the sofa 305 mm
+east, the recliner 305 mm north — so every clearance to the pods and the door
+is unchanged. The run also moved **500 mm (1′-8″) south** earlier in this round
+to make room for the fourth side; the console still clears the apse crown by
+**1598 mm (5′-3″)**.
 
 | conversation, seat centre to seat centre | mm | ft |
 |---|---|---|
-| **recliner ↔ rocking chair** — across the group | **2049** | **6′-9″** |
-| rocking chair ↔ nearest sofa seat | 1425 | 4′-8″ |
-| rocking chair ↔ far sofa seat | 1668 | 5′-6″ |
-| recliner ↔ nearest sofa seat, across the planter | 1351 | 4′-5″ |
+| **recliner ↔ rocking chair** — across the group | **2014** | **6′-7″** |
+| rocking chair ↔ far sofa seat | 1743 | 5′-9″ |
+| recliner ↔ nearest sofa seat | 1633 | 5′-4″ |
+| rocking chair ↔ nearest sofa seat | 1537 | 5′-1″ |
 
-**2049 mm (6′-9″) across is the number that matters**, and it sits at the close
-end of the comfortable band rather than the middle of it. The two short ones
-are not a fault of the layout: they are adjacent seats in an L, and in both
-cases something sits between them — the planter in the corner, the sofa's own
-arm at the chair.
+Standing the seats off the planter also **evened the group out**: the spread
+was 1351–2049 mm when they were flush and is 1537–2014 mm now. Every seat is
+between 5′-1″ and 6′-7″ of every other. It reads close rather than loose, but
+nothing in it is awkward.
 
 **It is as spread as the space allows.** Two things pin it: the deck glass,
-**594 mm (1′-11″)** off the rocking chair's north edge, and the pair of rocking
-chairs in the east half, **348 mm (1′-2″)** off its east edge. If a looser
+**480 mm (1′-7″)** off the rocking chair's north edge, and the pair of rocking
+chairs in the east half, **359 mm (1′-2″)** off its east edge. If a looser
 group is wanted, moving that east pair further east is the only lever left.
 
 | | mm | ft |
 |---|---|---|
 | planter west face → west pod glazing | 1035 | 3′-5″ |
 | recliner west face → west pod glazing | 964 | 3′-2″ |
-| recliner north edge → deck glass | 1217 | 4′-0″ |
+| recliner north edge → deck glass | 912 | 3′-0″ |
 | the parents' door, approach | 1038 | 3′-5″ |
 
 ### The two halves swapped, and the parents' door moved south

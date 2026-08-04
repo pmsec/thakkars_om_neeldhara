@@ -823,8 +823,8 @@ def great_room_carpet():
 # fountain is a finish, settled with whoever plants it, off this drawing.
 
 
-def great_room_sofa(ax=12173, ay=5537, deg=0, L=1600, D=900, foot=280,
-                    box=900, flip=True):
+def great_room_sofa(ax=12478, ay=5537, deg=0, L=1600, D=900, foot=280,
+                    box=900, flip=True, gap=305):
     """The great room's 2-seat recliner sofa, with its planter built on to it.
 
     SQUARE TO THE ROOM, not diagonal.  It was set out at 45 degrees for one
@@ -903,10 +903,16 @@ def great_room_sofa(ax=12173, ay=5537, deg=0, L=1600, D=900, foot=280,
         a_, b_ = P(L * f, 270), P(L * f, D - 80)
         out.append(('line', a_[0], a_[1], b_[0], b_[1], 'light'))
 
-    out.append(quad(L, 0, L + box, D, 'solid', 120))   # the planter — a BOX
-    out.append(quad(L + 90, 90, L + box - 90, D - 90, 'green', 80))
-    cx, cy = P(L + box / 2, D / 2)                     # again, corners eased
-    rad = box * 0.9                                    # 120, with the canopy
+    # THE PLANTER STANDS OFF THE SOFA BY `gap`.  It used to butt it — the two
+    # were drawn as one L of joinery — and flush was wrong: a soil box hard
+    # against an upholstered arm has nowhere to be wiped, nowhere for the
+    # planting to hang over, and it reads as a lump on the end of the sofa
+    # rather than as the thing the seats are arranged around.  305 is a foot.
+    g = L + gap
+    out.append(quad(g, 0, g + box, D, 'solid', 120))   # the planter — a BOX
+    out.append(quad(g + 90, 90, g + box - 90, D - 90, 'green', 80))
+    cx, cy = P(g + box / 2, D / 2)                     # corners eased 120,
+    rad = box * 0.9                                    # with the canopy
     out.append(('circle', cx, cy, rad, 'dash'))        # dashed over it
     for k in range(6):
         a_ = math.radians(k * 60 + 15)
@@ -1039,7 +1045,7 @@ def wood_floor(board=190, island=False):
 # floor to seat two people who now have a pair of rocking chairs instead.
 
 
-def console_top(a=10573, b=5537, c=12173, d=5887):
+def console_top(a=10878, b=5537, c=12478, d=5887):
     """What stands on the console behind the sofa.
 
     A console 350 deep is a shelf, not a surface — everything on it has to be

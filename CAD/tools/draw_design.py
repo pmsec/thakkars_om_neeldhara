@@ -304,7 +304,7 @@ def main():
         prim(p)
     for p in R.rocking_chairs():       # the parallel pair, east half
         prim(p)
-    for p in R.rocking_chair(12100, 3700, face=(10123 - 12100, 4237 - 3700)):
+    for p in R.rocking_chair(12100, 3550, face=(10123 - 12100, 3932 - 3550)):
         prim(p)                        # the one that closes the L, west half
     for p in R.console_top():          # lamps, books and a bowl on the console
         prim(p)

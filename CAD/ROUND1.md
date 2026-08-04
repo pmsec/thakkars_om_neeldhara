@@ -690,70 +690,128 @@ screen to line up with, there is nothing there for the move to buy.
 
 ---
 
-## The parents' wardrobes, basket and dressing console
+## The parents' suite is two rooms now
 
-On the **west end wall, square opposite the bath door** — which opens west out
-of the bath at Y 7015–7815, so the run faces it across 2095 of floor.
+The brief changed: a permanent bed for Karan's parents, a wall bed for his
+grandmother when she stays, and something between them — because the two will
+want different air, and because whoever comes out of the bath should be able to
+reach a cupboard and dress without crossing the bedroom.
+
+The west-wall cupboard run that used to be here is gone. The suite splits on a
+line the room already draws.
+
+### The partition sits on the arch's crown
+
+Its north face lands on **Y 5875**, which is exactly the crown of the bath's
+sweep — the northernmost point that arch reaches, at X 3165. So it does not cut
+the room arbitrarily: it continues a line the bath already makes, and the two
+read as one boundary.
+
+It is built of two things, and neither of them is a wall:
+
+| | |
+|---|---|
+| X −450 → 1400 | a full-height **joinery block, 720 deep** |
+| X 1400 → 2732 | **brown tinted glass**, the same as Karan's screen |
+
+**The glass is the door.** One leaf, **1332**, sliding west into a pocket formed
+in the *back* of the cupboards — the block is 720 because it is a 120 cavity in
+front of a 600 cupboard, not a 720 cupboard. Shut, the two zones are separately
+heatable, which is the whole reason the partition exists. Open, the leaf is
+inside the cupboards and the suite is one room again.
+
+**It was a masonry wall with a hinged door first, and that was wrong twice.**
+The bath's sweep comes back west to X 2325 just below the partition, so the
+passage south of the east end of the opening was only 292 deep before it met
+the arch; and a 900 leaf hinged there fouled the arch by 161. Nothing slides
+into anything now, so nothing can foul it.
+
+Above the cupboards it is glass too — tinted from 2100 to the ceiling, the whole
+length. Solid to the ceiling would make the dressing zone a cell.
+
+### The parents' bed is Karan's bed, mirrored
+
+The same bed, the same headboard treatment, the same side tables, handed so the
+head is square on the **west** wall and the rounded foot faces east down the
+room and out through the pod slider.
 
 | | mm | ft |
 |---|---|---|
-| wardrobes, two of | 810 × 680 | 2'-8" × 2'-3" |
-| wardrobe over the column | 1200 × 600 | 3'-11" × 1'-12" |
-| the run | 2820 | 9'-3" |
-| laundry basket | 700 × 500 | 2'-4" × 1'-8" |
-| dressing console | 940 × 450 | 3'-1" × 1'-6" |
-| window left open at the south | 600 | 1'-12" |
-| cupboard end to the basket | 100 | 0'-4" |
+| bed | 1930 × 2032 | 6'-4" × 6'-8" |
+| foot corner radius | 594 | 1'-11" |
+| headboard | 3925 × 200 | 12'-11" × 0'-8" |
+| side tables | 550 × 450 | 1'-10" × 1'-6" |
+| to the terrace wall, and to the partition | 1297 each | 4'-3" |
+| clear east of the bed | 2623 | 8'-7" |
 
-**The run goes the full length and stops on the column's far edge.** Three units,
-all of them cupboards, from Y 6125 down to **8945** — the column's south edge,
-which is also the 600 window's north jamb. The window stays clear and the wall
-reads as one continuous run of joinery ending on a low basket, rather than as
-two short pieces with a gap in the middle.
+The headboard is the **whole blank wall**, Y 1950 to 5875 — window jamb above,
+partition below. Karan's is 3635 for the same reason on his end wall, and there
+it swallows a column; here there is none, so it is simply the full stretch and
+the joinery runs on into the partition block without a break.
 
-### The back steps, the front does not
+### The grandmother's wall bed is a queen, on the column
 
-The builder's 230 × 1200 column over Y 7745–8945 stands **80 proud** of the wall.
-Only the unit that sits **on** that column has to be held off at X −370. The two
-north of it have nothing behind them but wall, so they go back to the wall face
-at −450 and are **680 deep instead of 600**.
+A cabinet 400 deep that is shut fifty-one weeks of the year, and a **queen,
+1500 × 2000**, that folds out of it when she is here. Not a sofa bed: nothing to
+unfold nightly, nothing to make up twice.
 
-The alternative was to set the whole run at −370 and pack out behind, which is
-tidier to build and leaves a **sealed 80 × 1620 cavity** you can never open,
-never clean and never use — 0.31 m³ of it at 2400 high. Better to give that 80
-to the cupboard: behind a hanging rail it is exactly the depth a shoe box or a
-deep shelf wants.
+The cabinet's south end is fixed on the 600 window's north jamb at Y 8945 —
+anything past that stands in front of glass — so 1500 of cabinet runs back to
+7445, and its northern 300 comes off the builder's column and is packed out.
 
-**Every door still lines through on X 230**, so the run reads as one flat face
-whatever the carcass is doing behind it. The joint lands on Y 7745, the column's
-north edge, so no single unit has a stepped back.
+**A side table each side**, 500 × 480, going back to the wall face rather than
+the column's, so all three pieces share one flush front and read as a single
+2500 run. Bed up they are the dressing zone's console; bed down they are hers.
 
-**The basket is in the corner**, hard into the angle where the west window and
-the south window meet — back on the south wall at Y 9545, end on the west wall
-at X −450, and 100 below the last cupboard.
+| | mm | ft |
+|---|---|---|
+| bed | 1500 × 2000 | 4'-11" × 6'-7" |
+| cabinet | 1500 × 400 | 4'-11" × 1'-4" |
+| the whole run on the wall | 2500 | 8'-2" |
+| bed down, to the bath wall | 370 | 1'-3" |
+| cupboard doors to the head of the bed | 850 | 2'-9" |
 
-It lies **along the south wall**, 700 × 500. Turned the other way it would want
-700 of the west wall and there are only 600 between the column's south edge and
-the corner. It stands in front of the bottom of the 600 west window, which a
-500-high open basket may do, and it lines through with the cupboard fronts to
-**20** — a joiner's tolerance.
+With the bed down you do not walk past its foot. That corner is the bed's —
+which is why the laundry basket and the dressing console both came out of this
+zone. **The mirror stays**, 940 on the bath wall in the corner, with nothing
+under it: you face east into it with the south window on your right, so the
+light is on your face and not behind it.
 
-### The dressing console is in the corner, and on the bath wall
+### The console curls round this arch too
 
-It is **jammed into the corner** where the bath wall meets the south window:
-its back is on the bath wall at X 2400 and its end is on the south wall at
-Y 9545, so there is nothing behind it and nothing beside it. It was 75 short of
-the bath wall, which read as a gap rather than a corner.
+The same piece as Karan's, struck as an offset of the sweep's own outer face,
+400 deep, tapering to 250 at the pod wall and stopping there in a 431 face. No
+wall cabinet — that belongs on a straight tail and this one has none.
 
-And it goes **on the bath wall, not under the window.**
+**It is cut by the sliding screen.** The leaf shuts on Y 5875–5995 and the
+console crosses that line, so a slot runs through it and the leaf slides into
+the slot and stops against the arch. The two ends of the slot are found rather
+than chosen: u 0.264 and u 0.618 are the first and last sections of the console
+whose 400 depth touches the leaf's line with 20 of tolerance either side.
 
-That is not a stylistic preference. On the window wall the mirror would cover
-940 of a 3200 window, and you would sit facing the glass with all the light
-*behind* the mirror, lighting the back of your own head. On the bath wall you
-face east into it with the south window on your right: **side light on your
-face**, which is the whole reason for putting a dressing table in this corner.
+The piece left **south** of the slot sits in the grandmother's zone and narrows
+the way in past it — 704 at the screen line, **525** by the time the arch turns
+vertical. That is a squeeze, and it is the one thing in this suite worth
+deleting if it turns out to matter.
 
-Nothing covers the window, and nothing full height stands against it.
+### What this layout costs
+
+**The cupboards.** 1850 × 600 on the partition, against the 2820 the west wall
+used to carry. For two people that is **925 each**, and the planning minimum is
+about 1000 per adult — so the parents' hanging storage is now *below* minimum.
+It is the real price of the three-way split and it is not hidden here.
+
+Three ways back, none of them taken yet: a 790 run on the bath wall above the
+mirror; cupboards on the partition's north face as well, which puts them back
+in the bedroom; or overflow somewhere else in the home.
+
+| the suite, in two | m² | sq ft |
+|---|---|---|
+| parents, north of the partition | 21.97 | **236** |
+| — with the terrace | 25.69 | 277 |
+| grandmother, south of it | 9.76 | **105** |
+| — free floor, wall bed up | | 85 |
+| — free floor, wall bed down | | 56 |
 
 ## The suite windows — a correction, and why it matters
 

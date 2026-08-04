@@ -946,8 +946,8 @@ _ONCE = [
     # every time you put a glass down on it.
     ('rug',     12057, 3037, 15057, 5037,
      'rug  ·  3000 x 2000, the whole sofa + planter on it, 250 each side'),
-    ('counter-b', 12307, 5037, 13907, 5387,
-     "console  ·  1600 x 350, arched both ends, on the sofa's back line  ·  "
+    ('counter-e', 12307, 5037, 13907, 5387,
+     "console  ·  1600 x 350, four corners eased 90, on the sofa's back line  ·  "
      "two lamps, books and a bowl on it"),
 
     # ---------------------------------------- Karan's pod: the music + work den

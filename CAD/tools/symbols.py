@@ -24,13 +24,26 @@ def _rr(x0, y0, x1, y1, style='solid'):
     return ('rect', x0, y0, x1, y1, style)
 
 
-def _rrect(a, b, c, d, r):
-    """rectangle with all four corners filleted by r"""
+def _rrect(a, b, c, d, r, sel='ne se sw nw'):
+    """rectangle with corners filleted by r — all four, or only those in sel.
+
+    sel exists because a band butted on to a bigger shape must NOT be eased
+    where it meets it.  Round both and the two fillets leave a lens-shaped
+    gap along a joint that is actually flush, and a sofa's back reads as a
+    cushion floating behind it.  So a back band eases only its outer two
+    corners, and a recliner's footrest only the two at its far end.
+    """
     pts = []
-    for cx0, cy0, a0, a1 in ((c - r, b + r, -90, 0), (c - r, d - r, 0, 90),
-                             (a + r, d - r, 90, 180), (a + r, b + r, 180, 270)):
-        pts += [(cx0 + math.cos(math.radians(t)) * r,
-                 cy0 + math.sin(math.radians(t)) * r) for t in range(a0, a1 + 1, 6)]
+    for nm, cx0, cy0, a0, a1, sq in (('ne', c - r, b + r, -90, 0, (c, b)),
+                                     ('se', c - r, d - r, 0, 90, (c, d)),
+                                     ('sw', a + r, d - r, 90, 180, (a, d)),
+                                     ('nw', a + r, b + r, 180, 270, (a, b))):
+        if nm in sel:
+            pts += [(cx0 + math.cos(math.radians(t)) * r,
+                     cy0 + math.sin(math.radians(t)) * r)
+                    for t in range(a0, a1 + 1, 6)]
+        else:
+            pts.append(sq)
     return pts
 
 
@@ -132,6 +145,12 @@ def symbol(kind, a, b, c, d):
         return [('poly', pts, 'solid')]
     if kind == 'counter-r':
         return [('poly', _rrect(a, b, c, d, 200), 'solid')]
+    if kind == 'counter-e':
+        # EDGES ONLY EASED, 90 — for a run that floats in a room but is not
+        # long enough to carry a bullnose.  counter-b would strike a 175 half
+        # round off a 350 console and turn it into a lozenge; counter-r's flat
+        # 200 is more than half its depth.  90 is a hand running along an edge.
+        return [('poly', _rrect(a, b, c, d, 90), 'solid')]
     if kind == 'counter-b':
         # bullnosed at BOTH ends — a stadium.  For a run that floats in a room
         # with neither end against anything, which is the only case where a
@@ -256,21 +275,38 @@ def symbol(kind, a, b, c, d):
         # which side the BACK is on.  Given explicitly as a suffix — sofa-w,
         # sofa-n — or, with none, guessed from the proportion the old way.
         side = kind.split('-')[1] if '-' in kind else ('s' if w >= h else 'e')
-        out = [_rr(a, b, c, d, 'solid')]
+
+        # EVERY SEAT IN THIS PLAN HAS ITS CORNERS EASED.  Not a curve — 90 at
+        # most, and less on anything small — because upholstery does not come
+        # to a point and a plan full of sharp-cornered seats reads as boxes.
+        # Each sub-rectangle caps the radius at 45 per cent of its own short
+        # side, so a 190 back band eases to 85 and never pinches to nothing.
+        rad = min(90.0, min(w, h) * 0.14)
+
+        def _e(x0, y0, x1, y1, st, sel='ne se sw nw'):
+            r = min(rad, min(abs(x1 - x0), abs(y1 - y0)) * 0.45)
+            return ('poly', _rrect(min(x0, x1), min(y0, y1),
+                                   max(x0, x1), max(y0, y1), r, sel), st)
+
+        # which two corners of a band are the OUTER ones, by the side its
+        # parent edge is on.  Everything else stays square and stays flush.
+        OUT = {'s': 'se sw', 'n': 'ne nw', 'e': 'ne se', 'w': 'sw nw'}
+
+        out = [_e(a, b, c, d, 'solid')]
         back = 190 if base == 'sofa' else 170
         if base == 'chair':
             out.append(('circle', cx, cy, min(w, h) * 0.25, 'soft'))
             return out
         if side in ('s', 'n'):
             y0, y1 = (d - back, d) if side == 's' else (b, b + back)
-            out.append(_rr(a, y0, c, y1, 'soft'))
+            out.append(_e(a, y0, c, y1, 'soft', OUT[side]))
             for i in (1, 2):
                 x_ = a + i * w / 3
                 out.append(('line', x_, y1 + 50 if side == 'n' else b + 80,
                             x_, d - back - 50 if side == 's' else d - 80, 'light'))
         else:
             x0, x1 = (c - back, c) if side == 'e' else (a, a + back)
-            out.append(_rr(x0, b, x1, d, 'soft'))
+            out.append(_e(x0, b, x1, d, 'soft', OUT[side]))
             for i in (1, 2):
                 y_ = b + i * h / 3
                 out.append(('line', x1 + 50 if side == 'w' else a + 80, y_,
@@ -280,13 +316,13 @@ def symbol(kind, a, b, c, d):
             # south whichever way the recliner was turned, which put it through
             # whatever stood in front of an east or west facing one
             if side == 's':
-                out.append(_rr(a + w * 0.16, b - h * 0.3, a + w * 0.84, b, 'soft'))
+                out.append(_e(a + w * 0.16, b - h * 0.3, a + w * 0.84, b, 'soft', OUT['n']))
             elif side == 'n':
-                out.append(_rr(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft'))
+                out.append(_e(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft', OUT['s']))
             elif side == 'w':
-                out.append(_rr(c, b + h * 0.16, c + w * 0.3, b + h * 0.84, 'soft'))
+                out.append(_e(c, b + h * 0.16, c + w * 0.3, b + h * 0.84, 'soft', OUT['e']))
             else:
-                out.append(_rr(a - w * 0.3, b + h * 0.16, a, b + h * 0.84, 'soft'))
+                out.append(_e(a - w * 0.3, b + h * 0.16, a, b + h * 0.84, 'soft', OUT['w']))
         return out
     if kind == 'bed-rw':      # the same bed mirrored — head square on the WEST
         r = min(w, h) * 0.33

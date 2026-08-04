@@ -1322,22 +1322,41 @@ it, from two chairs sitting side by side.
 one piece of furniture, wide enough that a side table can go in later without
 moving either chair.
 
-### The console is arched on both ends, and has things on it
+### The console has its corners eased, and things on it
 
 | | mm | ft |
 |---|---|---|
 | console | 1600 × 350 | 5′-3″ × 1′-2″ |
-| ends | full half-rounds off its own 350 depth | |
+| all four corners | eased 90 | 3½″ |
 | two table lamps | 260 shades | 10″ |
 | a bowl | 210 | 8″ |
 | a stack of books | 280 × 170 | 11″ × 7″ |
 | gaps between the four | 113, 115, 122 | ~4½″ |
 
-**The arched ends are the house rule, not a flourish.** The baths are arches,
-the gallery is an apse, the dining table is a superellipse, the den's work
-console is bullnosed both ends and run B's nose is eased 300 mm. Nothing that
-stands free in this home has a square corner on it — and this piece stands
-free on both ends with a sofa in front of it.
+**It was a stadium for one round — bullnosed both ends — and that was too
+much.** A 175 mm half-round struck off a 350 mm depth turns a console into a
+lozenge. `counter-e` eases all four corners by **90 mm (3½″)** instead: enough
+that a hand runs along the edge, not so much that the piece stops reading as a
+console. The house rule still holds — the baths are arches, the gallery an
+apse, the dining table a superellipse, run B's nose eased 300 mm — it just
+wants the right radius for the size of thing.
+
+### Every seat in the plan has its corners eased
+
+Not curves — **90 mm (3½″) at most**, and less on anything small. Upholstery
+does not come to a point, and a plan full of sharp-cornered seats reads as a
+plan full of boxes. It applies to every sofa, recliner, chair and rocking
+chair in the home, plus the great-room sofa and its planter box, which are
+drawn as raw polygons.
+
+Each sub-rectangle caps its radius at **45 per cent of its own short side**, so
+a 190 mm back band eases to 85 mm rather than closing up into a lozenge.
+
+**And a band butted on to a bigger shape is eased only on its outer corners.**
+Round both and the two fillets leave a lens-shaped gap along a joint that is
+actually flush — which drew a sofa's back as a cushion floating behind it, and
+a recliner's footrest as a separate object. So a back band rounds the two
+corners on its far side and stays square where it meets the seat.
 
 **A console 350 mm (1′-2″) deep is a shelf, not a surface**, and the lamps set
 the limit: a 260 mm (10″) shade leaves 45 mm (2″) either side and nothing

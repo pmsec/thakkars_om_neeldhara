@@ -869,21 +869,43 @@ def great_room_sofa(ax=12307, ay=5037, deg=0, L=1600, D=900, foot=280, box=900):
     def P(s, t):
         return (ax + ux * s + vx * t, ay + uy * s + vy * t)
 
-    def quad(s0, t0, s1, t1, style):
-        return ('poly', [P(s0, t0), P(s1, t0), P(s1, t1), P(s0, t1)], style)
+    def quad(s0, t0, s1, t1, style, r=90.0, ease='all'):
+        """A rectangle in the piece's own frame, corners eased.
+
+        The easing is struck in (s, t) and only then mapped through P, so it
+        stays a true fillet whatever angle the piece is set at.  r is capped
+        at 45 per cent of the rectangle's own short side, so a 190 back band
+        eases to 85 rather than closing up into a lozenge.
+        """
+        s0, s1 = min(s0, s1), max(s0, s1)
+        t0, t1 = min(t0, t1), max(t0, t1)
+        r = min(r, min(s1 - s0, t1 - t0) * 0.45)
+        pts = []
+        for nm, cs, ct, a0, a1, sq in (
+                ('hi', s1 - r, t1 - r, 0, 90, (s1, t1)),
+                ('hi', s0 + r, t1 - r, 90, 180, (s0, t1)),
+                ('lo', s0 + r, t0 + r, 180, 270, (s0, t0)),
+                ('lo', s1 - r, t0 + r, -90, 0, (s1, t0))):
+            if ease in ('all', nm):
+                pts += [P(cs + math.cos(math.radians(k)) * r,
+                          ct + math.sin(math.radians(k)) * r)
+                        for k in range(a0, a1 + 1, 6)]
+            else:
+                pts.append(P(*sq))
+        return ('poly', pts, style)
 
     out = [quad(0, 0, L, D, 'solid'),                  # the sofa
-           quad(0, 0, L, 190, 'soft'),                 # its back
-           quad(L * 0.16, D, L * 0.84, D + foot, 'soft')]   # footrests, out
+           quad(0, 0, L, 190, 'soft', ease='lo'),      # its back
+           quad(L * 0.16, D, L * 0.84, D + foot, 'soft', ease='hi')]  # footrests
     for f in (1 / 3, 2 / 3):                           # the two seat divisions
         a_, b_ = P(L * f, 270), P(L * f, D - 80)
         out.append(('line', a_[0], a_[1], b_[0], b_[1], 'light'))
 
-    cx, cy = P(L + box / 2, D / 2)                     # the planter — a DRUM
-    out.append(('circle', cx, cy, box / 2, 'solid'))   # not a box.  Its west
-    out.append(('circle', cx, cy, box / 2 - 90, 'green'))   # face is tangent
-    rad = box * 0.9                                    # to the sofa's east end
-    out.append(('circle', cx, cy, rad, 'dash'))        # and the canopy over it
+    out.append(quad(L, 0, L + box, D, 'solid', 120))   # the planter — a BOX
+    out.append(quad(L + 90, 90, L + box - 90, D - 90, 'green', 80))
+    cx, cy = P(L + box / 2, D / 2)                     # again, corners eased
+    rad = box * 0.9                                    # 120, with the canopy
+    out.append(('circle', cx, cy, rad, 'dash'))        # dashed over it
     for k in range(6):
         a_ = math.radians(k * 60 + 15)
         out.append(('circle', cx + math.cos(a_) * rad * 0.5,
@@ -1122,15 +1144,37 @@ def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250, face=None):
     def P(s, t):
         return (cx + ux * s + vx * t, cy + uy * s + vy * t)
 
-    def quad(s0, t0, s1, t1, style):
-        return ('poly', [P(s0, t0), P(s1, t0), P(s1, t1), P(s0, t1)], style)
+    def quad(s0, t0, s1, t1, style, r=70.0, ease='all'):
+        """A rectangle in the piece's own frame, corners eased.
+
+        The easing is struck in (s, t) and only then mapped through P, so it
+        stays a true fillet whatever angle the piece is set at.  r is capped
+        at 45 per cent of the rectangle's own short side, so a 190 back band
+        eases to 85 rather than closing up into a lozenge.
+        """
+        s0, s1 = min(s0, s1), max(s0, s1)
+        t0, t1 = min(t0, t1), max(t0, t1)
+        r = min(r, min(s1 - s0, t1 - t0) * 0.45)
+        pts = []
+        for nm, cs, ct, a0, a1, sq in (
+                ('hi', s1 - r, t1 - r, 0, 90, (s1, t1)),
+                ('hi', s0 + r, t1 - r, 90, 180, (s0, t1)),
+                ('lo', s0 + r, t0 + r, 180, 270, (s0, t0)),
+                ('lo', s1 - r, t0 + r, -90, 0, (s1, t0))):
+            if ease in ('all', nm):
+                pts += [P(cs + math.cos(math.radians(k)) * r,
+                          ct + math.sin(math.radians(k)) * r)
+                        for k in range(a0, a1 + 1, 6)]
+            else:
+                pts.append(P(*sq))
+        return ('poly', pts, style)
 
     out = []
     for side in (-1, 1):                               # the two rockers
         s = side * (W / 2 - 70)
         out.append(quad(s - 35, -D / 2 - 130, s + 35, D / 2 + 150, 'light'))
     out.append(quad(-W / 2, -D / 2, W / 2, D / 2, 'solid'))
-    out.append(quad(-W / 2, -D / 2, W / 2, -D / 2 + 140, 'soft'))   # the back
+    out.append(quad(-W / 2, -D / 2, W / 2, -D / 2 + 140, 'soft', ease='lo'))  # back
     out.append(quad(-W / 2, -D / 2 - rock, W / 2, D / 2 - rock, 'dash'))
     return out
 

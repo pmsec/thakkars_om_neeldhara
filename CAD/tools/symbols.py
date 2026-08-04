@@ -232,7 +232,17 @@ def symbol(kind, a, b, c, d):
                 out.append(('line', x1 + 50 if side == 'w' else a + 80, y_,
                             c - back - 50 if side == 'e' else c - 80, y_, 'light'))
         if base == 'recliner':
-            out.append(_rr(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft'))
+            # the footrest, out the way the chair FACES — it used to be drawn
+            # south whichever way the recliner was turned, which put it through
+            # whatever stood in front of an east or west facing one
+            if side == 's':
+                out.append(_rr(a + w * 0.16, b - h * 0.3, a + w * 0.84, b, 'soft'))
+            elif side == 'n':
+                out.append(_rr(a + w * 0.16, d, a + w * 0.84, d + h * 0.3, 'soft'))
+            elif side == 'w':
+                out.append(_rr(c, b + h * 0.16, c + w * 0.3, b + h * 0.84, 'soft'))
+            else:
+                out.append(_rr(a - w * 0.3, b + h * 0.16, a, b + h * 0.84, 'soft'))
         return out
     if kind == 'bed-rw':      # the same bed mirrored — head square on the WEST
         r = min(w, h) * 0.33

@@ -813,14 +813,35 @@ so the desk never stands in that opening.
 
 ### The parents' pod gets a sitting group
 
-Its north half had nothing in it but the glass roof over the bay. A **two-seater
-1700 × 850** with its back to the west facing east, and **two recliners 950 × 900**
-facing it back, with 1150 between them.
+Its north half had nothing in it but the glass roof over the bay. It took four
+goes. It started as three boxes facing each other across nothing, which is a row
+of furniture, not a group; the second recliner came out because it stood in the
+route from the deck to the dining table; and the round centre table came out
+last.
 
-The sofa sits **633 clear of the suite's sliding partition** rather than on it,
-so the way in from the bedroom passes round its north end (480) or its south
-(900) instead of into its back. 650 from the recliners down to the dining
-table.
+What is there now is an **L**, closed on the west and the south and open to the
+deck and to the great room:
+
+* **sofa 1700 × 800**, back to the dining end, facing north through the slider
+* **one recliner 800 × 900** at the west end, turned in to face it
+* **three tables instead of one centre table**, each with a job — a 500 square
+  at the recliner's left hand with its north face **on the terrace line**, a
+  **600 square corner table** in the angle of the L touching the recliner's
+  foot and 100 off the sofa, and a 500 square at the sofa's right hand
+
+Removing the round table is the gain worth naming: it stood in the deck slider
+and left **575** to get out. The only thing on that line now is the one 500
+side table, so the way out to the deck is **2100** — 1′-11″ to 6′-11″.
+
+Measured: 1150 in front of the sofa, 1130 behind it to the dining table, 500
+from the recliner up to the deck line.
+
+**What it costs.** The group sits 370 off the suite's sliding partition and
+stands against 1400 of that partition's 3555 opening. The full-width way
+through from the bedroom is the **1555** south of it — a door and a half, at
+the end you come out of anyway. Pulling the group 300 east clears the whole
+opening and breaks the side table off the terrace line, which was the
+instruction. Say the word if you want that trade instead.
 
 ### What this layout costs
 

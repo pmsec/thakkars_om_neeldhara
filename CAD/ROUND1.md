@@ -1160,27 +1160,35 @@ end is struck off the apse. The console floats along the glass with neither end
 against anything, so both get the full half-width round. It costs **0.05 m²
 (0.6 sq ft)** of top: 1.49 m² (16 sq ft) instead of 1.54.
 
-### And the same sitting group as the parents' pod
+### Two recliners, not a sitting group
 
-The parents' pod arrangement, **mirrored exactly** about the home's centreline:
-a **sofa 1700 × 800 mm (5′-7″ × 2′-8″)** with its back to the south facing
-north through the deck slider, and a **recliner 800 × 900 mm (2′-8″ × 3′-0″)**
-at the far end turned in. Same sizes, same set-out, so the two pods read as a
-pair across the home rather than as two different rooms.
+The parents' arrangement was mirrored in here first — a sofa and a recliner in
+an L — and then taken out again. What is here instead is **two recliners side
+by side, both facing north through the deck slider**, with a small table
+between them.
 
-Every clearance is therefore the parents' pod's, reflected:
+* **recliners 800 × 900 mm (2′-8″ × 3′-0″)** each
+* **a rectangular side table, 450 × 600 mm (1′-6″ × 2′-0″)**, between them
+* **2050 mm (6′-9″)** overall
 
-* **600 mm (2′-0″)** from the recliner's east face to the sofa, **360 mm
-  (1′-2″)** from the tip of its footrest reclined
-* **1150 mm (3′-9″)** in front of the sofa to the deck line
-* **370 mm (1′-3″)** behind the recliner to the suite's sliding partition
-* Karan's deck slider — **2850 mm (9′-4″)** — is clear end to end, like his
-  parents'
+The two pods are deliberately no longer a mirrored pair, and that is the point:
+this one is a den for one or two people looking at the deck, not a room to
+receive in. An L wants somebody sitting in the return talking across the
+corner — which is what the parents' pod is for.
 
-What is new is what it has to miss in this pod, and it does: **230 mm (9″)**
-from the sofa's back to the north end of the work console, and **16 mm (¾″)**
-between the sofa's north-west corner and the mandir and pantry units in the
-corner behind it. Tight, but it is a corner of a room, not a route.
+**The pair is centred on X 18405, which is the centre of Karan's deck slider**,
+not the centre of the room. It sits square on the opening it faces, because
+that is the alignment you notice from the chairs.
+
+The table's back is **on the chairs' own back line**, not centred on the seat.
+Reclined, your elbow is near the back of the chair; a table centred on the seat
+would be level with your knees.
+
+Clearances: **780 mm (2′-7″)** from the tip of a reclined footrest to the deck
+line, **230 mm (9″)** from the chair backs to the north end of the work
+console, **815 mm (2′-8″)** west to the mandir and pantry units, **520 mm
+(1′-8″)** east to the suite's sliding partition. Karan's deck slider —
+**2850 mm (9′-4″)** — is clear end to end, like his parents'.
 
 ---
 

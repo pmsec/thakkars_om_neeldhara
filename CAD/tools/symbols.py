@@ -92,7 +92,10 @@ def symbol(kind, a, b, c, d):
         return [_rr(a, b, c, d, 'solid'),
                 _rr(a + w * 0.42, b + 35, c, d - 35, 'soft')]
     if kind == 'sidetable':
-        return [_rr(a, b, c, d, 'solid')]
+        # A rectangle, with the corners only eased — 16 per cent of the short
+        # side.  counter-r's flat 200 would be nearly half the width on a table
+        # this small and it would stop reading as a rectangle at all.
+        return [('poly', _rrect(a, b, c, d, min(w, h) * 0.16), 'solid')]
     if kind == 'counter-re':
         # full bullnose on the east end — nobody turns a sharp corner into it —
         # and the far end's corners eased, like the rest of the kitchen

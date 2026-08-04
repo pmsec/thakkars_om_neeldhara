@@ -872,18 +872,26 @@ _ONCE = [
     ('screen-w', 15920, 5150, 16220, 5830, "monitor  ·  27 inch, facing east"),
     ('swivel',   16620, 5190, 17220, 5790, "desk chair  ·  600, swivel"),
 
-    # ------------------------------- Karan's pod: the sitting group
-    # The parents' pod group, mirrored exactly: a sofa with its back to the
-    # south facing north through the deck slider, and a recliner at the far end
-    # turned in — an L closed on two sides and open to the deck and the great
-    # room.  Same sizes, same set-out, mirrored about X 12240, so the two pods
-    # read as a pair across the home rather than as two different rooms.
+    # ------------------------------- Karan's pod: the two recliners
+    # NOT the parents' group after all.  It was mirrored in as a sofa and a
+    # recliner in an L; it is TWO RECLINERS side by side instead, both facing
+    # north through the deck slider, with a small table between them.
     #
-    # It clears what is already in this pod: 16 off the mandir and pantry units
-    # in the north-west corner, 230 from the sofa's back to the work console,
-    # and 620 from the recliner's footrest to the sofa.
-    ('sofa-s',    16480, 3770, 18180, 4570, "sofa  ·  1700 x 800, facing the deck"),
-    ('recliner-e', 18780, 3120, 19580, 4020, "recliner  ·  800 x 900, facing west"),
+    # The two pods stop being a mirrored pair, and that is the point: this one
+    # is a den for one or two people looking at the deck, not a room to receive
+    # in.  An L wants somebody to sit in the return and talk across the corner,
+    # which is what the parents' pod is for.
+    #
+    # 800 + 450 + 800 = 2050, centred on Karan's deck slider at X 18405 — so
+    # the pair sits square on the opening it faces rather than square on the
+    # room, which is what you notice from the chairs.
+    #
+    # The table is 450 x 600, its back on the chairs' own back line at Y 4570,
+    # because that is where your elbow is when you are actually reclined.  A
+    # table centred on the seat would be level with your knees.
+    ('recliner-s', 17380, 3670, 18180, 4570, "recliner  ·  800 x 900, facing the deck"),
+    ('sidetable',  18180, 3970, 18630, 4570, "side table  ·  450 x 600, between the two"),
+    ('recliner-s', 18630, 3670, 19430, 4570, "recliner  ·  800 x 900, facing the deck"),
     # The kit itself is circles struck off one centre — see retrofit.drum_kit().
     # 255 from its westernmost cymbal to the console's front edge, 150 to the
     # duct wall, 140 to the great-room wall, and open pod behind the drummer.

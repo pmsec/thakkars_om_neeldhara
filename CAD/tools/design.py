@@ -773,10 +773,10 @@ _ONCE = [
     # could sit anywhere in the run.  Under the old S curve this same table had
     # 178 on the glass side.
     #
-    # SEVEN, NOT EIGHT.  One occasional chair at the NORTH end, where 2270 of
-    # open pod stands behind it.  Nothing at the south end: that end is the
-    # serving stance at the hatch, 500 off the wall, and a chair there would sit
-    # in the hatch itself.
+    # SIX, AND NO END CHAIRS.  An occasional seventh was dashed in at the north
+    # end and has come out.  Both ends of the table stay clear, and that is what
+    # lets you walk round them: the south end is the serving stance at the hatch,
+    # 500 off the wall, and the north end is the run up to the sitting group.
     ('dining-se', 6603, 5700, 7703, 7900,
      'superellipse 1100 x 2200  ·  six, seven with the north end chair'),
     # ------------------------------------------------------------- kitchen

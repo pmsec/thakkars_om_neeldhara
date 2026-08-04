@@ -340,10 +340,10 @@ def symbol(kind, a, b, c, d):
             e = edge(sy)
             out.append(_rr(cx - e - 350, sy - 230, cx - e + 110, sy + 230, 'solid'))
             out.append(_rr(cx + e - 110, sy - 230, cx + e + 350, sy + 230, 'solid'))
-        # ONE occasional seventh, at the NORTH end only, drawn dashed.  There is
-        # no eighth: the south end is the serving stance at the hatch, and a
-        # chair there would sit in the hatch and have 500 to sit down in.
-        out.append(_rr(cx - 230, b - 810, cx + 230, b - 350, 'dash'))
+        # SIX, and no end chairs.  There was an occasional seventh dashed in at
+        # the north end; it came out.  Both ends of the table stay clear, which
+        # is what lets you walk round them — the south end is the serving stance
+        # at the hatch and the north end is the run up to the sitting group.
         return out
     if kind == 'dining':
         r = min(w, h) / 2

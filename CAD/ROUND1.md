@@ -1040,9 +1040,10 @@ outer diners sit, narrowing to 2'-11" under them.
 | clear behind the chairs, **both** sides | 559 | 1'-10" |
 | table end to the hatch wall | 500 | 1'-8" |
 
-**Seven, not eight.** One occasional chair at the **north** end, with open pod
-behind it. Nothing at the south end: that end is the serving stance at the
-hatch, and a chair there would sit in the hatch itself.
+**Six, and no end chairs.** An occasional seventh was dashed in at the north end
+and has come out. Both ends of the table stay clear, and that is what lets you
+walk round them: the south end is the serving stance at the hatch, and the north
+end is the run up to the sitting group.
 
 **This is also the clearest argument for the straight glazing.** Under the S the
 pod's width varied along its length, so where you put the table mattered — this
@@ -1172,7 +1173,7 @@ need. Beside the serving hatch it is also next to the kitchen.
 * all A-101 furniture — resolved, two pieces moved (see above)
 * **the dining table** — a long table seating six, in the parents' pod at the
   serving hatch — replaced by a 1100 × 2200 superellipse turned down the pod,
-  six seats and an occasional seventh, 1'-10" clear on both sides. See *The
+  six seats, three a side, ends left clear, 1'-10" on both sides. See *The
   dining table is not round*
 * **the kitchen and the utility are one space** — the wall between them is
   removed in full, so the builder's dry balcony reads as the kitchen's utility

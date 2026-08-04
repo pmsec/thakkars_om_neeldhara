@@ -724,12 +724,16 @@ _ONCE = [
     # other across nothing.  It was clumsy because it had no focus and nothing
     # to sit against — furniture in a row is not a group.
     #
-    # It is composed now, the same way Karan's terrace pod is: a U OPEN TO THE
-    # DECK, round a centre table.  The two-seater has its back to the dining end
-    # and faces north through the slider; a recliner sits at each end facing in,
-    # so the three of them and the table close three sides and leave the fourth
-    # open to the view.  That is the whole difference — the room's own opening
-    # is what the group is arranged on, instead of being ignored.
+    # It is composed on the room's own opening: the two-seater has its back to
+    # the dining end and faces NORTH through the deck slider, with a centre
+    # table in front of it and ONE recliner at the west end turned in.
+    #
+    # There were two recliners.  The east one came out — it stood in the pod's
+    # own width between the sitting group and the glazed screen, which is the
+    # route from the deck down to the dining table and on into the great room,
+    # and there is no second thing on that side for it to belong to.  With it
+    # gone the group is an L rather than a U: closed on the west and the south,
+    # open to the deck on the north and to the great room on the east.
     #
     # It clears everything without being pushed against anything:
     #   680 from the recliners north to the deck slider
@@ -739,7 +743,6 @@ _ONCE = [
     #       the bedroom is never blocked
     ('sofa-s',    5800, 4450, 7500, 5250, "two-seater  ·  1700 x 800, facing the deck"),
     ('recliner-w', 4900, 3300, 5700, 4200, "recliner  ·  800 x 900, facing east"),
-    ('recliner-e', 7500, 3300, 8300, 4200, "recliner  ·  800 x 900, facing west"),
     ('table',     6275, 3300, 7025, 4050, "centre table  ·  750 round"),
 
     # ------------------------------------------------- parents' pod: dining

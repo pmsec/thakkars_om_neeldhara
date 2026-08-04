@@ -1275,94 +1275,97 @@ The canopy is drawn **dashed**, because it is overhead — it oversails the
 planter box by about **360 mm (1′-2″)** on every side, which is the whole
 reason for a tree there rather than a pot.
 
-### A jhoola, a console and a rug — and the room becomes two pairs
+### Two rocking chairs, parallel, and a console with things on it
 
-The great room's south band was **18 m² (194 sq ft) of nothing** — the half you
-arrive into from the front door, furnished with absolutely nothing. It now
-holds a jhoola.
-
-| | mm | ft |
-|---|---|---|
-| jhoola frame | 1900 × 1000 | 6′-3″ × 3′-3″ |
-| seat | 1500 × 700 | 4′-11″ × 2′-4″ |
-| swing travel, fore and aft | 500 each way | 1′-8″ |
-| **seat centre → rocking chair's** | **2380** | **7′-10″** |
-| rug | 3000 × 2000 | 9′-10″ × 6′-7″ |
-| console, on the sofa's back line | 1600 × 350 | 5′-3″ × 1′-2″ |
-
-**It is on its own frame, not hung from the roof.** It was drawn for the deck
-first, which is where a jhoola belongs, and it does not fit: between the voids
-the deck has the fountain in the middle and a recliner against each void, and
-the two gaps that leaves are **1625 mm (5′-4″)** each against a frame of 1900.
-Nothing on that deck was going to move for a swing. Hanging it from the glass
-roof would in any case need the structural engineer, not a fabricator.
-
-**Its position is set by two lines.** The east edge stops at X 11600 because
-the gallery portal's lane starts at 11715 and that is the walk in from the
-front door — **115 mm (5″)** clear. West of it there is **1096 mm (3′-7″)** to
-the pod glazing, so it sits in a bay rather than jammed into a corner. Aft
-travel leaves **250 mm (10″)** to the kitchen bump's wall; forward travel
-leaves **913 mm (3′-0″)** to the rocking chair.
-
-**What it actually gains is a second conversation.** At **2380 mm (7′-10″)**
-the jhoola and the rocking chair are the closest two seats in this home — a
-better distance than anything else in the room — and they face the same way,
-up the length of it. So the great room now reads as **two pairs**: sofa and
-east deck recliner in the east half at 3261 mm (10′-8″), jhoola and rocking
-chair in the west half at 2380 mm (7′-10″). It stops being one group with
-strays around it.
-
-**The rug is 3000 × 2000 — a stock size, not a number invented to fit** — and
-the whole assembly stands on it, sofa and planter alike, 250 mm (10″) clear
-each side and 820 mm (2′-8″) in front of the extended footrests. It was drawn
-once at 2400 × 1700 stopping short of the planter, to keep a soil box off a
-rug, and it read as a rug sliding out from under the sofa to one side. A liner
-under the planter is a cheaper answer than an off-centre rug.
-
-**The console stands on the boards, not the rug.** Its north face is the
-sofa's own back line at Y 5037, which is also the rug's south edge — a console
-with two legs on a rug and two off rocks every time a glass goes down on it.
-
-### A rocking chair on the diagonal, aimed at the east recliner
-
-The west half of the great room had nothing in it at all. It now has one
-piece: a rocking chair, **turned off square** — the only thing in this plan
-that is.
+The great room's west half holds a **pair** of rocking chairs. The east half
+holds the sofa, its planter and tree, the rug and the console. Between them
+the room reads as two groups rather than one group with strays.
 
 | | mm | ft |
 |---|---|---|
-| seat | 700 × 750 | 2′-4″ × 2′-6″ |
+| each chair, seat | 700 × 750 | 2′-4″ × 2′-6″ |
 | footprint incl. rockers | 700 × 1030 | 2′-4″ × 3′-5″ |
 | rock travel, shown dashed | 250 | 10″ |
-| aim | 28.7° north of east | |
-| **to the east recliner's seat centre** | **5114** | **16′-9″** |
+| **seat centres, apart** | **1500** | **4′-11″** |
+| clear floor between the footprints | 800 | 2′-7″ |
+| shared aim | 28.0° north of east | |
 
-**The angle is a sightline, not a composition.** It is computed from the two
-positions rather than typed, so moving either end re-aims the chair instead
-of leaving it pointing at where the seat used to be.
+**Parallel is a real constraint, and it is why they are drawn together rather
+than twice.** A chair that aims itself at the recliner from its own seat
+centre cannot have a twin — move the twin 1500 mm sideways and it points
+somewhere else, and the two read as knocked out of line rather than set out.
+So the aim is computed **once**, from the midpoint between them, and both get
+the same vector. The pair as a unit points at the east recliner.
 
-**And the sightline was checked, not assumed.** Run across the room it clears
-the sofa's extended footrests by **555 mm (1′-10″)**, the planter box by
-**1712 mm (5′-7″)** and the tree canopy by **1599 mm (5′-3″)** — all to the
-north — then crosses the deck slider at X 13688, well inside the 6250 mm
-opening, and lands on the recliner. Nothing on that line stands above knee
-height.
+**Their position was solved, not chosen.** They run on the across-axis, which
+at this angle is mostly north–south — the direction the west half of the room
+actually has room in, since the pod glazing and the gallery portal's lane
+leave only about 3000 mm (9′-10″) across. Four things bound them, and all four
+are close:
 
-**At 5114 mm (16′-9″) this is a view, not a conversation** — too far to talk
-across without raising a voice, and that is the right use for it. The chair
-looks down the long diagonal of the room, out over the deck and past the
-fountain, and the recliner is where the eye stops.
+| | mm | ft |
+|---|---|---|
+| deck glass → the north-west chair | 468 | 1′-6″ |
+| the south-east chair → gallery portal lane | 351 | 1′-2″ |
+| family room's door, approach | 957 | 3′-2″ |
+| aft rock travel → kitchen bump | 100 | 4″ |
 
-**Where it sits is set by the family room's door**, the same rule the sofa's
-east end answers to at the other pod. The portal in the west pod screen runs
-Y 3872–4692 and the chair sits across the way out of it; on the marked spot it
-left **810 mm (2′-8″)** to get past, so it moved **200 mm (8″) east** to leave
-**1010 mm (3′-4″)**.
+**What each one sees is not the same, and that is the point of a pair rather
+than a row.** The south-east chair looks over the sofa's extended footrests —
+450 mm (1′-6″) high, well under a seated eye — and its line lands on the east
+recliner. The north-west chair's line leaves through the slider at X 11914,
+before it ever reaches the sofa, and goes out over open deck just east of the
+fountain to the parapet planting. One view into the room, one straight out of
+it, from two chairs sitting side by side.
 
-The rockers are drawn running past the seat both ways — 130 mm (5″) behind and
-150 mm (6″) in front — because that is the real floor footprint of a rocker
-and it is what decides how much room it needs. The dashed outline is the seat
-rocked back; keep that end clear.
+800 mm (2′-7″) between them is deliberate: close enough that the two read as
+one piece of furniture, wide enough that a side table can go in later without
+moving either chair.
+
+### The console is arched on both ends, and has things on it
+
+| | mm | ft |
+|---|---|---|
+| console | 1600 × 350 | 5′-3″ × 1′-2″ |
+| ends | full half-rounds off its own 350 depth | |
+| two table lamps | 260 shades | 10″ |
+| a bowl | 210 | 8″ |
+| a stack of books | 280 × 170 | 11″ × 7″ |
+| gaps between the four | 113, 115, 122 | ~4½″ |
+
+**The arched ends are the house rule, not a flourish.** The baths are arches,
+the gallery is an apse, the dining table is a superellipse, the den's work
+console is bullnosed both ends and run B's nose is eased 300 mm. Nothing that
+stands free in this home has a square corner on it — and this piece stands
+free on both ends with a sofa in front of it.
+
+**A console 350 mm (1′-2″) deep is a shelf, not a surface**, and the lamps set
+the limit: a 260 mm (10″) shade leaves 45 mm (2″) either side and nothing
+wider will sit square. Bowl before books, not after — the bowl and a lamp
+shade are both circles of much the same size, and side by side they read as a
+pair of lamps that has slipped.
+
+**The console stands on the boards, not the rug.** Its north face is the
+sofa's own back line at Y 5037, which is also the rug's south edge: a console
+with two legs on a rug and two off rocks every time a glass goes down on it.
+
+### The rug
+
+**3000 × 2000 mm (9′-10″ × 6′-7″) — a stock size, not a number invented to
+fit** — with the whole assembly on it, sofa and planter alike, 250 mm (10″)
+clear each side and 820 mm (2′-8″) in front of the extended footrests. It was
+drawn once at 2400 × 1700 stopping short of the planter, to keep a soil box
+off a rug, and it read as a rug sliding out from under the sofa to one side. A
+liner under the planter is a cheaper answer than an off-centre rug.
+
+### The jhoola was drawn and taken out
+
+It went into the great room's south-west quadrant for one round. It does not
+belong on the deck — between the voids the fountain sits in the middle of the
+bay with a recliner against each void, and the two gaps that leaves are
+**1625 mm (5′-4″)** each against a frame of 1900 mm (6′-3″) — and in the great
+room it was a 1900 mm frame standing in the middle of the floor to seat two
+people who now have a pair of rocking chairs instead.
 
 ### The fountain's planting is out of scope, on purpose
 

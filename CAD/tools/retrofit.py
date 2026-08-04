@@ -949,83 +949,105 @@ def wood_floor(board=190):
     return out
 
 
-def jhoola(w=1900, d=1000, seat_w=1500, seat_d=700, swing=500,
-           x0=9700, y0=6200):
-    """A jhoola in the great room's south-west quadrant, facing north.
+# THE JHOOLA IS GONE.  It was drawn in the great room's south-west quadrant
+# for one round and taken out again.  It does not fit the deck, which is where
+# a jhoola belongs — the fountain sits in the middle of that bay with a
+# recliner against each void, leaving two gaps of 1625 against a frame of 1900
+# — and in the great room it was a 1900 frame standing in the middle of the
+# floor to seat two people who now have a pair of rocking chairs instead.
 
-    ON ITS OWN FRAME, not hung from the roof.  It was drawn for the deck
-    first, which is where a jhoola belongs, and it does not fit: between the
-    two voids the deck has the fountain in the middle of it and a recliner
-    against each void, and the two gaps that leaves are 1625 each against a
-    frame of 1900.  Nothing on that deck was going to move for a swing.
 
-    The great room's south band, on the other hand, was 18 m2 of nothing —
-    the half of the room you arrive into from the front door, furnished with
-    absolutely nothing at all.
+def console_top(a=12307, b=5037, c=13907, d=5387):
+    """What stands on the console behind the sofa.
 
-    WHERE IT SITS IS SET BY TWO LINES.  Its east edge stops at 11600 because
-    the gallery portal's lane starts at 11715 and that is the walk in from
-    the front door; and it sits far enough west of that to leave 1098 to the
-    pod glazing on the other side, so the piece is in a bay rather than
-    jammed into a corner.
+    A console 350 deep is a shelf, not a surface — everything on it has to be
+    slim, and the lamps set the limit: a 260 shade leaves 45 either side of it
+    and nothing wider will sit square.  A pair of them, one near each arched
+    end, with a bowl and a stack of books between, spaced at 113, 115 and 122
+    so the run reads as evenly filled rather than as four objects that landed
+    where they landed.  Bowl before books and not after: the bowl and a lamp
+    shade are both circles of much the same size, and set side by side they
+    read as a pair of lamps that has slipped.
 
-    WHAT IT GAINS IS A SECOND CONVERSATION.  Its seat centre is 2380 from the
-    rocking chair's — a better distance than anything else in this room — so
-    the two of them make a pair in the west half, facing the same way up the
-    room, while the sofa and the east deck recliner make the other pair in
-    the east half.  The room stops being one group with strays in it.
-
-    Swing travel is drawn dashed at 500 fore and aft, which is normal use
-    rather than a child standing up on it.  Aft it leaves 250 to the kitchen
-    bump's wall at 7800; forward, 913 to the rocking chair.
+    The console itself is a STADIUM — both ends struck as full half-rounds off
+    its own 350 depth.  That is the house rule, not a flourish: the baths are
+    arches, the gallery is an apse, the dining table is a superellipse, the
+    den's work console is bullnosed both ends, and run B's nose is eased 300.
+    Nothing that stands free in this home has a square corner on it, and this
+    piece stands free on both ends with a sofa in front of it.
     """
-    x1, y1 = x0 + w, y0 + d
-    cx = (x0 + x1) / 2
-    sx0, sx1 = cx - seat_w / 2, cx + seat_w / 2
-    sy0, sy1 = y0 + (d - seat_d) / 2, y1 - (d - seat_d) / 2
-
-    def rect(a, b, c, e, st):
-        return ('poly', [(a, b), (c, b), (c, e), (a, e)], st)
-
-    out = [rect(x0, y0, x0 + 90, y1, 'solid'),          # the two A-frames,
-           rect(x1 - 90, y0, x1, y1, 'solid')]          # feet splayed fore-aft
-    out.append(('line', x0 + 45, (y0 + y1) / 2, x1 - 45, (y0 + y1) / 2, 'dash'))
-    out.append(rect(sx0, sy0, sx1, sy1, 'solid'))       # the seat
-    out.append(rect(sx0, sy1 - 140, sx1, sy1, 'soft'))  # its back, on the south
-    for x in (sx0 + 60, sx1 - 60):                      # the four chains
-        for y in (sy0 + 50, sy1 - 50):
-            out.append(('circle', x, y, 34, 'light'))
-    for dy in (-swing, swing):                          # and the travel
-        out.append(rect(sx0, sy0 + dy, sx1, sy1 + dy, 'dash'))
+    cy = (b + d) / 2
+    out = []
+    for x in (a + 250, c - 250):                       # the two table lamps
+        out.append(('circle', x, cy, 130, 'solid'))
+        out.append(('circle', x, cy, 42, 'light'))
+    out.append(('circle', a + 598, cy, 105, 'solid'))   # a bowl,
+    out.append(('circle', a + 598, cy, 60, 'light'))
+    out.append(('poly', [(a + 818, cy - 85), (a + 1098, cy - 85),
+                         (a + 1098, cy + 85), (a + 818, cy + 85)], 'soft'))
+    for k in (1, 2):                                   # and a stack of books
+        x = a + 818 + 280 * k / 3
+        out.append(('line', x, cy - 85, x, cy + 85, 'light'))
     return out
 
 
-def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250):
-    """The great room's rocking chair, turned to face the east deck recliner.
+def rocking_chairs(px=10400, py=4275, s=1500):
+    """THE PAIR.  Two rocking chairs, genuinely parallel, side by side.
 
-    It stands alone in the west half of the room, where there is nothing else
-    at all, and it is TURNED OFF SQUARE ON PURPOSE — the one piece in this
-    plan that is.  The reason is not composition, it is a sightline: aimed at
-    the east recliner's seat centre at (14915, 1872), 5114 away on a diagonal
-    28.7 degrees north of east.  The angle is COMPUTED from the two positions
-    rather than typed, so moving either end re-aims the chair instead of
-    leaving it pointing at where the seat used to be.
+    Parallel is a real constraint and it is why this function exists.  A chair
+    that aims itself at the recliner from its own seat centre cannot have a
+    twin: move the twin 1500 sideways and it aims somewhere else, and the two
+    read as knocked out of line rather than set out.  So the AIM IS COMPUTED
+    ONCE, from the midpoint between the two chairs, and both are given the
+    same vector.  28.0 degrees north of east, and the pair as a unit points at
+    the east recliner's seat centre.
 
-    THE SIGHTLINE WAS CHECKED, not assumed.  Running it across the room it
-    clears the sofa's extended footrests by 555, the planter box by 1712 and
-    the tree canopy by 1599, all to the north, then crosses the deck slider at
-    X 13688 — well inside the 6250 opening — and lands on the recliner.
-    Nothing on that line stands above knee height.
+    (px, py) is that midpoint and s is the seat-centre spacing.  1500 leaves
+    800 of clear floor between the two footprints — close enough that the two
+    of them are one piece of furniture, wide enough for a side table to go in
+    later without moving either chair.
 
-    cx 10430 IS SET BY THE FAMILY ROOM'S DOOR.  The portal in the west pod
-    screen runs Y 3872-4692 and the chair sits square across its way out; at
-    the marked spot it left 810 to get past, so it moved 200 east to leave
-    1010.  Same rule the sofa's east end answers to at the other pod.
+    THE PAIR'S POSITION WAS SOLVED, not chosen.  It runs on the u axis, which
+    at this angle is mostly north-south, and that is the direction the west
+    half of the room actually has room in — the pod glazing and the gallery
+    portal's lane leave only about 3000 across.  Four things bound it and all
+    four are tight:
 
-    At 5114 this is a VIEW, not a conversation: too far to talk across without
-    raising a voice.  That is the right use for it.  The chair looks down the
-    long diagonal of the room and out over the deck, past the fountain, and
-    the recliner is what the eye stops on.
+        deck glass          468 clear of the north-west chair
+        gallery portal lane 351 clear of the south-east chair, so the walk in
+                            from the front door is not touched
+        family room's door  957 of approach, the same rule the sofa's east end
+                            answers to at the other pod
+        kitchen bump        the aft rock travel stays 100 off it
+
+    WHAT EACH ONE SEES IS NOT THE SAME, and that is the point of a pair rather
+    than a row.  The south-east chair looks over the sofa's extended footrests
+    — 450 high, well under a seated eye — and its line lands on the east
+    recliner.  The north-west chair's line leaves through the slider at
+    X 11914 before it ever reaches the sofa, and goes out over open deck just
+    east of the fountain to the parapet planting.  One view into the room, one
+    straight out of it, from two chairs sitting side by side.
+    """
+    fx, fy = 14915 - px, 1872.5 - py
+    n = math.hypot(fx, fy)
+    ux, uy = -fy / n, fx / n                           # across the pair
+    return (rocking_chair(px - s / 2 * ux, py - s / 2 * uy, face=(fx, fy))
+            + rocking_chair(px + s / 2 * ux, py + s / 2 * uy, face=(fx, fy)))
+
+
+def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250, face=None):
+    """One rocking chair, turned off square to face the east deck recliner.
+
+    TURNED OFF SQUARE ON PURPOSE — the only thing in this plan that is.  The
+    reason is not composition, it is a sightline, and with `face` left at None
+    the chair computes its own: straight at the east recliner's seat centre at
+    (14915, 1872).  Computed rather than typed, so moving either end re-aims
+    the chair instead of leaving it pointing at where the seat used to be.
+
+    `face` overrides that with an explicit vector, and it exists so that two
+    of these can be PARALLEL — see rocking_chairs(), which is what the great
+    room actually uses.  Left to aim themselves, two chairs 1500 apart point
+    in two different directions.
 
     Drawn as raw polygons because the symbol library has no rotation in it.
     The rockers run past the seat both ways — 130 behind the back, 150 in
@@ -1033,9 +1055,10 @@ def rocking_chair(cx=10430, cy=4330, W=700, D=750, rock=250):
     the thing that decides how much room it needs.  The dashed outline is the
     seat rocked back 250, which is the travel; keep that end clear.
     """
-    tx, ty = 14915 - cx, 1872.5 - cy                   # aim at the recliner
-    n = math.hypot(tx, ty)
-    vx, vy = tx / n, ty / n                            # out of the back
+    if face is None:                                   # aim at the recliner
+        face = (14915 - cx, 1872.5 - cy)
+    n = math.hypot(*face)
+    vx, vy = face[0] / n, face[1] / n                  # out of the back
     ux, uy = -vy, vx                                   # across the piece
 
     def P(s, t):

@@ -926,13 +926,13 @@ _ONCE = [
     #               planter and tree built on to the east end, paired with the
     #               east deck recliner at 3261 across the slider line.  A
     #               console on its back line and a rug under it.
-    #   west half   the rocking chair on the diagonal, paired with the jhoola
-    #               at 2380 — the closest two seats in the room — both facing
-    #               north up the length of it.
+    #   west half   TWO rocking chairs, genuinely parallel, 1500 apart with
+    #               800 of clear floor between them, both on the same 28.0
+    #               degree line at the east recliner.
     #
-    # The pieces themselves are in retrofit: great_room_sofa(), rocking_chair()
-    # and jhoola().  The rug and the console are the only two here, because
-    # they are plain rectangles that the symbol library already draws.
+    # The pieces themselves are in retrofit: great_room_sofa(),
+    # rocking_chairs() and console_top().  The rug and the console are the
+    # only two here, because they are shapes the symbol library already draws.
     #
     # THE RUG IS 3000 x 2000 — a stock size, not a number invented to fit — and
     # the WHOLE assembly stands on it, sofa and planter alike, 250 clear each
@@ -946,8 +946,9 @@ _ONCE = [
     # every time you put a glass down on it.
     ('rug',     12057, 3037, 15057, 5037,
      'rug  ·  3000 x 2000, the whole sofa + planter on it, 250 each side'),
-    ('joinery', 12307, 5037, 13907, 5387,
-     "console  ·  1600 x 350, on the sofa's back line, lamps"),
+    ('counter-b', 12307, 5037, 13907, 5387,
+     "console  ·  1600 x 350, arched both ends, on the sofa's back line  ·  "
+     "two lamps, books and a bowl on it"),
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

@@ -285,9 +285,9 @@ def main():
         prim(p)
     for p in R.great_room_sofa():      # the 2-seater + the tree on its end
         prim(p)
-    for p in R.rocking_chair():        # turned to look at the east recliner
+    for p in R.rocking_chairs():       # the parallel pair, west half
         prim(p)
-    for p in R.jhoola():               # in the south-west quadrant, facing north
+    for p in R.console_top():          # lamps, books and a bowl on the console
         prim(p)
     gx, gy, gr, gt, _g = D.GALLERY
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:

@@ -240,6 +240,7 @@ def main():
                else 'PROP-SCREEN' if p[-1] == 'wood'
                else 'PROP-FLOOR' if p[-1] in ('plank', 'board', 'stone', 'joint')
                else 'PROP-LIGHT' if p[-1] == 'sconce'
+               else 'PROP-FLOOR' if p[-1] == 'ring'
                else 'PROP-FURN')
         if p[0] == 'rect':
             box(msp, p[1], p[2], p[3], p[4], lyr)

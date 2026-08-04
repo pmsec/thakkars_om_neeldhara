@@ -1400,6 +1400,47 @@ Bézier is not uniform — the same span of t buys more door low down the curve
 than high up — so setting both to 0.18 of t would have given two different
 doors. Solved instead for the t-range that reproduces the original 823 mm.
 
+### The rug is a slice of timber
+
+Full room width, and cut like a cross-sawn log — an irregular slab outline
+with growth rings inside it and the pith off centre.
+
+| | mm | ft |
+|---|---|---|
+| outline | 5604 × 2500 | 18′-5″ × 8′-2″ |
+| border to the west pod screen | 500 | 1′-8″ |
+| border to the east pod screen | 518 | 1′-8″ |
+| growth rings | 15 | |
+| the pith | at (12744, 4350) | |
+
+**The width is set by the room.** Across the rug's own band the great room is
+**6623 mm (21′-9″)** clear between the two pod screens, and the screens are
+exact mirrors, so a rug centred on X 12240 with 500 mm off each lands at 5604
+without any fudging.
+
+**The outline is derived, not drawn**, because a shape struck from a formula
+cuts the furniture — the seating fills this envelope and the sofa's back sits
+exactly on the rug's south line. So the curve is built from what it has to
+hold: the **convex hull of every seat**, plus a 250 mm border, capped at the
+envelope, then swung out towards that envelope on three harmonics. It bulges
+where there is room and pulls in where the furniture allows, and it cannot cut
+a seat however the harmonics are set.
+
+**Three things had to be solved rather than tuned, each caught on a render:**
+
+1. Taking the raw per-angle maximum of the furniture gave a boundary with the
+   seating's own notches in it, and rings struck off that read as a **contour
+   map of the layout**. The convex hull of the same points is smooth and still
+   contains everything by definition.
+2. Smoothing alone shaves the curve inside what it must cover; clamping alone
+   leaves the furniture's corners showing as kinks. Alternating the two ninety
+   times converges on a curve that is smooth **and** never cuts a seat.
+3. The pith started a third of the way east and the rings **crowded into a
+   band at one end and thinned to nothing at the other**. Brought in to a
+   fifth, they read as timber.
+
+Every seat — recliner, planter, sofa and rocking chair — sits fully on it.
+
 ### The group set out to standard, and what would not go
 
 The rocking chair moved to **(13080, 3500)** and the rug grew to **4600 × 2500

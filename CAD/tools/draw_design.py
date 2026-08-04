@@ -241,7 +241,8 @@ def main():
              'board': ('none', '#cfb896', 0.7),
              'stone': ('#e3e3e0', '#c9c8c2', 0.9),
              'joint': ('none', '#d5d4cf', 0.7),
-             'sconce': ('#f4e7c9', '#a8862f', 1.1)}
+             'sconce': ('#f4e7c9', '#a8862f', 1.1),
+             'ring': ('none', '#c9b393', 0.8)}
 
     def prim(p):
         st = p[-1]

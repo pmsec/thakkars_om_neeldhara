@@ -1131,15 +1131,48 @@ def great_room_rug(shape='cloud', cx=12240, cy=4287, W=5622, H=2500, n=360):
     def sq(t):                                         # the unit square
         return 1.0 / max(abs(math.cos(t)), abs(math.sin(t)))
 
-    lo = [0.0] * n
-    for x, y in hold:                                  # what must be covered
-        u, v = (x - cx) / A, (y - cy) / B
-        k = int(round(math.degrees(math.atan2(v, u)) % 360 / 360 * n)) % n
-        lo[k] = max(lo[k], math.hypot(u, v))
+    # THE BOUND IS THE FURNITURE'S CONVEX HULL, not the furniture itself.  A
+    # log slice is a convex thing; the raw per-angle maximum gave a boundary
+    # with the seating's own notches in it, and rings struck off that read as
+    # a contour map of the layout rather than as timber.  The hull of the same
+    # points is convex, and still contains every piece by definition.
+    pn = sorted(set(((x - cx) / A, (y - cy) / B) for x, y in hold))
 
-    sm = [max(lo[(k + d) % n] for d in range(-14, 15)) for k in range(n)]
-    for _ in range(30):                                # smooth out the kinks
+    def half(ps):
+        h = []
+        for q in ps:
+            while len(h) >= 2 and ((h[-1][0] - h[-2][0]) * (q[1] - h[-2][1])
+                                   - (h[-1][1] - h[-2][1]) * (q[0] - h[-2][0])) <= 0:
+                h.pop()
+            h.append(q)
+        return h[:-1]
+
+    hull = half(pn) + half(pn[::-1])
+
+    lo = [0.0] * n
+    for k in range(n):                                 # ray out to the hull
+        t = 2 * math.pi * k / n
+        dx, dy = math.cos(t), math.sin(t)
+        best = 0.0
+        for i in range(len(hull)):
+            ax, ay = hull[i]
+            bx, by = hull[(i + 1) % len(hull)]
+            den = dx * (by - ay) - dy * (bx - ax)
+            if abs(den) < 1e-12:
+                continue
+            u = (ax * (by - ay) - ay * (bx - ax)) / den
+            if u <= 0:
+                continue
+            e = ((u * dx - ax) * (bx - ax) + (u * dy - ay) * (by - ay))
+            L = (bx - ax) ** 2 + (by - ay) ** 2
+            if -1e-9 <= e <= L + 1e-9:
+                best = max(best, u)
+        lo[k] = best
+
+    sm = list(lo)
+    for _ in range(20):                                # take the kinks out
         sm = [(sm[(k - 1) % n] + 2 * sm[k] + sm[(k + 1) % n]) / 4 for k in range(n)]
+    sm = [max(sm[k], lo[k]) for k in range(n)]
     # the border, but never past the envelope — on the south the rug's edge IS
     # the sofa's back line, so there is no room for a border there and none is
     # forced.  min() against the square is what keeps the rug inside the room.
@@ -1177,11 +1210,51 @@ def great_room_rug(shape='cloud', cx=12240, cy=4287, W=5622, H=2500, n=360):
             rad = [min(max(rad[k], sm[k]), sq(2 * math.pi * k / n))
                    for k in range(n)]
 
-    out = []
-    for k in range(n):
+    # THE BARK.  Three high harmonics at a few per cent, added after the
+    # smoothing and clamped straight back above the bound, so the edge reads
+    # as a sawn log rather than as a drawn curve and still cuts nothing.
+    if shape != 'ellipse':
+        for k in range(n):
+            t = 2 * math.pi * k / n
+            bark = (1 + 0.014 * math.cos(11 * t + 0.4)
+                      + 0.009 * math.cos(17 * t - 1.1)
+                      + 0.006 * math.cos(23 * t + 2.2))
+            rad[k] = min(max(rad[k] * bark, sm[k]), sq(t))
+
+    def P(k):
         t = 2 * math.pi * k / n
-        out.append((cx + A * rad[k] * math.cos(t), cy + B * rad[k] * math.sin(t)))
-    return [('poly', out, 'soft')]
+        return (cx + A * rad[k] * math.cos(t), cy + B * rad[k] * math.sin(t))
+
+    out = [('poly', [P(k) for k in range(n)], 'soft')]
+    if shape == 'ellipse':
+        return out
+
+    # THE GROWTH RINGS.  Each is the outline drawn down towards the pith, and
+    # THE PITH IS OFF CENTRE — at (12744, 4350), a fifth of the length east of
+    # the middle.  A slice with its pith dead centre reads as a drawn target;
+    # every real log is eccentric, because a tree puts on more wood on one
+    # side than the other.  Pushed further out than this the rings crowd into
+    # a band at one end and thin to nothing at the other, which is a different
+    # fault and the one the first attempt had.
+    #
+    # They inherit the bark's wobble, being struck off the same outline, and
+    # each carries a little of its own so no two nest perfectly.  Spacing is
+    # even with a small per-ring variation — real rings vary by season, not by
+    # a factor of five.
+    px, py = cx + A * 0.18, cy + B * 0.05
+    nr = 15
+    for j in range(nr):
+        u = j / (nr - 1.0)
+        base = 0.15 + 0.80 * u + 0.017 * math.sin(4.7 * j + 1.3)
+        ring = []
+        for k in range(0, n, 2):
+            t = 2 * math.pi * k / n
+            g = base * (1 + 0.021 * math.cos(3 * t + 0.8 * j)
+                          + 0.013 * math.cos(5 * t - 1.4 * j))
+            x, y = P(k)
+            ring.append((px + g * (x - px), py + g * (y - py)))
+        out.append(('poly', ring, 'ring'))
+    return out
 
 
 def console_top(a=10878, b=5537, c=12478, d=5887):

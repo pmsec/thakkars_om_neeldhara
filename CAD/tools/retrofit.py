@@ -1089,20 +1089,186 @@ def apse_sconces(half=6.0, plate=45, arm=120, reach=190):
     return out
 
 
-# THERE IS NO RUG IN THE GREAT ROOM.  One was drawn several ways — a
-# rectangle, a stadium, a superellipse, a pebble, and finally a slice of
-# timber with fifteen growth rings and the pith off centre — and then taken
-# out altogether.  The floor is boarded on one grid that runs unbroken from
-# the apse out through the slider on to the deck, and every rug laid on it
-# cut that run in half.  What was gained was a shape; what was lost was the
-# one move that makes the great room and the deck read as a single room.
-#
-# Worth keeping from it, if a rug is ever wanted again: the outline has to be
-# DERIVED rather than drawn.  The seating fills the room's width and the
-# sofa's back sits exactly on the rug's south line, so any free curve cuts a
-# seat.  Take the convex hull of the seats, add a border, cap it at the
-# envelope, and swing out towards that envelope on a few harmonics — smooth
-# and clamp alternately, or smoothing shaves it back inside what it must hold.
+def great_room_rug(shape='cloud', cx=12240, cy=4287, W=5622, H=2500, n=360):
+    """The great room's rug — full width, symmetric in the room, cloud-shaped.
+
+    THE WIDTH IS SET BY THE ROOM, not by the furniture.  Across the rug's own
+    band the great room is 6623 clear between the two pod screens, and the two
+    screens are exact mirrors, so a rug centred on X 12240 with 500 off each
+    of them lands at 5622 x 2500 without any fudging.  500 leaves enough
+    boarded floor showing to read as a border on both sides.
+
+    THE OUTLINE IS DERIVED, NOT DRAWN.  A cloud shape struck from a formula
+    cuts the furniture — the seating fills this envelope and the sofa's back
+    sits exactly on the rug's south line, so a free curve loses corners.  So
+    the curve is built from what it has to hold:
+
+      1  work in normalised space, u = (x-cx)/(W/2), v = (y-cy)/(H/2), so the
+         envelope is a unit square and the anisotropy drops out
+      2  r_lo(t) — the furthest any piece of furniture reaches at that angle,
+         plus a 250 border, smoothed so the outline has no kinks in it
+      3  r_hi(t) — the envelope itself, the unit square
+      4  r(t) = r_lo + (r_hi - r_lo) * f(t), where f swings between 0 and 1 on
+         three harmonics
+
+    So the rug BULGES where there is room and PULLS IN where the furniture
+    lets it, and it cannot cut a seat however the harmonics are set: r is
+    never below r_lo.  The lobes and the notch are real consequences of the
+    layout rather than decoration laid over it.
+
+    shape='ellipse' gives the plain version for comparison.
+    """
+    o = great_room_sofa()
+    hold = ([(9673, 3532), (10573, 3532), (10573, 4332), (9673, 4332)]
+            + [e for e in o if e[0] == 'poly'][3][1]
+            + o[0][1] + o[1][1] + o[2][1]
+            + [q for e in rocking_chair(13080, 3500, face=(10123 - 13080,
+                                                           3932 - 3500))
+               for q in e[1]]
+            + [q for e in armchair(13800, 5050, (11640 - 13800, 4400 - 5050))
+               for q in e[1]]
+            + [(9800, 3050), (10250, 3050), (10250, 3500), (9800, 3500)]
+            + [(13900, 3450), (14350, 3450), (14350, 3900), (13900, 3900)]
+            + [(12760, 4950), (13160, 4950), (13160, 5350), (12760, 5350)])
+    A, B = W / 2, H / 2
+    MARGIN = 250.0
+
+    def sq(t):                                         # the unit square
+        return 1.0 / max(abs(math.cos(t)), abs(math.sin(t)))
+
+    # THE BOUND IS THE FURNITURE'S CONVEX HULL, not the furniture itself.  A
+    # log slice is a convex thing; the raw per-angle maximum gave a boundary
+    # with the seating's own notches in it, and rings struck off that read as
+    # a contour map of the layout rather than as timber.  The hull of the same
+    # points is convex, and still contains every piece by definition.
+    pn = sorted(set(((x - cx) / A, (y - cy) / B) for x, y in hold))
+
+    def half(ps):
+        h = []
+        for q in ps:
+            while len(h) >= 2 and ((h[-1][0] - h[-2][0]) * (q[1] - h[-2][1])
+                                   - (h[-1][1] - h[-2][1]) * (q[0] - h[-2][0])) <= 0:
+                h.pop()
+            h.append(q)
+        return h[:-1]
+
+    hull = half(pn) + half(pn[::-1])
+
+    lo = [0.0] * n
+    for k in range(n):                                 # ray out to the hull
+        t = 2 * math.pi * k / n
+        dx, dy = math.cos(t), math.sin(t)
+        best = 0.0
+        for i in range(len(hull)):
+            ax, ay = hull[i]
+            bx, by = hull[(i + 1) % len(hull)]
+            den = dx * (by - ay) - dy * (bx - ax)
+            if abs(den) < 1e-12:
+                continue
+            u = (ax * (by - ay) - ay * (bx - ax)) / den
+            if u <= 0:
+                continue
+            e = ((u * dx - ax) * (bx - ax) + (u * dy - ay) * (by - ay))
+            L = (bx - ax) ** 2 + (by - ay) ** 2
+            if -1e-9 <= e <= L + 1e-9:
+                best = max(best, u)
+        lo[k] = best
+
+    sm = list(lo)
+    for _ in range(20):                                # take the kinks out
+        sm = [(sm[(k - 1) % n] + 2 * sm[k] + sm[(k + 1) % n]) / 4 for k in range(n)]
+    sm = [max(sm[k], lo[k]) for k in range(n)]
+    # the border, but never past the envelope — on the south the rug's edge IS
+    # the sofa's back line, so there is no room for a border there and none is
+    # forced.  min() against the square is what keeps the rug inside the room.
+    sm = [min(sm[k] + MARGIN / A, sq(2 * math.pi * k / n)) for k in range(n)]
+
+    def brk(t):
+        return (0.62 * math.cos(2 * t) + 0.26 * math.cos(3 * t + math.pi / 2)
+                + 0.12 * math.cos(5 * t + math.pi / 2))
+    _b = [brk(2 * math.pi * k / n) for k in range(n)]
+    BMIN, BMAX = min(_b), max(_b)
+
+    rad = []
+    for k in range(n):
+        t = 2 * math.pi * k / n
+        hi = sq(t)
+        if shape == 'ellipse':
+            rad.append(1.0)
+            continue
+        # PHASED SO BOTH ENDS ARE LOBES.  cos(2t) peaks at t = 0 and t = pi,
+        # due east and due west, so the rug reaches its envelope on both sides
+        # and the border reads the same 500 either way.  The odd harmonics
+        # carry a quarter-turn of phase, putting their zeros at those same two
+        # points, so they wobble the flanks without pulling the ends in.
+        f = (brk(t) - BMIN) / (BMAX - BMIN) * 0.78 + 0.22
+        rad.append(min(sm[k] + (hi - sm[k]) * f, hi))
+
+    # SMOOTH, THEN PUT IT BACK ABOVE THE BOUND, AND REPEAT.  Smoothing alone
+    # would shave the curve inside what it has to cover; clamping alone leaves
+    # the furniture's own corners showing as kinks in the rug.  Alternating the
+    # two converges on a curve that is smooth AND never cuts a seat.
+    if shape != 'ellipse':
+        for _ in range(90):
+            rad = [(rad[(k - 1) % n] + 2 * rad[k] + rad[(k + 1) % n]) / 4
+                   for k in range(n)]
+            rad = [min(max(rad[k], sm[k]), sq(2 * math.pi * k / n))
+                   for k in range(n)]
+
+    # THE BARK.  Three high harmonics at a few per cent, added after the
+    # smoothing and clamped straight back above the bound, so the edge reads
+    # as a sawn log rather than as a drawn curve and still cuts nothing.
+    if shape != 'ellipse':
+        for k in range(n):
+            t = 2 * math.pi * k / n
+            bark = (1 + 0.014 * math.cos(11 * t + 0.4)
+                      + 0.009 * math.cos(17 * t - 1.1)
+                      + 0.006 * math.cos(23 * t + 2.2))
+            rad[k] = min(max(rad[k] * bark, sm[k]), sq(t))
+
+    def P(k):
+        t = 2 * math.pi * k / n
+        return (cx + A * rad[k] * math.cos(t), cy + B * rad[k] * math.sin(t))
+
+    out = [('poly', [P(k) for k in range(n)], 'soft')]
+    if shape == 'ellipse':
+        return out
+
+    # THE BORDER.  A band round the edge with a leaf pattern in it, which is
+    # what the reference rug has and what a plain outline cannot say.  The
+    # band's inner edge is the outline drawn down to 0.74 towards the rug's
+    # own centre, so it follows every lobe instead of being a rectangle
+    # inside a cloud.
+    inner = []
+    for k in range(0, n, 2):
+        x, y = P(k)
+        inner.append((cx + 0.74 * (x - cx), cy + 0.74 * (y - cy)))
+    out.append(('poly', inner, 'ring'))
+
+    # the leaves, laid along the band and turned to follow it.  Each is two
+    # arcs meeting at a point at both ends — a leaf, not an ellipse — and they
+    # alternate side to side of the band's centre line so the run reads as a
+    # trailing stem rather than as beads on a string.
+    NL = 46
+    for j in range(NL):
+        k = int(j * n / NL) % n
+        x, y = P(k)
+        gx, gy = x - cx, y - cy
+        band = 0.87 + 0.055 * (1 if j % 2 else -1)
+        bx, by = cx + band * gx, cy + band * gy
+        ang = math.atan2(gy, gx) + math.pi / 2 + (0.5 if j % 2 else -0.5)
+        L, Wd = 165.0, 62.0
+        ux_, uy_ = math.cos(ang), math.sin(ang)
+        vx_, vy_ = -uy_, ux_
+        leaf = []
+        for side in (1, -1):
+            for m in range(9):
+                f = -1 + 2 * m / 8.0
+                w = side * Wd * (1 - f * f) ** 0.75
+                leaf.append((bx + ux_ * L / 2 * f + vx_ * w,
+                             by + uy_ * L / 2 * f + vy_ * w))
+        out.append(('poly', leaf, 'leaf'))
+    return out
 
 
 def console_top(a=10878, b=5537, c=12478, d=5887):
@@ -1157,6 +1323,48 @@ def console_top(a=10878, b=5537, c=12478, d=5887):
 
     out.append(('circle', *Q(1420, 0), 90, 'solid'))   # and a bowl
     out.append(('circle', *Q(1420, 0), 50, 'light'))
+    return out
+
+
+def armchair(cx, cy, face, W=750, D=780, r=90.0):
+    """One armchair, turned to face a given direction.
+
+    The same construction as the rocking chair — struck in the piece's own
+    frame and then mapped — so it stays a true fillet at any angle.  A back
+    band on the far side and two arms, which is what tells you at a glance
+    which way a chair is pointing; without them a rotated chair in plan is
+    just a rounded square.
+    """
+    n = math.hypot(*face)
+    vx, vy = face[0] / n, face[1] / n                  # out of the back
+    ux, uy = -vy, vx                                   # across the piece
+
+    def P(s, t):
+        return (cx + ux * s + vx * t, cy + uy * s + vy * t)
+
+    def quad(s0, t0, s1, t1, style, rr=r, ease='all'):
+        s0, s1 = min(s0, s1), max(s0, s1)
+        t0, t1 = min(t0, t1), max(t0, t1)
+        rr = min(rr, min(s1 - s0, t1 - t0) * 0.45)
+        pts = []
+        for nm, cs, ct, a0, a1, sq in (
+                ('hi', s1 - rr, t1 - rr, 0, 90, (s1, t1)),
+                ('hi', s0 + rr, t1 - rr, 90, 180, (s0, t1)),
+                ('lo', s0 + rr, t0 + rr, 180, 270, (s0, t0)),
+                ('lo', s1 - rr, t0 + rr, -90, 0, (s1, t0))):
+            if ease in ('all', nm):
+                pts += [P(cs + math.cos(math.radians(k)) * rr,
+                          ct + math.sin(math.radians(k)) * rr)
+                        for k in range(a0, a1 + 1, 6)]
+            else:
+                pts.append(P(*sq))
+        return ('poly', pts, style)
+
+    out = [quad(-W / 2, -D / 2, W / 2, D / 2, 'solid'),
+           quad(-W / 2, -D / 2, W / 2, -D / 2 + 165, 'soft', ease='lo')]
+    for side in (-1, 1):                               # the two arms
+        s = side * (W / 2 - 60)
+        out.append(quad(s - 60, -D / 2 + 60, s + 60, D / 2 - 40, 'soft', 55))
     return out
 
 

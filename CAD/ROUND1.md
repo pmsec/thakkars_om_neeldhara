@@ -1400,23 +1400,46 @@ Bézier is not uniform — the same span of t buys more door low down the curve
 than high up — so setting both to 0.18 of t would have given two different
 doors. Solved instead for the t-range that reproduces the original 823 mm.
 
-### There is no rug in the great room
+### The rug comes back, with a leaf border — and an armchair with it
 
-One was drawn several ways — a rectangle, a stadium, a superellipse, a pebble,
-and finally a slice of cross-sawn timber with fifteen growth rings and the
-pith off centre — and then taken out altogether.
+The rug is a **cloud, 5622 × 2500 mm (18′-5″ × 8′-2″)**, with a border band
+whose inner edge is the outline drawn down to 0.74 towards the rug's own
+centre, so it follows every lobe instead of being a rectangle inside a cloud.
+**46 leaves** run along that band, alternating either side of its centre line
+so it reads as a trailing stem rather than beads on a string.
 
-**The floor is boarded on one grid that runs unbroken from the apse out
-through the slider on to the deck**, and every rug laid on it cut that run in
-half. What each version gained was a shape; what all of them lost was the one
-move that makes the great room and the deck read as a single room.
+**The outline is derived, not drawn.** It is the convex hull of everything
+that must sit on it, plus a 250 mm border, capped at the room's envelope, then
+swung out towards that envelope on three harmonics. Add a chair and the rug
+grows round it — the two are not set out independently.
 
-**Worth keeping from it, if a rug is ever wanted again:** the outline has to be
-*derived*, not drawn. The seating fills the room's width and the sofa's back
-sits exactly on the rug's south line, so any free curve cuts a seat. Take the
-convex hull of the seats, add a border, cap it at the envelope, and swing out
-towards that envelope on a few harmonics — smoothing and clamping alternately,
-because smoothing alone shaves the curve back inside what it has to hold.
+**One armchair, at (13800, 5050)**, turned to face the group's centre. It
+closes the east side, which was the one open flank.
+
+| seat to seat | mm | ft | |
+|---|---|---|---|
+| recliner ↔ rocking chair | 2988 | 9′-10″ | in band |
+| sofa west ↔ armchair | 2522 | 8′-3″ | in band |
+| sofa west ↔ rocking chair | 2401 | 7′-11″ | in band |
+| recliner ↔ sofa east | 2271 | 7′-5″ | |
+| sofa east ↔ rocking chair | 1877 | 6′-2″ | |
+| sofa east ↔ armchair | 1722 | 5′-8″ | |
+| rocking chair ↔ armchair | 1709 | 5′-7″ | |
+| recliner ↔ sofa west | 1633 | 5′-4″ | |
+| recliner ↔ armchair | 3843 | 12′-7″ | opposite ends |
+
+**A SECOND armchair does not fit, and that was searched rather than assumed.**
+Every position in the room was tested at 100 mm steps against: 420 mm off the
+deck glass and both pod screens, 450 mm clear of every other piece, and at
+least two existing seats between 1700 and 3200 mm. 245 positions pass singly.
+No two of them are 1900 mm apart without overlapping. The great room is 407 sq
+ft but it is long and shallow — the sofa, planter and console already take the
+whole south of the west half, and what is left will hold one chair.
+
+**Three side tables**, 400–450 mm square, one at the recliner, one at the
+rocking chair and one between the sofa's east end and the armchair. That was
+the thing the plan was actually missing: somewhere to put a cup down without
+leaning past the person next to you.
 
 ### The group set out to standard, and what would not go
 

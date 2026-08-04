@@ -965,6 +965,16 @@ _ONCE = [
     # THE RUG IS NOT HERE ANY MORE.  It is no longer a rectangle, so it is
     # drawn by retrofit.great_room_rug() — full width of the room at 5622,
     # centred, with 500 of boarded floor showing off each pod screen.
+    # A SIDE TABLE AT EVERY SEAT, which is what the reference has and what
+    # the plan was missing: somewhere to put a cup down without leaning past
+    # the person next to you.  400-450 square, which is as big as any of the
+    # three gaps they sit in will take.
+    ('sidetable', 9800, 3050, 10250, 3500,
+     "side table  ·  450 square, north of the recliner"),
+    ('sidetable', 13900, 3450, 14350, 3900,
+     "side table  ·  450 square, east of the rocking chair"),
+    ('sidetable', 12760, 4950, 13160, 5350,
+     "side table  ·  400 square, between the sofa's east end and the armchair"),
     ('recliner-w', 9673, 3532, 10573, 4332,
      'recliner  ·  900 x 800, single, standing 305 off the planter\'s north '
      'face  ·  the L\'s west leg, facing east across the group'),

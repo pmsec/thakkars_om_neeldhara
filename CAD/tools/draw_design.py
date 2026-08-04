@@ -240,7 +240,8 @@ def main():
              'stone': ('#e3e3e0', '#c9c8c2', 0.9),
              'joint': ('none', '#d5d4cf', 0.7),
              'sconce': ('#f4e7c9', '#a8862f', 1.1),
-             'ring': ('none', '#c9b393', 0.8)}
+             'ring': ('none', '#c9b393', 0.8),
+             'leaf': ('#dfe3d4', '#a9b598', 0.7)}
 
     def prim(p):
         st = p[-1]
@@ -267,6 +268,8 @@ def main():
                        f'stroke-width="{lw}"{dash}/>')
 
     for p in R.wood_floor(island=ISLAND):  # great room + deck bay, one board grid
+        prim(p)
+    for p in R.great_room_rug():       # full width, under everything else
         prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)
@@ -305,7 +308,9 @@ def main():
     for p in R.great_room_sofa():      # the 2-seater + the tree on its end
         prim(p)
     for p in R.rocking_chair(13080, 3500, face=(10123 - 13080, 3932 - 3500)):
-        prim(p)                        # the one that closes the L, west half
+        prim(p)
+    for p in R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)):
+        prim(p)                        # closes the group's east side                        # the one that closes the L, west half
     for p in R.console_top():          # lamps, books and a bowl on the console
         prim(p)
     for p in R.apse_sconces():         # the two wall lights on the apse

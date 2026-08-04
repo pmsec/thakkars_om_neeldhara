@@ -240,7 +240,7 @@ def main():
                else 'PROP-SCREEN' if p[-1] == 'wood'
                else 'PROP-FLOOR' if p[-1] in ('plank', 'board', 'stone', 'joint')
                else 'PROP-LIGHT' if p[-1] == 'sconce'
-               else 'PROP-FLOOR' if p[-1] == 'ring'
+               else 'PROP-FLOOR' if p[-1] in ('ring', 'leaf')
                else 'PROP-FURN')
         if p[0] == 'rect':
             box(msp, p[1], p[2], p[3], p[4], lyr)
@@ -252,6 +252,8 @@ def main():
             poly(msp, p[1], lyr)
 
     for p in R.wood_floor():           # great room + deck bay, one board grid
+        prim(p)
+    for p in R.great_room_rug():       # full width, under everything else
         prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)
@@ -290,7 +292,9 @@ def main():
     for p in R.great_room_sofa():      # the 2-seater + the tree on its end
         prim(p)
     for p in R.rocking_chair(13080, 3500, face=(10123 - 13080, 3932 - 3500)):
-        prim(p)                        # the one that closes the L, west half
+        prim(p)
+    for p in R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)):
+        prim(p)                        # closes the group's east side                        # the one that closes the L, west half
     for p in R.console_top():          # lamps, books and a bowl on the console
         prim(p)
     for p in R.apse_sconces():         # the two wall lights on the apse

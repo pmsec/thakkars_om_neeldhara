@@ -35,9 +35,11 @@ function setKey(name: string, v: string): void {
   localStorage.setItem(KEYS_LS, JSON.stringify({ ...keys(), [name]: v.trim() }))
 }
 
+// every room with a real floor — baths (wet), entry (circulation) and the
+// store included, so materials can go anywhere; only voids are excluded
 const rooms = getModel().rooms
-  .filter((r) => r.def.category === 'habitable' || r.def.category === 'service' || r.def.category === 'outdoor')
-  .map((r) => ({ id: r.id, name: r.name }))
+  .filter((r) => r.def.category !== 'void')
+  .map((r) => ({ id: r.id, name: r.name, finish: (r.def.finish ?? '').toLowerCase() }))
 
 const row: React.CSSProperties = { display: 'flex', gap: 6, alignItems: 'center', margin: '6px 0' }
 
@@ -77,8 +79,8 @@ export function StylePanel(): React.ReactElement {
 
   /** Extract ONE palette entry as a tile, image-to-image from the reference
    * render — the model reproduces the material AS SHOWN, not from words. */
-  const extractTile = async (entry: { surface: string; prompt: string }): Promise<boolean> => {
-    if (!paletteRef || !imgModel) return false
+  const extractTile = async (entry: { surface: string; prompt: string }): Promise<number | null> => {
+    if (!paletteRef || !imgModel) return null
     const k = keys()[imgProvider]
     const [head, b64] = paletteRef.split(',', 2)
     const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/jpeg'
@@ -94,12 +96,61 @@ export function StylePanel(): React.ReactElement {
     })
     const j = (await r.json()) as { image?: string; mime?: string; error?: string }
     if (!r.ok || !j.image) throw new Error(j.error ?? `HTTP ${r.status}`)
-    await materialLib.save({
+    const id = await materialLib.save({
       at: Date.now(), note: `${entry.surface} — from render`, provider: imgProvider,
       model: imgModel, prompt: entry.prompt,
       image: `data:${j.mime ?? 'image/png'};base64,${j.image}`,
     })
-    return true
+    return id
+  }
+
+  /**
+   * ONE BUTTON, first iteration: read the approved render's look onto the
+   * real model. The main floor material covers every wood-finish room, a
+   * stone material (when the render has one) covers the stone-finish rooms,
+   * the wall material covers the walls. Every tile lands in the library, so
+   * the manual per-room controls below take over from there.
+   */
+  const autoApplyLook = async (): Promise<void> => {
+    const floorEntries = palette.filter((e) => /floor/i.test(e.surface))
+    const wood = floorEntries.find((e) => /wood|walnut|oak|plank|timber|teak/i.test(e.prompt)) ?? floorEntries[0]
+    const stone = floorEntries.find((e) => e !== wood && /stone|marble|tile|terrazzo|concrete/i.test(e.prompt))
+      ?? palette.find((e) => !/floor/i.test(e.surface) && /^stone|stone$/i.test(e.surface))
+    const wall = palette.find((e) => /wall|plaster|paint/i.test(e.surface))
+    if (!wood && !wall) {
+      setBusy('Nothing to auto-apply: the palette has no floor or wall entry.')
+      return
+    }
+    try {
+      const a = getAssign()
+      let step = 0
+      const total = [wood, stone, wall].filter(Boolean).length
+      if (wood) {
+        setBusy(`Auto-applying… ${++step}/${total}: main floor`)
+        const id = await extractTile(wood)
+        if (id) a.floors['*'] = id
+      }
+      if (stone) {
+        setBusy(`Auto-applying… ${++step}/${total}: stone floors`)
+        const id = await extractTile(stone)
+        if (id) {
+          for (const r of rooms) {
+            if (r.finish.includes('stone') || r.finish.includes('vinyl')) a.floors[r.id] = id
+          }
+        }
+      }
+      if (wall) {
+        setBusy(`Auto-applying… ${++step}/${total}: walls`)
+        const id = await extractTile(wall)
+        if (id) a.walls = id
+      }
+      setAssign(a)
+      await refresh()
+      bump()
+      setBusy('')
+    } catch (err) {
+      setBusy(`Failed: ${err instanceof Error ? err.message : String(err)}`)
+    }
   }
 
   const extractOne = async (entry: { surface: string; prompt: string }): Promise<void> => {
@@ -369,8 +420,17 @@ export function StylePanel(): React.ReactElement {
                     <span>
                       {paletteRef && (
                         <button
+                          title="First pass in one click: floor material to every wood room, stone to the stone rooms, wall material to the walls — then fine-tune per room below"
+                          disabled={busy.startsWith('Auto') || busy.startsWith('Extracting')}
+                          onClick={() => void autoApplyLook()}
+                        >
+                          Auto-apply this look
+                        </button>
+                      )}{' '}
+                      {paletteRef && (
+                        <button
                           title="Extract every material as a tile, image-to-image from the render itself"
-                          disabled={busy.startsWith('Extracting')}
+                          disabled={busy.startsWith('Extracting') || busy.startsWith('Auto')}
                           onClick={() => void extractAllTiles()}
                         >
                           Extract all as tiles

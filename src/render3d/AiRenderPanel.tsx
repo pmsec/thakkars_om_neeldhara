@@ -71,14 +71,12 @@ export function AiRenderPanel({
     async (p: Provider, k: Keys): Promise<void> => {
       setModels([])
       setModel('')
-      if (!k[p]) {
-        setModelsMsg('Add the API key below, then load models.')
-        return
-      }
       setModelsMsg('Loading models…')
       try {
+        // a key typed here wins; with none, the server falls back to the
+        // keys saved in Vercel env vars — set once, never re-entered
         const r = await fetch(`/api/ai-models?provider=${p}`, {
-          headers: { 'x-provider-key': k[p] },
+          headers: k[p] ? { 'x-provider-key': k[p] } : {},
         })
         const j = (await r.json()) as { models?: string[]; error?: string }
         if (!r.ok || !j.models) throw new Error(j.error ?? `HTTP ${r.status}`)
@@ -106,7 +104,10 @@ export function AiRenderPanel({
     const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/jpeg'
     const r = await fetch('/api/ai-render', {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-provider-key': keys[provider] },
+      headers: {
+        'content-type': 'application/json',
+        ...(keys[provider] ? { 'x-provider-key': keys[provider] } : {}),
+      },
       body: JSON.stringify({ provider, model, prompt: thePrompt, image: b64, mime }),
     })
     const j = (await r.json()) as { image?: string; mime?: string; error?: string }
@@ -120,8 +121,8 @@ export function AiRenderPanel({
       window.alert('The view is not ready to capture yet.')
       return
     }
-    if (!keys[provider] || !model) {
-      window.alert('Add the API key and pick a model first.')
+    if (!model) {
+      window.alert('Pick a model first (load the list with ↻).')
       return
     }
     setBusy(true)
@@ -258,8 +259,8 @@ export function AiRenderPanel({
             {showKeys && (
               <div>
                 <p style={{ color: '#6d6558', margin: '6px 0' }}>
-                  Stored only in this browser. Sent per-request to the provider via our proxy —
-                  never saved on any server.
+                  Optional. A key typed here stays in this browser and wins; leave empty to
+                  use the keys saved server-side (OPENAI_API_KEY / GOOGLE_API_KEY in Vercel).
                 </p>
                 {(['openai', 'google'] as const).map((p) => (
                   <div style={row} key={p}>

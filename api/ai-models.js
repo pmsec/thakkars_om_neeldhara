@@ -2,19 +2,23 @@
  * GET /api/ai-models?provider=openai|google — the provider's model list,
  * filtered to image-generation models only.
  *
- * The API key arrives per-request in the `x-provider-key` header, entered by
- * the user in the app's AI panel and kept in their browser's localStorage.
- * It is never stored server-side; this function only forwards it, because
- * the providers' APIs block browser CORS and the key must not ship in the
- * bundle.
+ * The API key comes from the `x-provider-key` header (typed in the app,
+ * kept in that browser's localStorage) or, when the header is absent, from
+ * the keys saved server-side in Vercel env vars (OPENAI_API_KEY /
+ * GOOGLE_API_KEY) — set once, never re-entered. A typed key always wins.
  */
 
 export default async function handler(req, res) {
   res.setHeader('cache-control', 'no-store')
   const provider = String(req.query.provider || '')
-  const key = req.headers['x-provider-key']
+  const key = req.headers['x-provider-key'] ||
+    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY)
   if (!key) {
-    res.status(400).json({ error: 'No API key. Add your key in the AI render panel first.' })
+    res.status(400).json({
+      error: 'No API key. Add yours in the AI render panel, or save one server-side as ' +
+        (provider === 'openai' ? 'OPENAI_API_KEY' : 'GOOGLE_API_KEY') +
+        ' in Vercel → Settings → Environment Variables.',
+    })
     return
   }
   try {

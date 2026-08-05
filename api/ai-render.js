@@ -5,8 +5,10 @@
  *
  * Body (JSON): { provider, model, prompt, image (base64, no data: prefix),
  *                mime }
- * Header:      x-provider-key — the user's key, from the app's AI panel.
- *              Forwarded, never stored.
+ * Header:      x-provider-key — a key typed in the app's AI panel. When
+ *              absent, the keys saved server-side in Vercel env vars
+ *              (OPENAI_API_KEY / GOOGLE_API_KEY) are used instead — set
+ *              once, never re-entered. A typed key always wins.
  *
  * Returns { image (base64 PNG), mime } or { error }.
  */
@@ -19,14 +21,19 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'POST only' })
     return
   }
-  const key = req.headers['x-provider-key']
-  if (!key) {
-    res.status(400).json({ error: 'No API key. Add your key in the AI render panel first.' })
-    return
-  }
   const { provider, model, prompt, image, mime } = req.body || {}
   if (!provider || !model || !prompt || !image) {
     res.status(400).json({ error: 'provider, model, prompt and image are all required.' })
+    return
+  }
+  const key = req.headers['x-provider-key'] ||
+    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY)
+  if (!key) {
+    res.status(400).json({
+      error: 'No API key. Add yours in the AI render panel, or save one server-side as ' +
+        (provider === 'openai' ? 'OPENAI_API_KEY' : 'GOOGLE_API_KEY') +
+        ' in Vercel → Settings → Environment Variables.',
+    })
     return
   }
 

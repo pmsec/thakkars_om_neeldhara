@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Plan2D } from './render2d/Plan2D'
 import { Viewer3D } from './render3d/Viewer3D'
+import { Realistic } from './render3d/Realistic'
 import { IntegrityView } from './ui/IntegrityView'
 import { Schedules } from './ui/Schedules'
 import { BriefView } from './ui/BriefView'
@@ -21,6 +22,7 @@ import { building } from './data/building'
 const TABS: Array<[ViewId, string]> = [
   ['plan', '2D plan'],
   ['model', '3D model'],
+  ['real', 'Walkthrough'],
   ['split', 'Split'],
   ['schedules', 'Schedules'],
   ['integrity', 'Model integrity'],
@@ -167,6 +169,7 @@ export function App(): React.ReactElement {
             )}
             {state.view === 'plan' && <Plan2D />}
             {state.view === 'model' && <Viewer3D />}
+            {state.view === 'real' && <Realistic />}
             {state.view === 'split' && (
               <div className="split">
                 <Plan2D compact />

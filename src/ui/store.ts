@@ -40,7 +40,7 @@ export const LAYER_LABELS: Array<[LayerId, string]> = [
 
 export type Tool = 'select' | 'measure' | 'area' | 'markup' | 'calibrate'
 
-export type ViewId = 'plan' | 'model' | 'split' | 'schedules' | 'integrity' | 'brief'
+export type ViewId = 'plan' | 'model' | 'real' | 'split' | 'schedules' | 'integrity' | 'brief'
 
 export interface MeasureChain {
   id: string

@@ -624,12 +624,20 @@ def emit_fixtures():
             add(f'FX-FR-{len(fx)}', 'fridge', cx, cy, c - a, d - b, 'R-KITCHEN',
                 None, 'Tall fridge')
 
-    # the kitchen's counter runs, boxed from the CAD curves
-    for i, fn in enumerate((R.kitchen_counter(), R.hob_counter())):
-        bb = bbox_of(fn)
-        if bb:
-            a, b, c, d = bb
-            add(f'FX-CTR-{i + 1}', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
+    # the kitchen's counter runs: one box PER DRAWN PIECE, not one bounding
+    # box around the whole L — that read as a bridge across the room in 3D
+    n = 0
+    for fn in (R.kitchen_counter(), R.hob_counter()):
+        for p in fn:
+            if p[-1] != 'solid' or p[0] != 'poly':
+                continue
+            xs = [q[0] for q in p[1]]
+            ys = [q[1] for q in p[1]]
+            a, b, c, d = min(xs), min(ys), max(xs), max(ys)
+            if (c - a) < 200 or (d - b) < 200 or (c - a) > 4000 or (d - b) > 4000:
+                continue
+            n += 1
+            add(f'FX-CTR-{n}', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
                 'R-KITCHEN', None, 'Counter run')
 
     # the three curved vanities, boxed
@@ -773,7 +781,17 @@ def emit_furniture():
     add_prims(R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)),
               'armchair', 'R-GREAT', 'Armchair', 780)
     add_prims(R.drum_kit(), 'drumkit', 'R-K-DEN', 'Electronic drum kit', 900)
-    add_prims(R.corner_units(), 'console', 'R-K-DEN', 'Corner unit', 750)
+    # corner units piece by piece — one bbox across both pods spanned 9 m
+    for p in R.corner_units():
+        if p[-1] not in ('solid', 'wood') or p[0] != 'poly':
+            continue
+        xs = [q[0] for q in p[1]]
+        ys = [q[1] for q in p[1]]
+        a, b, c, d = min(xs), min(ys), max(xs), max(ys)
+        if (c - a) < 250 or (d - b) < 250 or (c - a) > 3000 or (d - b) > 3000:
+            continue
+        add('console', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
+            'Corner unit', 750)
 
     # trees: one per terrace centre, plus the great-room planter tree
     add('tree', 1200 - 350, 600 - 350, 700, 700, 'R-P-TERRACE',

@@ -179,6 +179,34 @@ export function AiRenderPanel({
     }
   }
 
+  const [extractMsg, setExtractMsg] = useState('')
+  /** Read the material palette out of THIS render: a vision model lists every
+   * distinct material as a single-material tile prompt, and the Style panel
+   * picks them up as a ready palette. */
+  const extractMaterials = async (): Promise<void> => {
+    if (!result) return
+    setExtractMsg('Reading materials…')
+    try {
+      const [head, b64] = result.out.split(',', 2)
+      const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/png'
+      const r = await fetch('/api/ai-describe', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(keys[provider] ? { 'x-provider-key': keys[provider] } : {}),
+        },
+        body: JSON.stringify({ provider, image: b64, mime }),
+      })
+      const j = (await r.json()) as { materials?: Array<{ surface: string; prompt: string }>; error?: string }
+      if (!r.ok || !j.materials) throw new Error(j.error ?? `HTTP ${r.status}`)
+      localStorage.setItem('om-material-palette', JSON.stringify({ at: Date.now(), materials: j.materials }))
+      window.dispatchEvent(new Event('om-palette-changed'))
+      setExtractMsg(`Palette of ${j.materials.length} materials ready — open 🎨 Style → Materials.`)
+    } catch (err) {
+      setExtractMsg(`Failed: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
   const card: React.CSSProperties = {
     position: 'absolute', top: 10, right: 10, width: 330, maxHeight: 'calc(100% - 20px)',
     overflowY: 'auto', background: 'rgba(250,248,244,0.97)', border: '1px solid #d5cdbb',
@@ -332,7 +360,19 @@ export function AiRenderPanel({
             <button disabled={busy || !editPrompt.trim()} onClick={() => void refine()}>
               {busy ? 'Working…' : 'Refine'}
             </button>
+            <button
+              disabled={busy}
+              title="List every material in this render as single-material tile prompts, ready in the Style panel"
+              onClick={() => void extractMaterials()}
+            >
+              Extract materials
+            </button>
           </div>
+          {extractMsg && (
+            <div style={{ color: extractMsg.startsWith('Failed') ? '#e8a5a5' : '#bfd8b0', fontSize: 12 }}>
+              {extractMsg}
+            </div>
+          )}
           <div style={{ color: '#cfc6b2', fontSize: 12 }}>
             Slide to compare against the source — never measure from the AI image. Refine sends
             THIS image back to the model with your edit; the slider then compares to the version you edited.

@@ -52,6 +52,23 @@ export function StylePanel(): React.ReactElement {
   const [mats, setMats] = useState<SavedMaterial[]>([])
   const [busy, setBusy] = useState('')
   const [applyTarget, setApplyTarget] = useState('*')
+  const [palette, setPalette] = useState<Array<{ surface: string; prompt: string }>>([])
+
+  useEffect(() => {
+    const readPalette = (): void => {
+      try {
+        const p = JSON.parse(localStorage.getItem('om-material-palette') || '{}') as {
+          materials?: Array<{ surface: string; prompt: string }>
+        }
+        setPalette(p.materials ?? [])
+      } catch {
+        setPalette([])
+      }
+    }
+    readPalette()
+    window.addEventListener('om-palette-changed', readPalette)
+    return () => window.removeEventListener('om-palette-changed', readPalette)
+  }, [])
 
   // ---- objects
   const [genProvider, setGenProvider] = useState<GenProvider>('meshy')
@@ -246,6 +263,28 @@ export function StylePanel(): React.ReactElement {
                   Generate
                 </button>
               </div>
+              {palette.length > 0 && (
+                <div style={{ border: '1px dashed #cbbfa4', borderRadius: 6, padding: 6, margin: '6px 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                    <b>Palette from your render</b>
+                    <button onClick={() => { localStorage.removeItem('om-material-palette'); setPalette([]) }}>
+                      dismiss
+                    </button>
+                  </div>
+                  <div style={{ color: '#6d6558', fontSize: 11, margin: '2px 0 4px' }}>
+                    Extracted from the AI render — click one to load its prompt, tweak, then Generate its tile.
+                  </div>
+                  {palette.map((p, i) => (
+                    <button
+                      key={i}
+                      style={{ display: 'block', width: '100%', textAlign: 'left', margin: '3px 0', fontSize: 11 }}
+                      onClick={() => setMatPrompt(p.prompt)}
+                    >
+                      <b>{p.surface}</b> — {p.prompt}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div style={row}>
                 <span style={{ width: 60 }}>Apply to</span>
                 <select value={applyTarget} onChange={(e) => setApplyTarget(e.target.value)} style={{ flex: 1, minWidth: 0 }}>

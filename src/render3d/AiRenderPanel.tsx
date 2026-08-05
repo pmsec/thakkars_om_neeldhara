@@ -99,6 +99,15 @@ export function AiRenderPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, provider])
 
+  /** Appended to every render/refine: image models silently DROP small or
+   * low-contrast objects (kitchen counters read as floor and vanish). An
+   * explicit inventory clause measurably reduces that. */
+  const KEEP_EVERYTHING =
+    ' IMPORTANT: every object in the input image must appear in the output in the same ' +
+    'place — every counter, kitchen appliance, sink, hob, wardrobe, screen and piece of ' +
+    'furniture. Kitchens and bathrooms keep all their fittings. Do not remove, add or ' +
+    'move any object; change only appearance.'
+
   /** One provider round trip: data-URL in, data-URL out. */
   const requestRender = async (input: string, thePrompt: string): Promise<string> => {
     const [head, b64] = input.split(',', 2)
@@ -128,7 +137,7 @@ export function AiRenderPanel({
     }
     setBusy(true)
     try {
-      const out = await requestRender(input, prompt)
+      const out = await requestRender(input, prompt + KEEP_EVERYTHING)
       setResult({ out, input, prompt })
       setOverlay(0)
       setNote('')
@@ -149,7 +158,8 @@ export function AiRenderPanel({
     try {
       // the AI's own PNG output is too big to upload raw (Vercel body limit)
       const bounded = await shrinkDataUrl(result.out, 1536, 0.9)
-      const out = await requestRender(bounded, editPrompt.trim())
+      const out = await requestRender(bounded,
+        editPrompt.trim() + ' Change only what this instruction asks; keep every other object exactly as in the input image.')
       setResult({ out, input: result.out, prompt: editPrompt.trim() })
       setOverlay(0)
       setSaveMsg('')

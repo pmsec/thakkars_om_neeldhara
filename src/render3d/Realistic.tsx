@@ -23,7 +23,9 @@ import { buildSolids } from '../geometry/solid'
 import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
+import { StylePanel } from './StylePanel'
 import { decimate, prismGeometry, S } from './prism'
+import { customObject, floorMaterial, primeStyle, wallMaterial } from './styleOverrides'
 
 const model = getModel()
 const solids = buildSolids(model)
@@ -261,6 +263,11 @@ function polyPiece(
 }
 
 export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
+  // A real 3D object assigned to this piece replaces the built-in mesh —
+  // already FITTED to the drawn footprint, so the projection gate still holds.
+  const custom = customObject(f)
+  if (custom) return custom
+
   const g = new THREE.Group()
   const w = f.w
   const d = f.d
@@ -572,11 +579,12 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     const room = model.roomById.get(slab.roomId)
     const fin = (room?.def.finish ?? '').toLowerCase()
     const mat =
-      fin.includes('grass') ? M.grass
+      floorMaterial(slab.roomId)          // an assigned AI material wins
+      ?? (fin.includes('grass') ? M.grass
       : fin.includes('oak') || fin.includes('timber') ? M.oak
       : fin.includes('stone') ? M.stone
       : fin.includes('vinyl') ? M.stone
-      : M.stone
+      : M.stone)
     if (room?.def.category === 'void') continue         // shafts stay open
     const geo = prismGeometry(decimate(slab.polygon), -80, 0,
       slab.holes.map((h) => decimate(h)))
@@ -595,7 +603,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
       p.kind === 'glazing' ? M.glass
       : p.kind === 'wall-curved-glass' ? (p.wallId === 'W-CURVE-KARAN' ? M.tintGlass : M.glass)
       : p.kind === 'screen' ? M.wallWood
-      : M.plaster
+      : wallMaterial() ?? M.plaster
     const mesh = new THREE.Mesh(prismGeometry(p.polygon, p.base, p.top), mat)
     mesh.castShadow = mat === M.plaster
     mesh.receiveShadow = true
@@ -715,6 +723,16 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const mountRef = useRef<HTMLDivElement | null>(null)
   const [walking, setWalking] = useState(false)
   const [hint, setHint] = useState(true)
+
+  const [styleTick, setStyleTick] = useState(0)
+  useEffect(() => {
+    const onStyle = (): void => {
+      void primeStyle().then(() => setStyleTick((t) => t + 1))
+    }
+    onStyle()
+    window.addEventListener('om-style-changed', onStyle)
+    return () => window.removeEventListener('om-style-changed', onStyle)
+  }, [])
 
   useEffect(() => {
     const mount = mountRef.current
@@ -847,11 +865,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       renderer.dispose()
       mount.removeChild(renderer.domElement)
     }
-  }, [])
+  }, [styleTick])
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0 }} />
+      {!compact && <StylePanel />}
       <div
         style={{
           position: 'absolute', left: 12, bottom: 12, padding: '6px 12px',

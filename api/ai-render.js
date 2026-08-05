@@ -22,10 +22,12 @@ export default async function handler(req, res) {
     return
   }
   const { provider, model, prompt, image, mime } = req.body || {}
-  if (!provider || !model || !prompt || !image) {
-    res.status(400).json({ error: 'provider, model, prompt and image are all required.' })
+  if (!provider || !model || !prompt) {
+    res.status(400).json({ error: 'provider, model and prompt are required.' })
     return
   }
+  // `image` is optional: with it this is an edit/re-render; without it a pure
+  // text-to-image generation (used for seamless material textures).
   const key = req.headers['x-provider-key'] ||
     (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY)
   if (!key) {
@@ -39,21 +41,30 @@ export default async function handler(req, res) {
 
   try {
     if (provider === 'openai') {
-      const form = new FormData()
-      form.append('model', model)
-      form.append('prompt', prompt)
-      form.append('n', '1')
-      form.append('size', '1536x1024')
-      form.append(
-        'image',
-        new Blob([Buffer.from(image, 'base64')], { type: mime || 'image/jpeg' }),
-        'view.jpg',
-      )
-      const r = await fetch('https://api.openai.com/v1/images/edits', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${key}` },
-        body: form,
-      })
+      let r
+      if (image) {
+        const form = new FormData()
+        form.append('model', model)
+        form.append('prompt', prompt)
+        form.append('n', '1')
+        form.append('size', '1536x1024')
+        form.append(
+          'image',
+          new Blob([Buffer.from(image, 'base64')], { type: mime || 'image/jpeg' }),
+          'view.jpg',
+        )
+        r = await fetch('https://api.openai.com/v1/images/edits', {
+          method: 'POST',
+          headers: { authorization: `Bearer ${key}` },
+          body: form,
+        })
+      } else {
+        r = await fetch('https://api.openai.com/v1/images/generations', {
+          method: 'POST',
+          headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+          body: JSON.stringify({ model, prompt, n: 1, size: '1024x1024' }),
+        })
+      }
       const j = await r.json().catch(() => ({}))
       if (!r.ok) {
         res.status(r.status).json({
@@ -79,10 +90,12 @@ export default async function handler(req, res) {
           body: JSON.stringify({
             contents: [
               {
-                parts: [
-                  { text: prompt },
-                  { inline_data: { mime_type: mime || 'image/jpeg', data: image } },
-                ],
+                parts: image
+                  ? [
+                      { text: prompt },
+                      { inline_data: { mime_type: mime || 'image/jpeg', data: image } },
+                    ]
+                  : [{ text: prompt }],
               },
             ],
             generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },

@@ -18,6 +18,8 @@ import { furniture } from '../data/furniture'
 import { S } from './prism'
 import { buildFixtures, buildScene, furnitureMesh, makeMaterials } from './Realistic'
 import { AiRenderPanel } from './AiRenderPanel'
+import { StylePanel } from './StylePanel'
+import { primeStyle } from './styleOverrides'
 
 const model = getModel()
 
@@ -25,6 +27,16 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
   const mountRef = useRef<HTMLDivElement | null>(null)
   const [hint] = useState(true)
   const captureRef = useRef<(() => string | null) | null>(null)
+
+  const [styleTick, setStyleTick] = useState(0)
+  useEffect(() => {
+    const onStyle = (): void => {
+      void primeStyle().then(() => setStyleTick((t) => t + 1))
+    }
+    onStyle()
+    window.addEventListener('om-style-changed', onStyle)
+    return () => window.removeEventListener('om-style-changed', onStyle)
+  }, [])
 
   useEffect(() => {
     const mount = mountRef.current
@@ -173,12 +185,13 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
       renderer.dispose()
       mount.removeChild(renderer.domElement)
     }
-  }, [])
+  }, [styleTick])
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0, touchAction: 'none' }} />
       {!compact && <AiRenderPanel capture={() => captureRef.current?.() ?? null} />}
+      {!compact && <StylePanel />}
       {hint && !compact && (
         <div
           className="tiny"

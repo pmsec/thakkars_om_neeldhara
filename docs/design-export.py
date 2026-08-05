@@ -842,9 +842,22 @@ def emit_furniture():
     return '\n'.join(o)
 
 
+def copy_sheet():
+    """The CAD review sheet, verbatim.  The 2D tab shows THIS, so what the
+    family sees in the app is pixel-for-pixel the drawing the DXF ships with."""
+    import shutil
+    src = os.path.join(os.path.abspath(args.cad), '..', 'drawings',
+                       '07-round1-layout.svg')
+    dst_dir = os.path.join(os.path.dirname(__file__), '..', 'src', 'assets')
+    os.makedirs(dst_dir, exist_ok=True)
+    shutil.copyfile(src, os.path.join(dst_dir, 'plan-sheet.svg'))
+    print('copied plan-sheet.svg from the CAD drawings')
+
+
 if __name__ == '__main__':
     fixtures_ts = emit_fixtures()          # fills STACK_POS
     open(os.path.join(OUT, 'building.ts'), 'w').write(emit_building())
     open(os.path.join(OUT, 'fixtures.ts'), 'w').write(fixtures_ts)
     open(os.path.join(OUT, 'furniture.ts'), 'w').write(emit_furniture())
+    copy_sheet()
     print('wrote building.ts, fixtures.ts, furniture.ts')

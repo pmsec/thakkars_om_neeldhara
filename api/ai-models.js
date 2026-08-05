@@ -11,8 +11,8 @@
 export default async function handler(req, res) {
   res.setHeader('cache-control', 'no-store')
   const provider = String(req.query.provider || '')
-  const key = req.headers['x-provider-key'] ||
-    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY)
+  const key = String(req.headers['x-provider-key'] ||
+    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY) || '').trim()
   if (!key) {
     res.status(400).json({
       error: 'No API key. Add yours in the AI render panel, or save one server-side as ' +

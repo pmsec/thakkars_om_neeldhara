@@ -45,8 +45,8 @@ export default async function handler(req, res) {
     res.status(400).json({ error: 'provider and image are required.' })
     return
   }
-  const key = req.headers['x-provider-key'] ||
-    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY)
+  const key = String(req.headers['x-provider-key'] ||
+    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY) || '').trim()
   if (!key) {
     res.status(400).json({ error: 'No API key for ' + provider + '.' })
     return

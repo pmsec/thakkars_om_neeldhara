@@ -20,8 +20,8 @@ export default async function handler(req, res) {
     return
   }
   const { provider, action, prompt, taskId } = req.body || {}
-  const key = req.headers['x-provider-key'] ||
-    (provider === 'meshy' ? process.env.MESHY_API_KEY : process.env.TRIPO_API_KEY)
+  const key = String(req.headers['x-provider-key'] ||
+    (provider === 'meshy' ? process.env.MESHY_API_KEY : process.env.TRIPO_API_KEY) || '').trim()
   if (!key) {
     res.status(400).json({
       error: `No API key. Add your ${provider} key in the Style panel, or save it server-side as ` +

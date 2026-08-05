@@ -28,8 +28,8 @@ export default async function handler(req, res) {
   }
   // `image` is optional: with it this is an edit/re-render; without it a pure
   // text-to-image generation (used for seamless material textures).
-  const key = req.headers['x-provider-key'] ||
-    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY)
+  const key = String(req.headers['x-provider-key'] ||
+    (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY) || '').trim()
   if (!key) {
     res.status(400).json({
       error: 'No API key. Add yours in the AI render panel, or save one server-side as ' +

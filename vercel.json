@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/ai-render.js": { "maxDuration": 60 },
+    "api/ai-models.js": { "maxDuration": 15 },
+    "api/plan.js": { "maxDuration": 15 }
+  }
+}

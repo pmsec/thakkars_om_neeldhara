@@ -17,12 +17,14 @@ import { getModel } from '../geometry/model'
 import { furniture } from '../data/furniture'
 import { S } from './prism'
 import { buildFixtures, buildScene, furnitureMesh, makeMaterials } from './Realistic'
+import { AiRenderPanel } from './AiRenderPanel'
 
 const model = getModel()
 
 export function TopView({ compact = false }: { compact?: boolean }): React.ReactElement {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const [hint] = useState(true)
+  const captureRef = useRef<(() => string | null) | null>(null)
 
   useEffect(() => {
     const mount = mountRef.current
@@ -129,6 +131,21 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
     el.addEventListener('pointerleave', onUp)
     el.addEventListener('wheel', onWheel, { passive: false })
 
+    captureRef.current = () => {
+      // render synchronously, then downscale to a provider-friendly JPEG
+      renderer.render(scene, camera)
+      const src = renderer.domElement
+      const w = Math.min(1536, src.width)
+      const h = Math.round((src.height / src.width) * w)
+      const c = document.createElement('canvas')
+      c.width = w
+      c.height = h
+      const g = c.getContext('2d')
+      if (!g) return null
+      g.drawImage(src, 0, 0, w, h)
+      return c.toDataURL('image/jpeg', 0.92)
+    }
+
     let raf = 0
     const animate = (): void => {
       raf = requestAnimationFrame(animate)
@@ -145,6 +162,7 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
     animate()
 
     return () => {
+      captureRef.current = null
       cancelAnimationFrame(raf)
       ro.disconnect()
       el.removeEventListener('pointerdown', onDown)
@@ -160,6 +178,7 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0, touchAction: 'none' }} />
+      {!compact && <AiRenderPanel capture={() => captureRef.current?.() ?? null} />}
       {hint && !compact && (
         <div
           className="tiny"

@@ -267,6 +267,17 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
   const cx = f.x + w / 2
   const cy = f.y + d / 2
 
+  /** Extrude the drawn outline in the piece's LOCAL frame, so it can sit in
+   * a group that place() positions — rounded beds and sofas keep their
+   * drawn silhouette instead of being squared back into boxes. */
+  const basePrism = (poly: { x: number; y: number }[], base: number, top: number, mat: THREE.Material): THREE.Mesh => {
+    const lp = decimate(poly.map((q) => ({ x: q.x - cx, y: q.y - cy })))
+    const m = new THREE.Mesh(prismGeometry(lp, base, top), mat)
+    m.castShadow = true
+    m.receiveShadow = true
+    return m
+  }
+
   // A piece with its drawn 2D outline extrudes THAT — the shape on the sheet,
   // clipped at the walls — instead of a box that squares its curves back off.
   if (f.poly && EXTRUDED_KINDS.has(f.kind)) {
@@ -323,7 +334,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     case 'sofa': {
       const seatH = 420
       const backH = f.height
-      g.add(box(w, seatH, d, M.fabric, 0, seatH / 2, 0))
+      g.add(f.poly ? basePrism(f.poly, 0, seatH, M.fabric)
+        : box(w, seatH, d, M.fabric, 0, seatH / 2, 0))
       // back along the far side by `face`
       const bt = 190
       const back =
@@ -347,7 +359,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'lounger': {
-      g.add(box(w, 380, d, M.fabric, 0, 190, 0))
+      g.add(f.poly ? basePrism(f.poly, 0, 380, M.fabric)
+        : box(w, 380, d, M.fabric, 0, 190, 0))
       // inclined back toward the face direction — the back's long side runs
       // ACROSS the face axis (by face, not by aspect: a deep W-facing chair
       // still reclines along x)
@@ -368,17 +381,23 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'bed': {
-      g.add(box(w, 260, d, M.timber, 0, 130, 0))                      // frame
-      g.add(box(w - 60, 210, d - 60, M.duvet, 0, 260 + 105, 0))      // mattress+duvet
-      // pillows at the head (by face: the head is where the bed FACES from).
-      // The head axis follows the face — E/W heads run along x, N/S along y —
-      // and a cabinet too shallow for pillows (the folded murphy) gets none,
-      // exactly as the 2D draws the folded-down bed dashed, i.e. not there.
+      if (f.poly) {
+        // the drawn silhouette — rounded foot corners survive to 3D
+        g.add(basePrism(f.poly, 0, 260, M.timber))
+        g.add(basePrism(f.poly, 260, 470, M.duvet))
+      } else {
+        g.add(box(w, 260, d, M.timber, 0, 130, 0))                    // frame
+        g.add(box(w - 60, 210, d - 60, M.duvet, 0, 260 + 105, 0))    // mattress+duvet
+      }
+      // pillows at the head (face = the way the sleeper looks, derived from
+      // the DRAWN pillows/headboard; no face means no drawn head — no
+      // pillows, never a guess). E/W heads run along x, N/S along y, and a
+      // cabinet too shallow for pillows (the folded murphy) gets none.
       const ph = 260 + 210 + 70
       const ew = f.face === 'E' || f.face === 'W'
       const pw = Math.min(560, (ew ? d : w) / 2 - 80)
       const off = (ew ? w : d) / 2 - 260
-      if (off > 80 && pw > 80) {
+      if (f.face && off > 80 && pw > 80) {
         const pos: Array<[number, number]> =
           f.face === 'E' ? [[-off, -pw * 0.7], [-off, pw * 0.7]]
           : f.face === 'W' ? [[off, -pw * 0.7], [off, pw * 0.7]]
@@ -391,10 +410,22 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'armchair': {
-      g.add(box(w, 400, d, M.fabric, 0, 200, 0))
-      g.add(box(w, 720, 170, M.fabricDark, 0, 360, -d / 2 + 85))
-      g.add(box(150, 560, d, M.fabricDark, -w / 2 + 75, 280, 0))
-      g.add(box(150, 560, d, M.fabricDark, w / 2 - 75, 280, 0))
+      g.add(f.poly ? basePrism(f.poly, 0, 400, M.fabric)
+        : box(w, 400, d, M.fabric, 0, 200, 0))
+      // back on the side opposite the face (drawn), arms on the flanks
+      const bk =
+        f.face === 'N' ? box(w, 720, 170, M.fabricDark, 0, 360, d / 2 - 85)
+        : f.face === 'E' ? box(170, 720, d, M.fabricDark, -w / 2 + 85, 360, 0)
+        : f.face === 'W' ? box(170, 720, d, M.fabricDark, w / 2 - 85, 360, 0)
+        : box(w, 720, 170, M.fabricDark, 0, 360, -d / 2 + 85)
+      g.add(bk)
+      if (f.face === 'E' || f.face === 'W') {
+        g.add(box(w, 560, 150, M.fabricDark, 0, 280, -d / 2 + 75))
+        g.add(box(w, 560, 150, M.fabricDark, 0, 280, d / 2 - 75))
+      } else {
+        g.add(box(150, 560, d, M.fabricDark, -w / 2 + 75, 280, 0))
+        g.add(box(150, 560, d, M.fabricDark, w / 2 - 75, 280, 0))
+      }
       place(g, cx, cy)
       return g
     }

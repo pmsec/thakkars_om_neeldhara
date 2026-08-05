@@ -605,18 +605,60 @@ def bbox_of(prims, styles=('solid',)):
 
 
 def outline_of(prims, styles=('solid',)):
-    """The drawn footprint of a piece: its first solid 'poly' primitive.
+    """The drawn footprint of a piece: its first solid outline primitive.
 
     Every symbol and retrofit generator in the CAD library puts the outline
     first and the detail (basins, mirrors, shelf lines) after it, so this IS
-    the shape the 2D sheet draws. None means the outline is a plain rect and
-    the bbox tells the whole truth."""
+    the shape the 2D sheet draws. A circle outline (round tables, the swivel
+    chair) becomes a polygon — round in 2D stays round in 3D. None means the
+    outline is a plain rect and the bbox tells the whole truth."""
     for p in prims:
         if p[0] == 'poly' and p[-1] in styles:
             return p[1]
+        if p[0] == 'circle' and p[-1] in styles:
+            _, ccx, ccy, r, _ = p
+            return [(ccx + r * math.cos(math.radians(t)),
+                     ccy + r * math.sin(math.radians(t)))
+                    for t in range(0, 360, 10)]
         if p[0] == 'rect' and p[-1] in styles:
             return None
     return None
+
+
+OPP = {'n': 'S', 's': 'N', 'e': 'W', 'w': 'E'}
+
+
+def face_from_drawn(prims, a, b, c, d):
+    """The way a piece FACES, read off the drawing itself.
+
+    Backs, headboards and pillows are drawn 'soft' at the piece's back or
+    head, so face = opposite the edge the soft prims hug. Reading the NAME
+    (sofa-e, bed-rw) proved unreliable — 'sofa-e' means back-on-east, which
+    is facing WEST, and 'bed-rw' told the old suffix map nothing at all.
+    The drawing cannot be misread. Soft prims outside the bbox are fronts
+    (a recliner's deployed footrest), so only inside ones vote."""
+    votes = {}
+    for p in prims:
+        if p[-1] != 'soft':
+            continue
+        if p[0] == 'rect':
+            x0, y0 = min(p[1], p[3]), min(p[2], p[4])
+            x1, y1 = max(p[1], p[3]), max(p[2], p[4])
+        elif p[0] == 'poly':
+            xs = [q[0] for q in p[1]]
+            ys = [q[1] for q in p[1]]
+            x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
+        else:
+            continue
+        if x0 < a - 1 or x1 > c + 1 or y0 < b - 1 or y1 > d + 1:
+            continue
+        ex, ey = (x0 + x1) / 2, (y0 + y1) / 2
+        edges = {'w': ex - a, 'e': c - ex, 'n': ey - b, 's': d - ey}
+        side = min(edges, key=edges.get)
+        votes[side] = votes.get(side, 0) + (x1 - x0) * (y1 - y0)
+    if not votes:
+        return None
+    return OPP[max(votes, key=votes.get)]
 
 
 def thin(poly, tol=20):
@@ -899,15 +941,22 @@ def emit_furniture():
                     room_for((x0 + x1) / 2, (y0 + y1) / 2),
                     'Dining chair', 880, face=cface)
             continue
+        prims = SY.symbol(kind, a, b, c, d)
+        # Orientation READ OFF THE DRAWING for anything with a drawn back or
+        # pillows; the name-suffix map stays only as a fallback (murphy folds).
+        if mapped in ('sofa', 'bed', 'lounger', 'armchair'):
+            face = face_from_drawn(prims, a, b, c, d) or face
         # The drawn outline, from the SAME symbol code the 2D sheet uses: a
         # rounded or curved piece carries its true polygon, so the 3D cannot
-        # square it back off. Only for kinds the app extrudes as one slab —
-        # detail-modelled kinds (sofa, bed, recliner…) keep the bbox, which is
-        # a SUPERSET of the drawing and therefore safe to test against walls.
+        # square it back off. Slab kinds without one get their plain rect,
+        # so square joinery (the study desk's L) extrudes as solid runs too.
         outline = None
         if mapped in ('console', 'table', 'wardrobe', 'shelves', 'stool',
-                      'bench'):
-            outline = outline_of(SY.symbol(kind, a, b, c, d))
+                      'bench', 'sofa', 'bed', 'lounger', 'armchair'):
+            outline = outline_of(prims)
+        if outline is None and mapped in ('console', 'table', 'wardrobe',
+                                          'shelves', 'stool', 'bench'):
+            outline = [(a, b), (c, b), (c, d), (a, d)]
         add(mapped, a, b, c - a, d - b, room, label, h, face,
             poly=outline)
         # Recliners are drawn with the footrest DEPLOYED — a soft poly beyond
@@ -925,12 +974,19 @@ def emit_furniture():
                     max(ys) - min(ys), room, 'Recliner footrest, deployed',
                     380)
 
-    # the retrofit set, boxed
+    # the retrofit set: bbox for placement, face read off the drawn backs,
+    # and the drawn outline attached — a ROTATED chair's silhouette carries
+    # its rotation, which a bounding box never can
     def add_prims(prims, kind, room, label, h, styles=('solid',)):
         bb = bbox_of(prims, styles)
         if bb:
             a, b, c, d = bb
-            add(kind, a, b, c - a, d - b, room, label, h)
+            face = (face_from_drawn(prims, a, b, c, d)
+                    if kind in ('sofa', 'armchair', 'lounger') else None)
+            outline = (outline_of(prims, styles)
+                       if kind in ('sofa', 'armchair', 'lounger') else None)
+            add(kind, a, b, c - a, d - b, room, label, h, face=face,
+                poly=outline)
 
     add_prims(R.great_room_sofa(), 'sofa', 'R-GREAT',
               '2-seat recliner sofa with the planter on its end', 780)

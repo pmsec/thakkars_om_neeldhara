@@ -761,6 +761,17 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
 
   const { w, d } = f
   const back = 170
+  // The drawn silhouette, extruded in the piece's local frame — rounded beds
+  // and sofas keep their drawn shape here just as they do in the styled plan.
+  const basePrism = (poly: { x: number; y: number }[], base: number, top: number, mat: THREE.MeshStandardMaterial): void => {
+    const cx0 = f.x + w / 2
+    const cy0 = f.y + d / 2
+    const lp = decimate(poly.map((q) => ({ x: q.x - cx0, y: q.y - cy0 })))
+    const m = new THREE.Mesh(prismGeometry(lp, base, top), withClip(mat, clip))
+    m.castShadow = true
+    m.receiveShadow = true
+    g.add(m)
+  }
   switch (f.kind) {
     case 'rug':
       box(w, 10, d, MAT.rug, 0, 5, 0)
@@ -779,11 +790,19 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
       }
       break
     case 'bed': {
-      const headAlongX = f.face === 'E' || f.face === 'W'
-      box(w, 380, d, MAT.soft, 0, 190, 0)
-      box(w * 0.96, 90, d * 0.96, MAT.linen, 0, 425, 0)
-      if (headAlongX) box(120, 900, d, MAT.furniture, (f.face === 'E' ? 1 : -1) * (w / 2 - 60), 450, 0)
-      else box(w, 900, 120, MAT.furniture, 0, 450, (f.face === 'S' ? 1 : -1) * (d / 2 - 60))
+      if (f.poly) {
+        basePrism(f.poly, 0, 380, MAT.soft)
+        basePrism(f.poly, 380, 470, MAT.linen)
+      } else {
+        box(w, 380, d, MAT.soft, 0, 190, 0)
+        box(w * 0.96, 90, d * 0.96, MAT.linen, 0, 425, 0)
+      }
+      // headboard opposite the face (face = the way the sleeper looks);
+      // no face means no drawn head — no headboard, never a guess
+      if (f.face === 'E') box(120, 900, d, MAT.furniture, -(w / 2 - 60), 450, 0)
+      else if (f.face === 'W') box(120, 900, d, MAT.furniture, w / 2 - 60, 450, 0)
+      else if (f.face === 'S') box(w, 900, 120, MAT.furniture, 0, 450, -(d / 2 - 60))
+      else if (f.face === 'N') box(w, 900, 120, MAT.furniture, 0, 450, d / 2 - 60)
       break
     }
     case 'daybed':
@@ -791,16 +810,24 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
       box(w, 700, 120, MAT.furniture, 0, 350, -(d / 2 - 60))
       break
     case 'sofa': {
-      box(w, 380, d, MAT.soft, 0, 190, 0)
-      const alongX = f.face === 'N' || f.face === 'S'
-      if (alongX) box(w, 720, back, MAT.furniture, 0, 360, (f.face === 'N' ? 1 : -1) * (d / 2 - back / 2))
-      else box(back, 720, d, MAT.furniture, (f.face === 'E' ? -1 : 1) * (w / 2 - back / 2), 360, 0)
+      if (f.poly) basePrism(f.poly, 0, 380, MAT.soft)
+      else box(w, 380, d, MAT.soft, 0, 190, 0)
+      // back OPPOSITE the face, only when the drawing gave one
+      if (f.face === 'N') box(w, 720, back, MAT.furniture, 0, 360, d / 2 - back / 2)
+      else if (f.face === 'S') box(w, 720, back, MAT.furniture, 0, 360, -(d / 2 - back / 2))
+      else if (f.face === 'E') box(back, 720, d, MAT.furniture, -(w / 2 - back / 2), 360, 0)
+      else if (f.face === 'W') box(back, 720, d, MAT.furniture, w / 2 - back / 2, 360, 0)
       break
     }
-    case 'armchair':
-      box(w, 360, d, MAT.soft, 0, 180, 0)
-      box(w, 700, back, MAT.furniture, 0, 350, d / 2 - back / 2)
+    case 'armchair': {
+      if (f.poly) basePrism(f.poly, 0, 360, MAT.soft)
+      else box(w, 360, d, MAT.soft, 0, 180, 0)
+      if (f.face === 'N') box(w, 700, back, MAT.furniture, 0, 350, d / 2 - back / 2)
+      else if (f.face === 'E') box(back, 700, d, MAT.furniture, -(w / 2 - back / 2), 350, 0)
+      else if (f.face === 'W') box(back, 700, d, MAT.furniture, w / 2 - back / 2, 350, 0)
+      else box(w, 700, back, MAT.furniture, 0, 350, -(d / 2 - back / 2))
       break
+    }
     case 'dining':
       box(w, 60, d, MAT.wood, 0, f.height - 30, 0)
       for (const sx of [-1, 1]) {
@@ -819,10 +846,16 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
       cyl(Math.min(w, d) / 2, 60, MAT.wood, 0, f.height - 30, 0, 12)
       cyl(50, f.height - 60, MAT.furniture, 0, (f.height - 60) / 2, 0, 8)
       break
-    case 'lounger':
-      box(w, 320, d, MAT.soft, 0, 160, 0)
-      box(w, 420, d * 0.34, MAT.furniture, 0, 480, -(d / 2 - d * 0.17))
+    case 'lounger': {
+      if (f.poly) basePrism(f.poly, 0, 320, MAT.soft)
+      else box(w, 320, d, MAT.soft, 0, 160, 0)
+      // the raised back is opposite the way the chair faces
+      if (f.face === 'E') box(w * 0.34, 420, d, MAT.furniture, -(w / 2 - w * 0.17), 480, 0)
+      else if (f.face === 'W') box(w * 0.34, 420, d, MAT.furniture, w / 2 - w * 0.17, 480, 0)
+      else if (f.face === 'S') box(w, 420, d * 0.34, MAT.furniture, 0, 480, -(d / 2 - d * 0.17))
+      else box(w, 420, d * 0.34, MAT.furniture, 0, 480, d / 2 - d * 0.17)
       break
+    }
     case 'shelves':
     case 'wardrobe':
       box(w, f.height, d, MAT.furniture, 0, f.height / 2, 0)

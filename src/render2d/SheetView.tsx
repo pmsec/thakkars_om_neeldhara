@@ -382,20 +382,44 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             )
           })}
 
-          {live.length > 0 && cursor && (
+          {live.length > 0 && (
             <g>
-              <path
-                d={live.map((p, i) => `${i ? 'L' : 'M'}${mmToSheet(p).x},${mmToSheet(p).y}`).join(' ') +
-                  `L${mmToSheet(cursor).x},${mmToSheet(cursor).y}`}
-                fill="none" stroke="#a33d2f" strokeWidth={strokeW} strokeDasharray={`${strokeW * 3} ${strokeW * 2}`}
-              />
-              {state.tool === 'measure' && live.length === 1 && (() => {
+              {live.map((p, i) => {
+                const P = mmToSheet(p)
+                return <circle key={i} cx={P.x} cy={P.y} r={strokeW * 2.6} fill="#a33d2f" />
+              })}
+              {live.length > 1 && (
+                <path
+                  d={live.map((p, i) => `${i ? 'L' : 'M'}${mmToSheet(p).x},${mmToSheet(p).y}`).join(' ')}
+                  fill="none" stroke="#a33d2f" strokeWidth={strokeW}
+                />
+              )}
+              {cursor && (
+                <path
+                  d={`M${mmToSheet(live[live.length - 1]).x},${mmToSheet(live[live.length - 1]).y}` +
+                    `L${mmToSheet(cursor).x},${mmToSheet(cursor).y}`}
+                  fill="none" stroke="#a33d2f" strokeWidth={strokeW} strokeDasharray={`${strokeW * 3} ${strokeW * 2}`}
+                />
+              )}
+              {state.tool === 'measure' && live.length === 1 && cursor && (() => {
                 const L = measureLabel(live[0], cursor)
                 return (
                   <text x={L.at.x} y={L.at.y - strokeW * 3} fontSize={fontPx} fill="#a33d2f" textAnchor="middle"
                     fontFamily="Helvetica,Arial,sans-serif" fontWeight={700}
                     paintOrder="stroke" stroke="#faf8f4" strokeWidth={fontPx / 4}>
                     {L.text}
+                  </text>
+                )
+              })()}
+              {state.tool === 'area' && live.length >= 3 && (() => {
+                const c = live.reduce((a, p) => ({ x: a.x + p.x / live.length, y: a.y + p.y / live.length }), { x: 0, y: 0 })
+                const P = mmToSheet(c)
+                const ar = polyArea(live)
+                return (
+                  <text x={P.x} y={P.y} fontSize={fontPx} fill="#a33d2f" textAnchor="middle"
+                    fontFamily="Helvetica,Arial,sans-serif" fontWeight={700}
+                    paintOrder="stroke" stroke="#faf8f4" strokeWidth={fontPx / 4}>
+                    {`${sqM(ar).toFixed(2)} m² · ${sqFt(ar).toFixed(1)} sq ft`}
                   </text>
                 )
               })()}
@@ -459,12 +483,36 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
               {!fetched.newer && ' — this build is already up to date.'}
             </div>
           )}
-          <div className="tiny" style={{ position: 'absolute', bottom: 10, left: 10, padding: '5px 10px',
-            background: 'rgba(250,248,244,0.92)', border: '1px solid #d5cdbb', borderRadius: 5, color: '#6d6558' }}>
-            {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel to zoom · click a room to inspect.'}
-            {state.tool === 'measure' && 'Measure: click two points. Snap is ' + (state.snap ? 'on' : 'off') + ' · Esc cancels · Del clears.'}
-            {state.tool === 'area' && 'Area: click the corners, double-click to close. Esc cancels · Del clears.'}
-            {state.tool === 'markup' && 'Markup: click where the note belongs.'}
+          <div className="tiny no-print" style={{ position: 'absolute', bottom: 10, left: 10, padding: '5px 10px',
+            background: 'rgba(250,248,244,0.92)', border: '1px solid #d5cdbb', borderRadius: 5, color: '#6d6558',
+            display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span>
+              {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel to zoom · tap a room to inspect.'}
+              {state.tool === 'measure' && 'Measure: tap point A, then point B. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
+              {state.tool === 'area' && (live.length < 3
+                ? `Area: tap the corners (${live.length} so far), then close.`
+                : `Area: ${live.length} corners — close it, or keep tapping.`)}
+              {state.tool === 'markup' && 'Markup: tap where the note belongs.'}
+            </span>
+            {state.tool === 'area' && live.length >= 3 && (
+              <button
+                onClick={() => {
+                  update((s2) => ({
+                    ...s2,
+                    areas: [...s2.areas, { id: `A${Date.now()}`, points: live, committed: true }],
+                  }))
+                  setLive([])
+                }}
+              >
+                Close area
+              </button>
+            )}
+            {live.length > 0 && <button onClick={() => setLive([])}>Cancel</button>}
+            {(state.measures.length > 0 || state.areas.length > 0) && (
+              <button onClick={() => update((s2) => ({ ...s2, measures: [], areas: [] }))}>
+                Clear all
+              </button>
+            )}
           </div>
         </>
       )}

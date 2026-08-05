@@ -6,11 +6,22 @@
  * under the limit (and faster on mobile) at no visible quality cost for the
  * model's purposes.
  */
+/**
+ * The bound is CONFIGURATION, not code: it exists because of the current
+ * host's request-body cap (Vercel: ~4.5 MB), not because the app wants small
+ * images. On infrastructure without that cap, set VITE_AI_UPLOAD_MAX_PX
+ * (e.g. 4096, or 0 to disable shrinking entirely) and rebuild — nothing else
+ * changes. Stored images are never degraded; only the upload copy is bounded.
+ */
+const ENV_MAX = Number(import.meta.env.VITE_AI_UPLOAD_MAX_PX ?? '') || null
+
 export function shrinkDataUrl(dataUrl: string, maxW = 1536, quality = 0.88): Promise<string> {
+  const limit = ENV_MAX === null ? maxW : ENV_MAX
+  if (limit <= 0) return Promise.resolve(dataUrl)   // explicitly unbounded
   return new Promise((resolve) => {
     const img = new Image()
     img.onload = () => {
-      const w = Math.min(maxW, img.width)
+      const w = Math.min(limit, img.width)
       const h = Math.round((img.height / img.width) * w)
       const c = document.createElement('canvas')
       c.width = w

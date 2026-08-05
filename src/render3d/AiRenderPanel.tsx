@@ -15,6 +15,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react'
 import { deleteRender, listRenders, saveRender, type SavedRender } from './aiStore'
+import { shrinkDataUrl } from './imgUtil'
 
 export const DEFAULT_PROMPT =
   'Re-render this architectural floor-plan view photorealistically. Keep every wall, ' +
@@ -146,7 +147,9 @@ export function AiRenderPanel({
     if (!result || !editPrompt.trim()) return
     setBusy(true)
     try {
-      const out = await requestRender(result.out, editPrompt.trim())
+      // the AI's own PNG output is too big to upload raw (Vercel body limit)
+      const bounded = await shrinkDataUrl(result.out, 1536, 0.9)
+      const out = await requestRender(bounded, editPrompt.trim())
       setResult({ out, input: result.out, prompt: editPrompt.trim() })
       setOverlay(0)
       setSaveMsg('')
@@ -187,7 +190,8 @@ export function AiRenderPanel({
     if (!result) return
     setExtractMsg('Reading materials…')
     try {
-      const [head, b64] = result.out.split(',', 2)
+      const bounded = await shrinkDataUrl(result.out, 1024, 0.88)
+      const [head, b64] = bounded.split(',', 2)
       const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/png'
       const r = await fetch('/api/ai-describe', {
         method: 'POST',

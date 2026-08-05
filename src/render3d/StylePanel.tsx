@@ -18,6 +18,7 @@ import { getModel } from '../geometry/model'
 import { furniture } from '../data/furniture'
 import { materialLib, objectLib, type SavedMaterial, type SavedObject } from './libStore'
 import { getAssign, setAssign } from './styleOverrides'
+import { shrinkDataUrl } from './imgUtil'
 
 const KEYS_LS = 'om-ai-keys'
 type ImgProvider = 'openai' | 'google'
@@ -209,7 +210,8 @@ export function StylePanel(): React.ReactElement {
     setBusy('Editing tile…')
     try {
       const k = keys()[imgProvider]
-      const [head, b64] = src.image.split(',', 2)
+      const bounded = await shrinkDataUrl(src.image, 1024, 0.9)
+      const [head, b64] = bounded.split(',', 2)
       const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/png'
       const fullPrompt =
         `Edit this seamless material texture tile: ${edit.prompt.trim()}. ` +

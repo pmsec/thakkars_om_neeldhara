@@ -42,8 +42,6 @@ export type Tool = 'select' | 'measure' | 'area' | 'markup' | 'calibrate'
 
 export type ViewId = 'plan' | 'model' | 'real' | 'split' | 'schedules' | 'integrity' | 'brief'
 
-/** The 2D tab: the CAD sheet verbatim, or the app's interactive derived model. */
-export type PlanMode = 'sheet' | 'model'
 
 export interface MeasureChain {
   id: string
@@ -93,12 +91,12 @@ export interface Sun {
 
 export interface PortalState {
   view: ViewId
-  planMode: PlanMode
   units: UnitSystem
   /** Round feet-inches to the nearest whole inch, as the Rev 4 sheet does. */
   roundToInch: boolean
   layers: Record<LayerId, boolean>
   tool: Tool
+  sheetLayers: Record<string, boolean>
   selectedRoom: string | null
   hoveredRoom: string | null
   measures: MeasureChain[]
@@ -131,7 +129,6 @@ export interface PortalState {
 }
 
 export const initialState: PortalState = {
-  planMode: 'sheet',
   view: 'plan',
   units: 'mm',
   roundToInch: false,
@@ -151,6 +148,7 @@ export const initialState: PortalState = {
     underlay: false,
   },
   tool: 'select',
+  sheetLayers: { floor: true, furniture: true, labels: true, dims: true, keepclear: true, ref: true, title: true },
   selectedRoom: null,
   hoveredRoom: null,
   measures: [],

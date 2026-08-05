@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Plan2D } from './render2d/Plan2D'
-import { SheetView } from './render2d/SheetView'
+import { SheetLayersPanel, SheetView } from './render2d/SheetView'
 import { Viewer3D } from './render3d/Viewer3D'
 import { Realistic } from './render3d/Realistic'
 import { IntegrityView } from './ui/IntegrityView'
@@ -8,12 +7,10 @@ import { Schedules } from './ui/Schedules'
 import { BriefView } from './ui/BriefView'
 import {
   ExportPanel,
-  LayersPanel,
   MarkupPanel,
   RoomInspector,
   ToolsPanel,
   TotalsPanel,
-  UnderlayPanel,
   View3DPanel,
 } from './ui/panels'
 import { initialState, StoreContext, type PortalState, type ViewId } from './ui/store'
@@ -90,24 +87,6 @@ export function App(): React.ReactElement {
               : `Model reconciles · ${integrity.passed}/${integrity.checks.length} checks`}
           </div>
 
-          {showsPlan && (
-            <div className="unitgroup" role="group" aria-label="2D plan source">
-              <button
-                aria-pressed={state.planMode === 'sheet'}
-                onClick={() => set({ planMode: 'sheet' })}
-                title="The CAD sheet, verbatim — exactly the current 2D plan"
-              >
-                CAD sheet
-              </button>
-              <button
-                aria-pressed={state.planMode === 'model'}
-                onClick={() => set({ planMode: 'model' })}
-                title="The app's interactive derived model — measure, layers, exports"
-              >
-                Interactive
-              </button>
-            </div>
-          )}
           {hasPanels && (
             <div className="unitgroup" role="group" aria-label="Sidebars">
               <button
@@ -153,11 +132,10 @@ export function App(): React.ReactElement {
         <div className="body">
           {hasPanels && state.panels.left && (
             <aside className="side no-print">
-              {showsPlan && state.planMode === 'model' && (
+              {showsPlan && (
                 <>
                   <ToolsPanel />
-                  <LayersPanel />
-                  <UnderlayPanel />
+                  <SheetLayersPanel />
                 </>
               )}
               {shows3d && <View3DPanel />}
@@ -186,12 +164,12 @@ export function App(): React.ReactElement {
                 ‹
               </button>
             )}
-            {state.view === 'plan' && (state.planMode === 'sheet' ? <SheetView /> : <Plan2D />)}
+            {state.view === 'plan' && <SheetView />}
             {state.view === 'model' && <Viewer3D />}
             {state.view === 'real' && <Realistic />}
             {state.view === 'split' && (
               <div className="split">
-                {state.planMode === 'sheet' ? <SheetView compact /> : <Plan2D compact />}
+                <SheetView compact />
                 <Viewer3D compact />
               </div>
             )}

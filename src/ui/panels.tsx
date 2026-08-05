@@ -9,6 +9,7 @@ import { building } from '../data/building'
 import { fixtures } from '../data/fixtures'
 import { formatArea, formatFeetInches, formatLength, formatMm, sqFt, sqM } from '../geometry/units'
 import { LAYER_LABELS, useStore, type LayerId } from './store'
+import sheetSvgRaw from '../assets/plan-sheet.svg?raw'
 import { exportMarkupPdf, exportPdf, PAPER, type PaperName } from '../export/pdf'
 import {
   download,
@@ -627,7 +628,7 @@ export function ExportPanel(): React.ReactElement {
         <button className="btn tiny" onClick={() => download('floor-plan-fabric.svg', exportSvg({ fabricOnly: true }), 'image/svg+xml')}>
           SVG (fabric)
         </button>
-        <button className="btn tiny" onClick={() => download('floor-plan.svg', exportSvg(sheetOpts), 'image/svg+xml')}>
+        <button className="btn tiny" onClick={() => download('cad-sheet.svg', sheetSvgRaw, 'image/svg+xml')}>
           SVG (full)
         </button>
         <button className="btn tiny" onClick={() => download('floor-plan-fabric.dxf', exportDxf({ fabricOnly: true }), 'application/dxf')}>
@@ -652,7 +653,9 @@ export function ExportPanel(): React.ReactElement {
         onClick={async () => {
           setBusy('png')
           try {
-            download(`floor-plan-${dpi}dpi-1-${scale}.png`, await exportPng(dpi, sheetOpts, scale))
+            download(`cad-sheet-${dpi}dpi-1-${scale}.png`, await exportPng(dpi, sheetOpts, scale))
+          } catch (err) {
+            window.alert(String(err instanceof Error ? err.message : err))
           } finally {
             setBusy('')
           }

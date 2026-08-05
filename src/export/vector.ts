@@ -3,6 +3,7 @@
  */
 
 import { buildSheet, type Prim, type SheetOptions } from './sheet'
+import sheetSvgRaw from '../assets/plan-sheet.svg?raw'
 import { getModel } from '../geometry/model'
 import { building } from '../data/building'
 import { formatFeetInches, sqFt, sqM } from '../geometry/units'
@@ -151,31 +152,55 @@ export function exportDxf(opts: Partial<SheetOptions> = {}): string {
  * Everything in the SVG is inline, so the canvas is never tainted and toBlob works from
  * a file:// origin.
  */
-export async function exportPng(dpi: number, opts: Partial<SheetOptions> = {}, scale = 75): Promise<Blob> {
+/**
+ * Rasterise THE CAD SHEET — the drawing the 2D tab shows — at the chosen DPI
+ * for the chosen paper width at the chosen scale.
+ *
+ * Silent-failure fixes, all found the hard way:
+ *   - a data: URI of a multi-hundred-kB SVG fails to load as an <img> on
+ *     some browsers; a Blob URL does not
+ *   - canvases above the platform limit (iOS Safari most of all) draw
+ *     nothing and toBlob() yields null, which the old code force-unwrapped;
+ *     the size now steps down until the canvas actually works, and a null
+ *     blob raises a real error instead of doing nothing
+ */
+export async function exportPng(dpi: number, _opts: Partial<SheetOptions> = {}, scale = 50): Promise<Blob> {
   const model = getModel()
   const bb = model.envelopeBBox
-  // Model mm -> paper mm at the drawing scale, then paper mm -> pixels at the DPI.
   const paperWmm = (bb.maxX - bb.minX + PAD * 2) / scale
-  const paperHmm = (bb.maxY - bb.minY + PAD * 2) / scale
-  const px = Math.round((paperWmm / 25.4) * dpi)
-  const py = Math.round((paperHmm / 25.4) * dpi)
+  const sheetAspect = 2675 / 4200
+  let px = Math.round((paperWmm / 25.4) * dpi)
 
-  const svg = exportSvg(opts)
-  const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
-  const img = new Image()
-  await new Promise<void>((resolve, reject) => {
-    img.onload = () => resolve()
-    img.onerror = () => reject(new Error('Could not rasterise the plan'))
-    img.src = url
-  })
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.min(px, 16000)
-  canvas.height = Math.min(py, 16000)
-  const ctx = canvas.getContext('2d')!
-  ctx.fillStyle = '#F5F3EE'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-  return new Promise((resolve) => canvas.toBlob((b) => resolve(b!), 'image/png'))
+  const svg = sheetSvgRaw
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
+  try {
+    const img = new Image()
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve()
+      img.onerror = () => reject(new Error('Could not rasterise the CAD sheet'))
+      img.src = url
+    })
+    // Step the size down until the platform accepts the canvas AND fills it.
+    for (; px >= 1000; px = Math.floor(px * 0.75)) {
+      const py = Math.round(px * sheetAspect)
+      if (px * py > 60_000_000 || px > 16000) continue
+      const canvas = document.createElement('canvas')
+      canvas.width = px
+      canvas.height = py
+      const ctx = canvas.getContext('2d')
+      if (!ctx) continue
+      ctx.fillStyle = '#faf8f4'
+      ctx.fillRect(0, 0, px, py)
+      ctx.drawImage(img, 0, 0, px, py)
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob((b) => resolve(b), 'image/png'),
+      )
+      if (blob && blob.size > 1000) return blob
+    }
+    throw new Error('This browser could not produce a canvas large enough for that DPI — try a lower one')
+  } finally {
+    URL.revokeObjectURL(url)
+  }
 }
 
 // ------------------------------------------------------------------------- CSV

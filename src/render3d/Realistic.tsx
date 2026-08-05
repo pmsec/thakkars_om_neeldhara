@@ -170,7 +170,7 @@ function woodTexture(): THREE.CanvasTexture {
 }
 
 // ------------------------------------------------------------- materials
-function makeMaterials() {
+export function makeMaterials() {
   const oak = oakTexture()
   const stone = stoneTexture()
   const grass = grassTexture()
@@ -215,7 +215,7 @@ function makeMaterials() {
     appliance: new THREE.MeshStandardMaterial({ color: 0xd8d5cc, roughness: 0.4, metalness: 0.25 }),
   }
 }
-type Mats = ReturnType<typeof makeMaterials>
+export type Mats = ReturnType<typeof makeMaterials>
 
 // ---------------------------------------------------------- scene build
 /** Drop near-duplicate vertices: boolean-derived outlines carry thousands of
@@ -251,7 +251,7 @@ function place(o: THREE.Object3D, cx: number, cy: number, h = 0): void {
   o.position.set(cx * S, h * S, cy * S)
 }
 
-function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
+export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
   const g = new THREE.Group()
   const w = f.w
   const d = f.d
@@ -440,7 +440,7 @@ function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
   }
 }
 
-function buildScene(M: Mats): THREE.Group {
+export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group {
   const root = new THREE.Group()
 
   // ---- floors, by finish
@@ -489,7 +489,7 @@ function buildScene(M: Mats): THREE.Group {
   }
 
   // ---- glass roofs
-  for (const roof of solids.roofs) {
+  for (const roof of opts.roofs === false ? [] : solids.roofs) {
     const [x0, y0, x1, y1] = roof.extent
     const h = (roof.height ?? model.data.levels.ceiling) * S
     const mesh = new THREE.Mesh(
@@ -518,7 +518,7 @@ function buildScene(M: Mats): THREE.Group {
 }
 
 // fixtures rendered simply
-function buildFixtures(M: Mats): THREE.Group {
+export function buildFixtures(M: Mats): THREE.Group {
   const g = new THREE.Group()
   for (const f of fixtures) {
     const [w, d] = f.size

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { SheetLayersPanel, SheetView } from './render2d/SheetView'
 import { Viewer3D } from './render3d/Viewer3D'
 import { Realistic } from './render3d/Realistic'
+import { TopView } from './render3d/TopView'
 import { IntegrityView } from './ui/IntegrityView'
 import { Schedules } from './ui/Schedules'
 import { BriefView } from './ui/BriefView'
@@ -19,6 +20,7 @@ import { building } from './data/building'
 
 const TABS: Array<[ViewId, string]> = [
   ['plan', '2D plan'],
+  ['top', 'Styled plan'],
   ['model', '3D model'],
   ['real', 'Walkthrough'],
   ['split', 'Split'],
@@ -165,6 +167,7 @@ export function App(): React.ReactElement {
               </button>
             )}
             {state.view === 'plan' && <SheetView />}
+            {state.view === 'top' && <TopView />}
             {state.view === 'model' && <Viewer3D />}
             {state.view === 'real' && <Realistic />}
             {state.view === 'split' && (

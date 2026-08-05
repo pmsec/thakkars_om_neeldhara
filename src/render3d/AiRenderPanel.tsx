@@ -14,6 +14,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react'
+import { deleteRender, listRenders, saveRender, type SavedRender } from './aiStore'
 
 export const DEFAULT_PROMPT =
   'Re-render this architectural floor-plan view photorealistically. Keep every wall, ' +
@@ -54,8 +55,12 @@ export function AiRenderPanel({
   const [modelsMsg, setModelsMsg] = useState('')
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT)
   const [busy, setBusy] = useState(false)
-  const [result, setResult] = useState<{ out: string; input: string } | null>(null)
+  const [result, setResult] = useState<{ out: string; input: string; prompt: string } | null>(null)
   const [overlay, setOverlay] = useState(0)
+  const [note, setNote] = useState('')
+  const [saveMsg, setSaveMsg] = useState('')
+  const [editPrompt, setEditPrompt] = useState('')
+  const [gallery, setGallery] = useState<SavedRender[] | null>(null)
 
   const saveKeys = (k: Keys): void => {
     setKeys(k)
@@ -95,6 +100,20 @@ export function AiRenderPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, provider])
 
+  /** One provider round trip: data-URL in, data-URL out. */
+  const requestRender = async (input: string, thePrompt: string): Promise<string> => {
+    const [head, b64] = input.split(',', 2)
+    const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/jpeg'
+    const r = await fetch('/api/ai-render', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-provider-key': keys[provider] },
+      body: JSON.stringify({ provider, model, prompt: thePrompt, image: b64, mime }),
+    })
+    const j = (await r.json()) as { image?: string; mime?: string; error?: string }
+    if (!r.ok || !j.image) throw new Error(j.error ?? `HTTP ${r.status}`)
+    return `data:${j.mime ?? 'image/png'};base64,${j.image}`
+  }
+
   const generate = async (): Promise<void> => {
     const input = capture()
     if (!input) {
@@ -107,21 +126,55 @@ export function AiRenderPanel({
     }
     setBusy(true)
     try {
-      const [head, b64] = input.split(',', 2)
-      const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/jpeg'
-      const r = await fetch('/api/ai-render', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-provider-key': keys[provider] },
-        body: JSON.stringify({ provider, model, prompt, image: b64, mime }),
-      })
-      const j = (await r.json()) as { image?: string; mime?: string; error?: string }
-      if (!r.ok || !j.image) throw new Error(j.error ?? `HTTP ${r.status}`)
-      setResult({ out: `data:${j.mime ?? 'image/png'};base64,${j.image}`, input })
+      const out = await requestRender(input, prompt)
+      setResult({ out, input, prompt })
       setOverlay(0)
+      setNote('')
+      setSaveMsg('')
+      setEditPrompt('')
     } catch (err) {
       window.alert(`Generation failed.\n\n${err instanceof Error ? err.message : String(err)}`)
     } finally {
       setBusy(false)
+    }
+  }
+
+  /** Send the GENERATED image back with an edit prompt — iterate to taste.
+   * The compare slider then compares against the version being edited. */
+  const refine = async (): Promise<void> => {
+    if (!result || !editPrompt.trim()) return
+    setBusy(true)
+    try {
+      const out = await requestRender(result.out, editPrompt.trim())
+      setResult({ out, input: result.out, prompt: editPrompt.trim() })
+      setOverlay(0)
+      setSaveMsg('')
+      setEditPrompt('')
+    } catch (err) {
+      window.alert(`Edit failed.\n\n${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const saveCurrent = async (): Promise<void> => {
+    if (!result) return
+    try {
+      await saveRender({
+        at: Date.now(), note: note.trim(), provider, model,
+        prompt: result.prompt, out: result.out, input: result.input,
+      })
+      setSaveMsg('Saved ✓')
+    } catch (err) {
+      setSaveMsg(`Could not save: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
+  const openGallery = async (): Promise<void> => {
+    try {
+      setGallery(await listRenders())
+    } catch (err) {
+      window.alert(`Could not open saved renders.\n\n${err instanceof Error ? err.message : String(err)}`)
     }
   }
 
@@ -194,6 +247,9 @@ export function AiRenderPanel({
           <button style={{ width: '100%', padding: '7px 0' }} disabled={busy} onClick={() => void generate()}>
             {busy ? 'Generating… (10–30 s)' : 'Generate'}
           </button>
+          <button style={{ width: '100%', marginTop: 6 }} onClick={() => void openGallery()}>
+            Saved renders…
+          </button>
 
           <div style={{ marginTop: 10, borderTop: '1px solid #e2dac8', paddingTop: 8 }}>
             <button onClick={() => setShowKeys(!showKeys)}>
@@ -246,16 +302,91 @@ export function AiRenderPanel({
               type="range" min={0} max={1} step={0.01} value={overlay}
               onChange={(e) => setOverlay(Number(e.target.value))}
               style={{ width: 220 }}
-              title="Fade the true render over the AI image to check for drift"
+              title="Fade the source image over the AI image to check for drift"
             />
-            <span>True render</span>
+            <span>Source</span>
             <a href={result.out} download="ai-render.png">
               <button>Download</button>
             </a>
             <button onClick={() => setResult(null)}>Close</button>
           </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: 'min(760px, 96%)' }}>
+            <input
+              value={note}
+              onChange={(e) => { setNote(e.target.value); setSaveMsg('') }}
+              placeholder="Note for this render (e.g. “warm evening, best floor so far”)"
+              style={{ flex: 1, minWidth: 0, fontSize: 13, padding: '5px 8px' }}
+            />
+            <button disabled={busy} onClick={() => void saveCurrent()}>Save</button>
+            {saveMsg && <span style={{ color: '#bfd8b0', fontSize: 12, whiteSpace: 'nowrap' }}>{saveMsg}</span>}
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: 'min(760px, 96%)' }}>
+            <input
+              value={editPrompt}
+              onChange={(e) => setEditPrompt(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !busy) void refine() }}
+              placeholder="Edit this image: describe one change (e.g. “make the rug deep blue”)"
+              style={{ flex: 1, minWidth: 0, fontSize: 13, padding: '5px 8px' }}
+            />
+            <button disabled={busy || !editPrompt.trim()} onClick={() => void refine()}>
+              {busy ? 'Working…' : 'Refine'}
+            </button>
+          </div>
           <div style={{ color: '#cfc6b2', fontSize: 12 }}>
-            Slide to compare against the true render — never measure from the AI image.
+            Slide to compare against the source — never measure from the AI image. Refine sends
+            THIS image back to the model with your edit; the slider then compares to the version you edited.
+          </div>
+        </div>
+      )}
+
+      {gallery && (
+        <div
+          style={{
+            position: 'absolute', inset: 0, background: 'rgba(30,28,24,0.92)', zIndex: 30,
+            display: 'flex', flexDirection: 'column', padding: 18, gap: 10, overflowY: 'auto',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#f3ecdd' }}>
+            <b>Saved renders ({gallery.length})</b>
+            <button onClick={() => setGallery(null)}>Close</button>
+          </div>
+          {gallery.length === 0 && (
+            <div style={{ color: '#cfc6b2' }}>
+              Nothing saved yet — generate a render, add a note and press Save.
+            </div>
+          )}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+            {gallery.map((r) => (
+              <div key={r.id} style={{ background: 'rgba(250,248,244,0.96)', borderRadius: 8, padding: 8, fontSize: 12 }}>
+                <img
+                  src={r.out}
+                  style={{ width: '100%', borderRadius: 4, cursor: 'pointer', display: 'block' }}
+                  title="Open with the compare slider"
+                  onClick={() => {
+                    setResult({ out: r.out, input: r.input, prompt: r.prompt })
+                    setOverlay(0)
+                    setNote(r.note)
+                    setSaveMsg('')
+                    setEditPrompt('')
+                    setGallery(null)
+                  }}
+                />
+                <div style={{ margin: '6px 0 2px', fontWeight: 600 }}>{r.note || '(no note)'}</div>
+                <div style={{ color: '#6d6558' }}>
+                  {new Date(r.at).toLocaleString()} · {r.provider} · {r.model}
+                </div>
+                <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                  <a href={r.out} download={`ai-render-${r.id}.png`}><button>Download</button></a>
+                  <button
+                    onClick={() => {
+                      void deleteRender(r.id).then(openGallery)
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

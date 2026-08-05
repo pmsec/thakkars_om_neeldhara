@@ -73,11 +73,44 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
   const outerRef = useRef<HTMLDivElement | null>(null)
   const sheetRef = useRef<HTMLDivElement | null>(null)
   const [view, setView] = useState({ x: 0, y: 0, z: 0.35 })
+  const [fetched, setFetched] = useState<{ svg: string; note: string; newer: boolean } | null>(null)
+  const [fetching, setFetching] = useState(false)
   const [cursor, setCursor] = useState<Pt | null>(null)          // mm
   const [live, setLive] = useState<Pt[]>([])                     // mm, active chain
   const drag = useRef<{ px: number; py: number; x: number; y: number; moved: boolean } | null>(null)
   const sheetLayers = state.sheetLayers
   const snaps = useMemo(snapPoints, [])
+
+  const fetchLatest = useCallback(async (): Promise<void> => {
+    setFetching(true)
+    try {
+      const res = await fetch('/api/plan', { cache: 'no-store' })
+      const body = (await res.json()) as {
+        svg?: string
+        commit?: { sha: string; date: string; message: string } | null
+        error?: string
+      }
+      if (!res.ok || !body.svg) {
+        throw new Error(body.error ?? `The plan endpoint returned ${res.status}`)
+      }
+      const newer = body.svg !== sheetSvg
+      const when = body.commit?.date ? new Date(body.commit.date).toLocaleString() : 'unknown date'
+      setFetched({
+        svg: body.svg,
+        note: body.commit
+          ? `Sheet ${body.commit.sha} · ${when} · ${body.commit.message}`
+          : 'Latest sheet fetched',
+        newer,
+      })
+    } catch (err) {
+      window.alert(
+        `Could not fetch the latest plan.\n\n${err instanceof Error ? err.message : String(err)}\n\n` +
+          'The button needs the deployed /api/plan function and a GITHUB_TOKEN in the Vercel project settings.',
+      )
+    } finally {
+      setFetching(false)
+    }
+  }, [])
 
   const fit = useCallback((): void => {
     const el = outerRef.current
@@ -96,7 +129,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
       const g = root.querySelector<SVGGElement>(`#L-${l.id}`)
       if (g) g.style.display = sheetLayers[l.id] ? '' : 'none'
     }
-  }, [sheetLayers])
+  }, [sheetLayers, fetched])
 
   const screenToMm = useCallback(
     (clientX: number, clientY: number): Pt => {
@@ -148,6 +181,9 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
+      // capturing the pointer on the container would steal the click from
+      // the toolbar buttons layered over the sheet — leave their events alone
+      if ((e.target as HTMLElement).closest('button, select, input, a, label')) return
       ;(e.currentTarget as Element).setPointerCapture?.(e.pointerId)
       drag.current = { px: e.clientX, py: e.clientY, x: view.x, y: view.y, moved: false }
     },
@@ -293,7 +329,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
           boxShadow: '0 2px 18px rgba(40,34,24,0.18)',
         }}
       >
-        <div ref={sheetRef} dangerouslySetInnerHTML={{ __html: sheetSvg }} />
+        <div ref={sheetRef} dangerouslySetInnerHTML={{ __html: fetched?.svg ?? sheetSvg }} />
 
         {/* the tool overlay shares the sheet's pixel frame exactly */}
         <svg
@@ -403,10 +439,26 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
               </button>
             ))}
             <span style={{ width: 1, background: '#d5cdbb', margin: '2px 3px' }} />
+            <button onClick={() => void fetchLatest()} disabled={fetching}
+              title="Pull the newest sheet straight from the CAD branch, without waiting for a redeploy">
+              {fetching ? 'Fetching…' : 'Fetch latest plan'}
+            </button>
+            <span style={{ width: 1, background: '#d5cdbb', margin: '2px 3px' }} />
             <button onClick={() => setView((v) => zoomAbout(outerRef.current!, v, 1.3))} title="Zoom in">＋</button>
             <button onClick={() => setView((v) => zoomAbout(outerRef.current!, v, 1 / 1.3))} title="Zoom out">－</button>
             <button onClick={fit} title="Fit the sheet">Fit</button>
           </div>
+          {fetched && (
+            <div className="tiny" style={{ position: 'absolute', top: 56, left: 10, padding: '5px 10px',
+              background: fetched.newer ? 'rgba(255,244,214,0.96)' : 'rgba(232,240,229,0.96)',
+              border: `1px solid ${fetched.newer ? '#c9a227' : '#7d9a72'}`, borderRadius: 5,
+              color: '#5a5142', maxWidth: 520 }}>
+              {fetched.note}
+              {fetched.newer &&
+                ' — newer than this build: the sheet is current, but the room inspector, 3D and walkthrough follow on the next deploy.'}
+              {!fetched.newer && ' — this build is already up to date.'}
+            </div>
+          )}
           <div className="tiny" style={{ position: 'absolute', bottom: 10, left: 10, padding: '5px 10px',
             background: 'rgba(250,248,244,0.92)', border: '1px solid #d5cdbb', borderRadius: 5, color: '#6d6558' }}>
             {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel to zoom · click a room to inspect.'}

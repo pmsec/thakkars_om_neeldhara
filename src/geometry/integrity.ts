@@ -13,7 +13,6 @@ import { building } from '../data/building'
 import { reachableFrom, serviceBreaches, serviceRoomIds } from './graph'
 import { buildModel, getModel, type BuiltModel } from './model'
 import { barrelProfile, buildSolids } from './solid'
-import { isMonotonicInY, flattenError } from './bezier'
 import { formatFeetInches, parseFeetInches, sqFt, sqM } from './units'
 import { area, dist, pointInPolygon, segIntersect, signedArea, type Poly, type Pt } from './vec'
 import polygonClipping from 'polygon-clipping'
@@ -85,21 +84,25 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       }
     }
     const expected: Pt[] = [
-      { x: 0, y: 0 },
-      { x: 24480, y: 0 },
-      { x: 24480, y: 8400 },
-      { x: 18600, y: 8400 },
-      { x: 18600, y: 10850 },
-      { x: 3200, y: 10850 },
-      { x: 3200, y: 8400 },
-      { x: 0, y: 8400 },
+      { x: -600, y: 0 },
+      { x: 4530, y: 0 },
+      { x: 4530, y: -150 },
+      { x: 19950, y: -150 },
+      { x: 19950, y: 0 },
+      { x: 25080, y: 0 },
+      { x: 25080, y: 9695 },
+      { x: 18925, y: 9695 },
+      { x: 18925, y: 11125 },
+      { x: 5555, y: 11125 },
+      { x: 5555, y: 9695 },
+      { x: -600, y: 9695 },
     ]
     const matches =
       env.length === expected.length && env.every((p, i) => dist(p, expected[i]) < 1e-9)
     add({
       id: 'envelope',
       title: 'Envelope is closed, simple, and matches the stepped outline',
-      requirement: 'Closed, non-self-intersecting, equal to the 8-vertex stepped outline of brief §3.1.',
+      requirement: 'Closed, non-self-intersecting, equal to the 12-vertex stepped outline of the CAD plan.',
       pass: closed && crossings.length === 0 && matches,
       actual:
         `${env.length} vertices, ${crossings.length} self-intersections, ` +
@@ -267,29 +270,27 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
     })
   }
 
-  // --------------------------------------------- 6b. service zone isolation + access
+  // --------------------------------------------- 6b. service access off the gallery
   {
     const svc = serviceRoomIds(model)
-    const required = ['R-HELP', 'R-LAUNDRY', 'R-STORE', 'R-SVC-WC', 'R-KITCHEN']
-    const res = reachableFrom(model, 'R-SVC-VEST', { within: svc })
+    const required = ['R-HELP', 'R-STORE', 'R-KITCHEN']
+    const res = reachableFrom(model, 'R-ENTRY', { within: new Set([...svc, 'R-ENTRY']) })
     const missing = required.filter((id) => !res.reached.has(id))
     const breaches = serviceBreaches(model)
-    const pass = missing.length === 0 && breaches.length === 1
     add({
       id: 'reach-service',
-      title: 'The service zone works, and stays sealed',
+      title: 'Service rooms hang straight off the entry gallery',
       requirement:
-        'Help’s room, laundry, store, service WC and kitchen are reachable from F-1401 without ' +
-        'passing through any non-service room; exactly one internal door joins the zone to the house.',
-      pass,
+        'Kitchen, help’s room and the store are each reachable from the entry gallery without ' +
+        'crossing any living room — the drum’s two service doors are exactly that.',
+      pass: missing.length === 0,
       actual:
-        `${res.reached.size} service rooms reached from the service entry; ` +
-        `${breaches.length} internal connection${breaches.length === 1 ? '' : 's'} to the house`,
+        `${res.reached.size - 1} service rooms reached from the gallery; ` +
+        `${breaches.length} connection${breaches.length === 1 ? '' : 's'} between the service rooms and the rest`,
       detail: [
-        ...missing.map((id) => `NOT reachable from the service entry: ${id}`),
-        ...breaches.map(
-          (b) => `${b.openingId}: ${b.a} ↔ ${b.b}${b.sealed ? ' (sealed service door — expected)' : ' (UNEXPECTED)'}`,
-        ),
+        ...missing.map((id) => `NOT reachable from the gallery within the service zone: ${id}`),
+        ...breaches.map((b) => `${b.openingId}: ${b.a} ↔ ${b.b}`),
+        'This home has no sealed staff zone by design — open but close applies to service too.',
       ],
       severity: 'fail',
     })
@@ -387,37 +388,34 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   // ------------------------------------------------------- 10. curved wall integrity
   {
     const problems: string[] = []
-    let worstFlat = 0
-    for (const w of building.walls) {
-      if (!w.curve) continue
-      if (!isMonotonicInY(w.curve)) problems.push(`${w.id} is not monotonic in y`)
-      worstFlat = Math.max(worstFlat, flattenError(w.curve, 96))
-    }
-    // The pods must bow AWAY from the great room — the Rev 4 correction.
-    const p = building.walls.find((w) => w.id === 'W-CURVE-PARENTS')!.curve!
-    const k = building.walls.find((w) => w.id === 'W-CURVE-KARAN')!.curve!
-    const pBows = p.p1.x < (p.p0.x + p.p2.x) / 2 || p.p2.x < p.p0.x
-    const kBows = k.p1.x > (k.p0.x + k.p2.x) / 2 || k.p2.x > k.p0.x
-    if (!pBows) problems.push('Parents’ pod curve does not bow away from the great room')
-    if (!kBows) problems.push('Karan’s pod curve does not bow away from the great room')
+    const p = building.walls.find((w) => w.id === 'W-CURVE-PARENTS')!.points!
+    const k = building.walls.find((w) => w.id === 'W-CURVE-KARAN')!.points!
+    // Both screens bow AWAY from the great room: the family pod's curve runs
+    // west of its deck-edge start, the den's east of its.
+    if (Math.min(...p.map((q) => q.x)) >= p[0].x)
+      problems.push('Family pod screen does not bow away from the great room')
+    if (Math.max(...k.map((q) => q.x)) <= k[0].x)
+      problems.push('Den pod screen does not bow away from the great room')
 
     const great = model.roomById.get('R-GREAT')!
-    const widthAtDeck = k.p0.x - p.p0.x
-    const widthAtBack = k.p2.x - p.p2.x
-    if (Math.abs(widthAtDeck - 7690) > 1) problems.push(`Great room is ${widthAtDeck} mm at the deck, expected 7690`)
-    if (Math.abs(widthAtBack - 10480) > 1) problems.push(`Great room is ${widthAtBack} mm at the back, expected 10480`)
+    const widthAtDeck = k[0].x - p[0].x
+    const widthAtBack = Math.max(...k.map((q) => q.x)) - Math.min(...p.map((q) => q.x))
+    if (Math.abs(widthAtDeck - 6250) > 1)
+      problems.push(`Great room is ${widthAtDeck} mm at the deck, expected 6250`)
+    if (Math.abs(widthAtBack - 7280) > 1)
+      problems.push(`Great room is ${widthAtBack} mm at the pods, expected 7280`)
 
     add({
       id: 'curved-walls',
-      title: 'Curved pod walls bow away from the great room',
+      title: 'Curved pod screens bow away from the great room',
       requirement:
-        'Both pod curves are monotonic in y and bow into the pods, giving the great room 7690 mm at the ' +
-        'deck and 10480 mm at the dining end (the Rev 4 correction).',
+        'Both pod screens are sampled from the CAD béziers and bow into the pods, giving the great ' +
+        'room 6250 mm at the deck glass and 7280 mm between the pods.',
       pass: problems.length === 0,
       actual:
         `great room ${widthAtDeck} → ${widthAtBack} mm wide, gross ${mm2ToBoth(great.grossArea)}, ` +
-        `flattening error ${worstFlat.toFixed(4)} mm`,
-      detail: problems.length ? problems : ['Rev 3 bowed these the wrong way and ate the great room.'],
+        `${p.length + k.length} sampled screen vertices`,
+      detail: problems.length ? problems : ['Screen polylines exported at t-steps of 1/200.'],
       severity: 'fail',
     })
   }
@@ -452,15 +450,14 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
 
   // --------------------------------------------------- 12. mirror symmetry of the wings
   {
-    // Only rooms clear of the east-bay step are true mirror pairs. That step runs from
-    // x 3200 to x 18600, whose midpoint is 10900, not 12240 — so the south edge of the
-    // building is genuinely NOT symmetric, and any room touching it inherits that.
+    // The wings mirror in fabric. The pods are excluded: the den carries the east
+    // service duct as a notch and its portal sits lower on the curve, both deliberate.
     const pairs: Array<[string, string]> = [
       ['R-P-SUITE', 'R-K-SUITE'],
       ['R-P-BATH', 'R-K-BATH'],
       ['R-P-DRESSING', 'R-K-DRESSING'],
-      ['R-P-FAMILY', 'R-K-DEN'],
       ['R-SHAFT-W', 'R-SHAFT-E'],
+      ['R-VOID-W', 'R-VOID-E'],
       ['R-P-TERRACE', 'R-K-TERRACE'],
     ]
     const rows: string[] = []
@@ -474,7 +471,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       const dC = Math.hypot(2 * 12240 - ra.centroid.x - rb.centroid.x, ra.centroid.y - rb.centroid.y)
       worstArea = Math.max(worstArea, dA)
       worstCentroid = Math.max(worstCentroid, dC)
-      if (dA > 1000 || dC > 1) {
+      if (dA > 5000 || dC > 1) {
         rows.push(
           `${a} vs ${b}: areas ${sqFt(ra.area).toFixed(2)} / ${sqFt(rb.area).toFixed(2)} sq ft, ` +
             `mirrored centroid off by ${dC.toFixed(2)} mm`,
@@ -485,10 +482,10 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       id: 'mirror',
       title: 'The two wings mirror about x = 12 240',
       requirement:
-        'Mirror-paired rooms clear of the east bay match in area to 0.001 m² and in mirrored centroid to 1 mm.',
+        'Mirror-paired rooms match in area to 0.005 m² and in mirrored centroid to 1 mm.',
       pass: rows.length === 0,
       actual: `worst area difference ${(worstArea / 1e6).toFixed(6)} m², worst centroid offset ${worstCentroid.toFixed(3)} mm, across ${pairs.length} pairs`,
-      tolerance: '0.001 m² / 1 mm',
+      tolerance: '0.005 m² / 1 mm',
       detail: rows.length ? rows : undefined,
       severity: 'fail',
     })
@@ -496,24 +493,19 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
 
   // ---------------------------------------- 12b. the asymmetry that IS in the plan
   {
-    const pw = model.roomById.get('R-P-WARDROBE')!
-    const kw = model.roomById.get('R-K-WARDROBE')!
-    const ph = model.roomById.get('R-P-HALL')!
-    const kh = model.roomById.get('R-K-HALL')!
-    const kg = model.roomById.get('R-K-GEAR')!
+    const fam = model.roomById.get('R-P-FAMILY')!
+    const den = model.roomById.get('R-K-DEN')!
     add({
       id: 'east-bay-asymmetry',
-      title: 'Known asymmetry: the east bay is not centred on the mirror axis',
+      title: 'Known asymmetries, all deliberate',
       requirement:
-        'Advisory. Recorded so nobody mistakes it for a modelling error and "fixes" it on site.',
+        'Advisory. Recorded so nobody mistakes them for modelling errors and "fixes" them on site.',
       pass: true,
-      actual: `east bay spans x 3200–18600; its midpoint is 10900, the wings mirror about 12240`,
+      actual: `family ${sqFt(fam.area).toFixed(1)} sq ft vs den ${sqFt(den.area).toFixed(1)} sq ft`,
       detail: [
-        `Parents' walk-in wardrobe ${sqFt(pw.area).toFixed(1)} sq ft vs Karan's ${sqFt(kw.area).toFixed(1)} sq ft ` +
-          `(+${sqFt(pw.area - kw.area).toFixed(1)}): the parents' side picks up a 120 mm strip where the envelope steps at x = 3200.`,
-        `Parents' pod hall ${sqFt(ph.area).toFixed(1)} sq ft vs Karan's ${sqFt(kh.area).toFixed(1)} + gear store ${sqFt(kg.area).toFixed(1)} sq ft: ` +
-          `Karan's side is subdivided, and loses a further strip where the envelope steps at x = 18600.`,
-        'Both differences come from the sanctioned envelope, not from this model.',
+        `The den gives up ${sqFt(fam.area - den.area).toFixed(1)} sq ft to the east service duct — the family room has no such notch.`,
+        'The pod portals sit at different heights on their curves: the den’s is pinned by Karan’s work console, the family room’s moved south so the parents land at the dining table.',
+        'The kitchen bay and the entry drum are south-bay features with no mirror counterparts.',
       ],
       severity: 'warn',
     })

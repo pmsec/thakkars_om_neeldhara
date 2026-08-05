@@ -87,15 +87,15 @@ describe('model construction invariants', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('all authored lengths are integer millimetres, bar the two curve tangency points', () => {
-    // W-P-POD-MID and W-K-POD-MID terminate on the Bézier, whose x at y = 4900 is not an
-    // integer. Those are the only permitted non-integers, and they are derived, not chosen.
-    const allowed = new Set(['W-P-POD-MID', 'W-K-POD-MID'])
+  it('every authored coordinate is finite and inside the site', () => {
+    // The data is GENERATED from the CAD design: curved walls arrive as
+    // sampled polylines, so non-integer millimetres are expected. What must
+    // still hold is that every coordinate is a real number on the plot.
     const offenders: string[] = []
     for (const w of building.walls) {
-      if (!w.points || allowed.has(w.id)) continue
-      for (const p of w.points) {
-        if (!Number.isInteger(p.x) || !Number.isInteger(p.y)) {
+      for (const p of w.points ?? []) {
+        if (!Number.isFinite(p.x) || !Number.isFinite(p.y) ||
+            Math.abs(p.x) > 50000 || Math.abs(p.y) > 50000) {
           offenders.push(`${w.id} (${p.x}, ${p.y})`)
         }
       }

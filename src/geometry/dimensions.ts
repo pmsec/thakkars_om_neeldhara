@@ -71,8 +71,8 @@ function chain(
 export function buildDimensions(model: BuiltModel): DimChain[] {
   const bb = model.envelopeBBox
   // Deck band / main body / east bay divisions, read off the fabric.
-  const deckLine = wallY(model, 'TH-GREAT-DECK') // y = 2620
-  const bodyLine = wallY(model, 'W-GREAT-S') // y = 8400
+  const deckLine = wallY(model, 'G-GREAT-DECK') // y = 2545, the deck glass line
+  const bodyLine = wallY(model, 'W-HELP-N') // y = 8462.5, the body's south line
 
   const out: DimChain[] = []
 
@@ -85,10 +85,10 @@ export function buildDimensions(model: BuiltModel): DimChain[] {
       -900,
       [
         { at: bb.minX },
-        { at: wallX(model, 'V-SHAFT-W-1') },
-        { at: wallX(model, 'V-SHAFT-W-2') },
-        { at: wallX(model, 'V-SHAFT-E-2'), label: 'CONTINUOUS DECK' },
-        { at: wallX(model, 'V-SHAFT-E-1') },
+        { at: wallX(model, 'W-SHAFT-W-W') },
+        { at: wallX(model, 'W-SHAFT-W-E'), label: 'SEALED SHAFT' },
+        { at: wallX(model, 'W-SHAFT-E-W'), label: 'CONTINUOUS DECK' },
+        { at: wallX(model, 'W-SHAFT-E-E'), label: 'SEALED SHAFT' },
         { at: bb.maxX },
       ],
       bb.minY,

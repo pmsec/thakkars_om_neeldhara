@@ -276,7 +276,6 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
   const d = f.d
   const cx = f.x + w / 2
   const cy = f.y + d / 2
-  const along = w >= d // long axis east-west?
 
   // A piece with its drawn 2D outline extrudes THAT — the shape on the sheet,
   // clipped at the walls — instead of a box that squares its curves back off.
@@ -324,10 +323,13 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     }
     case 'lounger': {
       g.add(box(w, 380, d, M.fabric, 0, 190, 0))
-      // inclined back toward the face direction
-      const backLen = (along ? w : d) * 0.45
+      // inclined back toward the face direction — the back's long side runs
+      // ACROSS the face axis (by face, not by aspect: a deep W-facing chair
+      // still reclines along x)
+      const ewL = f.face === 'E' || f.face === 'W'
+      const backLen = (ewL ? w : d) * 0.45
       const bk = new THREE.Mesh(
-        new THREE.BoxGeometry((along ? backLen : w * 0.9) * S, 90 * S, (along ? d * 0.9 : backLen) * S),
+        new THREE.BoxGeometry((ewL ? backLen : w * 0.9) * S, 90 * S, (ewL ? d * 0.9 : backLen) * S),
         M.fabricDark,
       )
       bk.castShadow = true
@@ -343,16 +345,23 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     case 'bed': {
       g.add(box(w, 260, d, M.timber, 0, 130, 0))                      // frame
       g.add(box(w - 60, 210, d - 60, M.duvet, 0, 260 + 105, 0))      // mattress+duvet
-      // pillows at the head (by face: the head is where the bed FACES from)
+      // pillows at the head (by face: the head is where the bed FACES from).
+      // The head axis follows the face — E/W heads run along x, N/S along y —
+      // and a cabinet too shallow for pillows (the folded murphy) gets none,
+      // exactly as the 2D draws the folded-down bed dashed, i.e. not there.
       const ph = 260 + 210 + 70
-      const pw = Math.min(560, (along ? d : w) / 2 - 80)
-      const off = (along ? w : d) / 2 - 260
-      const pos: Array<[number, number]> =
-        f.face === 'E' ? [[-off, -pw * 0.7], [-off, pw * 0.7]]
-        : f.face === 'W' ? [[off, -pw * 0.7], [off, pw * 0.7]]
-        : f.face === 'S' ? [[-pw * 0.7, -off], [pw * 0.7, -off]]
-        : [[-pw * 0.7, off], [pw * 0.7, off]]
-      for (const [px, pz] of pos) g.add(box(pw, 140, 360, M.pillow, px, ph, pz))
+      const ew = f.face === 'E' || f.face === 'W'
+      const pw = Math.min(560, (ew ? d : w) / 2 - 80)
+      const off = (ew ? w : d) / 2 - 260
+      if (off > 80 && pw > 80) {
+        const pos: Array<[number, number]> =
+          f.face === 'E' ? [[-off, -pw * 0.7], [-off, pw * 0.7]]
+          : f.face === 'W' ? [[off, -pw * 0.7], [off, pw * 0.7]]
+          : f.face === 'S' ? [[-pw * 0.7, -off], [pw * 0.7, -off]]
+          : [[-pw * 0.7, off], [pw * 0.7, off]]
+        for (const [px, pz] of pos)
+          g.add(box(ew ? 360 : pw, 140, ew ? pw : 360, M.pillow, px, ph, pz))
+      }
       place(g, cx, cy)
       return g
     }
@@ -365,32 +374,40 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'dining': {
+      // The TABLE ONLY — its chairs are their own items now, exported one per
+      // chair the sheet draws. The 3D never invents seating again: a seat
+      // count was a hint, and hints drift; drawn rectangles cannot.
+      if (f.poly) {
+        const top = polyPiece(f.poly, 690, 750, M.timber)
+        if (top) g.add(top)
+        for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+          const leg = box(70, 690, 70, M.timber)
+          place(leg, cx + sx * w * 0.26, cy + sz * d * 0.3, 345)
+          g.add(leg)
+        }
+        return g
+      }
       g.add(box(w, 60, d, M.timber, 0, 750, 0))
       for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
         g.add(box(70, 750, 70, M.timber, sx * (w / 2 - 90), 375, sz * (d / 2 - 90)))
       }
-      // chairs
-      const [perLong, perShort] = f.seats ?? [2, 1]
-      const chair = (x: number, z: number, rot: number): void => {
-        const c = new THREE.Group()
-        c.add(box(430, 60, 430, M.fabricDark, 0, 440, 0))
-        c.add(box(430, 420, 60, M.fabricDark, 0, 660, -215 + 30))
-        for (const [lx, lz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const)
-          c.add(box(45, 440, 45, M.timber, lx * 180, 220, lz * 180))
-        c.position.set(x * S, 0, z * S)
-        c.rotation.y = rot
-        g.add(c)
-      }
-      for (let i = 0; i < perLong; i++) {
-        const x = -w / 2 + ((i + 0.5) * w) / perLong
-        chair(x, d / 2 + 260, Math.PI)
-        chair(x, -d / 2 - 260, 0)
-      }
-      for (let i = 0; i < perShort; i++) {
-        const z = -d / 2 + ((i + 0.5) * d) / perShort
-        chair(-w / 2 - 260, z, Math.PI / 2)
-        chair(w / 2 + 260, z, -Math.PI / 2)
-      }
+      place(g, cx, cy)
+      return g
+    }
+    case 'chair': {
+      // One drawn chair: seat and legs inside its rectangle, back on the side
+      // away from `face` (the way the sitter looks — at the table).
+      const seat = Math.min(w, d) - 30
+      g.add(box(seat, 60, seat, M.fabricDark, 0, 440, 0))
+      for (const [lx, lz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const)
+        g.add(box(45, 440, 45, M.timber, lx * (seat / 2 - 35), 220, lz * (seat / 2 - 35)))
+      const bh = Math.min(f.height, 900)
+      const back =
+        f.face === 'E' ? box(60, bh - 440, seat, M.fabricDark, -w / 2 + 30, (bh + 440) / 2, 0)
+        : f.face === 'W' ? box(60, bh - 440, seat, M.fabricDark, w / 2 - 30, (bh + 440) / 2, 0)
+        : f.face === 'S' ? box(seat, bh - 440, 60, M.fabricDark, 0, (bh + 440) / 2, -d / 2 + 30)
+        : box(seat, bh - 440, 60, M.fabricDark, 0, (bh + 440) / 2, d / 2 - 30)
+      g.add(back)
       place(g, cx, cy)
       return g
     }

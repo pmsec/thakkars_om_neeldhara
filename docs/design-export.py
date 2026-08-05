@@ -805,7 +805,35 @@ def emit_furniture():
         if base == 'fountain':
             label, h = 'Marble fountain', 420
         face = FACE.get(suff or '', None)
-        seats = (2, 1) if mapped == 'dining' else None
+        # A dining group is DECOMPOSED: the table with its true drawn outline
+        # (superellipse or round), and every chair the symbol draws as its own
+        # item, exactly where and how many the sheet shows. The 3D renders
+        # these; it no longer invents a chair arrangement from a seat count.
+        if mapped == 'dining':
+            prims = SY.symbol(kind, a, b, c, d)
+            top = prims[0]
+            if top[0] == 'circle':
+                _, ccx, ccy, r, _ = top
+                outline = [(ccx + r * math.cos(math.radians(t)),
+                            ccy + r * math.sin(math.radians(t)))
+                           for t in range(0, 360, 10)]
+            elif top[0] == 'poly':
+                outline = top[1]
+            else:
+                outline = None
+            add('dining', a, b, c - a, d - b, room, label, h, poly=outline)
+            tcx, tcy = (a + c) / 2, (b + d) / 2
+            for p in prims[1:]:
+                if p[0] != 'rect' or p[-1] != 'solid':
+                    continue
+                _, x0, y0, x1, y1, _ = p
+                dxc, dyc = tcx - (x0 + x1) / 2, tcy - (y0 + y1) / 2
+                cface = (('E' if dxc > 0 else 'W') if abs(dxc) >= abs(dyc)
+                         else ('S' if dyc > 0 else 'N'))
+                add('chair', x0, y0, x1 - x0, y1 - y0,
+                    room_for((x0 + x1) / 2, (y0 + y1) / 2),
+                    'Dining chair', 880, face=cface)
+            continue
         # The drawn outline, from the SAME symbol code the 2D sheet uses: a
         # rounded or curved piece carries its true polygon, so the 3D cannot
         # square it back off. Only for kinds the app extrudes as one slab —
@@ -815,7 +843,7 @@ def emit_furniture():
         if mapped in ('console', 'table', 'wardrobe', 'shelves', 'stool',
                       'bench'):
             outline = outline_of(SY.symbol(kind, a, b, c, d))
-        add(mapped, a, b, c - a, d - b, room, label, h, face, seats,
+        add(mapped, a, b, c - a, d - b, room, label, h, face,
             poly=outline)
 
     # the retrofit set, boxed
@@ -867,7 +895,8 @@ def emit_furniture():
     A("export type FurnitureKind =")
     A("  | 'sofa' | 'bed' | 'daybed' | 'armchair' | 'table' | 'console'")
     A("  | 'bench' | 'stool' | 'lounger' | 'rug' | 'plant' | 'tree'")
-    A("  | 'shelves' | 'dining' | 'drumkit' | 'guitar' | 'stair' | 'wardrobe'")
+    A("  | 'shelves' | 'dining' | 'chair' | 'drumkit' | 'guitar' | 'stair'")
+    A("  | 'wardrobe'")
     A('')
     A('export interface FurnitureItem {')
     A('  id: string')

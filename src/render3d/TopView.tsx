@@ -19,7 +19,8 @@ import { S } from './prism'
 import { buildFixtures, buildScene, furnitureMesh, makeMaterials } from './Realistic'
 import { AiRenderPanel } from './AiRenderPanel'
 import { StylePanel } from './StylePanel'
-import { primeStyle } from './styleOverrides'
+import { getAssign, primeStyle } from './styleOverrides'
+import { lightRig } from './lighting'
 
 const model = getModel()
 
@@ -46,12 +47,13 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    const rig = lightRig(getAssign().lighting ?? null, 'top')
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.08
+    renderer.toneMappingExposure = rig.exposure
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xd8d2c4)      // the mat around the plan
+    scene.background = new THREE.Color(rig.background)   // the mat around the plan
 
     const M = makeMaterials()
     scene.add(buildScene(M, { roofs: false }))
@@ -64,9 +66,9 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
     }
     scene.add(furn)
 
-    scene.add(new THREE.HemisphereLight(0xeaf2f7, 0x9a9078, 1.0))
-    const sun = new THREE.DirectionalLight(0xfff2dd, 1.7)
-    sun.position.set(4, 26, 12)
+    scene.add(new THREE.HemisphereLight(rig.hemiSky, rig.hemiGround, rig.hemiIntensity))
+    const sun = new THREE.DirectionalLight(rig.sunColor, rig.sunIntensity)
+    sun.position.set(12.24 + rig.sunOffset[0], rig.sunOffset[1], 5.5 + rig.sunOffset[2])
     sun.castShadow = true
     sun.shadow.mapSize.set(4096, 4096)
     const ext = 18
@@ -79,7 +81,7 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
     scene.add(sun, sun.target)
     for (const r of model.rooms) {
       if (r.def.category !== 'habitable' && r.def.id !== 'R-ENTRY') continue
-      const p = new THREE.PointLight(0xffe3b0, 0.45, Math.max(r.width, r.depth) * S * 1.4, 1.8)
+      const p = new THREE.PointLight(rig.pointColor, rig.pointIntensity, Math.max(r.width, r.depth) * S * 1.4, 1.8)
       p.position.set(r.centroid.x * S, (r.ceiling - 400) * S, r.centroid.y * S)
       scene.add(p)
     }

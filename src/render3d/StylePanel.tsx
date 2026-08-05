@@ -19,6 +19,7 @@ import { furniture } from '../data/furniture'
 import { materialLib, objectLib, type SavedMaterial, type SavedObject } from './libStore'
 import { getAssign, setAssign } from './styleOverrides'
 import { shrinkDataUrl } from './imgUtil'
+import { LIGHT_PRESETS, type LightMood } from './lighting'
 
 const KEYS_LS = 'om-ai-keys'
 type ImgProvider = 'openai' | 'google'
@@ -57,6 +58,7 @@ export function StylePanel(): React.ReactElement {
   const [applyTarget, setApplyTarget] = useState('*')
   const [palette, setPalette] = useState<Array<{ surface: string; prompt: string }>>([])
   const [paletteRef, setPaletteRef] = useState<string | null>(null)
+  const [paletteLight, setPaletteLight] = useState<LightMood | null>(null)
 
   useEffect(() => {
     const readPalette = (): void => {
@@ -64,12 +66,15 @@ export function StylePanel(): React.ReactElement {
         const p = JSON.parse(localStorage.getItem('om-material-palette') || '{}') as {
           materials?: Array<{ surface: string; prompt: string }>
           ref?: string
+          lighting?: LightMood | null
         }
         setPalette(p.materials ?? [])
         setPaletteRef(p.ref ?? null)
+        setPaletteLight(p.lighting ?? null)
       } catch {
         setPalette([])
         setPaletteRef(null)
+        setPaletteLight(null)
       }
     }
     readPalette()
@@ -144,6 +149,7 @@ export function StylePanel(): React.ReactElement {
         const id = await extractTile(wall)
         if (id) a.walls = id
       }
+      if (paletteLight) a.lighting = paletteLight
       setAssign(a)
       await refresh()
       bump()
@@ -151,6 +157,13 @@ export function StylePanel(): React.ReactElement {
     } catch (err) {
       setBusy(`Failed: ${err instanceof Error ? err.message : String(err)}`)
     }
+  }
+
+  const setLighting = (m: LightMood | null): void => {
+    const a = getAssign()
+    a.lighting = m
+    setAssign(a)
+    bump()
   }
 
   const extractOne = async (entry: { surface: string; prompt: string }): Promise<void> => {
@@ -467,6 +480,26 @@ export function StylePanel(): React.ReactElement {
                   ))}
                 </div>
               )}
+              <div style={{ border: '1px solid #e2dac8', borderRadius: 6, padding: 6, margin: '6px 0', fontSize: 12 }}>
+                <b>Lighting</b>
+                <span style={{ color: '#6d6558' }}>
+                  {' '}— {getAssign().lighting?.name ?? 'default rig'}
+                </span>
+                <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
+                  {paletteLight && (
+                    <button
+                      title="Match the walkthrough and styled plan to the render's light"
+                      onClick={() => setLighting(paletteLight)}
+                    >
+                      From render: {paletteLight.name}
+                    </button>
+                  )}
+                  {Object.entries(LIGHT_PRESETS).map(([k, m]) => (
+                    <button key={k} onClick={() => setLighting(m)}>{m.name}</button>
+                  ))}
+                  <button onClick={() => setLighting(null)}>Reset</button>
+                </div>
+              </div>
               <div style={row}>
                 <span style={{ width: 60 }}>Apply to</span>
                 <select value={applyTarget} onChange={(e) => setApplyTarget(e.target.value)} style={{ flex: 1, minWidth: 0 }}>

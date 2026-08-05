@@ -25,7 +25,8 @@ import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
 import { StylePanel } from './StylePanel'
 import { decimate, prismGeometry, S } from './prism'
-import { customObject, floorMaterial, primeStyle, wallMaterial } from './styleOverrides'
+import { customObject, floorMaterial, getAssign, primeStyle, wallMaterial } from './styleOverrides'
+import { lightRig } from './lighting'
 
 const model = getModel()
 const solids = buildSolids(model)
@@ -742,13 +743,14 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    const rig = lightRig(getAssign().lighting ?? null, 'walk')
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.05
+    renderer.toneMappingExposure = rig.exposure
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xcfe0ea)
-    scene.fog = new THREE.Fog(0xcfe0ea, 60, 160)
+    scene.background = new THREE.Color(rig.background)
+    scene.fog = new THREE.Fog(rig.background, 60, 160)
 
     const M = makeMaterials()
     scene.add(buildScene(M))
@@ -763,9 +765,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     scene.add(furn)
 
     // ---- light
-    scene.add(new THREE.HemisphereLight(0xeaf2f7, 0x9a9078, 1.0))
-    const sun = new THREE.DirectionalLight(0xfff2dd, 1.9)
-    sun.position.set(6, 22, 14)
+    scene.add(new THREE.HemisphereLight(rig.hemiSky, rig.hemiGround, rig.hemiIntensity))
+    const sun = new THREE.DirectionalLight(rig.sunColor, rig.sunIntensity)
+    sun.position.set(12.24 + rig.sunOffset[0], rig.sunOffset[1], 5 + rig.sunOffset[2])
     sun.castShadow = true
     sun.shadow.mapSize.set(2048, 2048)
     const ext = 18
@@ -780,7 +782,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // warm evening pools in the habitable rooms
     for (const r of model.rooms) {
       if (r.def.category !== 'habitable' && r.def.id !== 'R-ENTRY') continue
-      const p = new THREE.PointLight(0xffe3b0, 0.5, Math.max(r.width, r.depth) * S * 1.4, 1.8)
+      const p = new THREE.PointLight(rig.pointColor, rig.pointIntensity, Math.max(r.width, r.depth) * S * 1.4, 1.8)
       p.position.set(r.centroid.x * S, (r.ceiling - 350) * S, r.centroid.y * S)
       scene.add(p)
     }

@@ -17,12 +17,16 @@ import type { FurnitureItem } from '../data/furniture'
 import { materialLib, objectLib } from './libStore'
 import { S } from './prism'
 
+import type { LightMood } from './lighting'
+
 export interface StyleAssign {
   /** roomId -> material id; the special key '*' is every floor. */
   floors: Record<string, number>
   walls?: number | null
   /** furniture id -> saved object + quarter turns. */
   objects: Record<string, { objId: number; rot: number }>
+  /** The lighting mood; null keeps each view's original fixed rig. */
+  lighting?: LightMood | null
 }
 
 const LS = 'om-style-assign'
@@ -30,9 +34,12 @@ const LS = 'om-style-assign'
 export function getAssign(): StyleAssign {
   try {
     const a = JSON.parse(localStorage.getItem(LS) || '{}') as Partial<StyleAssign>
-    return { floors: a.floors ?? {}, walls: a.walls ?? null, objects: a.objects ?? {} }
+    return {
+      floors: a.floors ?? {}, walls: a.walls ?? null, objects: a.objects ?? {},
+      lighting: a.lighting ?? null,
+    }
   } catch {
-    return { floors: {}, walls: null, objects: {} }
+    return { floors: {}, walls: null, objects: {}, lighting: null }
   }
 }
 

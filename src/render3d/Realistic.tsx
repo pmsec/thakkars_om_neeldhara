@@ -20,7 +20,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { getModel } from '../geometry/model'
 import { buildSolids } from '../geometry/solid'
-import { EXTRUDED_KINDS, renderFootprint } from '../geometry/fidelity'
+import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
 import { prismGeometry, S } from './prism'
@@ -252,22 +252,28 @@ function place(o: THREE.Object3D, cx: number, cy: number, h = 0): void {
   o.position.set(cx * S, h * S, cy * S)
 }
 
-/** Extrude a drawn outline, clipped so it can never occupy wall space. */
+/** Extrude a drawn outline, clipped so it can never occupy wall space, and
+ * limited to the fragments that belong in the piece's own room. */
 function polyPiece(
   poly: { x: number; y: number }[],
   base: number,
   top: number,
   mat: THREE.Material,
-): THREE.Mesh | null {
-  const fp = renderFootprint(poly)
-  if (!fp) return null
-  const m = new THREE.Mesh(
-    prismGeometry(decimate(fp.outer), base, top, fp.holes.map((h) => decimate(h))),
-    mat,
-  )
-  m.castShadow = true
-  m.receiveShadow = true
-  return m
+  room?: string,
+): THREE.Object3D | null {
+  const parts = renderFootprints(poly, room)
+  if (!parts.length) return null
+  const g = new THREE.Group()
+  for (const fp of parts) {
+    const m = new THREE.Mesh(
+      prismGeometry(decimate(fp.outer), base, top, fp.holes.map((h) => decimate(h))),
+      mat,
+    )
+    m.castShadow = true
+    m.receiveShadow = true
+    g.add(m)
+  }
+  return g
 }
 
 export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
@@ -283,17 +289,52 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     const h = f.kind === 'wardrobe' || f.kind === 'shelves'
       ? f.height
       : Math.min(f.height, 900)
-    const body = polyPiece(f.poly, 0, h, M.timber)
+    const body = polyPiece(f.poly, 0, h, M.timber, f.room)
     return body
   }
 
   switch (f.kind) {
     case 'rug': {
+      if (f.poly) {
+        const m = polyPiece(f.poly, 2, 14, M.rug, f.room)
+        if (m) m.traverse((o) => { o.castShadow = false })
+        return m
+      }
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w * S, d * S), M.rug)
       m.rotation.x = -Math.PI / 2
       m.receiveShadow = true
       place(m, cx, cy, 14)
       return m
+    }
+    case 'grass': {
+      // a drawn field of real grass (deck, terraces) laid over the slab
+      const m = f.poly ? polyPiece(f.poly, 0, 25, M.grass, f.room)
+        : box(w, 25, d, M.grass)
+      if (!m) return null
+      if (!f.poly) place(m, cx, cy, 12.5)
+      m.traverse((o) => { o.castShadow = false })
+      return m
+    }
+    case 'planter': {
+      // the planted strip: a low bed with a run of shrubs standing in it
+      const bed = f.poly ? polyPiece(f.poly, 0, 300, M.pot, f.room) : box(w, 300, d, M.pot)
+      if (bed) {
+        if (!f.poly) place(bed, cx, cy, 150)
+        g.add(bed)
+      }
+      const long = Math.max(w, d)
+      const n = Math.max(2, Math.round(long / 1250))
+      const r = Math.min(220, Math.min(w, d) / 2 - 20)
+      for (let i = 0; i < n; i++) {
+        const t = (i + 0.5) / n
+        const sx = w >= d ? f.x + t * w : cx
+        const sy = w >= d ? cy : f.y + t * d
+        const s = new THREE.Mesh(new THREE.SphereGeometry(r * S, 8, 6), i % 2 ? M.leaf : M.leafDark)
+        s.position.set(sx * S, (300 + r * 0.7) * S, sy * S)
+        s.castShadow = true
+        g.add(s)
+      }
+      return g
     }
     case 'sofa': {
       const seatH = 420
@@ -378,7 +419,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // chair the sheet draws. The 3D never invents seating again: a seat
       // count was a hint, and hints drift; drawn rectangles cannot.
       if (f.poly) {
-        const top = polyPiece(f.poly, 690, 750, M.timber)
+        const top = polyPiece(f.poly, 690, 750, M.timber, f.room)
         if (top) g.add(top)
         for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
           const leg = box(70, 690, 70, M.timber)
@@ -573,10 +614,47 @@ export function buildFixtures(M: Mats): THREE.Group {
     // Curved runs (kitchen counters, the arched vanities) carry their drawn
     // outline: extrude the real shape, clipped at the walls, with a stone top.
     if (f.poly && (f.kind === 'counter' || f.kind === 'basin')) {
-      const body = polyPiece(f.poly, 0, h, M.timber)
-      const top = polyPiece(f.poly, h, h + 40, M.marble)
+      const body = polyPiece(f.poly, 0, h, M.timber, f.room)
+      const top = polyPiece(f.poly, h, h + 40, M.marble, f.room)
       if (body) g.add(body)
       if (top) g.add(top)
+      if (f.bowl) {
+        // the basin, set exactly where the sheet draws its circle
+        const bowl = new THREE.Mesh(
+          new THREE.CylinderGeometry(f.bowl.r * S, f.bowl.r * 0.8 * S, 140 * S, 20),
+          M.marble,
+        )
+        bowl.position.set(f.bowl.x * S, (h + 40 + 70) * S, f.bowl.y * S)
+        bowl.castShadow = true
+        g.add(bowl)
+      }
+      continue
+    }
+    // The shower is a CABINET, not a floor stain: stone tray with a raised
+    // curb and glass around it — visible from above and walk-through alike.
+    if (f.kind === 'shower') {
+      const tray = box(w, 50, d, M.marble)
+      place(tray, f.at.x, f.at.y, 25)
+      g.add(tray)
+      const curb = 60
+      const gh = 2000
+      for (const [px, py, sw, sd] of [
+        [f.at.x, f.at.y - d / 2 + curb / 2, w, curb],
+        [f.at.x, f.at.y + d / 2 - curb / 2, w, curb],
+        [f.at.x - w / 2 + curb / 2, f.at.y, curb, d],
+        [f.at.x + w / 2 - curb / 2, f.at.y, curb, d],
+      ] as const) {
+        const c = box(sw, 100, sd, M.marble)
+        place(c, px, py, 75)
+        g.add(c)
+        const gl = new THREE.Mesh(
+          new THREE.BoxGeometry((sw === curb ? 14 : sw - 20) * S, gh * S,
+            (sd === curb ? 14 : sd - 20) * S),
+          M.glass,
+        )
+        gl.position.set(px * S, (100 + gh / 2) * S, py * S)
+        g.add(gl)
+      }
       continue
     }
     const mat = f.kind === 'counter' || f.kind === 'basin' ? M.timber

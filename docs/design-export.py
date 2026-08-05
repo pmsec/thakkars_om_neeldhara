@@ -41,6 +41,10 @@ sys.path.insert(0, os.path.abspath(args.cad))
 import design as D          # noqa: E402
 import retrofit as R        # noqa: E402
 import symbols as SY        # noqa: E402
+import clash as C           # noqa: E402  (raster helpers for the coverage audit)
+
+# Everything exported, kept for the coverage audit: (id, bbox, poly-or-None).
+EXPORTED = []
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'src', 'data')
 M = 12240.0
@@ -593,6 +597,10 @@ def bbox_of(prims, styles=('solid',)):
         elif p[0] == 'rect':
             xs += [p[1], p[3]]
             ys += [p[2], p[4]]
+        elif p[0] == 'circle':
+            # circles are real objects too — the drum kit is nothing else
+            xs += [p[1] - p[3], p[1] + p[3]]
+            ys += [p[2] - p[3], p[2] + p[3]]
     return (min(xs), min(ys), max(xs), max(ys)) if xs else None
 
 
@@ -630,8 +638,11 @@ def emit_fixtures():
     fx = []
 
     def add(fid, kind, cx, cy, wd, dp, room, stack=None, label=None, rot=None,
-            poly=None):
-        fx.append((fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly))
+            poly=None, bowl=None):
+        fx.append((fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly,
+                   bowl))
+        EXPORTED.append((fid, (cx - wd / 2, cy - dp / 2, cx + wd / 2,
+                               cy + dp / 2), poly))
 
     # from the furniture list: the plumbed and fitted pieces
     for kind, a, b, c, d, lab in D.FURNITURE:
@@ -678,24 +689,55 @@ def emit_fixtures():
             add(f'FX-CTR-{n}', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
                 'R-KITCHEN', None, 'Counter run', poly=p[1])
 
-    # the three curved vanities: bbox for placement, TRUE poly for shape
+    # the three curved vanities: bbox for placement, TRUE poly for shape, and
+    # the drawn bowl circle so the 3D sets a basin exactly where the sheet does
+    def bowl_of(prims):
+        for p in prims:
+            if p[0] == 'circle':
+                return (p[1], p[2], p[3])
+        return None
+
     van = outline_of(R.mb_console())
     if van:
         a, b, c, d = bbox_of(R.mb_console())
+        bw = bowl_of(R.mb_console())
         add('FX-P-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-P-BATH', 'STK-P-BATH', 'Curved vanity, 400 bowl', poly=van)
+            'R-P-BATH', 'STK-P-BATH', 'Curved vanity, 400 bowl', poly=van,
+            bowl=bw)
         add('FX-K-VAN', 'basin', mx((a + c) / 2), (b + d) / 2, c - a, d - b,
             'R-K-BATH', 'STK-K-BATH', 'Curved vanity, 400 bowl',
-            poly=[(mx(q[0]), q[1]) for q in van])
+            poly=[(mx(q[0]), q[1]) for q in van],
+            bowl=(mx(bw[0]), bw[1], bw[2]) if bw else None)
     van = outline_of(R.wc_console())
     if van:
         a, b, c, d = bbox_of(R.wc_console())
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-GUEST-BATH', 'STK-GUEST', 'Curved console, 344 bowl', poly=van)
+            'R-GUEST-BATH', 'STK-GUEST', 'Curved console, 344 bowl', poly=van,
+            bowl=bowl_of(R.wc_console()))
+
+    # the bath wall cabinet at the west end of each sweep — same face as the
+    # console, so the 3D shows one continuous run of joinery
+    cab = outline_of(R.mb_cabinet())
+    if cab:
+        a, b, c, d = bbox_of(R.mb_cabinet(), styles=('solid',))
+        add('FX-P-CAB', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
+            'R-P-BATH', None, 'Bath wall cabinet', poly=cab)
+        add('FX-K-CAB', 'counter', mx((a + c) / 2), (b + d) / 2, c - a, d - b,
+            'R-K-BATH', None, 'Bath wall cabinet',
+            poly=[(mx(q[0]), q[1]) for q in cab])
+    # and the shelf unit carrying that face on down the duct wall
+    shl = outline_of(R.mb_shelves())
+    if shl:
+        a, b, c, d = bbox_of(R.mb_shelves(), styles=('solid',))
+        add('FX-P-SHELF', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
+            'R-P-BATH', None, 'Bath shelves, duct wall', poly=shl)
+        add('FX-K-SHELF', 'counter', mx((a + c) / 2), (b + d) / 2, c - a, d - b,
+            'R-K-BATH', None, 'Bath shelves, duct wall',
+            poly=[(mx(q[0]), q[1]) for q in shl])
 
     # place each stack at its fixture group's centroid
     groups = {}
-    for fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly in fx:
+    for fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly, bowl in fx:
         if stack:
             groups.setdefault(stack, []).append((cx, cy))
     for sid, pts_ in groups.items():
@@ -712,12 +754,14 @@ def emit_fixtures():
     A("import type { FixtureDef } from './schema'")
     A('')
     A('export const fixtures: FixtureDef[] = [')
-    for fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly in fx:
+    for fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly, bowl in fx:
         s = f', stack: {stack!r}' if stack else ''
         lb = f', label: {label!r}' if label else ''
+        bw = (f', bowl: {{ x: {fnum(bowl[0])}, y: {fnum(bowl[1])}, '
+              f'r: {fnum(bowl[2])} }}' if bowl else '')
         A(f'  {{ id: {fid!r}, kind: {kind!r}, at: {pt(cx, cy)}, '
           f'size: [{fnum(wd)}, {fnum(dp)}], room: {room!r}{s}{lb}'
-          f'{poly_field(poly)} }},')
+          f'{poly_field(poly)}{bw} }},')
     A(']')
     A('')
     return '\n'.join(o)
@@ -783,13 +827,25 @@ def emit_furniture():
         seen[base] = seen.get(base, 0) + 1
         items.append((f'{base}-{seen[base]}', kind, x, y, wd, dp, room, label,
                       height, face, seats, poly))
+        EXPORTED.append((f'{base}-{seen[base]}', (x, y, x + wd, y + dp), poly))
 
     FACE = {'n': 'N', 's': 'S', 'e': 'E', 'w': 'W'}
     for kind, a, b, c, d, lab in D.FURNITURE:
         base = kind.split('-')[0]
         suff = kind.split('-')[1] if '-' in kind else None
         if base in ('wc', 'shower', 'sink', 'hob', 'under', 'appliance',
-                    'grass', 'planter', 'magic'):
+                    'magic'):
+            continue                      # plumbed / fitted: fixtures.ts
+        # The deck's real grass and the planted strip inside the parapet are
+        # DRAWN — so they exist in 3D too, as ground-level items.
+        if base == 'grass':
+            add('grass', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
+                (lab or 'real grass').split('·')[0].strip(), 25)
+            continue
+        if base == 'planter':
+            add('planter', a, b, c - a, d - b,
+                room_for((a + c) / 2, (b + d) / 2),
+                'Planted strip inside the parapet', 340)
             continue
         mapped = KIND_MAP.get(base)
         if not mapped:
@@ -845,6 +901,20 @@ def emit_furniture():
             outline = outline_of(SY.symbol(kind, a, b, c, d))
         add(mapped, a, b, c - a, d - b, room, label, h, face,
             poly=outline)
+        # Recliners are drawn with the footrest DEPLOYED — a soft poly beyond
+        # the seat. It is on the sheet, so it exists in 3D, as its own piece.
+        if base == 'recliner':
+            for p in SY.symbol(kind, a, b, c, d):
+                if p[0] != 'poly' or p[-1] != 'soft':
+                    continue
+                xs = [q[0] for q in p[1]]
+                ys = [q[1] for q in p[1]]
+                if (min(xs) >= a - 1 and max(xs) <= c + 1
+                        and min(ys) >= b - 1 and max(ys) <= d + 1):
+                    continue              # the back band, inside the seat
+                add('stool', min(xs), min(ys), max(xs) - min(xs),
+                    max(ys) - min(ys), room, 'Recliner footrest, deployed',
+                    380)
 
     # the retrofit set, boxed
     def add_prims(prims, kind, room, label, h, styles=('solid',)):
@@ -859,7 +929,8 @@ def emit_furniture():
               'armchair', 'R-GREAT', 'Rocking chair', 780)
     add_prims(R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)),
               'armchair', 'R-GREAT', 'Armchair', 780)
-    add_prims(R.drum_kit(), 'drumkit', 'R-K-DEN', 'Electronic drum kit', 900)
+    add_prims(R.drum_kit(), 'drumkit', 'R-K-DEN', 'Electronic drum kit', 900,
+              styles=('solid', 'soft'))
     # corner units piece by piece, each with its TRUE drawn polygon — the
     # mandir wedge and the pantry run follow the pod glazing, and a bounding
     # box here is exactly the shape that pokes through the curved screen
@@ -881,9 +952,43 @@ def emit_furniture():
         'The terrace tree — real, in real grass', 2500)
     add('tree', 10123 - 450, 5087 - 450, 900, 900, 'R-GREAT',
         'The tree growing off the sofa’s end', 2400)
-    # jhoolas
-    add('bench', 1200 - 450, 100, 900, 300, 'R-P-TERRACE', 'Jhoola', 1900)
-    add('bench', mx(1200) - 450, 100, 900, 300, 'R-K-TERRACE', 'Jhoola', 1900)
+    # the terraces as DRAWN by terrace_pieces(): the grass field, and the
+    # jhoola where its frame actually stands (posts at x -200 and 610)
+    add('grass', -350, 0, 3100, 1200, 'R-P-TERRACE', 'real grass', 25)
+    add('grass', 21730, 0, 3100, 1200, 'R-K-TERRACE', 'real grass', 25)
+    add('bench', -200, 250, 900, 700, 'R-P-TERRACE', 'Jhoola', 1900)
+    add('bench', 23780, 250, 900, 700, 'R-K-TERRACE', 'Jhoola', 1900)
+
+    # ---- the drawn pieces the bounding-box era never exported at all.
+    # Each ships its TRUE outline; none of these is a guess.
+    def add_outline(prims, kind, room, label, h, mirror=False,
+                    styles=('solid',)):
+        p = outline_of(prims, styles)
+        if not p:
+            return
+        if mirror:
+            p = [(mx(q[0]), q[1]) for q in p]
+        xs = [q[0] for q in p]
+        ys = [q[1] for q in p]
+        add(kind, min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys),
+            room, label, h, poly=p)
+
+    # the great-room rug — the full-width field the sitting group stands on
+    add_outline(R.great_room_rug(), 'rug', 'R-GREAT',
+                'The great-room rug, leaf-patterned', 12, styles=('soft',))
+    # the arch consoles either side: the parents' (cut by the sliding screen)
+    # and Karan's, drawn mirrored
+    add_outline(R.arch_console_par(), 'console', 'R-P-SUITE',
+                'Arch console', 800)
+    add_outline(R.arch_console(), 'console', 'R-K-SUITE',
+                'Arch console', 800, mirror=True)
+    # Karan's dressing screen — wood below, tinted glass above
+    add_outline(R.suite_screen(), 'wardrobe', 'R-K-DRESSING',
+                'Dressing screen — wood dado, tinted glass over', 2100,
+                styles=('wood',))
+    # the great room's planter, answering the kitchen bump across the room
+    add_outline(R.great_room_planter(), 'planter', 'R-GREAT',
+                'Great-room planter', 340, styles=('green',))
 
     o = []
     A = o.append
@@ -896,7 +1001,7 @@ def emit_furniture():
     A("  | 'sofa' | 'bed' | 'daybed' | 'armchair' | 'table' | 'console'")
     A("  | 'bench' | 'stool' | 'lounger' | 'rug' | 'plant' | 'tree'")
     A("  | 'shelves' | 'dining' | 'chair' | 'drumkit' | 'guitar' | 'stair'")
-    A("  | 'wardrobe'")
+    A("  | 'wardrobe' | 'planter' | 'grass'")
     A('')
     A('export interface FurnitureItem {')
     A('  id: string')
@@ -926,6 +1031,97 @@ def emit_furniture():
     return '\n'.join(o)
 
 
+# ------------------------------------------------------ the coverage audit
+def audit_coverage():
+    """THE COMPLETENESS GATE. Every primitive the sheet's floor + furniture
+    layers draw must be covered by something this exporter shipped — if the
+    2D shows it, the 3D must have it. Runs on the same generator calls
+    draw_design.py makes, so a piece added to the drawing and not mapped
+    here kills the export with its name instead of silently vanishing.
+
+    Excluded, deliberately: door leaves (the model carries the openings),
+    glass sliders (architecture, not furniture), dashed prims (the sheet's
+    own 'not there in plan' convention), decor styles (shelf lines, sconce
+    glows), tree-crown circles (crowns overhang; the trunk is the footprint),
+    and prims under 0.02 m2 (knobs, diyas, drain circles)."""
+    mask = C.blank()
+    for _fid, (x0, y0, x1, y1), poly in EXPORTED:
+        if poly:
+            C.put_poly(mask, [(q[0], q[1]) for q in poly])
+        else:
+            C.put_rect(mask, x0, y0, x1, y1)
+
+    drawn = []
+
+    def take(name, prims, mirror=False):
+        for p in prims:
+            drawn.append((name, R._mirror_prim(p) if mirror else p))
+
+    take('great_room_rug', R.great_room_rug())
+    take('terrace_pieces', R.terrace_pieces())
+    take('kitchen_counter', R.kitchen_counter())
+    take('hob_counter', R.hob_counter())
+    take('magic_corner', R.magic_corner())
+    take('drum_kit', R.drum_kit())
+    for kind, a, b, c, d, lab in D.FURNITURE:
+        take(f'symbol:{kind}', SY.symbol(kind, a, b, c, d))
+    take('wc_console', R.wc_console())
+    for fn in (R.mb_console, R.mb_cabinet, R.mb_shelves):
+        take(fn.__name__, fn())
+        take(fn.__name__, fn(), mirror=True)
+    take('arch_console_par', R.arch_console_par())
+    take('arch_console', R.arch_console(), mirror=True)
+    take('suite_screen', R.suite_screen())
+    take('corner_units', R.corner_units())
+    take('great_room_planter', R.great_room_planter())
+    take('great_room_sofa', R.great_room_sofa())
+    take('rocking_chair',
+         R.rocking_chair(13080, 3500, face=(10123 - 13080, 3932 - 3500)))
+    take('armchair', R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)))
+    take('console_top', R.console_top())
+
+    COUNTED = ('solid', 'wood', 'soft', 'green', 'water')
+    MIN_AREA = 0.02e6                      # mm²
+    fails = []
+    for name, p in drawn:
+        style = p[-1]
+        if style not in COUNTED:
+            continue
+        piece = C.blank()
+        if p[0] == 'poly':
+            xs = [q[0] for q in p[1]]
+            ys = [q[1] for q in p[1]]
+            if (max(xs) - min(xs)) * (max(ys) - min(ys)) < MIN_AREA:
+                continue
+            C.put_poly(piece, p[1])
+        elif p[0] == 'rect':
+            if abs((p[3] - p[1]) * (p[4] - p[2])) < MIN_AREA:
+                continue
+            C.put_rect(piece, min(p[1], p[3]), min(p[2], p[4]),
+                       max(p[1], p[3]), max(p[2], p[4]))
+        elif p[0] == 'circle':
+            if style == 'green':
+                continue   # foliage — crowns and shrubs overhang their beds
+            if math.pi * p[3] * p[3] < MIN_AREA:
+                continue
+            C.put_disc(piece, p[1], p[2], p[3])
+        else:
+            continue
+        total = int(piece.sum())
+        if not total:
+            continue
+        covered = int((piece & mask).sum())
+        if covered / total < 0.7:
+            fails.append(f'  {name}: {p[0]} {style} covered '
+                         f'{100 * covered / total:.0f} %')
+    if fails:
+        print('COVERAGE AUDIT FAILED — drawn in 2D, missing from the export:')
+        print('\n'.join(sorted(set(fails))))
+        sys.exit(1)
+    print(f'coverage audit: every drawn piece is exported '
+          f'({len(drawn)} prims checked)')
+
+
 def copy_sheet():
     """The CAD review sheet, verbatim.  The 2D tab shows THIS, so what the
     family sees in the app is pixel-for-pixel the drawing the DXF ships with."""
@@ -940,8 +1136,10 @@ def copy_sheet():
 
 if __name__ == '__main__':
     fixtures_ts = emit_fixtures()          # fills STACK_POS
+    furniture_ts = emit_furniture()
+    audit_coverage()                       # refuses to ship an incomplete 3D
     open(os.path.join(OUT, 'building.ts'), 'w').write(emit_building())
     open(os.path.join(OUT, 'fixtures.ts'), 'w').write(fixtures_ts)
-    open(os.path.join(OUT, 'furniture.ts'), 'w').write(emit_furniture())
+    open(os.path.join(OUT, 'furniture.ts'), 'w').write(furniture_ts)
     copy_sheet()
     print('wrote building.ts, fixtures.ts, furniture.ts')

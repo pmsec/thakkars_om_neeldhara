@@ -84,6 +84,27 @@ describe('2D↔3D fidelity', () => {
     for (const c of counters) expect(c.poly, `${c.id} lost its outline`).toBeDefined()
   })
 
+  it('everything the sheet draws exists in 3D (the omission regression set)', () => {
+    // Each of these was drawn in 2D and simply absent from the export once.
+    // The exporter's coverage audit now hard-fails on any such omission; this
+    // locks the shipped data to the same standard.
+    const byLabel = (s: string): number =>
+      furniture.filter((f) => f.label.toLowerCase().includes(s)).length
+    expect(byLabel('rug'), 'the great-room rug').toBeGreaterThanOrEqual(1)
+    expect(furniture.find((f) => f.label.includes('rug'))?.poly, 'rug outline').toBeDefined()
+    expect(byLabel('arch console'), 'the two arch consoles').toBe(2)
+    expect(byLabel('dressing screen'), "Karan's dressing screen").toBe(1)
+    expect(byLabel('jhoola'), 'both jhoolas').toBe(2)
+    expect(byLabel('footrest'), 'deployed recliner footrests').toBeGreaterThanOrEqual(4)
+    expect(furniture.filter((f) => f.kind === 'grass').length, 'grass fields').toBeGreaterThanOrEqual(4)
+    expect(furniture.filter((f) => f.kind === 'planter').length, 'planters').toBeGreaterThanOrEqual(2)
+    expect(furniture.find((f) => f.label.includes('drum kit')), 'the drum kit').toBeDefined()
+    expect(fixtures.filter((f) => f.label?.includes('cabinet')).length, 'bath wall cabinets').toBe(2)
+    expect(fixtures.filter((f) => f.label?.includes('shelves')).length, 'bath shelf units').toBe(2)
+    const vans = fixtures.filter((f) => f.id.endsWith('-VAN'))
+    for (const v of vans) expect(v.bowl, `${v.id} basin bowl`).toBeDefined()
+  })
+
   it('every 3D piece projects inside its own drawn 2D footprint', () => {
     // The gate that stops the renderer INVENTING geometry: whatever a kind's
     // 3D builder produces, its plan projection must stay inside the item's

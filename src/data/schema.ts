@@ -117,6 +117,8 @@ export interface FixtureDef {
   label?: string
   /** The drawn 2D outline when it is not the plain rect — the 3D extrudes THIS. */
   poly?: Pt[]
+  /** Drawn basin bowl (vanities): centre and radius, straight off the sheet. */
+  bowl?: { x: number; y: number; r: number }
 }
 
 /** A stretch of the external wall replaced by structural glazing, floor to canopy. */

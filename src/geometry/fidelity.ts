@@ -23,7 +23,7 @@ import { fixtures } from '../data/fixtures'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import type { FixtureDef } from '../data/schema'
 import { getModel, type WallRun } from './model'
-import { add, area, norm, scale, sub, type Poly, type Pt } from './vec'
+import { add, area, norm, pointInPolygon, scale, sub, type Poly, type Pt } from './vec'
 
 // polygon-clipping ships both CJS and ESM shapes depending on bundler; normalise.
 const pc = ((polygonClipping as unknown as { default?: typeof polygonClipping }).default ??
@@ -36,9 +36,16 @@ type PcMulti = PcPoly[]
 /** Real area below which an overlap is numeric noise, mm² (0.002 m²). */
 const EPS_AREA = 2000
 
-/** Kinds the renderers extrude straight from the drawn outline. */
+/** Kinds the renderers extrude as one solid slab from the drawn outline. */
 export const EXTRUDED_KINDS = new Set<string>([
   'console', 'table', 'bench', 'wardrobe', 'shelves', 'stool',
+])
+
+/** Every kind whose RENDERED footprint is its drawn outline — the slab kinds
+ * plus the kinds with their own outline-driven builders. Keep in lockstep
+ * with furnitureMesh: the tests judge exactly what the renderer draws. */
+export const POLY_FOOTPRINT_KINDS = new Set<string>([
+  ...EXTRUDED_KINDS, 'rug', 'grass', 'planter', 'dining',
 ])
 
 function closeRing(p: Poly): PcRing {
@@ -72,7 +79,7 @@ function rect(x: number, y: number, w: number, d: number): Poly {
 
 /** The plan footprint the 3D actually renders for a furniture piece. */
 export function furnitureFootprint(f: FurnitureItem): Poly {
-  if (f.poly && EXTRUDED_KINDS.has(f.kind)) return f.poly
+  if (f.poly && POLY_FOOTPRINT_KINDS.has(f.kind)) return f.poly
   return rect(f.x, f.y, f.w, f.d)
 }
 
@@ -105,14 +112,40 @@ export function clipToPlan(poly: Poly): Footprint[] {
     .sort((a, b) => area(b.outer) - area(a.outer))
 }
 
+function centroidOf(poly: Poly): Pt {
+  let x = 0
+  let y = 0
+  for (const p of poly) {
+    x += p.x
+    y += p.y
+  }
+  return { x: x / poly.length, y: y / poly.length }
+}
+
+/** The room whose carpet contains the point, if any. */
+function roomAt(p: Pt): string | null {
+  for (const r of getModel().rooms) {
+    if (pointInPolygon(p, r.polygon) && !r.holes.some((h) => pointInPolygon(p, h))) return r.id
+  }
+  return null
+}
+
 /**
- * What the renderers extrude: the clipped footprint's LARGEST fragment. A
- * piece of furniture lives on one side of a wall; if a wall severs its drawn
- * shape (a known 2D clash), the severed sliver on the far side is not
- * furniture and must not appear in a room it was never meant for.
+ * What the renderers extrude: the clipped footprint's fragments that belong
+ * to the piece's own room. A wall can notch a piece (the arch console where
+ * the exporter's straight jog stands in for the sweep) without deleting its
+ * tail — but a fragment a wall pushes into a DIFFERENT room (the severed
+ * sliver of a known 2D clash) is not furniture and must not appear there.
+ * With no room given, the largest fragment wins.
  */
-export function renderFootprint(poly: Poly): Footprint | null {
-  return clipToPlan(poly)[0] ?? null
+export function renderFootprints(poly: Poly, room?: string): Footprint[] {
+  const fragments = clipToPlan(poly)
+  if (!room) return fragments.slice(0, 1)
+  const kept = fragments.filter((fr) => {
+    const at = roomAt(centroidOf(fr.outer))
+    return at === null || at === room
+  })
+  return kept.length ? kept : fragments.slice(0, 1)
 }
 
 // ------------------------------------------------------------- wall crossing
@@ -199,6 +232,24 @@ export const KNOWN_2D_CLASHES: Array<{ itemId: string; wallId: string; maxArea: 
     maxArea: 60000,
     note: 'Guest WC shower: drawn from y 8425, which is 100 into the 125 great-room wall band (face at 8525).',
   },
+  {
+    itemId: 'FN-CONSOLE-20',
+    wallId: 'W-K-DRESS',
+    maxArea: 40000,
+    note: "Exporter idealisation, not a design clash: Karan's dressing partition dies into the curved sweep, modelled here as a straight jog — the arch console beds on the sweep's outer face and crosses that jog on paper only.",
+  },
+  {
+    itemId: 'FX-P-CAB',
+    wallId: 'W-P-DRESS',
+    maxArea: 20000,
+    note: 'Same jog idealisation, west wing: the bath wall cabinet beds on the sweep; the straight stand-in for the die-into-the-sweep crosses it on paper only.',
+  },
+  {
+    itemId: 'FX-K-CAB',
+    wallId: 'W-K-DRESS',
+    maxArea: 20000,
+    note: 'Same jog idealisation, east wing (mirror of FX-P-CAB).',
+  },
 ]
 
 /**
@@ -239,10 +290,15 @@ export function wallCrossings(): Crossing[] {
         fpBox.maxX < ws.bbox.minX || fpBox.minX > ws.bbox.maxX ||
         fpBox.maxY < ws.bbox.minY || fpBox.minY > ws.bbox.maxY
       ) continue
+      // A crossing needs REAL area on both sides: more than noise, and more
+      // than half a percent of the piece — a long parapet strip nicking a
+      // 150 mm jog stub at its corner is a drawn 2D condition, not a piece
+      // standing on the wrong side of a wall.
+      const minReal = Math.max(EPS_AREA, 0.005 * fpArea)
       const aPlus = multiArea(pc.intersection(fpGeom, ws.plus) as unknown as PcMulti)
-      if (aPlus <= EPS_AREA) continue
+      if (aPlus <= minReal) continue
       const aMinus = multiArea(pc.intersection(fpGeom, ws.minus) as unknown as PcMulti)
-      if (aMinus <= EPS_AREA) continue
+      if (aMinus <= minReal) continue
       const known = KNOWN_2D_CLASHES.find((k) => k.itemId === it.id && k.wallId === ws.wall.id)
       if (known && aPlus <= known.maxArea && aMinus <= known.maxArea) continue
       out.push({ itemId: it.id, itemLabel: it.label, wallId: ws.wall.id, areas: [aPlus, aMinus] })

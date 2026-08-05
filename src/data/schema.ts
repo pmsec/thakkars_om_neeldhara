@@ -115,6 +115,8 @@ export interface FixtureDef {
   /** Set for plumbed fixtures; drives the wet-stack integrity check. */
   stack?: string
   label?: string
+  /** The drawn 2D outline when it is not the plain rect — the 3D extrudes THIS. */
+  poly?: Pt[]
 }
 
 /** A stretch of the external wall replaced by structural glazing, floor to canopy. */

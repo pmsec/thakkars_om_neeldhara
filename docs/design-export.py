@@ -17,9 +17,14 @@ Idealisations, deliberate:
   * The envelope is the clean stepped outline of the home, not the builder's
     every chajja and niche. Room dimensions are exact; slab-edge noise is not.
   * Builder shell walls are taken as 150 thick throughout.
-  * The kitchen's curved counters, the drum kit and the curved consoles are
-    exported as bounding boxes — the portal is a communication tool, the DXF
-    is the construction reference.
+
+Fidelity, non-negotiable: any piece whose DRAWN outline is not its plain
+rectangle (curved counters, the pantry run, the arched vanities, rounded
+consoles) carries that outline as `poly` — the exact polygon the 2D sheet
+draws, produced by the same symbols.py / retrofit.py code. The app extrudes
+`poly` when present and its test suite fails the build if any footprint
+crosses a wall, so the 3D can no longer deviate from the 2D by flattening a
+curve into a box.
 """
 
 import argparse
@@ -35,6 +40,7 @@ sys.path.insert(0, os.path.abspath(args.cad))
 
 import design as D          # noqa: E402
 import retrofit as R        # noqa: E402
+import symbols as SY        # noqa: E402
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'src', 'data')
 M = 12240.0
@@ -590,11 +596,42 @@ def bbox_of(prims, styles=('solid',)):
     return (min(xs), min(ys), max(xs), max(ys)) if xs else None
 
 
+def outline_of(prims, styles=('solid',)):
+    """The drawn footprint of a piece: its first solid 'poly' primitive.
+
+    Every symbol and retrofit generator in the CAD library puts the outline
+    first and the detail (basins, mirrors, shelf lines) after it, so this IS
+    the shape the 2D sheet draws. None means the outline is a plain rect and
+    the bbox tells the whole truth."""
+    for p in prims:
+        if p[0] == 'poly' and p[-1] in styles:
+            return p[1]
+        if p[0] == 'rect' and p[-1] in styles:
+            return None
+    return None
+
+
+def thin(poly, tol=20):
+    """Drop sampled points closer than tol mm, KEEPING both ends — curve ends
+    land exactly on wall centrelines and must stay there."""
+    out = [poly[0]]
+    for q in poly[1:-1]:
+        if math.dist(out[-1], q) >= tol:
+            out.append(q)
+    out.append(poly[-1])
+    return out
+
+
+def poly_field(poly):
+    return f', poly: {pts(thin([(q[0], q[1]) for q in poly]))}' if poly else ''
+
+
 def emit_fixtures():
     fx = []
 
-    def add(fid, kind, cx, cy, wd, dp, room, stack=None, label=None, rot=None):
-        fx.append((fid, kind, cx, cy, wd, dp, room, stack, label, rot))
+    def add(fid, kind, cx, cy, wd, dp, room, stack=None, label=None, rot=None,
+            poly=None):
+        fx.append((fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly))
 
     # from the furniture list: the plumbed and fitted pieces
     for kind, a, b, c, d, lab in D.FURNITURE:
@@ -624,8 +661,9 @@ def emit_fixtures():
             add(f'FX-FR-{len(fx)}', 'fridge', cx, cy, c - a, d - b, 'R-KITCHEN',
                 None, 'Tall fridge')
 
-    # the kitchen's counter runs: one box PER DRAWN PIECE, not one bounding
-    # box around the whole L — that read as a bridge across the room in 3D
+    # the kitchen's counter runs, each with its TRUE drawn polygon — the runs
+    # turn corners and end on curves, and each ships the shape the sheet
+    # draws, so no size cap is needed to stop a bbox bridging the room
     n = 0
     for fn in (R.kitchen_counter(), R.hob_counter()):
         for p in fn:
@@ -634,29 +672,30 @@ def emit_fixtures():
             xs = [q[0] for q in p[1]]
             ys = [q[1] for q in p[1]]
             a, b, c, d = min(xs), min(ys), max(xs), max(ys)
-            if (c - a) < 200 or (d - b) < 200 or (c - a) > 4000 or (d - b) > 4000:
+            if (c - a) < 200 or (d - b) < 200:
                 continue
             n += 1
             add(f'FX-CTR-{n}', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
-                'R-KITCHEN', None, 'Counter run')
+                'R-KITCHEN', None, 'Counter run', poly=p[1])
 
-    # the three curved vanities, boxed
-    bb = bbox_of(R.mb_console())
-    if bb:
-        a, b, c, d = bb
+    # the three curved vanities: bbox for placement, TRUE poly for shape
+    van = outline_of(R.mb_console())
+    if van:
+        a, b, c, d = bbox_of(R.mb_console())
         add('FX-P-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-P-BATH', 'STK-P-BATH', 'Curved vanity, 400 bowl')
+            'R-P-BATH', 'STK-P-BATH', 'Curved vanity, 400 bowl', poly=van)
         add('FX-K-VAN', 'basin', mx((a + c) / 2), (b + d) / 2, c - a, d - b,
-            'R-K-BATH', 'STK-K-BATH', 'Curved vanity, 400 bowl')
-    bb = bbox_of(R.wc_console())
-    if bb:
-        a, b, c, d = bb
+            'R-K-BATH', 'STK-K-BATH', 'Curved vanity, 400 bowl',
+            poly=[(mx(q[0]), q[1]) for q in van])
+    van = outline_of(R.wc_console())
+    if van:
+        a, b, c, d = bbox_of(R.wc_console())
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-GUEST-BATH', 'STK-GUEST', 'Curved console, 344 bowl')
+            'R-GUEST-BATH', 'STK-GUEST', 'Curved console, 344 bowl', poly=van)
 
     # place each stack at its fixture group's centroid
     groups = {}
-    for fid, kind, cx, cy, wd, dp, room, stack, label, rot in fx:
+    for fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly in fx:
         if stack:
             groups.setdefault(stack, []).append((cx, cy))
     for sid, pts_ in groups.items():
@@ -673,11 +712,12 @@ def emit_fixtures():
     A("import type { FixtureDef } from './schema'")
     A('')
     A('export const fixtures: FixtureDef[] = [')
-    for fid, kind, cx, cy, wd, dp, room, stack, label, rot in fx:
+    for fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly in fx:
         s = f', stack: {stack!r}' if stack else ''
         lb = f', label: {label!r}' if label else ''
         A(f'  {{ id: {fid!r}, kind: {kind!r}, at: {pt(cx, cy)}, '
-          f'size: [{fnum(wd)}, {fnum(dp)}], room: {room!r}{s}{lb} }},')
+          f'size: [{fnum(wd)}, {fnum(dp)}], room: {room!r}{s}{lb}'
+          f'{poly_field(poly)} }},')
     A(']')
     A('')
     return '\n'.join(o)
@@ -737,11 +777,12 @@ def emit_furniture():
     items = []
     seen = {}
 
-    def add(kind, x, y, wd, dp, room, label, height, face=None, seats=None):
+    def add(kind, x, y, wd, dp, room, label, height, face=None, seats=None,
+            poly=None):
         base = f'FN-{kind.upper()}'
         seen[base] = seen.get(base, 0) + 1
         items.append((f'{base}-{seen[base]}', kind, x, y, wd, dp, room, label,
-                      height, face, seats))
+                      height, face, seats, poly))
 
     FACE = {'n': 'N', 's': 'S', 'e': 'E', 'w': 'W'}
     for kind, a, b, c, d, lab in D.FURNITURE:
@@ -765,7 +806,17 @@ def emit_furniture():
             label, h = 'Marble fountain', 420
         face = FACE.get(suff or '', None)
         seats = (2, 1) if mapped == 'dining' else None
-        add(mapped, a, b, c - a, d - b, room, label, h, face, seats)
+        # The drawn outline, from the SAME symbol code the 2D sheet uses: a
+        # rounded or curved piece carries its true polygon, so the 3D cannot
+        # square it back off. Only for kinds the app extrudes as one slab —
+        # detail-modelled kinds (sofa, bed, recliner…) keep the bbox, which is
+        # a SUPERSET of the drawing and therefore safe to test against walls.
+        outline = None
+        if mapped in ('console', 'table', 'wardrobe', 'shelves', 'stool',
+                      'bench'):
+            outline = outline_of(SY.symbol(kind, a, b, c, d))
+        add(mapped, a, b, c - a, d - b, room, label, h, face, seats,
+            poly=outline)
 
     # the retrofit set, boxed
     def add_prims(prims, kind, room, label, h, styles=('solid',)):
@@ -781,7 +832,9 @@ def emit_furniture():
     add_prims(R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)),
               'armchair', 'R-GREAT', 'Armchair', 780)
     add_prims(R.drum_kit(), 'drumkit', 'R-K-DEN', 'Electronic drum kit', 900)
-    # corner units piece by piece — one bbox across both pods spanned 9 m
+    # corner units piece by piece, each with its TRUE drawn polygon — the
+    # mandir wedge and the pantry run follow the pod glazing, and a bounding
+    # box here is exactly the shape that pokes through the curved screen
     for p in R.corner_units():
         if p[-1] not in ('solid', 'wood') or p[0] != 'poly':
             continue
@@ -791,7 +844,7 @@ def emit_furniture():
         if (c - a) < 250 or (d - b) < 250 or (c - a) > 3000 or (d - b) > 3000:
             continue
         add('console', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
-            'Corner unit', 750)
+            'Corner unit', 750, poly=p[1])
 
     # trees: one per terrace centre, plus the great-room planter tree
     add('tree', 1200 - 350, 600 - 350, 700, 700, 'R-P-TERRACE',
@@ -828,15 +881,17 @@ def emit_furniture():
     A('  label: string')
     A('  height: number')
     A('  seats?: [number, number]')
+    A('  /** The drawn 2D outline when it is not the plain rect — the 3D extrudes THIS. */')
+    A('  poly?: { x: number; y: number }[]')
     A('}')
     A('')
     A('export const furniture: FurnitureItem[] = [')
-    for fid, kind, x, y, wd, dp, room, label, h, face, seats in items:
+    for fid, kind, x, y, wd, dp, room, label, h, face, seats, poly in items:
         f = f", face: '{face}'" if face else ''
         s = f', seats: [{seats[0]}, {seats[1]}]' if seats else ''
         A(f'  {{ id: {fid!r}, kind: {kind!r}, x: {fnum(x)}, y: {fnum(y)}, '
           f'w: {fnum(wd)}, d: {fnum(dp)}, room: {room!r}, label: {label!r}, '
-          f'height: {h}{f}{s} }},')
+          f'height: {h}{f}{s}{poly_field(poly)} }},')
     A(']')
     A('')
     return '\n'.join(o)

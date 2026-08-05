@@ -20,6 +20,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { getModel } from '../geometry/model'
 import { buildSolids } from '../geometry/solid'
+import { EXTRUDED_KINDS, renderFootprint } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
 import { prismGeometry, S } from './prism'
@@ -251,6 +252,24 @@ function place(o: THREE.Object3D, cx: number, cy: number, h = 0): void {
   o.position.set(cx * S, h * S, cy * S)
 }
 
+/** Extrude a drawn outline, clipped so it can never occupy wall space. */
+function polyPiece(
+  poly: { x: number; y: number }[],
+  base: number,
+  top: number,
+  mat: THREE.Material,
+): THREE.Mesh | null {
+  const fp = renderFootprint(poly)
+  if (!fp) return null
+  const m = new THREE.Mesh(
+    prismGeometry(decimate(fp.outer), base, top, fp.holes.map((h) => decimate(h))),
+    mat,
+  )
+  m.castShadow = true
+  m.receiveShadow = true
+  return m
+}
+
 export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
   const g = new THREE.Group()
   const w = f.w
@@ -258,6 +277,16 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
   const cx = f.x + w / 2
   const cy = f.y + d / 2
   const along = w >= d // long axis east-west?
+
+  // A piece with its drawn 2D outline extrudes THAT — the shape on the sheet,
+  // clipped at the walls — instead of a box that squares its curves back off.
+  if (f.poly && EXTRUDED_KINDS.has(f.kind)) {
+    const h = f.kind === 'wardrobe' || f.kind === 'shelves'
+      ? f.height
+      : Math.min(f.height, 900)
+    const body = polyPiece(f.poly, 0, h, M.timber)
+    return body
+  }
 
   switch (f.kind) {
     case 'rug': {
@@ -524,6 +553,15 @@ export function buildFixtures(M: Mats): THREE.Group {
     const [w, d] = f.size
     const h = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900 : f.kind === 'basin' ? 850
       : f.kind === 'shower' ? 40 : f.kind === 'wc' ? 420 : f.kind === 'hob' ? 40 : 850
+    // Curved runs (kitchen counters, the arched vanities) carry their drawn
+    // outline: extrude the real shape, clipped at the walls, with a stone top.
+    if (f.poly && (f.kind === 'counter' || f.kind === 'basin')) {
+      const body = polyPiece(f.poly, 0, h, M.timber)
+      const top = polyPiece(f.poly, h, h + 40, M.marble)
+      if (body) g.add(body)
+      if (top) g.add(top)
+      continue
+    }
     const mat = f.kind === 'counter' || f.kind === 'basin' ? M.timber
       : f.kind === 'wc' ? M.marble : M.appliance
     const m = box(w, h, d, mat, 0, (f.kind === 'counter' || f.kind === 'basin' ? h / 2 : h / 2), 0)

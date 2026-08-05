@@ -106,6 +106,26 @@ describe('2D↔3D fidelity', () => {
     for (const v of vans) expect(v.bowl, `${v.id} basin bowl`).toBeDefined()
   })
 
+  it('drawn semantics survive: screens are screens, not walls', () => {
+    // The dressing screen once rendered as an opaque full-height slab — a
+    // phantom wall in Karan's suite. Thin see-through pieces must carry the
+    // 'screen' kind (wood dado + tinted glass in both renderers), the
+    // monitor must be a 'tv' panel, and a headboard is a board, not a
+    // wardrobe-height slab.
+    const screens = furniture.filter((f) => f.kind === 'screen')
+    expect(screens.length, 'sliding leaf + mirror + dressing screen').toBeGreaterThanOrEqual(3)
+    expect(
+      screens.some((f) => f.label.toLowerCase().includes('dressing screen')),
+      'the dressing screen is a screen',
+    ).toBe(true)
+    expect(furniture.some((f) => f.kind === 'tv' && f.label.includes('monitor'))).toBe(true)
+    for (const f of furniture) {
+      if (f.label.toLowerCase().includes('headboard')) {
+        expect(f.height, `${f.id} headboard height`).toBeLessThanOrEqual(1400)
+      }
+    }
+  })
+
   it('every 3D piece projects inside its own drawn 2D footprint', () => {
     // The gate that stops the renderer INVENTING geometry: whatever a kind's
     // 3D builder produces, its plan projection must stay inside the item's

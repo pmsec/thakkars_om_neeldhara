@@ -59,6 +59,10 @@ const MAT = {
     side: THREE.DoubleSide,
   }),
   mullion: new THREE.MeshStandardMaterial({ color: 0x6f97a4, roughness: 0.45, metalness: 0.25 }),
+  tint: new THREE.MeshPhysicalMaterial({
+    color: 0xa4763c, roughness: 0.1, transparent: true, opacity: 0.4,
+    side: THREE.DoubleSide,
+  }),
   wood: new THREE.MeshStandardMaterial({ color: 0xd2b184, roughness: 0.68 }),
   stone: new THREE.MeshStandardMaterial({ color: 0xc8d0c9, roughness: 0.5 }),
   deck: new THREE.MeshStandardMaterial({ color: 0xb99f7c, roughness: 0.82 }),
@@ -823,6 +827,25 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
     case 'wardrobe':
       box(w, f.height, d, MAT.furniture, 0, f.height / 2, 0)
       break
+    case 'screen': {
+      // thin, see-through above the dado — never an opaque wall
+      const dado = Math.min(900, f.height * 0.42)
+      box(w, dado, d, MAT.wood, 0, dado / 2, 0)
+      const glz = new THREE.Mesh(
+        new THREE.BoxGeometry(w * S, (f.height - dado) * S, d * S),
+        withClip(MAT.tint, clip))
+      glz.position.set(0, ((f.height + dado) / 2) * S, 0)
+      g.add(glz)
+      break
+    }
+    case 'tv': {
+      const thin = Math.min(80, Math.min(w, d))
+      const upright = d > w
+      box(upright ? thin : Math.max(w, d), 520, upright ? Math.max(w, d) : thin,
+        MAT.mullion, 0, 1020, 0)
+      box(120, 760, 120, MAT.furniture, 0, 380, 0)
+      break
+    }
     case 'chair': {
       // one drawn dining chair — seat in its rectangle, back away from `face`
       const seat = Math.min(w, d) - 30

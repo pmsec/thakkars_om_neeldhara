@@ -456,6 +456,28 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       place(m, cx, cy)
       return m
     }
+    case 'screen': {
+      // a drawn screen is thin and SEE-THROUGH above its dado — rendering it
+      // as an opaque slab once put a phantom wall in Karan's suite
+      const dado = Math.min(900, f.height * 0.42)
+      g.add(box(w, dado, d, M.timber, 0, dado / 2, 0))
+      const glass = new THREE.Mesh(
+        new THREE.BoxGeometry(w * S, (f.height - dado) * S, d * S), M.tintGlass)
+      glass.position.set(0, ((f.height + dado) / 2) * S, 0)
+      g.add(glass)
+      place(g, cx, cy)
+      return g
+    }
+    case 'tv': {
+      // slim dark panel on its stand (the den monitor), inside its rectangle
+      const thin = Math.min(80, Math.min(w, d))
+      const panelW = Math.max(w, d)
+      const upright = d > w
+      g.add(box(upright ? thin : panelW, 520, upright ? panelW : thin, M.appliance, 0, 1020, 0))
+      g.add(box(120, 760, 120, M.metal, 0, 380, 0))
+      place(g, cx, cy)
+      return g
+    }
     case 'plant': {
       const pot = new THREE.Mesh(
         new THREE.CylinderGeometry(Math.min(w, d) * 0.32 * S, Math.min(w, d) * 0.26 * S, 340 * S, 12),

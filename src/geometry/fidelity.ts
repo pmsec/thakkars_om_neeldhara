@@ -219,33 +219,39 @@ export interface Crossing {
  * side), the gate fails again. The 3D renderers clip these pieces at the
  * wall, so neither ever penetrates a wall on screen.
  */
-export const KNOWN_2D_CLASHES: Array<{ itemId: string; wallId: string; maxArea: number; note: string }> = [
+export const KNOWN_2D_CLASHES: Array<{
+  /** Matches by exported id OR by label — ids renumber when kinds change. */
+  item: string
+  wallId: string
+  maxArea: number
+  note: string
+}> = [
   {
-    itemId: 'FN-CONSOLE-11',
+    item: 'side table',
     wallId: 'W-K-DRESS',
     maxArea: 30000,
     note: "Karan's suite south side table: 550 deep in the 397.5 gap between the bed's foot and the dressing wall — drawn 202.5 past the wall face.",
   },
   {
-    itemId: 'FX-SH-5',
+    item: 'FX-SH-5',
     wallId: 'W-HELP-N',
     maxArea: 60000,
     note: 'Guest WC shower: drawn from y 8425, which is 100 into the 125 great-room wall band (face at 8525).',
   },
   {
-    itemId: 'FN-CONSOLE-20',
+    item: 'Arch console',
     wallId: 'W-K-DRESS',
     maxArea: 40000,
     note: "Exporter idealisation, not a design clash: Karan's dressing partition dies into the curved sweep, modelled here as a straight jog — the arch console beds on the sweep's outer face and crosses that jog on paper only.",
   },
   {
-    itemId: 'FX-P-CAB',
+    item: 'FX-P-CAB',
     wallId: 'W-P-DRESS',
     maxArea: 20000,
     note: 'Same jog idealisation, west wing: the bath wall cabinet beds on the sweep; the straight stand-in for the die-into-the-sweep crosses it on paper only.',
   },
   {
-    itemId: 'FX-K-CAB',
+    item: 'FX-K-CAB',
     wallId: 'W-K-DRESS',
     maxArea: 20000,
     note: 'Same jog idealisation, east wing (mirror of FX-P-CAB).',
@@ -299,7 +305,9 @@ export function wallCrossings(): Crossing[] {
       if (aPlus <= minReal) continue
       const aMinus = multiArea(pc.intersection(fpGeom, ws.minus) as unknown as PcMulti)
       if (aMinus <= minReal) continue
-      const known = KNOWN_2D_CLASHES.find((k) => k.itemId === it.id && k.wallId === ws.wall.id)
+      const known = KNOWN_2D_CLASHES.find(
+        (k) => (k.item === it.id || k.item === it.label) && k.wallId === ws.wall.id,
+      )
       if (known && aPlus <= known.maxArea && aMinus <= known.maxArea) continue
       out.push({ itemId: it.id, itemLabel: it.label, wallId: ws.wall.id, areas: [aPlus, aMinus] })
     }

@@ -773,14 +773,20 @@ KIND_MAP = {
     'sidetable': 'table', 'counter': 'console', 'console': 'console',
     'dining': 'dining', 'bed': 'bed', 'murphy': 'bed', 'bunk': 'bed',
     'hanging': 'wardrobe', 'joinery': 'wardrobe', 'shelves': 'shelves',
-    'mirror': 'console', 'plant': 'plant', 'basket': 'stool', 'bin': 'stool',
+    'plant': 'plant', 'basket': 'stool', 'bin': 'stool',
     'gym': 'shelves', 'spa': 'table', 'fountain': 'plant',
-    'screen': 'wardrobe', 'tint': 'console', 'drum': 'drumkit',
+    'drum': 'drumkit',
+    # SEMANTICS MATTER: a drawn screen is thin and see-through above its
+    # dado, a monitor is a slim dark panel on a desk, a mirror is a pane.
+    # Mapping these to opaque solids once put a phantom WALL in Karan's
+    # suite — the dressing screen as a full-height white slab.
+    'screen': 'tv', 'tint': 'screen', 'mirror': 'screen',
 }
 HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
            'console': 800, 'dining': 750, 'bed': 550, 'wardrobe': 2300,
            'shelves': 1400, 'plant': 1200, 'stool': 400, 'rug': 12,
-           'bench': 450, 'drumkit': 900, 'tree': 2500}
+           'bench': 450, 'drumkit': 900, 'tree': 2500,
+           'screen': 2100, 'tv': 1300}
 
 
 def room_for(cx, cy):
@@ -860,6 +866,9 @@ def emit_furniture():
             label, h = '4-seat spa', 880
         if base == 'fountain':
             label, h = 'Marble fountain', 420
+        # a headboard is a board you lean on, not a 2300 wardrobe slab
+        if 'headboard' in label.lower():
+            h = 1350
         face = FACE.get(suff or '', None)
         # A dining group is DECOMPOSED: the table with its true drawn outline
         # (superellipse or round), and every chair the symbol draws as its own
@@ -983,7 +992,7 @@ def emit_furniture():
     add_outline(R.arch_console(), 'console', 'R-K-SUITE',
                 'Arch console', 800, mirror=True)
     # Karan's dressing screen — wood below, tinted glass above
-    add_outline(R.suite_screen(), 'wardrobe', 'R-K-DRESSING',
+    add_outline(R.suite_screen(), 'screen', 'R-K-DRESSING',
                 'Dressing screen — wood dado, tinted glass over', 2100,
                 styles=('wood',))
     # the great room's planter, answering the kitchen bump across the room
@@ -1001,7 +1010,7 @@ def emit_furniture():
     A("  | 'sofa' | 'bed' | 'daybed' | 'armchair' | 'table' | 'console'")
     A("  | 'bench' | 'stool' | 'lounger' | 'rug' | 'plant' | 'tree'")
     A("  | 'shelves' | 'dining' | 'chair' | 'drumkit' | 'guitar' | 'stair'")
-    A("  | 'wardrobe' | 'planter' | 'grass'")
+    A("  | 'wardrobe' | 'planter' | 'grass' | 'screen' | 'tv'")
     A('')
     A('export interface FurnitureItem {')
     A('  id: string')

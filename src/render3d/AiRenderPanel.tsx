@@ -199,7 +199,25 @@ export function AiRenderPanel({
       })
       const j = (await r.json()) as { materials?: Array<{ surface: string; prompt: string }>; error?: string }
       if (!r.ok || !j.materials) throw new Error(j.error ?? `HTTP ${r.status}`)
-      localStorage.setItem('om-material-palette', JSON.stringify({ at: Date.now(), materials: j.materials }))
+      // Keep a downscaled copy of the RENDER with the palette: tiles are then
+      // extracted image-to-image from the actual pixels, not re-imagined from
+      // the text — the saved material is the material you approved.
+      const ref = await new Promise<string>((resolve) => {
+        const img = new Image()
+        img.onload = () => {
+          const w = Math.min(768, img.width)
+          const c = document.createElement('canvas')
+          c.width = w
+          c.height = Math.round((img.height / img.width) * w)
+          const g = c.getContext('2d')
+          if (!g) { resolve(result.out); return }
+          g.drawImage(img, 0, 0, c.width, c.height)
+          resolve(c.toDataURL('image/jpeg', 0.85))
+        }
+        img.onerror = () => resolve(result.out)
+        img.src = result.out
+      })
+      localStorage.setItem('om-material-palette', JSON.stringify({ at: Date.now(), materials: j.materials, ref }))
       window.dispatchEvent(new Event('om-palette-changed'))
       setExtractMsg(`Palette of ${j.materials.length} materials ready — open 🎨 Style → Materials.`)
     } catch (err) {

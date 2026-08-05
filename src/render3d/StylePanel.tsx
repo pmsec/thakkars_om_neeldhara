@@ -53,22 +53,79 @@ export function StylePanel(): React.ReactElement {
   const [busy, setBusy] = useState('')
   const [applyTarget, setApplyTarget] = useState('*')
   const [palette, setPalette] = useState<Array<{ surface: string; prompt: string }>>([])
+  const [paletteRef, setPaletteRef] = useState<string | null>(null)
 
   useEffect(() => {
     const readPalette = (): void => {
       try {
         const p = JSON.parse(localStorage.getItem('om-material-palette') || '{}') as {
           materials?: Array<{ surface: string; prompt: string }>
+          ref?: string
         }
         setPalette(p.materials ?? [])
+        setPaletteRef(p.ref ?? null)
       } catch {
         setPalette([])
+        setPaletteRef(null)
       }
     }
     readPalette()
     window.addEventListener('om-palette-changed', readPalette)
     return () => window.removeEventListener('om-palette-changed', readPalette)
   }, [])
+
+  /** Extract ONE palette entry as a tile, image-to-image from the reference
+   * render — the model reproduces the material AS SHOWN, not from words. */
+  const extractTile = async (entry: { surface: string; prompt: string }): Promise<boolean> => {
+    if (!paletteRef || !imgModel) return false
+    const k = keys()[imgProvider]
+    const [head, b64] = paletteRef.split(',', 2)
+    const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/jpeg'
+    const ask =
+      `From this interior render, extract the ${entry.surface} material (${entry.prompt}) as a ` +
+      'texture tile. Reproduce EXACTLY the material as it appears in the image — same colour, ' +
+      'pattern, grain and finish, no restyling — as a perfectly flat, seamless, tileable ' +
+      'texture filling the whole frame. Even diffuse lighting, no shadows, no perspective, no objects.'
+    const r = await fetch('/api/ai-render', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...(k ? { 'x-provider-key': k } : {}) },
+      body: JSON.stringify({ provider: imgProvider, model: imgModel, prompt: ask, image: b64, mime }),
+    })
+    const j = (await r.json()) as { image?: string; mime?: string; error?: string }
+    if (!r.ok || !j.image) throw new Error(j.error ?? `HTTP ${r.status}`)
+    await materialLib.save({
+      at: Date.now(), note: `${entry.surface} — from render`, provider: imgProvider,
+      model: imgModel, prompt: entry.prompt,
+      image: `data:${j.mime ?? 'image/png'};base64,${j.image}`,
+    })
+    return true
+  }
+
+  const extractOne = async (entry: { surface: string; prompt: string }): Promise<void> => {
+    setBusy(`Extracting ${entry.surface} tile…`)
+    try {
+      await extractTile(entry)
+      await refresh()
+      setBusy('')
+    } catch (err) {
+      setBusy(`Failed: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
+  const extractAllTiles = async (): Promise<void> => {
+    let done = 0
+    try {
+      for (const entry of palette) {
+        setBusy(`Extracting tiles… ${done + 1} / ${palette.length} (${entry.surface})`)
+        await extractTile(entry)
+        done++
+        await refresh()
+      }
+      setBusy('')
+    } catch (err) {
+      setBusy(`Failed after ${done} tile${done === 1 ? '' : 's'}: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
 
   // ---- objects
   const [genProvider, setGenProvider] = useState<GenProvider>('meshy')
@@ -307,21 +364,44 @@ export function StylePanel(): React.ReactElement {
                 <div style={{ border: '1px dashed #cbbfa4', borderRadius: 6, padding: 6, margin: '6px 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                     <b>Palette from your render</b>
-                    <button onClick={() => { localStorage.removeItem('om-material-palette'); setPalette([]) }}>
-                      dismiss
-                    </button>
+                    <span>
+                      {paletteRef && (
+                        <button
+                          title="Extract every material as a tile, image-to-image from the render itself"
+                          disabled={busy.startsWith('Extracting')}
+                          onClick={() => void extractAllTiles()}
+                        >
+                          Extract all as tiles
+                        </button>
+                      )}{' '}
+                      <button onClick={() => { localStorage.removeItem('om-material-palette'); setPalette([]); setPaletteRef(null) }}>
+                        dismiss
+                      </button>
+                    </span>
                   </div>
                   <div style={{ color: '#6d6558', fontSize: 11, margin: '2px 0 4px' }}>
-                    Extracted from the AI render — click one to load its prompt, tweak, then Generate its tile.
+                    {paletteRef
+                      ? 'Tile buttons extract the ACTUAL material from the render (image-to-image). Clicking the text loads the prompt to generate a fresh interpretation instead.'
+                      : 'Click one to load its prompt, tweak, then Generate its tile.'}
                   </div>
                   {palette.map((p, i) => (
-                    <button
-                      key={i}
-                      style={{ display: 'block', width: '100%', textAlign: 'left', margin: '3px 0', fontSize: 11 }}
-                      onClick={() => setMatPrompt(p.prompt)}
-                    >
-                      <b>{p.surface}</b> — {p.prompt}
-                    </button>
+                    <div key={i} style={{ display: 'flex', gap: 4, alignItems: 'stretch', margin: '3px 0' }}>
+                      <button
+                        style={{ flex: 1, minWidth: 0, textAlign: 'left', fontSize: 11 }}
+                        onClick={() => setMatPrompt(p.prompt)}
+                      >
+                        <b>{p.surface}</b> — {p.prompt}
+                      </button>
+                      {paletteRef && (
+                        <button
+                          title="Extract this material from the render as a saved tile"
+                          disabled={busy.startsWith('Extracting')}
+                          onClick={() => void extractOne(p)}
+                        >
+                          Tile
+                        </button>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}

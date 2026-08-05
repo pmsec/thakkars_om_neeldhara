@@ -16,8 +16,9 @@ import { building } from '../data/building'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
 import { bezierAt } from '../geometry/bezier'
+import { POLY_FOOTPRINT_KINDS, renderFootprints } from '../geometry/fidelity'
 import { pointInPolygon, type Poly } from '../geometry/vec'
-import { prismGeometry, S } from './prism'
+import { decimate, prismGeometry, S } from './prism'
 import { gableGeometry, gableJamb, vaultGeometry } from './canopy'
 import { cageGroup } from './cage'
 import { treeMasses } from './tree'
@@ -343,12 +344,50 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       if (obj) groups.furniture.add(obj)
     }
     fixtures.forEach((f, i) => {
+      // A fixture with its drawn outline extrudes it, wall-clipped — the
+      // curved vanities and counter runs stopped being bounding boxes here
+      // the same day they did in the styled plan.
+      if (f.poly) {
+        const ph = f.kind === 'basin' ? 850 : 900
+        groups.fabric.add(polyPrisms(f.poly, f.room, 0, ph, MAT.furniture, clip))
+        if (f.bowl) {
+          const bwl = new THREE.Mesh(
+            new THREE.CylinderGeometry(f.bowl.r * S, f.bowl.r * 0.8 * S, 140 * S, 20),
+            withClip(MAT.linen, clip),
+          )
+          bwl.position.set(f.bowl.x * S, (ph + 70) * S, f.bowl.y * S)
+          bwl.castShadow = true
+          groups.fabric.add(bwl)
+        }
+        return
+      }
+      // showers are cabinets: stone tray, glass around — as drawn, and as the
+      // styled plan builds them
+      if (f.kind === 'shower') {
+        const [sw, sd] = f.size
+        const tray = new THREE.Mesh(new THREE.BoxGeometry(sw * S, 50 * S, sd * S), withClip(MAT.stone, clip))
+        tray.position.set(f.at.x * S, 25 * S, f.at.y * S)
+        tray.receiveShadow = true
+        groups.fabric.add(tray)
+        for (const [px, py, pw, pd] of [
+          [f.at.x, f.at.y - sd / 2 + 10, sw, 14],
+          [f.at.x, f.at.y + sd / 2 - 10, sw, 14],
+          [f.at.x - sw / 2 + 10, f.at.y, 14, sd],
+          [f.at.x + sw / 2 - 10, f.at.y, 14, sd],
+        ] as const) {
+          const gl = new THREE.Mesh(new THREE.BoxGeometry(pw * S, 2000 * S, pd * S), withClip(MAT.glass, clip))
+          gl.position.set(px * S, 1050 * S, py * S)
+          groups.fabric.add(gl)
+        }
+        return
+      }
       // Some fitted items genuinely overlap in plan — the serving-hatch counter sits
       // within the north counter run, and the hob within the south one. In 2D that just
       // draws on top; in 3D it gives two boxes identical top faces at 900 mm, and no
       // amount of depth precision can break that tie, so it stipples. A couple of
       // millimetres of stagger resolves it and is far below any dimension that matters.
-      const base = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900 : 800
+      const base = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900
+        : f.kind === 'wc' ? 420 : 800
       const h = base + (i % 5) * 2
       const geo = new THREE.BoxGeometry(f.size[0] * S, h * S, f.size[1] * S)
       const mat = MAT.furniture.clone()
@@ -625,7 +664,81 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
  * is a layout study, not a visualisation — but a bed reads as a bed and a sofa has a back,
  * which is what stops the interior looking like a warehouse of packing crates.
  */
-function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Object3D | null {
+/** Extrude a drawn outline, wall-clipped and room-limited — the SAME shared
+ * rule the styled plan and walkthrough use, so this view cannot diverge. */
+function polyPrisms(
+  poly: { x: number; y: number }[],
+  room: string | undefined,
+  base: number,
+  top: number,
+  mat: THREE.MeshStandardMaterial,
+  clip: THREE.Plane[],
+): THREE.Group {
+  const g = new THREE.Group()
+  for (const fp of renderFootprints(poly, room)) {
+    const m = new THREE.Mesh(
+      prismGeometry(decimate(fp.outer), base, top, fp.holes.map((h) => decimate(h))),
+      withClip(mat, clip),
+    )
+    m.castShadow = true
+    m.receiveShadow = true
+    g.add(m)
+  }
+  return g
+}
+
+export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Object3D | null {
+  // A piece with its drawn 2D outline extrudes THAT — never a box around it.
+  if (f.poly && POLY_FOOTPRINT_KINDS.has(f.kind)) {
+    const abs = new THREE.Group()
+    switch (f.kind) {
+      case 'rug':
+        abs.add(polyPrisms(f.poly, f.room, 2, 12, MAT.rug, clip))
+        break
+      case 'grass':
+        abs.add(polyPrisms(f.poly, f.room, 0, 25, MAT.green, clip))
+        break
+      case 'planter': {
+        abs.add(polyPrisms(f.poly, f.room, 0, 300, MAT.pot, clip))
+        const n = Math.max(2, Math.round(Math.max(f.w, f.d) / 1250))
+        const r = Math.min(220, Math.min(f.w, f.d) / 2 - 20)
+        for (let i = 0; i < n; i++) {
+          const t = (i + 0.5) / n
+          const sx = f.w >= f.d ? f.x + t * f.w : f.x + f.w / 2
+          const sy = f.w >= f.d ? f.y + f.d / 2 : f.y + t * f.d
+          const s = sphere(r, MAT.green, 0, 0, 0, clip)
+          s.position.set(sx * S, (300 + r * 0.7) * S, sy * S)
+          abs.add(s)
+        }
+        break
+      }
+      case 'dining': {
+        abs.add(polyPrisms(f.poly, f.room, f.height - 60, f.height, MAT.wood, clip))
+        for (const sx of [-1, 1]) {
+          for (const sz of [-1, 1]) {
+            const leg = new THREE.Mesh(
+              new THREE.CylinderGeometry(35 * S, 35 * S, (f.height - 60) * S, 8),
+              withClip(MAT.furniture, clip),
+            )
+            leg.position.set((f.x + f.w / 2 + sx * f.w * 0.26) * S,
+              ((f.height - 60) / 2) * S, (f.y + f.d / 2 + sz * f.d * 0.3) * S)
+            leg.castShadow = true
+            abs.add(leg)
+          }
+        }
+        break
+      }
+      default: {
+        const mat = f.kind === 'console' || f.kind === 'table' || f.kind === 'bench'
+          ? MAT.wood : MAT.furniture
+        const top = f.kind === 'wardrobe' || f.kind === 'shelves'
+          ? f.height : Math.min(f.height, 900)
+        abs.add(polyPrisms(f.poly, f.room, 0, top, mat, clip))
+      }
+    }
+    return abs
+  }
+
   const g = new THREE.Group()
   const box = (w: number, h: number, d: number, mat: THREE.MeshStandardMaterial, dx = 0, dy = 0, dz = 0): void => {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w * S, h * S, d * S), withClip(mat, clip))
@@ -710,12 +823,30 @@ function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Object3D 
     case 'wardrobe':
       box(w, f.height, d, MAT.furniture, 0, f.height / 2, 0)
       break
+    case 'chair': {
+      // one drawn dining chair — seat in its rectangle, back away from `face`
+      const seat = Math.min(w, d) - 30
+      box(seat, 60, seat, MAT.soft, 0, 440, 0)
+      box(60, 380, 60, MAT.furniture, 0, 190, 0)
+      const bh = Math.min(f.height, 900)
+      if (f.face === 'E') box(60, bh - 440, seat, MAT.furniture, -w / 2 + 30, (bh + 440) / 2, 0)
+      else if (f.face === 'W') box(60, bh - 440, seat, MAT.furniture, w / 2 - 30, (bh + 440) / 2, 0)
+      else if (f.face === 'S') box(seat, bh - 440, 60, MAT.furniture, 0, (bh + 440) / 2, -d / 2 + 30)
+      else box(seat, bh - 440, 60, MAT.furniture, 0, (bh + 440) / 2, d / 2 - 30)
+      break
+    }
+    case 'grass':
+      box(w, 25, d, MAT.green, 0, 12.5, 0)
+      break
+    case 'planter':
+      box(w, 300, d, MAT.pot, 0, 150, 0)
+      break
     case 'drumkit':
       cyl(Math.min(w, d) * 0.28, 500, MAT.furniture, 0, 250, d * 0.1, 20)
       cyl(190, 300, MAT.furniture, -w * 0.26, 620, -d * 0.1, 16)
       cyl(190, 300, MAT.furniture, w * 0.02, 640, -d * 0.2, 16)
-      cyl(240, 40, MAT.mullion, -w * 0.34, 980, d * 0.16, 16)
-      cyl(260, 40, MAT.mullion, w * 0.32, 1020, -d * 0.26, 16)
+      cyl(240, 40, MAT.mullion, -w * 0.3, 980, d * 0.16, 16)
+      cyl(260, 40, MAT.mullion, w * 0.28, 1020, -d * 0.26, 16)
       break
     case 'guitar':
       cyl(30, 950, MAT.furniture, 0, 475, 0, 8)

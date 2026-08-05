@@ -18,6 +18,22 @@ import type { Poly, Pt } from '../geometry/vec'
 /** Millimetres to scene metres. */
 export const S = 0.001
 
+/** Drop near-duplicate vertices: boolean-derived outlines carry thousands of
+ * sampled points and earcut quietly produces degenerate triangles on them. */
+export function decimate(poly: Poly, tol = 18): Poly {
+  const out: Poly = []
+  for (const p of poly) {
+    const last = out[out.length - 1]
+    if (!last || Math.hypot(p.x - last.x, p.y - last.y) > tol) out.push(p)
+  }
+  if (out.length > 2) {
+    const a = out[0]
+    const b = out[out.length - 1]
+    if (Math.hypot(a.x - b.x, a.y - b.y) <= tol) out.pop()
+  }
+  return out.length >= 3 ? out : poly
+}
+
 function toVec(p: Pt): THREE.Vector2 {
   return new THREE.Vector2(p.x * S, -p.y * S)
 }

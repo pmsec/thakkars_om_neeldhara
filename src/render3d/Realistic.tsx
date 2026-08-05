@@ -23,7 +23,7 @@ import { buildSolids } from '../geometry/solid'
 import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
-import { prismGeometry, S } from './prism'
+import { decimate, prismGeometry, S } from './prism'
 
 const model = getModel()
 const solids = buildSolids(model)
@@ -219,22 +219,6 @@ export function makeMaterials() {
 export type Mats = ReturnType<typeof makeMaterials>
 
 // ---------------------------------------------------------- scene build
-/** Drop near-duplicate vertices: boolean-derived outlines carry thousands of
- * sampled points and earcut quietly produces degenerate triangles on them. */
-function decimate(poly: { x: number; y: number }[], tol = 18): { x: number; y: number }[] {
-  const out: { x: number; y: number }[] = []
-  for (const p of poly) {
-    const last = out[out.length - 1]
-    if (!last || Math.hypot(p.x - last.x, p.y - last.y) > tol) out.push(p)
-  }
-  if (out.length > 2) {
-    const a = out[0]
-    const b = out[out.length - 1]
-    if (Math.hypot(a.x - b.x, a.y - b.y) <= tol) out.pop()
-  }
-  return out.length >= 3 ? out : poly
-}
-
 function box(
   w: number, h: number, d: number, mat: THREE.Material,
   x = 0, y = 0, z = 0,

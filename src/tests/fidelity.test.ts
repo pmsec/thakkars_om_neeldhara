@@ -22,6 +22,7 @@ import {
 } from '../geometry/fidelity'
 import { area } from '../geometry/vec'
 import { furnitureMesh, type Mats } from '../render3d/Realistic'
+import { furnitureObject } from '../render3d/Viewer3D'
 import { S } from '../render3d/prism'
 
 describe('2D↔3D fidelity', () => {
@@ -118,21 +119,32 @@ describe('2D↔3D fidelity', () => {
     // of their exact size or as wall-clipped extrusions of their outline.
     const materialStub = new Proxy({}, { get: () => new THREE.MeshStandardMaterial() }) as Mats
     const TOL = 30
-    for (const f of furniture) {
-      if (f.kind === 'tree') continue
-      const o = furnitureMesh(f, materialStub)
-      if (!o) continue
-      o.updateMatrixWorld(true)
-      const bb = new THREE.Box3().setFromObject(o)
-      if (bb.isEmpty()) continue
-      const minX = bb.min.x / S
-      const maxX = bb.max.x / S
-      const minY = bb.min.z / S
-      const maxY = bb.max.z / S
-      expect(minX, `${f.id} (${f.label}) west of its footprint`).toBeGreaterThanOrEqual(f.x - TOL)
-      expect(maxX, `${f.id} (${f.label}) east of its footprint`).toBeLessThanOrEqual(f.x + f.w + TOL)
-      expect(minY, `${f.id} (${f.label}) north of its footprint`).toBeGreaterThanOrEqual(f.y - TOL)
-      expect(maxY, `${f.id} (${f.label}) south of its footprint`).toBeLessThanOrEqual(f.y + f.d + TOL)
+    // BOTH 3D renderers — the styled/walkthrough builder AND the technical
+    // viewer's — are held to the same projection. They diverged once (the
+    // technical tab kept bounding boxes long after the styled plan stopped);
+    // this is what makes that structurally impossible now.
+    const builders: Array<[string, (f: (typeof furniture)[number]) => THREE.Object3D | null]> = [
+      ['furnitureMesh', (f) => furnitureMesh(f, materialStub)],
+      ['furnitureObject', (f) => furnitureObject(f, [])],
+    ]
+    for (const [builderName, build] of builders) {
+      for (const f of furniture) {
+        if (f.kind === 'tree') continue
+        const o = build(f)
+        if (!o) continue
+        o.updateMatrixWorld(true)
+        const bb = new THREE.Box3().setFromObject(o)
+        if (bb.isEmpty()) continue
+        const minX = bb.min.x / S
+        const maxX = bb.max.x / S
+        const minY = bb.min.z / S
+        const maxY = bb.max.z / S
+        const tag = `${builderName}: ${f.id} (${f.label})`
+        expect(minX, `${tag} west of its footprint`).toBeGreaterThanOrEqual(f.x - TOL)
+        expect(maxX, `${tag} east of its footprint`).toBeLessThanOrEqual(f.x + f.w + TOL)
+        expect(minY, `${tag} north of its footprint`).toBeGreaterThanOrEqual(f.y - TOL)
+        expect(maxY, `${tag} south of its footprint`).toBeLessThanOrEqual(f.y + f.d + TOL)
+      }
     }
   })
 

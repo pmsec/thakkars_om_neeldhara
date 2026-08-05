@@ -296,12 +296,29 @@ export function AiRenderPanel({
                     <input
                       type="password"
                       value={keys[p]}
-                      placeholder={p === 'openai' ? 'sk-…' : 'AIza…'}
+                      placeholder="empty = use the server key"
                       onChange={(e) => saveKeys({ ...keys, [p]: e.target.value.trim() })}
                       style={{ flex: 1, minWidth: 0 }}
                     />
+                    {keys[p] && (
+                      <button
+                        title="Forget this browser key and use the server key instead"
+                        onClick={() => {
+                          saveKeys({ ...keys, [p]: '' })
+                          void loadModels(provider, { ...keys, [p]: '' })
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
                 ))}
+                {(keys.openai || keys.google) && (
+                  <p style={{ color: '#8a5a2f', margin: '4px 0', fontSize: 12 }}>
+                    A key typed here OVERRIDES the server key — if it is old or disabled you
+                    will see 401. Press ✕ to fall back to the key saved in Vercel.
+                  </p>
+                )}
               </div>
             )}
           </div>

@@ -141,6 +141,46 @@ export function StylePanel(): React.ReactElement {
     bump()
   }
 
+  // ---- per-tile editing: tile + instruction -> a NEW named tile; the
+  // original stays in the library untouched
+  const [edit, setEdit] = useState<{ id: number; prompt: string; name: string } | null>(null)
+
+  const generateEdit = async (): Promise<void> => {
+    if (!edit || !imgModel) return
+    const src = mats.find((m) => m.id === edit.id)
+    if (!src || !edit.prompt.trim()) return
+    setBusy('Editing tile…')
+    try {
+      const k = keys()[imgProvider]
+      const [head, b64] = src.image.split(',', 2)
+      const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/png'
+      const fullPrompt =
+        `Edit this seamless material texture tile: ${edit.prompt.trim()}. ` +
+        'Keep it a perfectly flat, seamless, tileable material texture filling the whole ' +
+        'frame — even diffuse lighting, no shadows, no perspective, no objects.'
+      const r = await fetch('/api/ai-render', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...(k ? { 'x-provider-key': k } : {}) },
+        body: JSON.stringify({ provider: imgProvider, model: imgModel, prompt: fullPrompt, image: b64, mime }),
+      })
+      const j = (await r.json()) as { image?: string; mime?: string; error?: string }
+      if (!r.ok || !j.image) throw new Error(j.error ?? `HTTP ${r.status}`)
+      await materialLib.save({
+        at: Date.now(),
+        note: edit.name.trim() || `${src.note} (edited)`,
+        provider: imgProvider,
+        model: imgModel,
+        prompt: `${src.prompt} → ${edit.prompt.trim()}`,
+        image: `data:${j.mime ?? 'image/png'};base64,${j.image}`,
+      })
+      await refresh()
+      setEdit(null)
+      setBusy('')
+    } catch (err) {
+      setBusy(`Failed: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
   const saveGlb = async (buf: ArrayBuffer, source: string, note: string): Promise<void> => {
     const id = await objectLib.save({ at: Date.now(), note, source, prompt: note, glb: buf })
     if (piece) {
@@ -293,6 +333,34 @@ export function StylePanel(): React.ReactElement {
                   {rooms.map((r) => <option key={r.id} value={r.id}>{r.name} floor</option>)}
                 </select>
               </div>
+              {edit && (
+                <div style={{ border: '1px solid #b9a877', background: '#faf6ea', borderRadius: 6, padding: 8, margin: '6px 0', fontSize: 12 }}>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <img src={mats.find((m) => m.id === edit.id)?.image} style={{ width: 64, height: 64, borderRadius: 4, objectFit: 'cover' }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <b>Edit this tile</b> — the original stays; the edit is saved as a new material.
+                      <input
+                        value={edit.prompt}
+                        onChange={(e) => setEdit({ ...edit, prompt: e.target.value })}
+                        placeholder="what to change (e.g. make it lighter, wider planks)"
+                        style={{ width: '100%', boxSizing: 'border-box', margin: '4px 0' }}
+                      />
+                      <input
+                        value={edit.name}
+                        onChange={(e) => setEdit({ ...edit, name: e.target.value })}
+                        placeholder="name for the new material"
+                        style={{ width: '100%', boxSizing: 'border-box', marginBottom: 4 }}
+                      />
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button disabled={!edit.prompt.trim() || busy === 'Editing tile…'} onClick={() => void generateEdit()}>
+                          {busy === 'Editing tile…' ? 'Editing…' : 'Generate edited tile'}
+                        </button>
+                        <button onClick={() => setEdit(null)}>Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 6 }}>
                 {mats.map((m) => (
                   <div key={m.id} style={{ border: '1px solid #e2dac8', borderRadius: 6, padding: 5, fontSize: 11 }}>
@@ -300,6 +368,9 @@ export function StylePanel(): React.ReactElement {
                     <div style={{ margin: '4px 0', minHeight: 24 }}>{m.note}</div>
                     <div style={{ display: 'flex', gap: 4 }}>
                       <button onClick={() => applyMaterial(m.id)}>Apply</button>
+                      <button onClick={() => setEdit({ id: m.id, prompt: '', name: `${m.note} (edited)` })}>
+                        Edit
+                      </button>
                       <button onClick={() => { void materialLib.remove(m.id).then(refresh) }}>Delete</button>
                     </div>
                   </div>

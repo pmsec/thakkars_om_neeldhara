@@ -21,13 +21,15 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'POST only' })
     return
   }
-  const { provider, model, prompt, image, mime } = req.body || {}
+  const { provider, model, prompt, image, mime, ref, refMime } = req.body || {}
   if (!provider || !model || !prompt) {
     res.status(400).json({ error: 'provider, model and prompt are required.' })
     return
   }
   // `image` is optional: with it this is an edit/re-render; without it a pure
   // text-to-image generation (used for seamless material textures).
+  // `ref` is an optional SECOND image — the schematic 2D plan sent along as
+  // the source of truth the model must keep in view.
   const key = String(req.headers['x-provider-key'] ||
     (provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.GOOGLE_API_KEY) || '').trim()
   if (!key) {
@@ -48,11 +50,21 @@ export default async function handler(req, res) {
         form.append('prompt', prompt)
         form.append('n', '1')
         form.append('size', '1536x1024')
+        // gpt-image models take multiple inputs via image[]; single-image
+        // requests keep the plain field for dall-e compatibility
+        const field = ref ? 'image[]' : 'image'
         form.append(
-          'image',
+          field,
           new Blob([Buffer.from(image, 'base64')], { type: mime || 'image/jpeg' }),
           'view.jpg',
         )
+        if (ref) {
+          form.append(
+            field,
+            new Blob([Buffer.from(ref, 'base64')], { type: refMime || 'image/jpeg' }),
+            'plan.jpg',
+          )
+        }
         r = await fetch('https://api.openai.com/v1/images/edits', {
           method: 'POST',
           headers: { authorization: `Bearer ${key}` },
@@ -94,6 +106,9 @@ export default async function handler(req, res) {
                   ? [
                       { text: prompt },
                       { inline_data: { mime_type: mime || 'image/jpeg', data: image } },
+                      ...(ref
+                        ? [{ inline_data: { mime_type: refMime || 'image/jpeg', data: ref } }]
+                        : []),
                     ]
                   : [{ text: prompt }],
               },

@@ -16,6 +16,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { deleteRender, listRenders, saveRender, type SavedRender } from './aiStore'
 import { shrinkDataUrl } from './imgUtil'
+import { planRefDataUrl } from './planRef'
 
 export const DEFAULT_PROMPT =
   'Re-render this architectural floor-plan view photorealistically. Keep every wall, ' +
@@ -62,6 +63,7 @@ export function AiRenderPanel({
   const [saveMsg, setSaveMsg] = useState('')
   const [editPrompt, setEditPrompt] = useState('')
   const [gallery, setGallery] = useState<SavedRender[] | null>(null)
+  const [sendPlan, setSendPlan] = useState(true)
 
   const saveKeys = (k: Keys): void => {
     setKeys(k)
@@ -108,17 +110,40 @@ export function AiRenderPanel({
     'furniture. Kitchens and bathrooms keep all their fittings. Do not remove, add or ' +
     'move any object; change only appearance.'
 
+  /** The clause that explains the second image, when the 2D plan rides along. */
+  const PLAN_CLAUSE =
+    ' The SECOND input image is the authoritative 2D floor plan of this home, schematic ' +
+    'top view. Treat it as the source of truth for where every wall, opening, counter, ' +
+    'appliance and piece of furniture is — nothing it shows may be missing or moved. ' +
+    'Render in the style and viewpoint of the FIRST image only; never copy the ' +
+    "schematic's flat line style into the output."
+
   /** One provider round trip: data-URL in, data-URL out. */
   const requestRender = async (input: string, thePrompt: string): Promise<string> => {
     const [head, b64] = input.split(',', 2)
     const mime = /data:([^;]+)/.exec(head)?.[1] ?? 'image/jpeg'
+    let ref: string | null = null
+    let refMime = 'image/jpeg'
+    if (sendPlan) {
+      const planUrl = await planRefDataUrl()
+      if (planUrl) {
+        const [rh, rb] = planUrl.split(',', 2)
+        refMime = /data:([^;]+)/.exec(rh)?.[1] ?? 'image/jpeg'
+        ref = rb
+      }
+    }
     const r = await fetch('/api/ai-render', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
         ...(keys[provider] ? { 'x-provider-key': keys[provider] } : {}),
       },
-      body: JSON.stringify({ provider, model, prompt: thePrompt, image: b64, mime }),
+      body: JSON.stringify({
+        provider, model,
+        prompt: ref ? thePrompt + PLAN_CLAUSE : thePrompt,
+        image: b64, mime,
+        ...(ref ? { ref, refMime } : {}),
+      }),
     })
     const j = (await r.json()) as { image?: string; mime?: string; error?: string }
     if (!r.ok || !j.image) throw new Error(j.error ?? `HTTP ${r.status}`)
@@ -305,6 +330,10 @@ export function AiRenderPanel({
             />
           </div>
 
+          <label style={{ display: 'flex', gap: 6, alignItems: 'center', margin: '4px 0', fontSize: 12 }}>
+            <input type="checkbox" checked={sendPlan} onChange={(e) => setSendPlan(e.target.checked)} />
+            Send the 2D plan as a second reference image (keeps the source of truth in view)
+          </label>
           <button style={{ width: '100%', padding: '7px 0' }} disabled={busy} onClick={() => void generate()}>
             {busy ? 'Generating… (10–30 s)' : 'Generate'}
           </button>

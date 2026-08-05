@@ -90,6 +90,14 @@ class Sheet:
                       f'fill="{col}" text-anchor="{anchor}" font-weight="{weight}" '
                       f'font-family="Helvetica,Arial,sans-serif"{ls}>{esc(s)}</text>')
 
+    def begin_layer(self, id_):
+        """Open a named <g> so the portal can toggle this stretch of the
+        sheet as a layer. Draw order — and so z-order — is unchanged."""
+        self.o.append(f'<g id="L-{id_}">')
+
+    def end_layer(self):
+        self.o.append('</g>')
+
     def save(self, name):
         self.o.append('</svg>')
         svg = os.path.join(OUT, name + '.svg')
@@ -157,6 +165,7 @@ def main():
     keep, _demo = R.keep_demo()
 
     # ------------------------------- the lift core beyond the entry hall
+    s.begin_layer('ref')
     rx0, ry0, rx1, ry1 = D.REFERENCE
     ref, reft = frame.load_cad(x0=40000, y0=10000, x1=135000, y1=75000)
     for lay, x1, y1, x2, y2 in ref:
@@ -174,8 +183,10 @@ def main():
     s.text((rx0 + rx1) / 2, ry1 + 200,
            'LIFT LOBBY, LIFTS AND FIRE LIFT — COMMON, NOT PART OF THE HOME',
            17, '#8b8377', weight='bold')
+    s.end_layer()
 
     # -------------------------------------------------- keep-clear zones
+    s.begin_layer('keepclear')
     for name, a, b, c, d, kind in C.NAMED:
         s.rect(a, b, c, d, fill='#ffffff', stroke=KEEP, stroke_width=2.2,
                stroke_dasharray='9 6')
@@ -190,6 +201,7 @@ def main():
         lab = name.split(',')[0].upper()
         s.text((a + c) / 2, b - 110, f'{lab}  {c - a:.0f}×{d - b:.0f}', 12, KEEP,
                weight='bold')
+    s.end_layer()
 
     # kept builder walls sit on top of everything structural
     for x1, y1, x2, y2 in keep:
@@ -267,11 +279,14 @@ def main():
             s.o.append(f'<polygon points="{pts}" fill="{fill}" stroke="{stroke}" '
                        f'stroke-width="{lw}"{dash}/>')
 
+    s.begin_layer('floor')
     for p in R.wood_floor(island=ISLAND):  # great room + deck bay, one board grid
         prim(p)
-    for p in R.terrace_pieces():       # grass, a tree and a jhoola on each
-        prim(p)
     for p in R.great_room_rug():       # full width, under everything else
+        prim(p)
+    s.end_layer()
+    s.begin_layer('furniture')
+    for p in R.terrace_pieces():       # grass, a tree and a jhoola on each
         prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)
@@ -321,6 +336,7 @@ def main():
     for r0, r1, a0, a1, back, lab in D.GALLERY_FURNITURE:
         for p in SY.annular(gx, gy, r0, r1, a0, a1, back):
             prim(p)
+    s.end_layer()
 
     # ---------------------------------------------------- columns and beams
     for r_ in cols:
@@ -342,6 +358,7 @@ def main():
         prim(p)
 
     # --------------------------------------------------------------- labels
+    s.begin_layer('labels')
     for name, sub, rects, note, anchor in D.ROOMS:
         if not rects:
             continue
@@ -374,8 +391,10 @@ def main():
                f'{A:.1f} m²  ·  {A * 10.7639:.0f} sq ft', 14 if big else 13, TXT2)
         if note:
             s.text(lx_, ly_ + dy + (230 if big else 200), note, 11, TXT2)
+    s.end_layer()
 
     # ----------------------------------------------------------- dimensions
+    s.begin_layer('dims')
     for x1, y1, x2, y2, _prefix in D.DIMS:
         txt = _prefix + f'{math.hypot(x2 - x1, y2 - y1):,.0f}'.replace(',', ' ')
         s.line(x1, y1, x2, y2, DIMC, 0.9)
@@ -397,7 +416,10 @@ def main():
                        f'text-anchor="middle" font-family="Helvetica,Arial,sans-serif">'
                        f'{esc(txt)}</text></g>')
 
+    s.end_layer()
+
     # ---------------------------------------------------------------- title
+    s.begin_layer('title')
     s.text(-3000, -2050, 'FULL-FLOOR RESIDENCE  —  ROUND 1', 30, INK, anchor='start',
            weight='bold')
     s.text(-3000, -1780, 'A-101 SET OUT ON THE BUILDER SHELL  ·  ALL COLUMNS, BEAMS, '
@@ -421,6 +443,7 @@ def main():
         s.o.append(f'<text x="{s.X(lx) + 46:.1f}" y="{s.Y(ly) + i * 26:.0f}" '
                    f'font-size="15" fill="{TXT}" '
                    f'font-family="Helvetica,Arial,sans-serif">{esc(txt)}</text>')
+    s.end_layer()
 
     s.save('07-round1-layout')
 

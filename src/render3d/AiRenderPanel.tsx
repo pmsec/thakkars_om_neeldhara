@@ -44,9 +44,12 @@ function loadKeys(): Keys {
 
 export function AiRenderPanel({
   capture,
+  defaultPrompt = DEFAULT_PROMPT,
 }: {
   /** Returns the current view as a JPEG data URL, or null if not ready. */
   capture: () => string | null
+  /** Per-view starting prompt (top-down vs first-person phrasing). */
+  defaultPrompt?: string
 }): React.ReactElement {
   const [open, setOpen] = useState(false)
   const [keys, setKeys] = useState<Keys>(loadKeys)
@@ -55,7 +58,7 @@ export function AiRenderPanel({
   const [models, setModels] = useState<string[]>([])
   const [model, setModel] = useState('')
   const [modelsMsg, setModelsMsg] = useState('')
-  const [prompt, setPrompt] = useState(DEFAULT_PROMPT)
+  const [prompt, setPrompt] = useState(defaultPrompt)
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<{ out: string; input: string; prompt: string } | null>(null)
   const [overlay, setOverlay] = useState(0)
@@ -64,6 +67,13 @@ export function AiRenderPanel({
   const [editPrompt, setEditPrompt] = useState('')
   const [gallery, setGallery] = useState<SavedRender[] | null>(null)
   const [sendPlan, setSendPlan] = useState(true)
+  const [styles, setStyles] = useState<SavedRender[]>([])
+
+  // saved renders double as reusable STYLES: picking one loads its prompt,
+  // so an approved full-house look drives any view — including first person
+  useEffect(() => {
+    if (open) void listRenders().then(setStyles).catch(() => setStyles([]))
+  }, [open])
 
   const saveKeys = (k: Keys): void => {
     setKeys(k)
@@ -324,6 +334,27 @@ export function AiRenderPanel({
           </div>
           {modelsMsg && <div style={{ color: '#8a5a2f', margin: '2px 0 6px' }}>{modelsMsg}</div>}
 
+          {styles.length > 0 && (
+            <div style={row}>
+              <span style={{ width: 62 }}>Style</span>
+              <select
+                defaultValue=""
+                style={{ flex: 1, minWidth: 0 }}
+                title="Load the prompt of a saved render — apply an approved look to this view"
+                onChange={(e) => {
+                  const s0 = styles.find((x) => String(x.id) === e.target.value)
+                  if (s0?.prompt) setPrompt(s0.prompt)
+                }}
+              >
+                <option value="">— from a saved render —</option>
+                {styles.map((x) => (
+                  <option key={x.id} value={x.id}>
+                    {x.note || new Date(x.at).toLocaleDateString()}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div style={{ margin: '6px 0' }}>
             <div style={{ marginBottom: 3 }}>Prompt</div>
             <textarea

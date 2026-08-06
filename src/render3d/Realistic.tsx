@@ -23,6 +23,7 @@ import { buildSolids } from '../geometry/solid'
 import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
+import { AiRenderPanel } from './AiRenderPanel'
 import { StylePanel } from './StylePanel'
 import { decimate, prismGeometry, S } from './prism'
 import { customObject, floorMaterial, getAssign, primeStyle, wallMaterial } from './styleOverrides'
@@ -30,6 +31,13 @@ import { lightRig } from './lighting'
 
 const model = getModel()
 const solids = buildSolids(model)
+
+/** The first-person default: same fidelity rules, eye-level phrasing. */
+const FP_PROMPT =
+  'Re-render this first-person interior view photorealistically. Keep the camera ' +
+  'viewpoint and every wall, opening and piece of furniture exactly where and how ' +
+  'large they are — change nothing structural. Upgrade materials and light to ' +
+  'high-end interior photography quality, natural depth of field, eye level.'
 
 // ------------------------------------------------------------- textures
 function canvasTexture(
@@ -724,6 +732,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const mountRef = useRef<HTMLDivElement | null>(null)
   const [walking, setWalking] = useState(false)
   const [hint, setHint] = useState(true)
+  const captureRef = useRef<(() => string | null) | null>(null)
+  const standRef = useRef<((roomId: string, dir: 'N' | 'S' | 'E' | 'W') => void) | null>(null)
+  const [standRoom, setStandRoom] = useState('R-GREAT')
 
   const [styleTick, setStyleTick] = useState(0)
   useEffect(() => {
@@ -806,6 +817,33 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     orbit.maxPolarAngle = Math.PI * 0.495
     orbit.update()
 
+    // first-person frame for the AI panel: render synchronously, bounded JPEG
+    captureRef.current = () => {
+      renderer.render(scene, camera)
+      const src = renderer.domElement
+      const w = Math.min(1536, src.width)
+      const h = Math.round((src.height / src.width) * w)
+      const c = document.createElement('canvas')
+      c.width = w
+      c.height = h
+      const g = c.getContext('2d')
+      if (!g) return null
+      g.drawImage(src, 0, 0, w, h)
+      return c.toDataURL('image/jpeg', 0.92)
+    }
+
+    // stand at a room's centre, eye height, looking the chosen way
+    standRef.current = (roomId, dir) => {
+      const room = model.roomById.get(roomId)
+      if (!room) return
+      const px = room.centroid.x * S
+      const pz = room.centroid.y * S
+      const d = dir === 'N' ? [0, -3] : dir === 'S' ? [0, 3] : dir === 'E' ? [3, 0] : [-3, 0]
+      camera.position.set(px, 1.62, pz)
+      orbit.target.set(px + d[0], 1.45, pz + d[1])
+      orbit.update()
+    }
+
     const lock = new PointerLockControls(camera, renderer.domElement)
     const keys = new Set<string>()
     const onKey = (e: KeyboardEvent, down: boolean): void => {
@@ -858,6 +896,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     animate()
 
     return () => {
+      captureRef.current = null
+      standRef.current = null
       cancelAnimationFrame(raf)
       ro.disconnect()
       window.removeEventListener('keydown', kd)
@@ -873,6 +913,34 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0 }} />
       {!compact && <StylePanel />}
+      {!compact && (
+        <AiRenderPanel
+          capture={() => captureRef.current?.() ?? null}
+          defaultPrompt={FP_PROMPT}
+        />
+      )}
+      {!compact && (
+        <div
+          style={{
+            position: 'absolute', top: 10, left: 12, display: 'flex', gap: 6,
+            alignItems: 'center', background: 'rgba(250,248,244,0.95)',
+            border: '1px solid #d5cdbb', borderRadius: 8, padding: '6px 8px', fontSize: 12,
+          }}
+        >
+          <span>Stand in</span>
+          <select value={standRoom} onChange={(e) => setStandRoom(e.target.value)}>
+            {model.rooms
+              .filter((r) => r.def.category !== 'void')
+              .map((r) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+          </select>
+          <span>look</span>
+          {(['N', 'E', 'S', 'W'] as const).map((d) => (
+            <button key={d} onClick={() => standRef.current?.(standRoom, d)}>{d}</button>
+          ))}
+        </div>
+      )}
       <div
         style={{
           position: 'absolute', left: 12, bottom: 12, padding: '6px 12px',

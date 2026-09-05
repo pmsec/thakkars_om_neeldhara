@@ -53,22 +53,94 @@ PLATE = [
 ]
 
 # ------------------------------------------------------------- the walls
-# (x1, y1, x2, y2, thickness, openings, kind, id, note). Openings are
-# (type, from, to) in absolute mm along the wall. A wall of thickness 0 and
-# kind 'threshold' is an OPENING, not a wall: it divides two rooms and puts
-# nothing on the floor.
+# (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
+#
+# BOW is the whole idea of this plan. It is the wall's sagitta in mm — how far
+# the middle of it stands off the straight line between its ends, positive to
+# the LEFT of the direction of travel. Nothing else changes: a bowed wall has
+# the same two endpoints as a straight one, so it meets its neighbours exactly
+# where a straight wall would and the plan still closes.
+#
+# Where the bows are is the argument. Every wall that faces the living room
+# bows into it and carries an arched opening; every wall that only divides two
+# private rooms is straight. So the public room is read as a sequence of
+# arches and apses, and the private ones stay square and easy to furnish.
+#
+# Openings are (type, from, to) in absolute mm along the wall.
 NEW_WALLS = [
-    # NOTHING. Every internal wall and threshold the builder drew has been
-    # taken out — this is the bare shell, and the plan is being designed from
-    # scratch inside it.
-    #
-    # What he drew is not lost: design.imported.py holds all eleven partitions,
-    # five thresholds and seven doors exactly as they came off the DWG, and
-    # `python3 import.py --to design.imported.py` writes a fresh copy any time.
-    #
-    # The ROOMS below are kept as LABELS ONLY. Their anchors are where his room
-    # names sit, so they say what he intended each part of the shell for while
-    # the new plan is drawn over it. They name nothing the walls enclose yet.
+    # --- north-west: the guest room and the flat's second bathroom
+    (3125, -75, 3125, 4195, 125, [('door', 3200, 4100)], 'partition', 'W-GUEST-E',
+     'guest room and study | hall. Straight: both sides are rooms to furnish.', 0),
+    (2220, 4195, 3125, 4195, 125, [], 'partition', 'W-GUEST-S',
+     'guest room | living. Solid — the room is entered off the hall, not the sofa.', 0),
+    (4650, 545, 4650, 4195, 125, [], 'partition', 'W-GBATH-E',
+     'guest bath and hall | kitchen', 0),
+    (3125, 2900, 4650, 2900, 125, [('door', 3450, 4150)], 'partition', 'W-GBATH-S',
+     'guest bath | hall. The bath keeps the west service shaft it was always on.', 0),
+    (3125, 4195, 4650, 4195, 125, [('arch', 3450, 4350)], 'partition', 'W-HALL-S',
+     'hall | living. Bows into the living room: the first arch you see from the sofa.', 300),
+
+    # --- north-centre: kitchen and the utility behind it
+    (4650, 4195, 6875, 4195, 125, [('arch', 5250, 6350)], 'partition', 'W-KIT-S',
+     'kitchen | dining. The counter line, bowed into the room, with the arch over it.', 450),
+    (6875, 545, 6875, 4195, 125, [('door', 1200, 2000)], 'partition', 'W-KIT-E',
+     'kitchen | utility and store', 0),
+    (8370, 545, 8370, 4195, 125, [], 'partition', 'W-UTIL-E',
+     "utility | family bedroom. Blind on the bedroom side — the kid's wardrobe "
+     'backs onto it.', 0),
+    (6875, 4195, 8370, 4195, 125, [], 'partition', 'W-UTIL-S',
+     'utility | vestibule', 0),
+
+    # --- the vestibule: the arched threshold into the family wing
+    (6875, 4195, 6875, 5600, 125, [('arch', 4450, 5350)], 'partition', 'W-VEST-W',
+     'living | vestibule. Bows west into the living room.', 320),
+    (8370, 4195, 8370, 5600, 125, [('arch', 4450, 5350)], 'partition', 'W-VEST-E',
+     'vestibule | family bedroom. Bows east, so the two arches face each other '
+     'across a room that is wider in the middle than at either end.', 320),
+
+    # --- the family bathroom
+    (6875, 5600, 8370, 5600, 125, [], 'partition', 'W-FBATH-N',
+     'vestibule | family bath', 0),
+    (6875, 5600, 6875, 7820, 125, [], 'partition', 'W-FBATH-W',
+     'living | family bath', 0),
+    (8370, 5600, 8370, 7820, 125, [('door', 6100, 6900)], 'partition', 'W-FBATH-E',
+     'family bath | family bedroom. The bath is entered from the bedroom, never '
+     'from the vestibule: the vestibule is a threshold, not a landing.', 0),
+
+    # --- the way in
+    (2220, 9625, 2220, 10995, 125, [('arch', 9875, 10725)], 'partition', 'W-FOYER-E',
+     'foyer | living. Bows into the foyer, so the front door opens onto a curve '
+     'rather than into the side of the sofa.', -250),
+
+    # --- the balcony line: an opening, not a wall
+    (3725, 10995, 6875, 10995, 0, [], 'threshold', 'T-BALC',
+     'living | balcony — the sliding door', 0),
+]
+
+# ------------------------------------------------------------------ screens
+# (x1, y1, x2, y2, bow, height, id, name, note)
+#
+# A SCREEN IS NOT A WALL. It stops short of the 3050 ceiling and it takes no
+# part in deciding what a room is, so the family bedroom stays ONE room in the
+# model — which is the truth of it, and the whole point of the brief.
+SCREENS = [
+    (9200, 4195, 11545, 4195, 550, 2100, 'S-KID', "the kid's section",
+     "A curved screen 2100 high in a 3050 room, open for 830 mm at its west "
+     "end. It gives the kid a bed, a desk and the north window to himself "
+     "without making a second bedroom out of it: over the top the ceiling runs "
+     "through, and from the doorway you see both ends at once. It bows south, "
+     "into the adults' end, so his side is the squarer of the two and their bed "
+     "gets a curved head wall to stand against."),
+]
+
+# ------------------------------------------------------- openings in the shell
+# (x1, y1, x2, y2, type, id, note) — endpoints on the OUTER face of the
+# envelope. The external walls are derived from that outline, so an opening in
+# one is authored against it rather than against a wall of ours.
+EXTERIOR_OPENINGS = [
+    (455, 9700, 455, 10920, 'door', 'D-ENTRY',
+     "the front door, 1220 (4'-0\") — where the builder put it, and it does not "
+     'move: the lobby beyond is common property.'),
 ]
 
 # ------------------------------------------------------------- glazing
@@ -110,37 +182,30 @@ GLAZING = [
 ]
 
 # --------------------------------------------------------------- rooms
-# name, subtitle, anchor, note, the builder's dimension text, its area in
-# sq ft. NO SHAPES: a room polygon is derived from the boundaries above, so
-# with the walls gone these are LABELS AND NOTHING ELSE — a record of what
-# the builder put where, to design against and to argue with.
+# name, subtitle, anchor, note. NO SHAPES: every polygon is derived from the
+# walls above, so an anchor is all a room needs. The builder's dimension text
+# is gone from these because they are no longer his rooms.
+#
+# THE BRIEF: two adults and a child. That is one bedroom, not three — so the
+# whole east block becomes a single family room with the child's end screened
+# off inside it, and the two bedrooms the builder drew in the middle of the
+# plan give their space back to the living room and the kitchen.
 ROOMS = [
-    ('BEDROOM', '', (1015, 1775), '',
-     '10\'0"x13\'6"', 135),
-    ('TOILET', 'COMMON', (3503, 1789), '',
-     '4\'6"x8\'1"', 36),
-    ('PASSAGE', 'BEDROOM', (3408, 3619), '',
-     '4\'6"x2\'11"', 13),
-    ('KITCHEN', '', (5325, 2346), 'open to the living room',
-     '7\'0"x11\'11"', 83),
-    ('TOILET 01', 'MASTER', (7110, 1790), '',
-     '4\'6"x8\'1"', 36),
-    ('PASSAGE', 'MASTER 01', (7196, 3619), '',
-     '4\'6"x2\'11"', 13),
-    ('M.BEDROOM 01', '', (9204, 1770), '',
-     '10\'0"x13\'6"', 135),
-    ('LIVING / DINING', '', (3901, 6762), 'the foyer is its entrance alcove and the kitchen opens off it',
-     '14\'9"x21\'11"', 323),
-    ('PASSAGE', 'MASTER 02', (7117, 4619), '',
-     '4\'10"x3\'0"', 14),
-    ('TOILET 02', 'MASTER', (7079, 6513), 'entered from the bedroom, not the passage',
-     '4\'6"x8\'0"', 36),
-    ('M.BEDROOM 02', '', (9065, 6198), '',
-     '10\'0"x13\'6"', 135),
-    ('FOYER', '', (1197, 10209), 'the way in',
-     '5\'7"x4\'0"', 22),
-    ('BALCONY', '', (4798, 11600), 'off the living room',
-     '10\'0"x4\'1"', 41),
+    ('GUEST / STUDY', '', (1500, 2000),
+     'the one spare room: a desk under the north window, a bed for visitors'),
+    ('BATH', 'GUEST', (3890, 1700), 'on the west service shaft, as drawn'),
+    ('HALL', '', (3890, 3550), 'guest room, guest bath and the living room meet here'),
+    ('KITCHEN', '', (5760, 2300), 'open to the dining across a bowed counter'),
+    ('UTILITY & STORE', '', (7620, 2300), 'washing, drying and the deep shelves'),
+    ('FAMILY BEDROOM', '', (9950, 2200),
+     "one room for all three: the adults south, the child's end north behind a "
+     'curved screen, a window at each end'),
+    ('VESTIBULE', '', (7620, 4900), 'the arched threshold into the family wing'),
+    ('BATH', 'FAMILY', (7620, 6700), 'on the south-east shaft, entered from the bedroom'),
+    ('LIVING / DINING', '', (4400, 7500),
+     'one room from the front door to the balcony, read through three arches'),
+    ('FOYER', '', (1375, 10300), 'the way in'),
+    ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
 
 # Loose furniture: nothing yet. This flat has not been designed.

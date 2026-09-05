@@ -9,10 +9,16 @@ design.py provides only the generic contract:
 
     ENVELOPE · NEW_WALLS · GLAZING · ROOMS · FURNITURE
 
-    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind[, id, note])
+    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind[, id, note, bow])
                openings are (type, from, to) ABSOLUTE along the wall; a wall
                of thickness 0 and kind 'threshold' divides two rooms without
-               putting anything on the floor.
+               putting anything on the floor; `bow` is the sagitta in mm and
+               becomes a quadratic Bezier, positive to the LEFT of travel.
+    SCREENS    (x1, y1, x2, y2, bow, height, id, name, note) — optional. NOT
+               walls: they stop below the ceiling and divide no rooms.
+    EXTERIOR_OPENINGS
+               (x1, y1, x2, y2, type, id, note) — optional, endpoints on the
+               OUTER face of the envelope.
     ROOMS      (name, subtitle, anchor, note[, dimension text, sq ft])
 
 Rooms carry an anchor and no shape — the app derives every room polygon from
@@ -39,6 +45,17 @@ def fnum(v):
 
 def pt(x, y):
     return f'{{ x: {fnum(x)}, y: {fnum(y)} }}'
+
+
+def control(x1, y1, x2, y2, bow):
+    """The Bezier control point for a wall bowed by `bow`. A quadratic sits
+    half way to its control point at t=0.5, so the control is offset by TWICE
+    the sagitta — which is what makes `bow` mean the distance you can measure
+    on the drawing."""
+    dx, dy = x2 - x1, y2 - y1
+    L = (dx * dx + dy * dy) ** 0.5 or 1.0
+    nx, ny = -dy / L, dx / L
+    return ((x1 + x2) / 2 + nx * 2 * bow, (y1 + y2) / 2 + ny * 2 * bow)
 
 
 def slug(s, used):
@@ -95,7 +112,16 @@ def main():
     A('  envelope: [' + ', '.join(pt(x, y) for x, y in D.ENVELOPE) + '],')
     A('  thickness: { exterior: 150, interior: 150, partition: 125 },')
     A('  levels: { ceiling: 3050, doorHead: 2100, windowSill: 750, windowHead: 2400 },')
-    A('  exteriorOpenings: [],')
+    A('  exteriorOpenings: [')
+    for eo in getattr(D, 'EXTERIOR_OPENINGS', []):
+        x1, y1, x2, y2, typ, oid = eo[:6]
+        note = eo[6] if len(eo) > 6 else None
+        head = 2100 if typ in ('door', 'cased', 'arch') else 2400
+        sill = 0 if typ in ('door', 'cased', 'arch') else 750
+        A(f"    {{ id: {oid!r}, type: {typ!r}, abs: [{pt(x1, y1)}, {pt(x2, y2)}], "
+          f'head: {head}, sill: {sill}'
+          + (f', notes: {note!r}' if note else '') + ' },')
+    A('  ],')
     A('  envelopeGlazing: [],')
     A('  walls: [')
     for i, w in enumerate(D.NEW_WALLS, 1):
@@ -104,6 +130,7 @@ def main():
         kind = w[6] if len(w) > 6 else 'partition'
         wid = w[7] if len(w) > 7 else f'W-{i:02d}'
         note = w[8] if len(w) > 8 else None
+        bow = w[9] if len(w) > 9 else 0
         # An opening is authored in absolute mm along the wall, because that is
         # how it is read off the drawing. The app wants it as a distance from
         # the run's first point.
@@ -115,7 +142,13 @@ def main():
             d0, d1 = sorted((sgn * (f0 - base), sgn * (f1 - base)))
             oo.append(f"{{ id: '{wid}-O{j}', type: {typ!r}, "
                       f'at: [{fnum(d0)}, {fnum(d1)}], head: 2100, sill: 0 }}')
-        A(f"    {{ id: {wid!r}, points: [{pt(x1, y1)}, {pt(x2, y2)}], "
+        if bow:
+            cx, cy = control(x1, y1, x2, y2, bow)
+            shape = (f'curve: {{ p0: {pt(x1, y1)}, p1: {pt(cx, cy)}, '
+                     f'p2: {pt(x2, y2)} }}')
+        else:
+            shape = f'points: [{pt(x1, y1)}, {pt(x2, y2)}]'
+        A(f"    {{ id: {wid!r}, {shape}, "
           f"thickness: {fnum(t)}, kind: {kind!r},"
           + (f' renderPane: false,' if t == 0 else '')
           + (f" notes: {note!r}," if note else '')
@@ -144,7 +177,15 @@ def main():
     A('  stacks: [],')
     A('  glassRoofs: [],')
     A('  portals: [],')
-    A('  screens: [],')
+    A('  screens: [')
+    for sc in getattr(D, 'SCREENS', []):
+        x1, y1, x2, y2, bow, h, sid, name = sc[:8]
+        note = sc[8] if len(sc) > 8 else ''
+        cx, cy = control(x1, y1, x2, y2, bow)
+        A(f"    {{ id: {sid!r}, name: {name!r}, curve: {{ p0: {pt(x1, y1)}, "
+          f'p1: {pt(cx, cy)}, p2: {pt(x2, y2)} }}, height: {fnum(h)}, '
+          f'notes: {note!r} }},')
+    A('  ],')
     A('}')
     A('')
     open(os.path.join(a.out, 'building.ts'), 'w').write('\n'.join(o))

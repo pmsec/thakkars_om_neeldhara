@@ -3,8 +3,10 @@
 A GENERIC PLAN SHEET, for any home that provides the plain contract:
 
     ENVELOPE   outer polygon
-    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind, ...) centrelines,
-               openings being (type, from, to) ABSOLUTE along the wall
+    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
+               openings being (type, from, to) ABSOLUTE along the wall, and
+               bow the wall's sagitta in mm, positive to the LEFT of travel
+    SCREENS    (x1, y1, x2, y2, bow, height, id, name, note) — optional
     GLAZING    (x1, y1, x2, y2, kind)
     ROOMS      (name, subtitle, (ax, ay), note, ...)
     FURNITURE  (kind, a, b, c, d, label)   — may be empty
@@ -105,6 +107,52 @@ class Sheet:
         doc = fitz.open(svg)
         doc.load_page(0).get_pixmap(dpi=150).save(os.path.join(out, name + '.png'))
         print('wrote', name, f'({self.w} x {self.h})')
+
+
+def bezier(x1, y1, x2, y2, bow, n=48):
+    """A bowed wall as a quadratic Bezier, flattened. `bow` is the sagitta —
+    the distance from the middle of the wall to the straight line between its
+    ends — so the control point is offset by twice it. Positive is to the LEFT
+    of the direction of travel."""
+    if not bow:
+        return [(x1, y1), (x2, y2)]
+    dx, dy = x2 - x1, y2 - y1
+    L = math.hypot(dx, dy) or 1.0
+    nx, ny = -dy / L, dx / L
+    cx = (x1 + x2) / 2 + nx * 2 * bow
+    cy = (y1 + y2) / 2 + ny * 2 * bow
+    out = []
+    for i in range(n + 1):
+        t = i / n
+        u = 1 - t
+        out.append((u * u * x1 + 2 * u * t * cx + t * t * x2,
+                    u * u * y1 + 2 * u * t * cy + t * t * y2))
+    return out
+
+
+def band(pts, t):
+    """A polyline given thickness: offset both ways and close the ring. Good
+    enough for a plan at these radii — the walls are 125 thick and the bows are
+    hundreds of millimetres, so the offset never folds on itself."""
+    left, right = [], []
+    for i, (x, y) in enumerate(pts):
+        a = pts[max(0, i - 1)]
+        b = pts[min(len(pts) - 1, i + 1)]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        L = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / L * t / 2, dx / L * t / 2
+        left.append((x + nx, y + ny))
+        right.append((x - nx, y - ny))
+    return left + right[::-1]
+
+
+def along(pts, f0, f1):
+    """The stretch of a polyline between two ABSOLUTE positions measured along
+    the wall's own axis — how openings are authored, so that a bowed wall's
+    door sits where it would on the straight line."""
+    vert = abs(pts[-1][0] - pts[0][0]) < abs(pts[-1][1] - pts[0][1])
+    lo, hi = min(f0, f1), max(f0, f1)
+    return [p for p in pts if lo - 1e-6 <= (p[1] if vert else p[0]) <= hi + 1e-6]
 
 
 def solid_runs(x1, y1, x2, y2, ops):
@@ -234,15 +282,40 @@ def main():
     for w in D.NEW_WALLS:
         x1, y1, x2, y2, t = w[:5]
         ops = w[5] if len(w) > 5 else []
+        bow = w[9] if len(w) > 9 else 0
+        curve = bezier(x1, y1, x2, y2, bow)
         if t <= 0:
-            # A threshold is an opening, not a wall: a broken line, so the
-            # plan reads as the open room it is.
             s.line(x1, y1, x2, y2, '#b9b2a4', 1.2, dash='10 12')
             continue
         for a, b in solid_runs(x1, y1, x2, y2, ops):
-            s.poly(wall_quad(a[0], a[1], b[0], b[1], t), fill=WALL, stroke='none')
+            piece = along(curve, (a[1] if a[0] == b[0] else a[0]),
+                          (b[1] if a[0] == b[0] else b[0])) if bow else [a, b]
+            if len(piece) >= 2:
+                s.poly(band(piece, t), fill=WALL, stroke='none')
         for kind, f0, f1 in ops:
-            door_swing(s, x1, y1, x2, y2, f0, f1)
+            if kind == 'door':
+                door_swing(s, x1, y1, x2, y2, f0, f1)
+            else:
+                # An arched or cased opening has no leaf. Drawn as the line of
+                # the reveal plus, for an arch, the head projected down into
+                # plan — the way an arch is shown on a sheet, so the drawing
+                # says which openings are arched and which are just holes.
+                jamb = along(curve, f0, f1) if bow else None
+                pa, pb = (jamb[0], jamb[-1]) if jamb else (
+                    ((x1, f0), (x1, f1)) if abs(x2 - x1) < abs(y2 - y1) else ((f0, y1), (f1, y1)))
+                s.line(pa[0], pa[1], pb[0], pb[1], '#b0a897', 1.4, dash='7 9')
+                if kind == 'arch':
+                    w = math.hypot(pb[0] - pa[0], pb[1] - pa[1])
+                    arc = bezier(pa[0], pa[1], pb[0], pb[1],
+                                 (w / 5) * (1 if bow >= 0 else -1), 16)
+                    for k in range(len(arc) - 1):
+                        s.line(arc[k][0], arc[k][1], arc[k + 1][0], arc[k + 1][1],
+                               '#b0a897', 1.0, dash='7 9')
+    for sc in getattr(D, 'SCREENS', []):
+        x1, y1, x2, y2, bow, h = sc[:6]
+        # A screen is drawn thinner and softer than a wall, because it is not
+        # one: it stops below the ceiling and divides nothing the model counts.
+        s.poly(band(bezier(x1, y1, x2, y2, bow), 90), fill='#6f6a61', stroke='none')
     for g in getattr(D, 'GLAZING', []):
         s.line(g[0], g[1], g[2], g[3], GLAS, 3.0)
     s.end_layer()

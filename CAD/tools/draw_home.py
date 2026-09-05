@@ -15,6 +15,12 @@ producing byte-identical output. This is for homes that have no such art yet
 — which is every home on the day it is imported.
 
     python3 draw_home.py --home <id>
+    python3 draw_home.py --home <id> --room KITCHEN [--pad 2800]
+    python3 draw_home.py --home <id> --crop x0,y0,x1,y1 --name round1-kitchen
+
+A CROP is how a change gets reviewed. The full sheet hides flaws; a zoomed
+view of just the piece that moved is what catches them. Crops write to
+drawings/<name>.png and never touch plan.png.
 """
 
 import math
@@ -40,8 +46,9 @@ class Sheet:
     """The same idea as draw_design.py's sheet, kept separate so that file is
     never touched: mm in, SVG out, layers the app can toggle."""
 
-    def __init__(self, x0, y0, x1, y1, width=3000, pad=80):
+    def __init__(self, x0, y0, x1, y1, width=3000, pad=80, tscale=1.0):
         self.x0, self.y0 = x0, y0
+        self.t = tscale
         self.sc = (width - 2 * pad) / (x1 - x0)
         self.w = width
         self.h = int((y1 - y0) * self.sc) + 2 * pad
@@ -80,6 +87,10 @@ class Sheet:
                       f'fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>')
 
     def text(self, x, y, s, size=12, col=TXT, weight='normal', letter=0):
+        # On a crop the geometry grows and the type would read small against
+        # it, so type is scaled with the zoom.
+        size *= self.t
+        letter *= self.t
         s = (s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
         self.o.append(f'<text x="{self.X(x):.1f}" y="{self.Y(y):.1f}" font-family="Helvetica,Arial" '
                       f'font-size="{size}" fill="{col}" font-weight="{weight}" '
@@ -142,6 +153,40 @@ def wall_quad(x1, y1, x2, y2, t):
     return [(x1 + nx, y1 + ny), (x2 + nx, y2 + ny), (x2 - nx, y2 - ny), (x1 - nx, y1 - ny)]
 
 
+def arg(flag, default=None):
+    if flag in sys.argv:
+        return sys.argv[sys.argv.index(flag) + 1]
+    return default
+
+
+def crop_box():
+    """The window to draw, and the name to write it under. --crop takes mm
+    directly; --room takes one or more room names and boxes their anchors."""
+    box = arg('--crop')
+    if box:
+        x0, y0, x1, y1 = (float(v) for v in box.split(','))
+        return (x0, y0, x1, y1), arg('--name', 'crop')
+    want = arg('--room')
+    if not want:
+        return None, arg('--name', 'plan')
+    keys = [w.strip().upper() for w in want.split(',')]
+    pad = float(arg('--pad', 2800))
+    hits = []
+    for r in D.ROOMS:
+        name, sub, (ax, ay) = r[0], r[1], r[2]
+        label = f'{name} {sub}'.upper()
+        if any(k in label for k in keys):
+            hits.append((ax, ay))
+    if not hits:
+        sys.exit(f'no room matching {want!r}. Have: '
+                 + ', '.join(sorted({r[0] for r in D.ROOMS})))
+    xs = [p[0] for p in hits]
+    ys = [p[1] for p in hits]
+    name = arg('--name') or 'crop-' + '-'.join(
+        k.lower().replace(' ', '-').replace('/', '') for k in keys)
+    return (min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad), name
+
+
 def main():
     # A balcony is a slab outside the enclosure, so it is not in ENVELOPE —
     # but it is part of the drawing, and the sheet has to make room for it.
@@ -149,7 +194,16 @@ def main():
     xs = [p[0] for p in D.ENVELOPE] + [p[0] for p in extra]
     ys = [p[1] for p in D.ENVELOPE] + [p[1] for p in extra]
     m = 1400
-    s = Sheet(min(xs) - m, min(ys) - m, max(xs) + m, max(ys) + m)
+    full = (min(xs) - m, min(ys) - m, max(xs) + m, max(ys) + m)
+    box, out_name = crop_box()
+    if box is None:
+        s = Sheet(*full)
+    else:
+        # Clamp to the sheet so a crop can never invent space outside it.
+        x0 = max(box[0], full[0]); y0 = max(box[1], full[1])
+        x1 = min(box[2], full[2]); y1 = min(box[3], full[3])
+        zoom = (full[2] - full[0]) / max(1.0, x1 - x0)
+        s = Sheet(x0, y0, x1, y1, tscale=min(3.0, max(1.0, zoom ** 0.6)))
 
     s.begin_layer('floor')
     # The external walls are the band between the envelope and the floor
@@ -206,11 +260,12 @@ def main():
 
     s.begin_layer('title')
     meta = home.meta()
-    s.text((min(xs) + max(xs)) / 2, min(ys) - 950, meta['name'].upper(), 22, TXT, 'bold', 2)
-    s.text((min(xs) + max(xs)) / 2, min(ys) - 660, meta.get('subtitle', ''), 11, TXT2, letter=1)
+    if box is None:
+        s.text((min(xs) + max(xs)) / 2, min(ys) - 950, meta['name'].upper(), 22, TXT, 'bold', 2)
+        s.text((min(xs) + max(xs)) / 2, min(ys) - 660, meta.get('subtitle', ''), 11, TXT2, letter=1)
     s.end_layer()
 
-    s.save('plan')
+    s.save(out_name)
 
 
 if __name__ == '__main__':

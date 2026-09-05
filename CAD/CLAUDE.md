@@ -76,6 +76,20 @@ drawing twice, which is the only reason it is worth anything.
 sheet's y runs down it. `local y = <top> - dwg y`, so the sheet reads the
 same way up as the drawing and the two can be compared by eye.
 
+**The import ends when the design begins.** `design.py` is the importer's
+output only until somebody starts designing the flat; from that moment it IS
+the design and re-running the import would throw it away. Ekta's has been
+handed over, so `import.py` now refuses to write unless forced:
+
+```
+python3 homes/ekta/import.py --to design.imported.py   # a fresh copy of the
+                                                       # builder's plan, to diff
+python3 homes/ekta/import.py --force                   # start again from the DWG
+```
+
+`homes/ekta/design.imported.py` is that copy frozen at handover — the record
+of what the builder drew, next to what we are turning it into.
+
 Everything for this work lives in `CAD/`. **Do not touch any other file in the
 repo.** Branch: `claude/cad-apartment-merge-miwnpm`.
 
@@ -91,7 +105,14 @@ This is the agreed flow. Follow it for every change that moves geometry.
    a render of something structurally impossible.
 3. **Show a zoomed crop of just the area that changed.** Add the full sheet
    only when the change is plan-wide. Crops are how flaws get caught; the full
-   sheet hides them.
+   sheet hides them. For an imported home:
+
+   ```
+   python3 tools/draw_home.py --home ekta --room KITCHEN [--pad 2800]
+   python3 tools/draw_home.py --home ekta --crop x0,y0,x1,y1 --name r1-kitchen
+   ```
+
+   Crops write `drawings/<name>.png` and never overwrite `plan.png`.
 4. **Wait.** Karan says *ship it* / *change this* / *try it the other way*.
 5. **On "ship it"**: run `build_dxf.py`, commit, push.
 

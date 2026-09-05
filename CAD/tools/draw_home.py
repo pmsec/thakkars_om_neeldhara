@@ -92,9 +92,11 @@ class Sheet:
         size *= self.t
         letter *= self.t
         s = (s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
+        # :g so an unzoomed sheet still writes font-size="15", not "15.0" —
+        # the crop feature must not churn the full sheet's bytes.
         self.o.append(f'<text x="{self.X(x):.1f}" y="{self.Y(y):.1f}" font-family="Helvetica,Arial" '
-                      f'font-size="{size}" fill="{col}" font-weight="{weight}" '
-                      f'letter-spacing="{letter}" text-anchor="middle">{s}</text>')
+                      f'font-size="{size:g}" fill="{col}" font-weight="{weight}" '
+                      f'letter-spacing="{letter:g}" text-anchor="middle">{s}</text>')
 
     def save(self, name):
         out = home.drawings_dir()

@@ -13,120 +13,6 @@
 <g id="L-furniture">
 </g>
 <g id="L-floor-walls">
-<polygon points="979.1,488.4 979.1,1009.8 1003.4,1009.8 1003.4,488.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="979.1,1185.2 979.1,1199.8 1003.4,1199.8 1003.4,1185.2" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="991.3" y1="1009.8" x2="1166.7" y2="1009.8" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="1166.7" y1="1009.8" x2="1165.2" y2="1032.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1165.2" y1="1032.7" x2="1160.7" y2="1055.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1160.7" y1="1055.2" x2="1153.3" y2="1076.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1153.3" y1="1076.9" x2="1143.2" y2="1097.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1143.2" y1="1097.5" x2="1130.4" y2="1116.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1130.4" y1="1116.6" x2="1115.3" y2="1133.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1115.3" y1="1133.8" x2="1098.1" y2="1149.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1098.1" y1="1149.0" x2="1079.0" y2="1161.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1079.0" y1="1161.7" x2="1058.4" y2="1171.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1058.4" y1="1171.8" x2="1036.7" y2="1179.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1036.7" y1="1179.2" x2="1014.2" y2="1183.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1014.2" y1="1183.7" x2="991.3" y2="1185.2" stroke="#c3bcae" stroke-width="1.0"/>
-<polygon points="991.3,1009.8 1001.0,1009.8 1001.0,985.4 991.3,985.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1147.2,1009.8 1280.2,1009.8 1280.2,985.4 1147.2,985.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="1001.0" y1="997.6" x2="1001.0" y2="1143.8" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="1001.0" y1="1143.8" x2="1020.1" y2="1142.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1020.1" y1="1142.5" x2="1038.8" y2="1138.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1038.8" y1="1138.8" x2="1056.9" y2="1132.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1056.9" y1="1132.7" x2="1074.1" y2="1124.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1074.1" y1="1124.2" x2="1090.0" y2="1113.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1090.0" y1="1113.6" x2="1104.4" y2="1101.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1104.4" y1="1101.0" x2="1117.0" y2="1086.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1117.0" y1="1086.6" x2="1127.6" y2="1070.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1127.6" y1="1070.7" x2="1136.1" y2="1053.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1136.1" y1="1053.5" x2="1142.2" y2="1035.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1142.2" y1="1035.4" x2="1145.9" y2="1016.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1145.9" y1="1016.7" x2="1147.2" y2="997.6" stroke="#c3bcae" stroke-width="1.0"/>
-<polygon points="1268.0,488.4 1268.0,1199.8 1292.4,1199.8 1292.4,488.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1710.0,488.4 1710.0,1199.8 1734.4,1199.8 1734.4,488.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1722.2,1009.8 1732.0,1009.8 1732.0,985.4 1722.2,985.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1878.1,1009.8 2013.6,1009.8 2013.6,985.4 1878.1,985.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="1732.0" y1="997.6" x2="1732.0" y2="1143.8" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="1732.0" y1="1143.8" x2="1751.0" y2="1142.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1751.0" y1="1142.5" x2="1769.8" y2="1138.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1769.8" y1="1138.8" x2="1787.9" y2="1132.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1787.9" y1="1132.7" x2="1805.1" y2="1124.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1805.1" y1="1124.2" x2="1821.0" y2="1113.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1821.0" y1="1113.6" x2="1835.3" y2="1101.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1835.3" y1="1101.0" x2="1847.9" y2="1086.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1847.9" y1="1086.6" x2="1858.6" y2="1070.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1858.6" y1="1070.7" x2="1867.0" y2="1053.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1867.0" y1="1053.5" x2="1873.2" y2="1035.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1873.2" y1="1035.4" x2="1876.9" y2="1016.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1876.9" y1="1016.7" x2="1878.1" y2="997.6" stroke="#c3bcae" stroke-width="1.0"/>
-<polygon points="2001.4,488.4 2001.4,1009.8 2025.8,1009.8 2025.8,488.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="2001.4,1185.2 2001.4,1199.8 2025.8,1199.8 2025.8,1185.2" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="2013.6" y1="1009.8" x2="2189.0" y2="1009.8" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="2189.0" y1="1009.8" x2="2187.5" y2="1032.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2187.5" y1="1032.7" x2="2183.1" y2="1055.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2183.1" y1="1055.2" x2="2175.7" y2="1076.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2175.7" y1="1076.9" x2="2165.5" y2="1097.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2165.5" y1="1097.5" x2="2152.8" y2="1116.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2152.8" y1="1116.6" x2="2137.7" y2="1133.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2137.7" y1="1133.8" x2="2120.4" y2="1149.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2120.4" y1="1149.0" x2="2101.3" y2="1161.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2101.3" y1="1161.7" x2="2080.8" y2="1171.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2080.8" y1="1171.8" x2="2059.0" y2="1179.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2059.0" y1="1179.2" x2="2036.5" y2="1183.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2036.5" y1="1183.7" x2="2013.6" y2="1185.2" stroke="#c3bcae" stroke-width="1.0"/>
-<polygon points="814.9,1212.0 1088.7,1212.0 1088.7,1187.6 814.9,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1722.2,1212.0 1732.0,1212.0 1732.0,1187.6 1722.2,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1911.3,1212.0 2632.5,1212.0 2632.5,1187.6 1911.3,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="1732.0" y1="1199.8" x2="1732.0" y2="1379.1" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="1732.0" y1="1379.1" x2="1755.4" y2="1377.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1755.4" y1="1377.6" x2="1778.4" y2="1373.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1778.4" y1="1373.0" x2="1800.6" y2="1365.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1800.6" y1="1365.5" x2="1821.6" y2="1355.1" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1821.6" y1="1355.1" x2="1841.1" y2="1342.1" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1841.1" y1="1342.1" x2="1858.8" y2="1326.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1858.8" y1="1326.6" x2="1874.2" y2="1309.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1874.2" y1="1309.0" x2="1887.3" y2="1289.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1887.3" y1="1289.5" x2="1897.6" y2="1268.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1897.6" y1="1268.4" x2="1905.2" y2="1246.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1905.2" y1="1246.2" x2="1909.7" y2="1223.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1909.7" y1="1223.2" x2="1911.3" y2="1199.8" stroke="#c3bcae" stroke-width="1.0"/>
-<polygon points="1722.2,1414.2 2013.6,1414.2 2013.6,1389.9 1722.2,1389.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1710.0,1402.1 1710.0,1906.4 1734.4,1906.4 1734.4,1402.1" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="2001.4,1199.8 2001.4,1209.6 2025.8,1209.6 2025.8,1199.8" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="2001.4,1388.9 2001.4,1414.2 2025.8,1414.2 2025.8,1388.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="2001.4,1559.5 2001.4,1906.4 2025.8,1906.4 2025.8,1559.5" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="2013.6" y1="1209.6" x2="2192.9" y2="1209.6" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="2192.9" y1="1209.6" x2="2191.4" y2="1233.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2191.4" y1="1233.0" x2="2186.8" y2="1256.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2186.8" y1="1256.0" x2="2179.3" y2="1278.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2179.3" y1="1278.2" x2="2168.9" y2="1299.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2168.9" y1="1299.2" x2="2155.9" y2="1318.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2155.9" y1="1318.7" x2="2140.4" y2="1336.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2140.4" y1="1336.4" x2="2122.8" y2="1351.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2122.8" y1="1351.8" x2="2103.3" y2="1364.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2103.3" y1="1364.9" x2="2082.2" y2="1375.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2082.2" y1="1375.2" x2="2060.0" y2="1382.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2060.0" y1="1382.8" x2="2037.0" y2="1387.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2037.0" y1="1387.4" x2="2013.6" y2="1388.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2013.6" y1="1414.2" x2="2158.8" y2="1414.2" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="2158.8" y1="1414.2" x2="2157.6" y2="1433.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2157.6" y1="1433.2" x2="2153.9" y2="1451.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2153.9" y1="1451.8" x2="2147.8" y2="1469.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2147.8" y1="1469.8" x2="2139.4" y2="1486.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2139.4" y1="1486.8" x2="2128.8" y2="1502.6" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2128.8" y1="1502.6" x2="2116.3" y2="1516.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2116.3" y1="1516.9" x2="2102.0" y2="1529.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2102.0" y1="1529.4" x2="2086.2" y2="1540.0" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2086.2" y1="1540.0" x2="2069.2" y2="1548.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2069.2" y1="1548.4" x2="2051.2" y2="1554.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2051.2" y1="1554.5" x2="2032.6" y2="1558.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="2032.6" y1="1558.2" x2="2013.6" y2="1559.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1088.7" y1="1199.8" x2="1280.2" y2="1199.8" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
-<line x1="1280.2" y1="1199.8" x2="1722.2" y2="1199.8" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
-<line x1="1722.2" y1="1199.8" x2="1722.2" y2="1402.1" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
-<line x1="814.9" y1="2258.2" x2="814.9" y2="2525.3" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
-<line x1="1108.2" y1="2525.3" x2="1722.2" y2="2525.3" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
 <line x1="397.7" y1="352.9" x2="976.6" y2="352.9" stroke="#2e8b9a" stroke-width="3.0"/>
 <line x1="2028.2" y1="352.9" x2="2617.9" y2="352.9" stroke="#2e8b9a" stroke-width="3.0"/>
 <line x1="397.7" y1="364.6" x2="976.6" y2="364.6" stroke="#2e8b9a" stroke-width="3.0"/>
@@ -162,45 +48,45 @@
 <line x1="1139.4" y1="2539.9" x2="1692.0" y2="2539.9" stroke="#2e8b9a" stroke-width="3.0"/>
 </g>
 <g id="L-labels">
-<text x="580.0" y="710.6" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BEDROOM</text>
-<text x="580.0" y="757.4" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">10'0"x13'6"</text>
-<text x="1064.9" y="713.3" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">TOILET</text>
-<text x="1064.9" y="746.4" font-family="Helvetica,Arial" font-size="10.0" fill="#2c5c61" font-weight="normal" letter-spacing="2.0" text-anchor="middle">COMMON</text>
-<text x="1064.9" y="775.7" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">4'6"x8'1"</text>
-<text x="1046.4" y="1070.0" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">PASSAGE</text>
-<text x="1046.4" y="1103.1" font-family="Helvetica,Arial" font-size="10.0" fill="#2c5c61" font-weight="normal" letter-spacing="2.0" text-anchor="middle">BEDROOM</text>
-<text x="1046.4" y="1132.4" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">4'6"x2'11"</text>
-<text x="1420.1" y="821.9" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">KITCHEN</text>
-<text x="1420.1" y="868.7" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">7'0"x11'11"</text>
-<text x="1420.1" y="899.8" font-family="Helvetica,Arial" font-size="9.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">open to the living room</text>
-<text x="1768.0" y="713.5" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">TOILET 01</text>
-<text x="1768.0" y="746.6" font-family="Helvetica,Arial" font-size="10.0" fill="#2c5c61" font-weight="normal" letter-spacing="2.0" text-anchor="middle">MASTER</text>
-<text x="1768.0" y="775.9" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">4'6"x8'1"</text>
-<text x="1784.8" y="1070.0" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">PASSAGE</text>
-<text x="1784.8" y="1103.1" font-family="Helvetica,Arial" font-size="10.0" fill="#2c5c61" font-weight="normal" letter-spacing="2.0" text-anchor="middle">MASTER 01</text>
-<text x="1784.8" y="1132.4" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">4'6"x2'11"</text>
-<text x="2176.2" y="709.6" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">M.BEDROOM 01</text>
-<text x="2176.2" y="756.4" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">10'0"x13'6"</text>
-<text x="1142.5" y="1682.6" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">LIVING / DINING</text>
-<text x="1142.5" y="1729.4" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">14'9"x21'11"</text>
-<text x="1142.5" y="1760.6" font-family="Helvetica,Arial" font-size="9.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">the foyer is its entrance alcove and the kitchen opens off it</text>
-<text x="1769.4" y="1264.9" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">PASSAGE</text>
-<text x="1769.4" y="1298.1" font-family="Helvetica,Arial" font-size="10.0" fill="#2c5c61" font-weight="normal" letter-spacing="2.0" text-anchor="middle">MASTER 02</text>
-<text x="1769.4" y="1327.3" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">4'10"x3'0"</text>
-<text x="1762.0" y="1634.1" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">TOILET 02</text>
-<text x="1762.0" y="1667.2" font-family="Helvetica,Arial" font-size="10.0" fill="#2c5c61" font-weight="normal" letter-spacing="2.0" text-anchor="middle">MASTER</text>
-<text x="1762.0" y="1696.5" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">4'6"x8'0"</text>
-<text x="1762.0" y="1727.7" font-family="Helvetica,Arial" font-size="9.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">entered from the bedroom, not the passage</text>
-<text x="2149.1" y="1572.7" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">M.BEDROOM 02</text>
-<text x="2149.1" y="1619.5" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">10'0"x13'6"</text>
-<text x="615.4" y="2354.5" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">FOYER</text>
-<text x="615.4" y="2401.3" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">5'7"x4'0"</text>
-<text x="615.4" y="2432.5" font-family="Helvetica,Arial" font-size="9.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">the way in</text>
-<text x="1317.4" y="2625.7" font-family="Helvetica,Arial" font-size="15.0" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BALCONY</text>
-<text x="1317.4" y="2672.5" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">10'0"x4'1"</text>
-<text x="1317.4" y="2703.6" font-family="Helvetica,Arial" font-size="9.0" fill="#6f6a61" font-weight="normal" letter-spacing="0.0" text-anchor="middle">off the living room</text>
+<text x="580.0" y="710.6" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BEDROOM</text>
+<text x="580.0" y="757.4" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">10'0"x13'6"</text>
+<text x="1064.9" y="713.3" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">TOILET</text>
+<text x="1064.9" y="746.4" font-family="Helvetica,Arial" font-size="10" fill="#2c5c61" font-weight="normal" letter-spacing="2" text-anchor="middle">COMMON</text>
+<text x="1064.9" y="775.7" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">4'6"x8'1"</text>
+<text x="1046.4" y="1070.0" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">PASSAGE</text>
+<text x="1046.4" y="1103.1" font-family="Helvetica,Arial" font-size="10" fill="#2c5c61" font-weight="normal" letter-spacing="2" text-anchor="middle">BEDROOM</text>
+<text x="1046.4" y="1132.4" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">4'6"x2'11"</text>
+<text x="1420.1" y="821.9" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">KITCHEN</text>
+<text x="1420.1" y="868.7" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">7'0"x11'11"</text>
+<text x="1420.1" y="899.8" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">open to the living room</text>
+<text x="1768.0" y="713.5" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">TOILET 01</text>
+<text x="1768.0" y="746.6" font-family="Helvetica,Arial" font-size="10" fill="#2c5c61" font-weight="normal" letter-spacing="2" text-anchor="middle">MASTER</text>
+<text x="1768.0" y="775.9" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">4'6"x8'1"</text>
+<text x="1784.8" y="1070.0" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">PASSAGE</text>
+<text x="1784.8" y="1103.1" font-family="Helvetica,Arial" font-size="10" fill="#2c5c61" font-weight="normal" letter-spacing="2" text-anchor="middle">MASTER 01</text>
+<text x="1784.8" y="1132.4" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">4'6"x2'11"</text>
+<text x="2176.2" y="709.6" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">M.BEDROOM 01</text>
+<text x="2176.2" y="756.4" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">10'0"x13'6"</text>
+<text x="1142.5" y="1682.6" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">LIVING / DINING</text>
+<text x="1142.5" y="1729.4" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">14'9"x21'11"</text>
+<text x="1142.5" y="1760.6" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the foyer is its entrance alcove and the kitchen opens off it</text>
+<text x="1769.4" y="1264.9" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">PASSAGE</text>
+<text x="1769.4" y="1298.1" font-family="Helvetica,Arial" font-size="10" fill="#2c5c61" font-weight="normal" letter-spacing="2" text-anchor="middle">MASTER 02</text>
+<text x="1769.4" y="1327.3" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">4'10"x3'0"</text>
+<text x="1762.0" y="1634.1" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">TOILET 02</text>
+<text x="1762.0" y="1667.2" font-family="Helvetica,Arial" font-size="10" fill="#2c5c61" font-weight="normal" letter-spacing="2" text-anchor="middle">MASTER</text>
+<text x="1762.0" y="1696.5" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">4'6"x8'0"</text>
+<text x="1762.0" y="1727.7" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">entered from the bedroom, not the passage</text>
+<text x="2149.1" y="1572.7" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">M.BEDROOM 02</text>
+<text x="2149.1" y="1619.5" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">10'0"x13'6"</text>
+<text x="615.4" y="2354.5" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">FOYER</text>
+<text x="615.4" y="2401.3" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">5'7"x4'0"</text>
+<text x="615.4" y="2432.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the way in</text>
+<text x="1317.4" y="2625.7" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BALCONY</text>
+<text x="1317.4" y="2672.5" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">10'0"x4'1"</text>
+<text x="1317.4" y="2703.6" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">off the living room</text>
 </g>
 <g id="L-title">
-<text x="1500.0" y="167.7" font-family="Helvetica,Arial" font-size="22.0" fill="#1d1b18" font-weight="bold" letter-spacing="2.0" text-anchor="middle">EKTA — 14TH FLOOR, NEELDHARA</text>
-<text x="1500.0" y="224.2" font-family="Helvetica,Arial" font-size="11.0" fill="#6f6a61" font-weight="normal" letter-spacing="1.0" text-anchor="middle">imported from the builder's DWG · 1073 sq ft RERA</text>
+<text x="1500.0" y="167.7" font-family="Helvetica,Arial" font-size="22" fill="#1d1b18" font-weight="bold" letter-spacing="2" text-anchor="middle">EKTA — 14TH FLOOR, NEELDHARA</text>
+<text x="1500.0" y="224.2" font-family="Helvetica,Arial" font-size="11" fill="#6f6a61" font-weight="normal" letter-spacing="1" text-anchor="middle">imported from the builder's DWG · 1073 sq ft RERA</text>
 </g></svg>

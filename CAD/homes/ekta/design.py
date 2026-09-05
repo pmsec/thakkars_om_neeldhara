@@ -54,42 +54,21 @@ PLATE = [
 
 # ------------------------------------------------------------- the walls
 # (x1, y1, x2, y2, thickness, openings, kind, id, note). Openings are
-# (type, from, to) in absolute mm along the wall — door positions read off
-# the DWG's own door layer. A wall of thickness 0 and kind 'threshold' is an
-# OPENING, not a wall: it divides two rooms and puts nothing on the floor.
+# (type, from, to) in absolute mm along the wall. A wall of thickness 0 and
+# kind 'threshold' is an OPENING, not a wall: it divides two rooms and puts
+# nothing on the floor.
 NEW_WALLS = [
-    (3125, 545, 3125, 4195, 125, [('door', 3220, 4120)], 'partition', 'W-BED-E',
-     'bedroom | common toilet and its passage. Solid from 770 to 1670: that gap in the drawn faces is a column, not an opening.'),
-    (3125, 3157.5, 4607.5, 3157.5, 125, [('door', 3175, 3925)], 'partition', 'W-CT-S',
-     'common toilet | passage'),
-    (4607.5, 545, 4607.5, 4195, 125, [], 'partition', 'W-KIT-W',
-     'common toilet and passage | kitchen'),
-    (6875, 545, 6875, 4195, 125, [], 'partition', 'W-KIT-E',
-     'kitchen | master toilet 01 and its passage'),
-    (6875, 3157.5, 8370, 3157.5, 125, [('door', 6925, 7675)], 'partition', 'W-T1-S',
-     'master toilet 01 | passage'),
-    (8370, 545, 8370, 4195, 125, [('door', 3220, 4120)], 'partition', 'W-B1-W',
-     'master toilet 01 and its passage | m.bedroom 01. Solid above 1670: a column fills the wall there.'),
-    (2220, 4195, 3625, 4195, 125, [], 'partition', 'W-P1-S',
-     'bedroom and its passage | living/dining'),
-    (6875, 4195, 11545, 4195, 125, [('door', 6925, 7845)], 'partition', 'W-P2-S',
-     'passage and m.bedroom 01 | passage and m.bedroom 02'),
-    (6875, 5232.5, 8370, 5232.5, 125, [], 'partition', 'W-T2-N',
-     'passage | master toilet 02'),
-    (6875, 5232.5, 6875, 7820, 125, [], 'partition', 'W-T2-W',
-     'living/dining | master toilet 02'),
-    (8370, 4195, 8370, 7820, 125, [('door', 4245, 5165), ('door', 5295, 6040)], 'partition', 'W-B2-W',
-     'passage and master toilet 02 | m.bedroom 02. The lower door is the ensuite: toilet 02 is entered from the bedroom, not the passage.'),
-    (3625, 4195, 4607.5, 4195, 0, [], 'threshold', 'T-P1-S',
-     'passage | living/dining — cased opening'),
-    (4607.5, 4195, 6875, 4195, 0, [], 'threshold', 'T-KIT-S',
-     'kitchen | living/dining — the kitchen is open'),
-    (6875, 4195, 6875, 5232.5, 0, [], 'threshold', 'T-P3-W',
-     'living/dining | passage — cased opening'),
-    (2220, 9625, 2220, 10995, 0, [], 'threshold', 'T-FOYER',
-     'foyer | living/dining — the foyer is an alcove'),
-    (3725, 10995, 6875, 10995, 0, [], 'threshold', 'T-BALC',
-     'living/dining | balcony — the sliding door'),
+    # NOTHING. Every internal wall and threshold the builder drew has been
+    # taken out — this is the bare shell, and the plan is being designed from
+    # scratch inside it.
+    #
+    # What he drew is not lost: design.imported.py holds all eleven partitions,
+    # five thresholds and seven doors exactly as they came off the DWG, and
+    # `python3 import.py --to design.imported.py` writes a fresh copy any time.
+    #
+    # The ROOMS below are kept as LABELS ONLY. Their anchors are where his room
+    # names sit, so they say what he intended each part of the shell for while
+    # the new plan is drawn over it. They name nothing the walls enclose yet.
 ]
 
 # ------------------------------------------------------------- glazing
@@ -132,8 +111,9 @@ GLAZING = [
 
 # --------------------------------------------------------------- rooms
 # name, subtitle, anchor, note, the builder's dimension text, its area in
-# sq ft. NO SHAPES: the room polygons are derived from the boundaries above,
-# and the last two columns are what that derivation is checked against.
+# sq ft. NO SHAPES: a room polygon is derived from the boundaries above, so
+# with the walls gone these are LABELS AND NOTHING ELSE — a record of what
+# the builder put where, to design against and to argue with.
 ROOMS = [
     ('BEDROOM', '', (1015, 1775), '',
      '10\'0"x13\'6"', 135),

@@ -10,7 +10,9 @@
  */
 
 import * as THREE from 'three'
+import { building } from '../data/building'
 import { getModel } from '../geometry/model'
+import { activeHome } from '../homes/registry'
 import { S } from './prism'
 
 export interface Preset {
@@ -21,7 +23,18 @@ export interface Preset {
   from?: 1 | -1
 }
 
-export const PRESETS: Preset[] = [
+/**
+ * Om Neeldhara's presets are NAMED, because its rooms are: the deck is worth a
+ * camera and the shafts are not, and "Service wing" means the kitchen with the
+ * help's room and the store behind it. That naming is a design decision about
+ * one home and cannot be guessed for another.
+ *
+ * Any other home gets a camera per habitable room instead — no worse than the
+ * room list itself, which is all an imported flat has to offer until someone
+ * decides what it is for. The derivation below is identical either way, so a
+ * derived preset is framed and clearance-checked exactly like a named one.
+ */
+const OM_NEELDHARA_PRESETS: Preset[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'great', label: 'Great room', room: 'R-GREAT' },
   { id: 'deck', label: 'Deck', room: 'R-DECK', from: -1 },
@@ -31,6 +44,19 @@ export const PRESETS: Preset[] = [
   { id: 'suiteP', label: "Parents' suite", room: 'R-P-SUITE' },
   { id: 'suiteK', label: "Karan's suite", room: 'R-K-SUITE' },
 ]
+
+function roomPresets(): Preset[] {
+  return [
+    { id: 'overview', label: 'Overview' },
+    ...building.rooms
+      .filter((r) => r.category === 'habitable')
+      .slice(0, 8)
+      .map((r) => ({ id: r.id, label: r.name, room: r.id })),
+  ]
+}
+
+export const PRESETS: Preset[] =
+  activeHome.meta.cameras === 'om-neeldhara' ? OM_NEELDHARA_PRESETS : roomPresets()
 
 export interface CameraShot {
   pos: THREE.Vector3

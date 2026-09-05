@@ -31,8 +31,29 @@ keys, so nothing already saved is orphaned.
 
 1. Author or import it on the CAD side: `CAD/homes/<id>/`
 2. Generate its data:
-   `python3 docs/design-export.py --cad ../CAD/tools --home <id>`
+   * an AUTHORED home (bespoke geometry, like Om Neeldhara):
+     `python3 docs/design-export.py --cad ../CAD/tools --home <id>`
+   * an IMPORTED home (plain walls out of a DWG):
+     `python3 CAD/tools/export_app.py --home <id> --out src/homes/<id>`
 3. Add one entry to `src/homes/registry.ts` and a `meta.ts` beside its data.
+4. `npx vitest run src/tests/homes.test.ts` — it walks the whole registry and
+   fails if any home's walls do not enclose its rooms.
+
+## What the app owes a home it does not know
+
+Anything hard-wired to one building has to be gated, or it lies about the
+next one. Four things were, and now are not:
+
+| was fixed to Home 1 | now |
+| --- | --- |
+| the eight named camera presets | named for Om Neeldhara; one per habitable room otherwise |
+| the deck fountain in the 3D scene | drawn only where the deck room it stands in exists |
+| glass-roof / tree-cage / pod toggles | shown only when the home has one |
+| the written brief | a home with `checks.brief` unset gets an honest "not designed yet" page |
+
+The integrity panel gates the same way: the hand-written envelope outline, the
+curved screens, the mirror line and the sealed service zone are assertions
+about Om Neeldhara and are skipped, not failed, for a home without them.
 
 ## The rule
 

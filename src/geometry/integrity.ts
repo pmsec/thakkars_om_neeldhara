@@ -10,6 +10,7 @@
 
 import { fixtures } from '../data/fixtures'
 import { building } from '../data/building'
+import { activeHome } from '../homes/registry'
 import { reachableFrom, serviceBreaches, serviceRoomIds } from './graph'
 import { buildModel, getModel, type BuiltModel } from './model'
 import { barrelProfile, buildSolids } from './solid'
@@ -65,6 +66,20 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   const checks: Check[] = []
   const add = (c: Check): void => void checks.push(c)
 
+  /**
+   * WHICH CHECKS APPLY TO THIS HOME.
+   *
+   * Most of what follows is true of any building: an envelope that closes,
+   * areas that reconcile, rooms that are reachable, polygons that are valid.
+   * A handful are about THIS building — Om Neeldhara's two mirrored wings, its
+   * curved pod screens, its sealed service zone, its hand-checked envelope.
+   * They are declared in the home's meta, and a home that does not declare
+   * them simply does not run them. Silently skipping is right here: a check
+   * for a screen that does not exist is not a failure, it is not a question.
+   */
+  const feature = activeHome.meta.checks
+  const has = (id: string): boolean => model.roomById.has(id)
+
   // ------------------------------------------------------------------ 1. envelope
   {
     const env = model.envelope
@@ -97,12 +112,19 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       { x: 5555, y: 9695 },
       { x: -600, y: 9695 },
     ]
+    // An IMPORTED home's outline came out of the builder's drawing; there is no
+    // hand-written outline to compare it against, so only closure is asserted.
     const matches =
-      env.length === expected.length && env.every((p, i) => dist(p, expected[i]) < 1e-9)
+      !feature.expectedEnvelope ||
+      (env.length === expected.length && env.every((p, i) => dist(p, expected[i]) < 1e-9))
     add({
       id: 'envelope',
-      title: 'Envelope is closed, simple, and matches the stepped outline',
-      requirement: 'Closed, non-self-intersecting, equal to the 12-vertex stepped outline of the CAD plan.',
+      title: feature.expectedEnvelope
+        ? 'Envelope is closed, simple, and matches the stepped outline'
+        : 'Envelope is closed and simple',
+      requirement: feature.expectedEnvelope
+        ? 'Closed, non-self-intersecting, equal to the 12-vertex stepped outline of the CAD plan.'
+        : 'Closed and non-self-intersecting. The outline itself is the builder\u2019s, read from the DWG.',
       pass: closed && crossings.length === 0 && matches,
       actual:
         `${env.length} vertices, ${crossings.length} self-intersections, ` +
@@ -254,7 +276,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   }
 
   // ------------------------------------------------- 6a. reachable from main entrance
-  {
+  if (has('R-ENTRY')) {
     const start = 'R-ENTRY'
     const res = reachableFrom(model, start)
     add({
@@ -271,7 +293,9 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   }
 
   // --------------------------------------------- 6b. service access off the gallery
-  {
+  // A sealed service zone off an entry gallery is a decision Om Neeldhara's
+  // brief makes. A flat that has no such zone has nothing to check here.
+  if (has('R-ENTRY') && has('R-HELP')) {
     const svc = serviceRoomIds(model)
     const required = ['R-HELP', 'R-STORE', 'R-KITCHEN']
     const res = reachableFrom(model, 'R-ENTRY', { within: new Set([...svc, 'R-ENTRY']) })
@@ -386,7 +410,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   }
 
   // ------------------------------------------------------- 10. curved wall integrity
-  {
+  if (feature.curvedScreens) {
     const problems: string[] = []
     const p = building.walls.find((w) => w.id === 'W-CURVE-PARENTS')!.points!
     const k = building.walls.find((w) => w.id === 'W-CURVE-KARAN')!.points!
@@ -449,7 +473,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   }
 
   // --------------------------------------------------- 12. mirror symmetry of the wings
-  {
+  if (feature.mirrorAbout !== undefined) {
     // The wings mirror in fabric. The pods are excluded: the den carries the east
     // service duct as a notch and its portal sits lower on the curve, both deliberate.
     const pairs: Array<[string, string]> = [
@@ -492,7 +516,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   }
 
   // ---------------------------------------- 12b. the asymmetry that IS in the plan
-  {
+  if (has('R-P-FAMILY') && has('R-K-DEN')) {
     const fam = model.roomById.get('R-P-FAMILY')!
     const den = model.roomById.get('R-K-DEN')!
     add({
@@ -513,7 +537,9 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
 
   // ------------------------------------- 13. no two boundaries authored on the same line
   {
-    const great = model.roomById.get('R-GREAT')!
+    // Report the biggest room as the headline number: on Home 1 that IS the
+    // great room, and on any other home it is whatever that home's is.
+    const biggest = model.rooms.reduce((a, r) => (r.area > a.area ? r : a), model.rooms[0])
     const positive = model.rooms.every((r) => r.area > 0 && Number.isFinite(r.area))
     const wound = model.rooms.every((r) => Math.abs(signedArea(r.polygon)) > 0)
     add({
@@ -521,7 +547,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       title: 'Every derived room polygon is valid',
       requirement: 'Positive finite area, non-degenerate winding, at least three vertices.',
       pass: positive && wound && model.rooms.every((r) => r.polygon.length >= 3),
-      actual: `${model.rooms.length} polygons, smallest ${mm2ToBoth(Math.min(...model.rooms.map((r) => r.area)))}, great room ${mm2ToBoth(great.area)}`,
+      actual: `${model.rooms.length} polygons, smallest ${mm2ToBoth(Math.min(...model.rooms.map((r) => r.area)))}, ${biggest.def.name} ${mm2ToBoth(biggest.area)}`,
       severity: 'fail',
     })
   }

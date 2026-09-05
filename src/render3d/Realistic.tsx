@@ -19,6 +19,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { getModel } from '../geometry/model'
+import { pointInPolygon } from '../geometry/vec'
 import { buildSolids } from '../geometry/solid'
 import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
@@ -645,15 +646,21 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     root.add(fr)
   }
 
-  // ---- the fountain: marble ring + water disc on the deck centre
+  // ---- the fountain: marble ring + water disc on the deck centre.
+  // Fixed to Om Neeldhara's deck, and the only thing in this scene with no
+  // footprint on the 2D sheet behind it. On a home without that deck it would
+  // hang in mid-air outside the flat, so it is drawn only where its room is.
+  const deck = model.roomById.get('R-DECK')
   const F = { x: 12240, y: 1160, r: 600 }
-  const ring = new THREE.Mesh(new THREE.CylinderGeometry(F.r * S, (F.r + 60) * S, 0.42, 36, 1, false), M.marble)
-  ring.position.set(F.x * S, 0.21, F.y * S)
-  ring.castShadow = true
-  root.add(ring)
-  const water = new THREE.Mesh(new THREE.CylinderGeometry((F.r - 90) * S, (F.r - 90) * S, 0.05, 32), M.water)
-  water.position.set(F.x * S, 0.4, F.y * S)
-  root.add(water)
+  if (deck && pointInPolygon({ x: F.x, y: F.y }, deck.polygon)) {
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(F.r * S, (F.r + 60) * S, 0.42, 36, 1, false), M.marble)
+    ring.position.set(F.x * S, 0.21, F.y * S)
+    ring.castShadow = true
+    root.add(ring)
+    const water = new THREE.Mesh(new THREE.CylinderGeometry((F.r - 90) * S, (F.r - 90) * S, 0.05, 32), M.water)
+    water.position.set(F.x * S, 0.4, F.y * S)
+    root.add(water)
+  }
 
   return root
 }
@@ -807,13 +814,24 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     scene.add(ground)
 
     // ---- camera + controls
+    // Stand at eye height in the home's BIGGEST habitable room, a step back
+    // from its middle, looking across it. That is Om Neeldhara's great room
+    // looking north over the seating to the deck — the view this started as,
+    // now derived instead of typed, so it is the same idea in any home rather
+    // than a point on the floor of one of them.
+    const biggest = model.rooms
+      .filter((r) => r.def.category === 'habitable')
+      .reduce((a, r) => (r.area > a.area ? r : a), model.rooms[0])
+    const CX = biggest.centroid.x * S
+    const CZ = biggest.centroid.y * S
+    const STEP = 1.9
+
     const camera = new THREE.PerspectiveCamera(64, 1, 0.05, 400)
-    // start inside the great room, looking north over the seating to the deck
-    camera.position.set(12.24, 1.62, 7.0)
-    camera.lookAt(12.24, 1.4, 2.0)
+    camera.position.set(CX, 1.62, CZ + STEP)
+    camera.lookAt(CX, 1.4, CZ - 3.3)
 
     const orbit = new OrbitControls(camera, renderer.domElement)
-    orbit.target.set(12.24, 1.1, 3.2)
+    orbit.target.set(CX, 1.1, CZ - STEP)
     orbit.maxPolarAngle = Math.PI * 0.495
     orbit.update()
 

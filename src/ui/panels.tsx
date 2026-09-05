@@ -6,6 +6,7 @@
 import React, { useMemo, useState } from 'react'
 import { getModel } from '../geometry/model'
 import { building } from '../data/building'
+import { activeHome } from '../homes/registry'
 import { fixtures } from '../data/fixtures'
 import { formatArea, formatFeetInches, formatLength, formatMm, sqFt, sqM } from '../geometry/units'
 import { LAYER_LABELS, useStore, type LayerId } from './store'
@@ -287,15 +288,20 @@ export function View3DPanel(): React.ReactElement {
 
       <div className="panel">
         <h3>Show</h3>
+        {/* Only offer a switch for something the home actually has. An imported
+            flat has no canopies, no tree cages and no pods, and a dead toggle
+            reads as a broken feature. */}
         {(
           [
-            ['glassRoofs', 'Glass roofs'],
-            ['cages', 'Tree cages'],
-            ['furniture', 'Furniture'],
-            ['podParents', "Parents' pod"],
-            ['podKaran', "Karan's pod"],
+            ['glassRoofs', 'Glass roofs', building.glassRoofs.length > 0],
+            ['cages', 'Tree cages', building.cages.length > 0],
+            ['furniture', 'Furniture', true],
+            ['podParents', "Parents' pod", building.screens.length > 0],
+            ['podKaran', "Karan's pod", building.screens.length > 1],
           ] as const
-        ).map(([k, label]) => (
+        )
+          .filter(([, , present]) => present)
+          .map(([k, label]) => (
           <div className="row" key={k}>
             <label>
               <input
@@ -306,7 +312,7 @@ export function View3DPanel(): React.ReactElement {
               {label}
             </label>
           </div>
-        ))}
+          ))}
       </div>
 
       <div className="panel">
@@ -375,9 +381,9 @@ export function View3DPanel(): React.ReactElement {
 
         <h4>North orientation</h4>
         <p className="tiny muted" style={{ marginTop: 0 }}>
-          Needs confirming. The Rev 4 sheet&rsquo;s north arrow points along +x; the Python
-          source&rsquo;s header comment says north is &minus;y. Shadows are only as right as
-          this setting.
+          {activeHome.meta.origin === 'authored'
+            ? 'Needs confirming. The Rev 4 sheet\u2019s north arrow points along +x; the Python source\u2019s header comment says north is \u2212y. Shadows are only as right as this setting.'
+            : 'Needs confirming. The builder\u2019s DWG carries no north arrow this import has read, so the default here is a guess. Shadows are only as right as this setting.'}
         </p>
         <div className="row wrap">
           {[
@@ -453,7 +459,7 @@ export function RoomInspector(): React.ReactElement {
       </div>
       {room.def.publishedSqFt != null && (
         <div className="row">
-          <span className="tiny">Rev 4 published</span>
+          <span className="tiny">Published</span>
           <span className="val">{room.def.publishedSqFt} sq ft</span>
         </div>
       )}
@@ -707,8 +713,9 @@ export function TotalsPanel(): React.ReactElement {
         </div>
       ))}
       <p className="tiny muted" style={{ marginBottom: 0 }}>
-        Carpet is measured inside the wall faces. Rev 4&rsquo;s published figures are measured
-        to zone extents, which is why they read higher.
+        {activeHome.meta.origin === 'authored'
+          ? 'Carpet is measured inside the wall faces. Rev 4\u2019s published figures are measured to zone extents, which is why they read higher.'
+          : 'Carpet is measured inside the wall faces. The builder\u2019s RERA figure includes the internal partitions, which is why it reads higher.'}
       </p>
     </div>
   )

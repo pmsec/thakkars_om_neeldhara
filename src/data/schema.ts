@@ -63,7 +63,7 @@ export type RoomCategory =
   | 'outdoor'
   | 'void'
 
-export type Zone = 'parents' | 'karan' | 'shared' | 'service' | 'outdoor' | 'core'
+export type Zone = 'parents' | 'karan' | 'shared' | 'service' | 'outdoor' | 'core' | 'flat'
 
 export interface RoomDef {
   id: string

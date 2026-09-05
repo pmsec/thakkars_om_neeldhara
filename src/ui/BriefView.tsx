@@ -7,11 +7,20 @@
 
 import React from 'react'
 import { building } from '../data/building'
+import { activeHome } from '../homes/registry'
+import { getModel } from '../geometry/model'
+import { sqFt, sqM } from '../geometry/units'
 
 const S: React.CSSProperties = { maxWidth: 860, margin: '0 auto', padding: '28px 34px 80px' }
 const H: React.CSSProperties = { marginTop: 34, marginBottom: 8 }
 
 export function BriefView(): React.ReactElement {
+  // A brief is a written thing. Om Neeldhara has one because somebody wrote it;
+  // a flat that was imported this morning has not been briefed, and printing
+  // another home's brief under its name would be the worst kind of lie the app
+  // could tell — plausible, specific and wrong.
+  if (!activeHome.meta.checks.brief) return <NoBrief />
+
   return (
     <div className="brief" style={S}>
       <h1 style={{ marginBottom: 4 }}>{building.meta.project}</h1>
@@ -72,6 +81,59 @@ export function BriefView(): React.ReactElement {
         the entry, and the mirror symmetry of the two wings. The construction reference
         remains the DXF generated on the CAD branch; this portal is generated from the
         same source and exists to be read, toggled and walked through.
+      </p>
+    </div>
+  )
+}
+
+/** What an imported home has instead of a brief: what it is, and what is missing. */
+function NoBrief(): React.ReactElement {
+  const model = getModel()
+  const rooms = model.rooms.reduce((a, r) => a + r.area, 0)
+  return (
+    <div className="brief" style={S}>
+      <h1 style={{ marginBottom: 4 }}>{building.meta.project}</h1>
+      <p className="tiny" style={{ color: 'var(--ink-soft)' }}>
+        {building.meta.drawing} · {building.meta.revision} · {building.meta.date}
+      </p>
+
+      <h2 style={H}>There is no brief for this home yet</h2>
+      <p>
+        This flat was IMPORTED, not designed. Every line in it came out of the
+        builder&rsquo;s DWG: the walls are the two drawn faces of each wall paired into a
+        centreline, the columns are the rectangles on the column layer, and the envelope
+        is the RERA carpet boundary pushed out by one external wall. Nothing here is a
+        decision — it is a survey.
+      </p>
+      <p>
+        So the model is true, and mute. The rooms below are the builder&rsquo;s rooms with
+        the builder&rsquo;s names; the areas are measured, not published; and the 3D model
+        is the shell you would walk into on handover, empty.
+      </p>
+
+      <h2 style={H}>What it measures</h2>
+      <p>
+        Envelope {sqM(model.envelopeArea).toFixed(2)} m² ({sqFt(model.envelopeArea).toFixed(0)} sq
+        ft) · rooms {sqM(rooms).toFixed(2)} m² ({sqFt(rooms).toFixed(0)} sq ft) across{' '}
+        {model.rooms.length} spaces. The difference is the internal partitions, which RERA
+        counts as carpet and the room polygons do not.
+      </p>
+
+      <h2 style={H}>What is still missing</h2>
+      <p>
+        Doors. The builder&rsquo;s door arcs sit on their own layer and have not been read
+        yet, so every room here is drawn sealed: the openings schedule is empty and the
+        reachability checks have nothing to walk through. Furniture and fixtures are empty
+        for the same reason — none were drawn.
+      </p>
+
+      <h2 style={H}>What happens next</h2>
+      <p>
+        The same thing that happened to Om Neeldhara. Its plan is Python too, and it began
+        as geometry with no reasons attached; it became a design when somebody said what
+        the rooms were for and the walls started moving to suit. The first real edit to
+        this flat is a sentence about what its owner wants — everything after that is
+        arithmetic.
       </p>
     </div>
   )

@@ -30,6 +30,17 @@ import { fixtures as omNeeldharaFixtures } from './om-neeldhara/fixtures'
 import { furniture as omNeeldharaFurniture } from './om-neeldhara/furniture'
 import omNeeldharaSheet from './om-neeldhara/plan-sheet.svg?raw'
 
+import { meta as ektaMeta } from './ekta/meta'
+import {
+  building as ektaBuilding,
+  MIRROR_X as ektaMirror,
+  POD_PARENTS as ektaPodP,
+  POD_KARAN as ektaPodK,
+} from './ekta/building'
+import { fixtures as ektaFixtures } from './ekta/fixtures'
+import { furniture as ektaFurniture } from './ekta/furniture'
+import ektaSheet from './ekta/plan-sheet.svg?raw'
+
 const omNeeldhara: Home = {
   meta: omNeeldharaMeta,
   building: omNeeldharaBuilding,
@@ -43,8 +54,17 @@ const omNeeldhara: Home = {
   },
 }
 
+const ekta: Home = {
+  meta: ektaMeta,
+  building: ektaBuilding,
+  fixtures: ektaFixtures,
+  furniture: ektaFurniture,
+  sheetSvg: ektaSheet,
+  constants: { MIRROR_X: ektaMirror, POD_PARENTS: ektaPodP, POD_KARAN: ektaPodK },
+}
+
 /** Every home, in the order they appear on the home page. */
-export const HOMES: Home[] = [omNeeldhara]
+export const HOMES: Home[] = [omNeeldhara, ekta]
 
 /** The home the app falls back to, always. */
 export const DEFAULT_HOME_ID = 'om-neeldhara'

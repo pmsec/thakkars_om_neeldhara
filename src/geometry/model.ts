@@ -460,7 +460,11 @@ export function buildModel(data: BuildingData = building): BuiltModel {
   }
 
   extRuns.forEach((d) => resolve(d, true))
-  data.walls.forEach((d) => resolve(d, false))
+  // An authored wall may declare itself exterior: an IMPORTED home carries the
+  // building's own perimeter walls, whose centrelines sit exactly on the
+  // envelope centreline and would clip to nothing. Om Neeldhara authors no
+  // such wall — all of its walls are internal — so this changes nothing there.
+  data.walls.forEach((d) => resolve(d, d.kind === 'exterior'))
 
   // Arched portals are authored as a Bézier parameter range on a curved wall, so turn
   // each into a real opening on that wall's run. Without this the pods would have no

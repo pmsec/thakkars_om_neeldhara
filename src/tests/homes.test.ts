@@ -61,25 +61,49 @@ describe('every registered home', () => {
   }
 })
 
-describe("Ekta's flat, against the builder's own figures", () => {
+describe("Ekta's flat, against the builder's own drawing", () => {
   const home = HOMES.find((h) => h.meta.id === 'ekta')!
   const model = buildModel(home.building)
 
-  it('matches the RERA carpet area', () => {
-    // RERA 1073 sq ft = 1032 carpet + 41 balcony. The balcony is a slab outside
-    // the enclosure, so the envelope is the 1032 plus the external wall it is
-    // measured inside of. Carpet as RERA counts it includes the internal
-    // partitions; the derived rooms do not, hence the two numbers.
-    const gross = sqFt(model.envelopeArea)
-    expect(gross).toBeGreaterThan(1100)
-    expect(gross).toBeLessThan(1130)
-    const rooms = sqFt(model.rooms.reduce((s, r) => s + r.area, 0))
-    expect(rooms).toBeGreaterThan(960)
-    expect(rooms).toBeLessThan(1010)
+  it('has all thirteen of the rooms the builder names', () => {
+    expect(model.rooms.length).toBe(13)
+    const names = model.rooms.map((r) => r.def.name).sort()
+    expect(names).toContain('Foyer')
+    expect(names).toContain('Balcony')
+    expect(names).toContain('Kitchen')
+    expect(names.filter((n) => n === 'Passage')).toHaveLength(3)
   })
 
-  it('has nine rooms, none of them under a square metre', () => {
-    expect(model.rooms.length).toBe(9)
-    expect(Math.min(...model.rooms.map((r) => r.area))).toBeGreaterThan(1e6)
+  it('matches the RERA figures', () => {
+    // RERA 1073 sq ft = 1032 carpet + 41 balcony. The rooms come out lower
+    // than the carpet figure because RERA counts the internal partitions as
+    // carpet and a derived room polygon stops at the wall face.
+    const rooms = sqFt(model.rooms.reduce((s, r) => s + r.area, 0))
+    expect(rooms).toBeGreaterThan(1000)
+    expect(rooms).toBeLessThan(1073)
+  })
+
+  /**
+   * THE ONE TEST THAT SAYS THE IMPORT READ THE DRAWING RIGHT.
+   *
+   * Every room on the builder's plan carries his own dimension text —
+   * `10'0"X13'6"` under BEDROOM, and so on for all thirteen. import.py copies
+   * that text through as `publishedSqFt`, untouched. So this compares a room
+   * DERIVED from the wall centrelines against the size the man who drew the
+   * walls says it is. Nothing in the chain measures the drawing twice.
+   *
+   * 8 % because his figures are nominal room rectangles rounded to the inch,
+   * and a derived polygon is the real shape to the millimetre — on a 13 sq ft
+   * passage one square foot is already 7 %.
+   */
+  it('derives every room to the size the builder wrote on it', () => {
+    const off: string[] = []
+    for (const r of model.rooms) {
+      const pub = r.def.publishedSqFt
+      expect(pub, `${r.def.id} carries no dimension from the DWG`).toBeGreaterThan(0)
+      const err = Math.abs(sqFt(r.area) - pub!) / pub!
+      if (err > 0.08) off.push(`${r.def.name}: ${sqFt(r.area).toFixed(0)} vs ${pub} sq ft`)
+    }
+    expect(off, off.join('; ')).toEqual([])
   })
 })

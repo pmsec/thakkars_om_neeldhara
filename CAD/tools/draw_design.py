@@ -15,6 +15,8 @@ ISLAND = "--island" in sys.argv
 import fitz
 import numpy as np
 
+import home
+home.select()          # --home / $OM_HOME / om-neeldhara
 import clash as C
 import design as D
 import frame
@@ -22,7 +24,7 @@ import retrofit as R
 import symbols as SY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', 'drawings')
+OUT = home.drawings_dir()   # per home; om-neeldhara keeps CAD/drawings
 
 INK = '#1b1a18'
 PAPER = '#faf8f4'

@@ -33,40 +33,29 @@ import numpy as np
 from matplotlib.path import Path
 
 import frame
+import home
+home.select()          # --home / $OM_HOME / om-neeldhara
+import immovables as IMM
 import plan_model as PM
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, '..', 'data')
 SRC = os.path.join(HERE, '..', 'source')
 
+# The raster the checks run on. CELL is machinery; the window and the
+# immovable shapes come from the selected home — see homes/<id>/immovables.py.
 CELL = 25
-X0, Y0, X1, Y1 = -1500, -1500, 26000, 13500
+X0, Y0, X1, Y1 = IMM.EXTENT
 NX, NY = (X1 - X0) // CELL, (Y1 - Y0) // CELL
 XS = X0 + (np.arange(NX) + 0.5) * CELL
 YS = Y0 + (np.arange(NY) + 0.5) * CELL
 GX, GY = np.meshgrid(XS, YS)
 PTS = np.column_stack([GX.ravel(), GY.ravel()])
 
-# ---------------------------------------------------------------------------
-# The builder's no-floor zones, read off DA_BUILDING LINE and confirmed against
-# the carpet polygons.  West half; the east half is the mirror about X 12240.
-# ---------------------------------------------------------------------------
-def mirror(z):
-    n, a, b, c, d, k = z
-    return (n.replace('west', 'east'), 24480 - c, b, 24480 - a, d, k)
-
-
-_WEST = [
-    ("sealed shaft, wing end",   2900,    0,  4380, 1200, 'open shaft'),
-    ("retained deck void",       7730, 1350,  8965, 2470, 'void'),
-    ("main service duct",        4555, 6175,  5555, 11125, 'open shaft'),
-    ("secondary duct",           5555, 8550,  6900, 9320, 'open shaft'),
-]
-NAMED = ([(n + ', west', a, b, c, d, k) for n, a, b, c, d, k in _WEST]
-         + [mirror((n + ', east', a, b, c, d, k)) for n, a, b, c, d, k in _WEST])
+mirror = IMM.mirror
+NAMED = IMM.NAMED
 NO_FLOOR = NAMED
-# The lift lobby is real floor but common property, not part of either flat.
-COMMON = ("lift lobby and landing", 10400, 8550, 14080, 12905)
+COMMON = IMM.COMMON
 
 
 def blank():

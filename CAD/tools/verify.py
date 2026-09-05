@@ -10,6 +10,8 @@ import sys
 
 import numpy as np
 
+import home
+home.select()          # --home / $OM_HOME / om-neeldhara
 import clash as C
 import design as D
 import retrofit as R

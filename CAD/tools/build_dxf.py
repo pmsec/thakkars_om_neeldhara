@@ -33,6 +33,8 @@ import ezdxf
 import numpy as np
 from ezdxf.enums import TextEntityAlignment
 
+import home
+home.select()          # --home / $OM_HOME / om-neeldhara
 import clash as C
 import frame
 import design as D
@@ -41,7 +43,7 @@ import symbols as SY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, '..', 'source')
-OUT = os.path.join(HERE, '..', 'out')
+OUT = home.out_dir()        # per home; om-neeldhara keeps CAD/out
 
 # frame -> builder model space.  frame.py maps CAD (x, y) to (y - X0, x - Y0),
 # so the inverse swaps the axes back.

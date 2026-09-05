@@ -23,6 +23,8 @@ import fitz
 import numpy as np
 from matplotlib.path import Path as MplPath
 
+import home
+home.select()          # --home / $OM_HOME / om-neeldhara
 import clash as C
 import design as D
 import retrofit as R

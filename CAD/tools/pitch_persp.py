@@ -25,6 +25,8 @@ sys.path.insert(0, HERE)
 import fitz
 import numpy as np
 
+import home
+home.select()          # --home / $OM_HOME / om-neeldhara
 import design as D
 import retrofit as R
 

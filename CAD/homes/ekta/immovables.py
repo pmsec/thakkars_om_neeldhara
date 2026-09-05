@@ -1,9 +1,10 @@
 """
-What cannot move in Ekta's flat — read off the builder's DWG.
+What cannot move in Ekta's flat — read off the builder's DWG by import.py.
 
-Columns are the rectangles on DA_COLUMN inside the flat. The service shafts
-and voids are the S.S. and VOID pockets on the south and east faces. This
-flat is NOT mirrored, so there is no mirror line.
+Columns are the closed rectangles on DA_COLUMN that sit inside the flat. The
+long 230 mm strips on that layer are external wall zones rather than columns
+and are not listed. This flat is not a mirrored pair, so there is no mirror
+line.
 """
 
 EXTENT = (-1500, -1500, 13500, 14500)
@@ -16,12 +17,12 @@ def mirror(z):
 
 
 NAMED = [
-    ("column 1", 3049, 10650, 3279, 11550, 'column'),
-    ("column 2", -150, 10350, 79, 11550, 'column'),
-    ("column 3", 8294, 4425, 8524, 5625, 'column'),
-    ("column 4", 8294, 10650, 8524, 11850, 'column'),
-    ("column 5", 6719, 3195, 6949, 4425, 'column'),
+    ("column 1", 8295, 470, 8525, 1670, 'column'),
+    ("column 2", -150, 770, 80, 1970, 'column'),
+    ("column 3", 3050, 770, 3280, 1670, 'column'),
+    ("column 4", 8295, 6695, 8525, 7895, 'column'),
+    ("column 5", 6720, 7895, 6950, 9125, 'column'),
 ]
 
-# Common property, not part of the flat: the lift core and staircase to the west.
-COMMON = ("lift core and staircase", -6000, 0, -300, 9000)
+# Common property, not part of the flat: the lift core and staircase, west.
+COMMON = ("lift core, lifts and staircase", -4000, 3500, -300, 13000)

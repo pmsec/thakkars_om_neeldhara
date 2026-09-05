@@ -44,22 +44,37 @@ Om Neeldhara was written; Ekta's flat was read. The chain is:
 ```
 dwg2dxf <file>.dwg                LibreDWG, straight to DXF
 tools/extract_dwg.py              flatten block inserts through their matrices
-tools/import_shell.py             pair the two DRAWN FACES of each wall -> centreline
-homes/<id>/import.py              make it a plan: square, grid, merge, connect
+homes/<id>/import.py              read the drawing; write design.py
 tools/draw_home.py --home <id>    the sheet
 tools/export_app.py --home <id>   the web app's building.ts / fixtures.ts / furniture.ts
 ```
 
-`import.py` is the honest place for every judgement the import needs, and it
-says why each one exists. The builder draws faces, not centrelines; he draws
-13 mm off square; he breaks every wall at a door jamb and stops it at the
-plaster line. None of that matters on paper and all of it matters to a planar
-subdivision, which is how the app DERIVES rooms from walls. Until somebody
-starts designing the flat by hand, `import.py` is the source and `design.py`
-is its output — re-runnable, and the record of what was assumed.
+**Reading the lines is not reading the drawing.** The first version of this
+paired the two drawn faces of every wall into a centreline and stopped, and
+it got the flat wrong three ways:
 
-What is NOT imported yet: doors. The builder's door arcs are on their own
-layer and have not been read, so every room comes through sealed.
+* A gap in a wall line is not the end of the wall. It is a DOOR (there is a
+  leaf on `DA_DOOR`) or a COLUMN (a rectangle on `DA_COLUMN`), and only
+  rarely a free end. Emit the wall as its full run with the doors as
+  openings, and the room closes and gains a doorway at the same time.
+* Some rooms are not divided by walls at all. In Ekta's flat the kitchen is
+  open to the living room, the foyer is an alcove of it, two passages have
+  cased openings and the balcony has a slider. A room is a face of the
+  boundary graph, so those lines are emitted as ZERO-THICKNESS THRESHOLDS:
+  draw nothing and the rooms do not exist; draw walls and the flat gains
+  five walls nobody built.
+* The balcony is outside the RERA carpet boundary, so an envelope offset
+  from the carpet alone leaves it off the plan.
+
+**Check the import against the drawing's own dimension text.** Every room on
+a builder's plan carries his figure — `10'0"X13'6"` under BEDROOM. `import.py`
+copies that through untouched as `publishedSqFt`, and the app's test suite
+compares each DERIVED room against it. Nothing in that chain measures the
+drawing twice, which is the only reason it is worth anything.
+
+**The frame is flipped on purpose.** DWG y runs up the page and a plan
+sheet's y runs down it. `local y = <top> - dwg y`, so the sheet reads the
+same way up as the drawing and the two can be compared by eye.
 
 Everything for this work lives in `CAD/`. **Do not touch any other file in the
 repo.** Branch: `claude/cad-apartment-merge-miwnpm`.

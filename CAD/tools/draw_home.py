@@ -3,9 +3,10 @@
 A GENERIC PLAN SHEET, for any home that provides the plain contract:
 
     ENVELOPE   outer polygon
-    NEW_WALLS  (x1, y1, x2, y2, thickness, openings) centrelines
+    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind, ...) centrelines,
+               openings being (type, from, to) ABSOLUTE along the wall
     GLAZING    (x1, y1, x2, y2, kind)
-    ROOMS      (name, subtitle, (ax, ay), note)
+    ROOMS      (name, subtitle, (ax, ay), note, ...)
     FURNITURE  (kind, a, b, c, d, label)   — may be empty
 
 Om Neeldhara does NOT use this: it has draw_design.py, which knows about its
@@ -93,6 +94,47 @@ class Sheet:
         print('wrote', name, f'({self.w} x {self.h})')
 
 
+def solid_runs(x1, y1, x2, y2, ops):
+    """The wall minus its openings. A gap in the builder's wall lines is a
+    door only where his door layer has a leaf in it; everywhere else the wall
+    is continuous, so what gets drawn here is the wall he built."""
+    vert = abs(x2 - x1) < abs(y2 - y1)
+    a0, a1 = (y1, y2) if vert else (x1, x2)
+    lo, hi = min(a0, a1), max(a0, a1)
+    cuts = sorted((max(lo, min(f0, f1)), min(hi, max(f0, f1))) for _, f0, f1 in ops)
+    runs, at = [], lo
+    for c0, c1 in cuts:
+        if c0 > at:
+            runs.append((at, c0))
+        at = max(at, c1)
+    if at < hi:
+        runs.append((at, hi))
+    fixed = x1 if vert else y1
+    return [(((fixed, p), (fixed, q)) if vert else ((p, fixed), (q, fixed)))
+            for p, q in runs]
+
+
+def door_swing(sh, x1, y1, x2, y2, f0, f1):
+    """A door as the builder draws it: the leaf on its hinge, and its arc."""
+    vert = abs(x2 - x1) < abs(y2 - y1)
+    lo, hi = min(f0, f1), max(f0, f1)
+    w = hi - lo
+    fixed = x1 if vert else y1
+    hx, hy = (fixed, lo) if vert else (lo, fixed)
+    lx, ly = (fixed + w, lo) if vert else (lo, fixed + w)
+    sh.line(hx, hy, lx, ly, '#8a8378', 1.4)
+    n = 12
+    pts = []
+    for i in range(n + 1):
+        a = (i / n) * (math.pi / 2)
+        if vert:
+            pts.append((fixed + w * math.cos(a), lo + w * math.sin(a)))
+        else:
+            pts.append((lo + w * math.sin(a), fixed + w * math.cos(a)))
+    for i in range(n):
+        sh.line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], '#c3bcae', 1.0)
+
+
 def wall_quad(x1, y1, x2, y2, t):
     dx, dy = x2 - x1, y2 - y1
     L = math.hypot(dx, dy) or 1.0
@@ -110,8 +152,14 @@ def main():
     s = Sheet(min(xs) - m, min(ys) - m, max(xs) + m, max(ys) + m)
 
     s.begin_layer('floor')
-    s.poly(D.ENVELOPE, fill=FLOOR, stroke=ENV, sw=2.0)
-    if extra:
+    # The external walls are the band between the envelope and the floor
+    # plate. Drawing them as a band rather than an outline is what makes the
+    # sheet read as a plan instead of a diagram.
+    plate = getattr(D, 'PLATE', None) or getattr(D, 'CARPET', None)
+    s.poly(D.ENVELOPE, fill=(WALL if plate else FLOOR), stroke=ENV, sw=2.0)
+    if plate:
+        s.poly(plate, fill=FLOOR, stroke='none')
+    if extra and not plate:
         s.poly(extra, fill='#e8eef0', stroke=ENV, sw=1.4)
     s.end_layer()
 
@@ -128,23 +176,32 @@ def main():
 
     s.begin_layer('floor-walls')
     for w in D.NEW_WALLS:
-        s.poly(wall_quad(*w[:5]), fill=WALL, stroke='none')
+        x1, y1, x2, y2, t = w[:5]
+        ops = w[5] if len(w) > 5 else []
+        if t <= 0:
+            # A threshold is an opening, not a wall: a broken line, so the
+            # plan reads as the open room it is.
+            s.line(x1, y1, x2, y2, '#b9b2a4', 1.2, dash='10 12')
+            continue
+        for a, b in solid_runs(x1, y1, x2, y2, ops):
+            s.poly(wall_quad(a[0], a[1], b[0], b[1], t), fill=WALL, stroke='none')
+        for kind, f0, f1 in ops:
+            door_swing(s, x1, y1, x2, y2, f0, f1)
     for g in getattr(D, 'GLAZING', []):
         s.line(g[0], g[1], g[2], g[3], GLAS, 3.0)
     s.end_layer()
 
     s.begin_layer('labels')
-    if extra:
-        bx = sum(p[0] for p in extra) / len(extra)
-        by = sum(p[1] for p in extra) / len(extra)
-        s.text(bx, by - 60, 'BALCONY', 15, TXT, 'bold', 1.1)
-        s.text(bx, by + 170, 'outside the enclosure — 3.81 m2 (41 sq ft)', 9, TXT2)
-    for name, sub, (ax, ay), note in D.ROOMS:
+    for r in D.ROOMS:
+        name, sub, (ax, ay), note = r[:4]
+        size = r[4] if len(r) > 4 else ''
         s.text(ax, ay - 90, name, 15, TXT, 'bold', 1.1)
         if sub:
             s.text(ax, ay + 80, sub, 10, '#2c5c61', letter=2)
+        if size:
+            s.text(ax, ay + (230 if sub else 150), size, 11, TXT2)
         if note:
-            s.text(ax, ay + (230 if sub else 150), note[:46], 9, TXT2)
+            s.text(ax, ay + (390 if sub else 310), note[:70], 9, TXT2)
     s.end_layer()
 
     s.begin_layer('title')

@@ -9,8 +9,17 @@ design.py provides only the generic contract:
 
     ENVELOPE · NEW_WALLS · GLAZING · ROOMS · FURNITURE
 
+    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind[, id, note])
+               openings are (type, from, to) ABSOLUTE along the wall; a wall
+               of thickness 0 and kind 'threshold' divides two rooms without
+               putting anything on the floor.
+    ROOMS      (name, subtitle, anchor, note[, dimension text, sq ft])
+
 Rooms carry an anchor and no shape — the app derives every room polygon from
-the wall centrelines, so that is genuinely all it needs.
+the wall centrelines, so that is genuinely all it needs. Where a home gives
+the last two columns, they are the SOURCE drawing's own dimension text and
+its area: the app carries them as `publishedSqFt` so the derivation can be
+checked against the drawing it came from.
 
     python3 export_app.py --home <id> --out <webapp>/src/homes/<id>
 """
@@ -79,7 +88,9 @@ def main():
     A(f"    revision: {meta.get('subtitle', 'imported')!r},")
     A("    date: 'imported',")
     A("    scaleNote: 'Imported from the builder\\u2019s DWG: wall centrelines paired "
-      "from drawn faces, envelope from the RERA carpet boundary. Not yet designed.',")
+      "from his drawn faces, doors off his door layer, envelope from the RERA "
+      "carpet boundary. Every room checked against his own dimension text. "
+      "Not yet designed.',")
     A('  },')
     A('  envelope: [' + ', '.join(pt(x, y) for x, y in D.ENVELOPE) + '],')
     A('  thickness: { exterior: 150, interior: 150, partition: 125 },')
@@ -89,24 +100,46 @@ def main():
     A('  walls: [')
     for i, w in enumerate(D.NEW_WALLS, 1):
         x1, y1, x2, y2, t = w[:5]
+        ops = w[5] if len(w) > 5 else []
         kind = w[6] if len(w) > 6 else 'partition'
-        A(f"    {{ id: 'W-{i:02d}', points: [{pt(x1, y1)}, {pt(x2, y2)}], "
-          f"thickness: {fnum(t)}, kind: {kind!r}, openings: [] }},")
+        wid = w[7] if len(w) > 7 else f'W-{i:02d}'
+        note = w[8] if len(w) > 8 else None
+        # An opening is authored in absolute mm along the wall, because that is
+        # how it is read off the drawing. The app wants it as a distance from
+        # the run's first point.
+        vert = abs(x2 - x1) < abs(y2 - y1)
+        base = y1 if vert else x1
+        sgn = 1 if (y2 > y1 if vert else x2 > x1) else -1
+        oo = []
+        for j, (typ, f0, f1) in enumerate(ops, 1):
+            d0, d1 = sorted((sgn * (f0 - base), sgn * (f1 - base)))
+            oo.append(f"{{ id: '{wid}-O{j}', type: {typ!r}, "
+                      f'at: [{fnum(d0)}, {fnum(d1)}], head: 2100, sill: 0 }}')
+        A(f"    {{ id: {wid!r}, points: [{pt(x1, y1)}, {pt(x2, y2)}], "
+          f"thickness: {fnum(t)}, kind: {kind!r},"
+          + (f' renderPane: false,' if t == 0 else '')
+          + (f" notes: {note!r}," if note else '')
+          + ' openings: [' + ', '.join(oo) + '] },')
     A('  ],')
     A('  cores: [],')
     A('  cages: [],')
     A('  rooms: [')
     used = set()
-    for name, sub, (ax, ay), note in D.ROOMS:
+    for r in D.ROOMS:
+        name, sub, (ax, ay), note = r[:4]
+        text, sq = (r[4], r[5]) if len(r) > 5 else (None, None)
         cat = 'habitable'
         for k, v in CATEGORY.items():
             if k in name.upper():
                 cat = v
         rid = slug(name if not sub else f'{name}-{sub}', used)
         fin = FINISH.get(cat, 'Oak plank')
+        full = ' · '.join(x for x in (text, note) if x)
         A(f"    {{ id: {rid!r}, name: {name.title()!r}, anchor: {pt(ax, ay)}, "
           f"category: {cat!r}, zone: 'flat', carpet: {str(cat != 'outdoor').lower()}, "
-          f"finish: {fin!r}, notes: {note!r} }},")
+          f"finish: {fin!r},"
+          + (f' publishedSqFt: {sq},' if sq else '')
+          + f' notes: {full!r} }},')
     A('  ],')
     A('  stacks: [],')
     A('  glassRoofs: [],')

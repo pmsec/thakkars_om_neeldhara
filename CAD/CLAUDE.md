@@ -8,6 +8,7 @@ shared; each building lives in `homes/<id>/`:
 ```
 tools/                 shared: symbols, draw_design, verify, clash, build_dxf
 homes/om-neeldhara/    design.py · retrofit.py · immovables.py · home.json · golden.json
+homes/ekta/            imported from a DWG: source/ · import.py · design.py · immovables.py
 homes/<new-home>/      the same shape
 ```
 
@@ -35,6 +36,30 @@ window (`immovables.py`), and its name, source drawing and output paths
 (`home.json`). `om-neeldhara` writes to `CAD/drawings` and `CAD/out` as it
 always has — new homes write under `homes/<id>/` so two homes can never
 overwrite each other.
+
+### Importing a home from a DWG
+
+Om Neeldhara was written; Ekta's flat was read. The chain is:
+
+```
+dwg2dxf <file>.dwg                LibreDWG, straight to DXF
+tools/extract_dwg.py              flatten block inserts through their matrices
+tools/import_shell.py             pair the two DRAWN FACES of each wall -> centreline
+homes/<id>/import.py              make it a plan: square, grid, merge, connect
+tools/draw_home.py --home <id>    the sheet
+tools/export_app.py --home <id>   the web app's building.ts / fixtures.ts / furniture.ts
+```
+
+`import.py` is the honest place for every judgement the import needs, and it
+says why each one exists. The builder draws faces, not centrelines; he draws
+13 mm off square; he breaks every wall at a door jamb and stops it at the
+plaster line. None of that matters on paper and all of it matters to a planar
+subdivision, which is how the app DERIVES rooms from walls. Until somebody
+starts designing the flat by hand, `import.py` is the source and `design.py`
+is its output — re-runnable, and the record of what was assumed.
+
+What is NOT imported yet: doors. The builder's door arcs are on their own
+layer and have not been read, so every room comes through sealed.
 
 Everything for this work lives in `CAD/`. **Do not touch any other file in the
 repo.** Branch: `claude/cad-apartment-merge-miwnpm`.

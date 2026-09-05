@@ -1,0 +1,16 @@
+{
+  "id": "ekta",
+  "name": "Ekta \u2014 14th floor, Neeldhara",
+  "subtitle": "imported from the builder's DWG \u00b7 1073 sq ft RERA",
+  "source": "homes/ekta/source/14th_floor_neeldhara_ekta.dwg",
+  "sheet": "homes/ekta/drawings/plan.svg",
+  "origin": "imported",
+  "paths": {
+    "drawings": "homes/ekta/drawings",
+    "out": "homes/ekta/out"
+  },
+  "golden": [
+    "plan.svg",
+    "plan.png"
+  ]
+}

@@ -79,6 +79,14 @@ def dir_of(name=None):
     return os.path.join(HOMES, name or current())
 
 
+def dir_for(name):
+    """A home's directory WITHOUT requiring a design yet — for the importer,
+    which runs before there is anything to import into."""
+    d = os.path.join(HOMES, name)
+    os.makedirs(os.path.join(d, 'source'), exist_ok=True)
+    return d
+
+
 def _path(key, fallback):
     """A configured output directory, absolute. Home 1 keeps the original
     CAD/drawings and CAD/out; a new home gets its own, so two homes can never

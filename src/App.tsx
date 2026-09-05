@@ -14,6 +14,7 @@ import {
   TotalsPanel,
   View3DPanel,
 } from './ui/panels'
+import { HomeSwitcher } from './ui/HomeSwitcher'
 import { initialState, StoreContext, type PortalState, type ViewId } from './ui/store'
 import { runIntegrity } from './geometry/integrity'
 import { building } from './data/building'
@@ -63,6 +64,8 @@ export function App(): React.ReactElement {
     <StoreContext.Provider value={store}>
       <div className="app">
         <header className="topbar">
+          <HomeSwitcher />
+
           <div className="brand">
             <b>{building.meta.project}</b>
             <span>

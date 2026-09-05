@@ -5,6 +5,8 @@
  * IndexedDB comfortably holds hundreds of renders.
  */
 
+import { storageKey } from '../homes/registry'
+
 export interface SavedRender {
   id: number
   /** Unix ms at save time. */
@@ -20,7 +22,7 @@ export interface SavedRender {
   input: string
 }
 
-const DB_NAME = 'om-ai-renders'
+const DB_NAME = storageKey('om-ai-renders')
 const STORE = 'renders'
 
 function openDb(): Promise<IDBDatabase> {

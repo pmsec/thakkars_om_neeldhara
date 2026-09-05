@@ -5,6 +5,8 @@
  * reuse anywhere, forever. Nothing is stored on any server.
  */
 
+import { storageKey } from '../homes/registry'
+
 export interface SavedMaterial {
   id: number
   at: number
@@ -64,5 +66,5 @@ function makeStore<T extends { id: number; at: number }>(dbName: string, store: 
   }
 }
 
-export const materialLib = makeStore<SavedMaterial>('om-ai-materials', 'materials')
-export const objectLib = makeStore<SavedObject>('om-ai-objects', 'objects')
+export const materialLib = makeStore<SavedMaterial>(storageKey('om-ai-materials'), 'materials')
+export const objectLib = makeStore<SavedObject>(storageKey('om-ai-objects'), 'objects')

@@ -9,7 +9,7 @@ import { building } from '../data/building'
 import { fixtures } from '../data/fixtures'
 import { formatArea, formatFeetInches, formatLength, formatMm, sqFt, sqM } from '../geometry/units'
 import { LAYER_LABELS, useStore, type LayerId } from './store'
-import sheetSvgRaw from '../assets/plan-sheet.svg?raw'
+import { sheetSvg as sheetSvgRaw } from '../data/sheet'
 import { exportMarkupPdf, exportPdf, PAPER, type PaperName } from '../export/pdf'
 import {
   download,

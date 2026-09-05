@@ -19,6 +19,7 @@ import { furniture } from '../data/furniture'
 import { materialLib, objectLib, type SavedMaterial, type SavedObject } from './libStore'
 import { getAssign, setAssign } from './styleOverrides'
 import { shrinkDataUrl } from './imgUtil'
+import { storageKey } from '../homes/registry'
 import { LIGHT_PRESETS, type LightMood } from './lighting'
 
 const KEYS_LS = 'om-ai-keys'
@@ -63,7 +64,7 @@ export function StylePanel(): React.ReactElement {
   useEffect(() => {
     const readPalette = (): void => {
       try {
-        const p = JSON.parse(localStorage.getItem('om-material-palette') || '{}') as {
+        const p = JSON.parse(localStorage.getItem(storageKey('om-material-palette')) || '{}') as {
           materials?: Array<{ surface: string; prompt: string }>
           ref?: string
           lighting?: LightMood | null
@@ -449,7 +450,7 @@ export function StylePanel(): React.ReactElement {
                           Extract all as tiles
                         </button>
                       )}{' '}
-                      <button onClick={() => { localStorage.removeItem('om-material-palette'); setPalette([]); setPaletteRef(null) }}>
+                      <button onClick={() => { localStorage.removeItem(storageKey('om-material-palette')); setPalette([]); setPaletteRef(null) }}>
                         dismiss
                       </button>
                     </span>

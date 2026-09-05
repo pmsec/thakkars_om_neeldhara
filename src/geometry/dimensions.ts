@@ -98,22 +98,26 @@ export function buildDimensions(model: BuiltModel): DimChain[] {
     chain('north-overall', 'north', 'x', -1620, [{ at: bb.minX }, { at: bb.maxX, label: 'OVERALL' }], bb.minY, true),
   )
 
-  // South: the two wings either side of the great room, measured at the deck edge.
-  out.push(
-    chain(
-      'south-wings',
-      'south',
-      'x',
-      900,
-      [
-        { at: bb.minX, label: '' },
-        { at: POD_PARENTS.p0.x, label: "PARENTS' WING" },
-        { at: POD_KARAN.p0.x, label: 'GREAT ROOM AT DECK' },
-        { at: bb.maxX, label: "KARAN'S WING" },
-      ],
-      bb.maxY,
-    ),
-  )
+  // South: the two wings either side of the great room, measured at the deck
+  // edge. Only a home built as two wings about a pair of curved screens has
+  // this chain; one without pods simply omits it.
+  if (POD_PARENTS && POD_KARAN) {
+    out.push(
+      chain(
+        'south-wings',
+        'south',
+        'x',
+        900,
+        [
+          { at: bb.minX, label: '' },
+          { at: POD_PARENTS.p0.x, label: "PARENTS' WING" },
+          { at: POD_KARAN.p0.x, label: 'GREAT ROOM AT DECK' },
+          { at: bb.maxX, label: "KARAN'S WING" },
+        ],
+        bb.maxY,
+      ),
+    )
+  }
   out.push(
     chain('south-overall', 'south', 'x', 1620, [{ at: bb.minX }, { at: bb.maxX, label: 'OVERALL' }], bb.maxY, true),
   )
@@ -141,8 +145,10 @@ export function buildDimensions(model: BuiltModel): DimChain[] {
   return out
 }
 
-/** The great room's variable width, which is the point of the curved walls. */
-export function greatRoomWidths(): { atDeck: number; atBack: number } {
+/** The great room's variable width, which is the point of the curved walls.
+ * Null for a home that has no pod screens. */
+export function greatRoomWidths(): { atDeck: number; atBack: number } | null {
+  if (!POD_PARENTS || !POD_KARAN) return null
   return {
     atDeck: POD_KARAN.p0.x - POD_PARENTS.p0.x,
     atBack: POD_KARAN.p2.x - POD_PARENTS.p2.x,

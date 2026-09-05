@@ -6,7 +6,7 @@
  * source of truth in view while it repaints.
  */
 
-import sheetSvgRaw from '../assets/plan-sheet.svg?raw'
+import { sheetSvg as sheetSvgRaw } from '../data/sheet'
 
 const HIDE_LAYERS = ['L-labels', 'L-dims', 'L-title', 'L-keepclear', 'L-ref']
 

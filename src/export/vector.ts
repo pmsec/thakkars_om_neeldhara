@@ -3,7 +3,7 @@
  */
 
 import { buildSheet, type Prim, type SheetOptions } from './sheet'
-import sheetSvgRaw from '../assets/plan-sheet.svg?raw'
+import { sheetSvg as sheetSvgRaw } from '../data/sheet'
 import { getModel } from '../geometry/model'
 import { building } from '../data/building'
 import { formatFeetInches, sqFt, sqM } from '../geometry/units'

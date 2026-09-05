@@ -14,7 +14,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import sheetSvg from '../assets/plan-sheet.svg?raw'
+import { sheetSvg } from '../data/sheet'
 import { getModel } from '../geometry/model'
 import { formatFeetInches, sqFt, sqM } from '../geometry/units'
 import { area as polyArea, pointInPolygon, type Pt } from '../geometry/vec'

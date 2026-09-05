@@ -15,6 +15,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type { FurnitureItem } from '../data/furniture'
 import { materialLib, objectLib } from './libStore'
+import { storageKey } from '../homes/registry'
 import { S } from './prism'
 
 import type { LightMood } from './lighting'
@@ -29,7 +30,7 @@ export interface StyleAssign {
   lighting?: LightMood | null
 }
 
-const LS = 'om-style-assign'
+const LS = storageKey('om-style-assign')
 
 export function getAssign(): StyleAssign {
   try {

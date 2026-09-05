@@ -16,6 +16,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { deleteRender, listRenders, saveRender, type SavedRender } from './aiStore'
 import { shrinkDataUrl } from './imgUtil'
+import { storageKey } from '../homes/registry'
 import { planRefDataUrl } from './planRef'
 
 export const DEFAULT_PROMPT =
@@ -270,7 +271,7 @@ export function AiRenderPanel({
         img.onerror = () => resolve(result.out)
         img.src = result.out
       })
-      localStorage.setItem('om-material-palette', JSON.stringify({ at: Date.now(), materials: j.materials, lighting: j.lighting ?? null, ref }))
+      localStorage.setItem(storageKey('om-material-palette'), JSON.stringify({ at: Date.now(), materials: j.materials, lighting: j.lighting ?? null, ref }))
       window.dispatchEvent(new Event('om-palette-changed'))
       setExtractMsg(`Palette of ${j.materials.length} materials ready — open 🎨 Style → Materials.`)
     } catch (err) {

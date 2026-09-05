@@ -35,8 +35,15 @@ import sys
 ap = argparse.ArgumentParser()
 ap.add_argument('--cad', default=os.path.join(os.path.dirname(__file__), '..', '..',
                                               'thakkars_om_neeldhara', 'CAD', 'tools'))
+ap.add_argument('--home', default=None,
+                help='which home under CAD/homes/ (default: om-neeldhara)')
+ap.add_argument('--out', default=None,
+                help='where to write the .ts data (default: src/data)')
 args = ap.parse_args()
 sys.path.insert(0, os.path.abspath(args.cad))
+
+import home                 # noqa: E402  the home resolver in CAD/tools
+home.select(args.home)      # puts homes/<id>/ on the path before design imports
 
 import design as D          # noqa: E402
 import retrofit as R        # noqa: E402
@@ -46,7 +53,11 @@ import clash as C           # noqa: E402  (raster helpers for the coverage audit
 # Everything exported, kept for the coverage audit: (id, bbox, poly-or-None).
 EXPORTED = []
 
-OUT = os.path.join(os.path.dirname(__file__), '..', 'src', 'data')
+# One directory per home: src/homes/<id>/ holds its generated data and its
+# sheet, and the app's src/data/* resolvers pick whichever home is active.
+OUT = args.out or os.path.join(os.path.dirname(__file__), '..', 'src', 'homes',
+                               home.current())
+os.makedirs(OUT, exist_ok=True)
 M = 12240.0
 
 
@@ -470,7 +481,7 @@ def emit_building():
     A(' * y −150 (deck slab edge) → 11125 (entry front). Mirror axis x = 12240.')
     A(' */')
     A('')
-    A("import type { BuildingData } from './schema'")
+    A("import type { BuildingData } from '../../data/schema'")
     A('')
     A('/** Curved pod screens, exported for the dimension layer’s labels. */')
     p = D.POD_W
@@ -793,7 +804,7 @@ def emit_fixtures():
     A(' * Fabric, not furniture: these tie each wet room to its stack.')
     A(' */')
     A('')
-    A("import type { FixtureDef } from './schema'")
+    A("import type { FixtureDef } from '../../data/schema'")
     A('')
     A('export const fixtures: FixtureDef[] = [')
     for fid, kind, cx, cy, wd, dp, room, stack, label, rot, poly, bowl in fx:
@@ -1191,12 +1202,14 @@ def copy_sheet():
     """The CAD review sheet, verbatim.  The 2D tab shows THIS, so what the
     family sees in the app is pixel-for-pixel the drawing the DXF ships with."""
     import shutil
-    src = os.path.join(os.path.abspath(args.cad), '..', 'drawings',
-                       '07-round1-layout.svg')
-    dst_dir = os.path.join(os.path.dirname(__file__), '..', 'src', 'assets')
+    # each home names its own sheet in home.json, relative to CAD/
+    cad_root = os.path.abspath(os.path.join(args.cad, '..'))
+    src = os.path.join(cad_root, home.meta().get('sheet',
+                                                 'drawings/07-round1-layout.svg'))
+    dst_dir = OUT      # the sheet lives with the home's data
     os.makedirs(dst_dir, exist_ok=True)
     shutil.copyfile(src, os.path.join(dst_dir, 'plan-sheet.svg'))
-    print('copied plan-sheet.svg from the CAD drawings')
+    print(f'copied plan-sheet.svg from {os.path.relpath(src, cad_root)}')
 
 
 if __name__ == '__main__':

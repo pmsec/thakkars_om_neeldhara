@@ -65,7 +65,12 @@ PLATE = [
 # the ends. This shape is the opposite — it is mostly straight, and the only
 # curvature is in two corners with one radius between them.
 
-KX0, KX1 = 3900.0, 7600.0     # the sides, where the north band was pulled in
+# Slid 595 east so the kitchen's east FACE lands on 8295, the west face of
+# the column at 8295-8525 — flush, with no sliver left between them. The
+# width is unchanged at 3700; the whole room moved rather than shrank, and
+# what it uncovers on the west is the only place in this flat a second
+# bathroom can go and still reach the north shaft.
+KX0, KX1 = 4495.0, 8195.0     # centrelines of the two sides
 KTOP, KBOT = 545.0, 3400.0    # the north wall, and how far south the U reaches
 KR = 900.0                    # corner radius — the "no sharp curve" number
 
@@ -255,7 +260,7 @@ GLAZING = [
 # off inside it, and the two bedrooms the builder drew in the middle of the
 # plan give their space back to the living room and the kitchen.
 ROOMS = [
-    ('KITCHEN', '', (5750, 1500),
+    ('KITCHEN', '', (6345, 1500),
      'a U with 900 corners: 3700 of working wall north, 1955 down each side, '
      'and the counter along the bottom'),
     ('LIVING / DINING', '', (4400, 7500),

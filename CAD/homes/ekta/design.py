@@ -1208,3 +1208,56 @@ FURNITURE += [
      f"({_ft(SEB_SHELF_R)}), from the south wall up to where column 4 ends",
      'R-BATH-COMMON', 1500, SEB_SHELF),
 ]
+
+
+# ------------------------------------------ the two swivels, at the balcony
+# THE POINT OF THESE CHAIRS IS THAT THEY TURN. Set facing the balcony they are
+# a view; turned round they are the living room's second seating group, which
+# is what a 37.8 m2 (407 sq ft) room with one dining bar at the far end needs.
+# So they are drawn as circles, and each carries a DASHED SWEEP — the 1200
+# (3'-11") a seated person takes to come round — because a swivel chair that
+# cannot complete the turn is just a chair.
+#
+# The pair is set back 795 (2'-7") from the balcony threshold, so you walk in
+# front of them to get out rather than between them. Across the room it is set
+# out from the EAST WALL and not from the balcony's centre: put on the centre
+# the eastern sweep came within 125 (5") of the wall. From the wall it clears
+# by 350 (1'-2"), and 1550 (5'-1") between centres leaves the same 350 between
+# the two sweeps — they turn without meeting anything. The pair ends up 225
+# (9") west of the balcony's middle, which nobody will find with a tape.
+#
+# THE OTTOMAN IS NORTH OF THEM, not in front of the view. Facing into the room
+# it is a footstool 300 (1'-0") off the seats; facing the balcony it is behind
+# you and out of the way. An ottoman on the balcony side would have had to be
+# stepped over every time somebody went out.
+SWIV_R = 450.0                  # the chair
+SWIV_SWEEP = 600.0              # and what a seated person needs to come round
+SWIV_Y = 9750.0
+SWIV_CLEAR = 350.0              # sweep to the east wall, and sweep to sweep
+_liv_e = 6950.0 - 75.0          # the envelope's inner face down this side
+SWIV_X = (_liv_e - SWIV_CLEAR - SWIV_SWEEP - (2 * SWIV_SWEEP + SWIV_CLEAR),
+          _liv_e - SWIV_CLEAR - SWIV_SWEEP)
+_otto_c = sum(SWIV_X) / 2
+OTTO = (_otto_c - 400.0, 8500.0, _otto_c + 400.0, 9000.0)   # 800 x 500
+
+FURNITURE += [
+    (kind, cx - r, SWIV_Y - r, cx + r, SWIV_Y + r, label, 'R-LIVING-DINING',
+     h, _ellipse(cx, SWIV_Y, r, r), ghost)
+    for cx in SWIV_X
+    for kind, r, label, h, ghost in [
+        ('armchair', SWIV_R,
+         f"swivel chair — {2 * SWIV_R:.0f} ({_ft(2 * SWIV_R)}) across, facing "
+         'the balcony or turned into the room',
+         750, False),
+        ('armchair', SWIV_SWEEP,
+         f"the turn — {2 * SWIV_SWEEP:.0f} ({_ft(2 * SWIV_SWEEP)}) swept by "
+         'somebody sitting in it, not a thing on the floor',
+         0, True),
+    ]
+] + [
+    ('stool', *OTTO,
+     f"ottoman — {OTTO[2] - OTTO[0]:.0f} x {OTTO[3] - OTTO[1]:.0f} "
+     f"({_ft(OTTO[2] - OTTO[0])} x {_ft(OTTO[3] - OTTO[1])}), shared, "
+     f"{_ft(SWIV_Y - SWIV_R - OTTO[3])} off both seats",
+     'R-LIVING-DINING', 420, _round_rect(*OTTO, 160)),
+]

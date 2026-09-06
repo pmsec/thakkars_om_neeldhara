@@ -351,17 +351,21 @@ NEW_WALLS = [
 
     # --- the north-west quarter
     (BED_E, KTOP, BED_E, BED_S, 150,
-     [('door', 1400, 2150, 0, 2100)], 'partition', 'W-BED-E',
+     # -1: the leaf swings into the BEDROOM. A 1180-wide bath has nowhere
+     # to put it.
+     [('door', 1400, 2150, 0, 2100, -1)], 'partition', 'W-BED-E',
      'bedroom | bath', 0),
     (NW_A[0], NW_A[1], NW_B[0], NW_B[1], 150,
-     [('door', NW_BATH_DOOR[0], NW_BATH_DOOR[1], 0, 2100),   # bath | living
-      ('door', NW_BED_DOOR[0], NW_BED_DOOR[1], 0, 2100)],    # bedroom | living
+     # Each opens into the room that has floor to spare for it: the bath's
+     # into the living room, the bedroom's into the bedroom.
+     [('door', NW_BATH_DOOR[0], NW_BATH_DOOR[1], 0, 2100, +1),   # bath | living
+      ('door', NW_BED_DOOR[0], NW_BED_DOOR[1], 0, 2100, -1)],    # bedroom | living
      'partition', 'W-NW',
      'bedroom and bath | living — one curve, both doors', NW_BOW),
 
     # --- the south-east bath: one wall, round the column
     (SEB_WX, SEB_S, SEB_EX, SEB_SY, SEB_T,
-     [('door', SEB_DOOR[0], SEB_DOOR[1], 0, 2100)], 'partition', 'W-SEB',
+     [('door', SEB_DOOR[0], SEB_DOOR[1], 0, 2100, +1)], 'partition', 'W-SEB',
      'bath 02 | living — up the notch line, round the top, down into the arm',
      0, SEB_LINE),
 
@@ -548,10 +552,14 @@ CLAD_CORNERS = [
     (8445, 0, (0, 1), (1, 0), 'R-LIVING-DINING'),
     (11470, 0, (-1, 0), (0, 1), 'R-LIVING-DINING'),
     (11470, 8355, (0, -1), (-1, 0), 'R-LIVING-DINING'),
-    (8445, 8355, (1, 0), (0, -1), 'R-LIVING-DINING'),
-    (8445, 7745, (-1, 0), (0, 1), 'R-LIVING-DINING'),
-    (6800, 7745, (1, 0), (0, 1), 'R-LIVING-DINING'),
 ]
+# THREE CORNERS CAME OUT OF THIS LIST when the bath was drawn round the
+# column. The notch's two arrises, (6800, 7745) and (8445, 7745): W-SEB now
+# springs off one and the other is inside the bathroom. And (8445, 8355),
+# which is now the bathroom's own south-west corner, behind the WC. None of
+# the three is a corner of the living room any more, and their cladding was
+# sitting on nothing — half of it buried in the new wall.
+
 # THE BATH PENINSULA'S NOSE IS NOT IN THIS LIST. A 600 fillet needs 600 of wall
 # behind it to be taken out of; those two corners are the ends of a 150
 # partition, and cladding them just buries the curve inside the wall — it was

@@ -170,6 +170,24 @@ def arc_runs(pts, ops):
     return run
 
 
+def _axis_arc(pts, run, vert, v):
+    """Where an opening authored on a wall's axis falls along the wall itself.
+    A straight wall makes these the same thing; a bowed one does not — a 1730
+    bow over 5245 makes the arc a fifth longer than the chord."""
+    key = 1 if vert else 0
+    for i in range(1, len(pts)):
+        a, b = pts[i - 1][key], pts[i][key]
+        if a != b and (a - v) * (b - v) <= 0:
+            u = (v - a) / (b - a)
+            return run[i - 1] + (run[i] - run[i - 1]) * u
+    best, bd = 0.0, None                    # off the end: the nearest vertex
+    for i, p in enumerate(pts):
+        d = abs(p[key] - v)
+        if bd is None or d < bd:
+            bd, best = d, run[i]
+    return best
+
+
 def sub_arc(pts, run, d0, d1):
     """The stretch of a polyline between two distances along it."""
     out = []
@@ -204,25 +222,47 @@ def solid_runs(x1, y1, x2, y2, ops):
             for p, q in runs]
 
 
-def door_swing(sh, x1, y1, x2, y2, f0, f1):
-    """A door as the builder draws it: the leaf on its hinge, and its arc."""
-    vert = abs(x2 - x1) < abs(y2 - y1)
-    lo, hi = min(f0, f1), max(f0, f1)
-    w = hi - lo
-    fixed = x1 if vert else y1
-    hx, hy = (fixed, lo) if vert else (lo, fixed)
-    lx, ly = (fixed + w, lo) if vert else (lo, fixed + w)
-    sh.line(hx, hy, lx, ly, '#8a8378', 1.4)
+def _at(pts, run, d):
+    """The point d along a polyline."""
+    d = min(max(d, 0.0), run[-1])
+    i = next((j for j in range(1, len(run)) if run[j] >= d), len(run) - 1)
+    a, b = pts[i - 1], pts[i]
+    seg = run[i] - run[i - 1] or 1.0
+    u = (d - run[i - 1]) / seg
+    return a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u
+
+
+def door_swing(sh, pts, run, d0, d1, side=1):
+    """A door as the builder draws it: the leaf on its hinge, and its arc.
+
+    IT IS SET OUT ON THE WALL, not on the straight line between the wall's two
+    ends. The version before this took the wall's endpoints and its opening
+    figures and treated them as coordinates, which is true only of a straight
+    wall on an axis. On the kitchen U and on the two curved walls it drew each
+    leaf and arc hundreds of millimetres away from its own doorway, out in the
+    middle of the living room, and they read as doors nobody had put there.
+
+    `side` is which way the leaf opens: +1 to the right of the wall's own
+    direction of travel, -1 to the left. Bathroom doors want the side the
+    fixtures are not on.
+    """
+    d0, d1 = min(d0, d1), max(d0, d1)
+    w = d1 - d0
+    hx, hy = _at(pts, run, d0)
+    tx, ty = _at(pts, run, min(d0 + 60.0, run[-1]))
+    tx, ty = tx - hx, ty - hy
+    L = math.hypot(tx, ty) or 1.0
+    tx, ty = tx / L, ty / L
+    nx, ny = ty * side, -tx * side          # the way the leaf swings
+    sh.line(hx, hy, hx + nx * w, hy + ny * w, '#8a8378', 1.4)
     n = 12
-    pts = []
+    arc = []
     for i in range(n + 1):
         a = (i / n) * (math.pi / 2)
-        if vert:
-            pts.append((fixed + w * math.cos(a), lo + w * math.sin(a)))
-        else:
-            pts.append((lo + w * math.sin(a), fixed + w * math.cos(a)))
+        c, sn = math.cos(a), math.sin(a)
+        arc.append((hx + w * (nx * c + tx * sn), hy + w * (ny * c + ty * sn)))
     for i in range(n):
-        sh.line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], '#c3bcae', 1.0)
+        sh.line(arc[i][0], arc[i][1], arc[i + 1][0], arc[i + 1][1], '#c3bcae', 1.0)
 
 
 def wall_quad(x1, y1, x2, y2, t):
@@ -361,7 +401,18 @@ def main():
                            dash=None if kind == 'window' else '10 8')
                 continue
             if kind == 'door':
-                door_swing(s, x1, y1, x2, y2, f0, f1)
+                # Openings on a polyline are already distances along the wall;
+                # on any other wall they are authored on its axis, so they are
+                # converted before the leaf is set out.
+                dd = arc_runs(curve, ops)
+                if pts_in:
+                    a0, a1 = f0, f1
+                else:
+                    vert = abs(x2 - x1) < abs(y2 - y1)
+                    a0 = _axis_arc(curve, dd, vert, f0)
+                    a1 = _axis_arc(curve, dd, vert, f1)
+                door_swing(s, curve, dd, a0, a1,
+                           op[5] if len(op) > 5 else 1)
             else:
                 # An arched or cased opening has no leaf. Drawn as the line of
                 # the reveal plus, for an arch, the head projected down into

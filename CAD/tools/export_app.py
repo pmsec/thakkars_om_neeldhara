@@ -9,7 +9,11 @@ design.py provides only the generic contract:
 
     ENVELOPE · NEW_WALLS · GLAZING · ROOMS · FURNITURE
 
-    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind[, id, note, bow])
+    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind[, id, note, bow, pts])
+               `pts`, when given, IS the wall — an explicit centreline
+               polyline, and its openings are absolute distances ALONG it.
+               Otherwise the wall is the straight line between its ends, or
+               the quadratic bow of it.
                openings are (type, from, to[, sill, head]) ABSOLUTE along the
                wall's own axis; a wall
                of thickness 0 and kind 'threshold' divides two rooms without
@@ -168,6 +172,7 @@ def main():
         wid = w[7] if len(w) > 7 else f'W-{i:02d}'
         note = w[8] if len(w) > 8 else None
         bow = w[9] if len(w) > 9 else 0
+        pts_in = w[10] if len(w) > 10 else None
         # An opening is authored in absolute mm along the wall, because that is
         # how it is read off the drawing. The app wants it as a distance from
         # the run's first point.
@@ -180,7 +185,9 @@ def main():
             typ, f0, f1 = op[:3]
             sill = op[3] if len(op) > 3 else 0
             head = op[4] if len(op) > 4 else (2400 if typ == 'window' else 2100)
-            if bow:
+            if pts_in:
+                a0, a1 = f0, f1          # already distances along the wall
+            elif bow:
                 a0, a1 = arc_at(pts, vert, f0), arc_at(pts, vert, f1)
             else:
                 a0, a1 = sgn * (f0 - base), sgn * (f1 - base)
@@ -188,7 +195,9 @@ def main():
             oo.append(f"{{ id: '{wid}-O{j}', type: {typ!r}, "
                       f'at: [{fnum(d0)}, {fnum(d1)}], head: {fnum(head)}, '
                       f'sill: {fnum(sill)} }}')
-        if bow:
+        if pts_in:
+            shape = 'points: [' + ', '.join(pt(px, py) for px, py in pts_in) + ']'
+        elif bow:
             cx, cy = control(x1, y1, x2, y2, bow)
             shape = (f'curve: {{ p0: {pt(x1, y1)}, p1: {pt(cx, cy)}, '
                      f'p2: {pt(x2, y2)} }}')

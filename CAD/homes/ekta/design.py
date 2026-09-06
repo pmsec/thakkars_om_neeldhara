@@ -54,84 +54,99 @@ PLATE = [
     (0, 4120)
 ]
 
-# ------------------------------------------------------- the counter shelf
-# The counter's eating side. A slab bolted to the south face of W-KIT-BAR at
-# 1050, sawn square at both ends. Its inner edge is the counter's own curve
-# and its outer edge is that curve offset — so the shelf is a true crescent of
-# constant width, not a slab that happens to sit near a curve.
+# ------------------------------------------------------- the kitchen line
+# THE KITCHEN IS A U WITH ROUNDED CORNERS, not a bowl. Straight down both
+# sides, flat along the bottom, and a generous radius where they meet — so
+# every wall in it is a wall you can stand a run of units against, and the
+# corners are turned rather than pinched.
 #
-# It was a live edge for one round. A natural edge is a good idea beside a
-# straight wall, where the wobble is the only thing moving; against a curve
-# this strong it just fought it, and two competing curves read as one badly
-# drawn one.
-#
-# BOTH FACES CARRY ONE. The eating side is the living room's; the mirror of it
-# inside the kitchen is where plates are put down and picked up through the
-# hatch. Each is a lens: full depth across the seats, tapering away to nothing
-# at both ends so the slab dies into the counter rather than stopping against
-# it with a cut end in mid-air.
+# The parabola that was here before had no straight anywhere: its curvature
+# was tightest exactly where the counter is longest, and it ran to nothing at
+# the ends. This shape is the opposite — it is mostly straight, and the only
+# curvature is in two corners with one radius between them.
 
-_BAR = ((3900.0, 1670.0), (5750.0, 5130.0), (7600.0, 1670.0))   # p0, control, p2
-FACE = 100.0        # half of the 200 counter, so the slab starts at its face
-DEPTH = 400.0       # projection: knee room under, plates on top
-SEAT = 700.0        # stool centres, measured from the counter centreline
-TAPER = 0.28        # the fraction at each end over which the slab dies away
-SPAN = (0.12, 0.88) # how far along the counter the slabs run
+KX0, KX1 = 3900.0, 7600.0     # the sides, where the north band was pulled in
+KTOP, KBOT = 545.0, 3400.0    # the north wall, and how far south the U reaches
+KR = 900.0                    # corner radius — the "no sharp curve" number
+
+FACE = 100.0        # half of the 200 counter, so a slab starts at its face
+DEPTH = 400.0       # slab projection: knee room under, plates on top
+SEAT = 700.0        # stool centres, measured from the wall centreline
+TAPER = 0.22        # the fraction at each end over which a slab dies away
+SPAN = (0.27, 0.73) # the stretch of the U a slab runs along, by arc
+SEATS = (0.35, 0.65)
 
 
-def _bar_point(t):
-    """A point on the counter centreline, and the outward (south) normal."""
-    (x0, y0), (cx, cy), (x2, y2) = _BAR
-    u = 1.0 - t
-    px = u * u * x0 + 2 * u * t * cx + t * t * x2
-    py = u * u * y0 + 2 * u * t * cy + t * t * y2
-    tx = 2 * u * (cx - x0) + 2 * t * (x2 - cx)
-    ty = 2 * u * (cy - y0) + 2 * t * (y2 - cy)
-    L = math.hypot(tx, ty) or 1.0
-    nx, ny = ty / L, -tx / L
-    if ny < 0.0:
-        nx, ny = -nx, -ny
-    return px, py, nx, ny
+def _round_u(n=32):
+    """Down one side, round the corner, along the bottom, round and back up."""
+    pts = [(KX0, KTOP), (KX0, KBOT - KR)]
+    cx, cy = KX0 + KR, KBOT - KR
+    for i in range(1, n + 1):                       # left corner
+        a = (math.pi / 2) * i / n
+        pts.append((cx - KR * math.cos(a), cy + KR * math.sin(a)))
+    cx = KX1 - KR
+    for i in range(n + 1):                          # bottom, then right corner
+        a = (math.pi / 2) * i / n
+        pts.append((cx + KR * math.sin(a), cy + KR * math.cos(a)))
+    pts.append((KX1, KTOP))
+    out = []
+    for q in pts:
+        q = (round(q[0], 1), round(q[1], 1))
+        if not out or abs(q[0] - out[-1][0]) > 0.5 or abs(q[1] - out[-1][1]) > 0.5:
+            out.append(q)
+    return out
 
 
-def _taper(f):
-    """Full depth through the middle, smoothstepped away at both ends.
-
-    Smoothstep rather than a sine because it leaves the slab at FULL width
-    across every seat and spends the taper where nobody sits; and because it
-    reaches zero with zero slope, so the edge runs into the counter face
-    tangentially instead of arriving at it as a spike.
-    """
-    u = min(f, 1.0 - f) / TAPER
-    if u >= 1.0:
-        return 1.0
-    return u * u * (3.0 - 2.0 * u)
+KITCHEN_LINE = _round_u()
 
 
-def _arc_run(t0=0.0, t1=1.0, n=400):
-    """Cumulative length along the counter, and the parameters that go with
-    it. Everything that has to be evenly spread on this wall — the openings,
-    the stools — is spread on THIS, not on the Bezier parameter."""
-    ts = [t0 + (t1 - t0) * i / n for i in range(n + 1)]
-    pts = [_bar_point(t)[:2] for t in ts]
-    run = [0.0]
+def _run(pts):
+    r = [0.0]
     for i in range(1, len(pts)):
-        run.append(run[-1] + math.hypot(pts[i][0] - pts[i - 1][0],
-                                        pts[i][1] - pts[i - 1][1]))
-    return ts, run
+        r.append(r[-1] + math.hypot(pts[i][0] - pts[i - 1][0],
+                                    pts[i][1] - pts[i - 1][1]))
+    return r
 
 
-def _t_at_arc(frac, t0=0.0, t1=1.0):
-    ts, run = _arc_run(t0, t1)
-    want = run[-1] * frac
-    i = min(range(len(run)), key=lambda j: abs(run[j] - want))
-    return ts[i]
+KITCHEN_RUN = _run(KITCHEN_LINE)
+ARC = KITCHEN_RUN[-1]
 
 
-def _arc_x(frac):
-    """The x an opening sits at, given where along the ARC it belongs. Wall
-    openings are authored against the chord, so this is the translation."""
-    return round(_bar_point(_t_at_arc(frac))[0], 1)
+def _arc_d(frac):
+    """A distance along the kitchen wall, from a fraction of it. Openings on
+    this wall are authored this way because there is no axis to measure
+    against — the wall turns two corners."""
+    return round(ARC * frac, 1)
+
+
+def _pt_at(d):
+    """The point d millimetres along the kitchen wall."""
+    d = min(max(d, 0.0), ARC)
+    i = next((j for j in range(1, len(KITCHEN_RUN)) if KITCHEN_RUN[j] >= d),
+             len(KITCHEN_RUN) - 1)
+    a, b = KITCHEN_LINE[i - 1], KITCHEN_LINE[i]
+    seg = KITCHEN_RUN[i] - KITCHEN_RUN[i - 1] or 1.0
+    u = (d - KITCHEN_RUN[i - 1]) / seg
+    return a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u
+
+
+def _bar_point(f, h=90.0):
+    """Position and OUTWARD normal at fraction f along the kitchen wall.
+
+    The tangent is taken across a 180 mm window rather than from the segment
+    the point happens to land on. A polyline's normal jumps at every vertex,
+    and offsetting a slab 500 out from it put a 40 mm sawtooth along both
+    corners; averaging across the joint takes it out.
+    """
+    d = ARC * min(max(f, 0.0), 1.0)
+    px, py = _pt_at(d)
+    ax, ay = _pt_at(d - h)
+    bx, by = _pt_at(d + h)
+    tx, ty = bx - ax, by - ay
+    L = math.hypot(tx, ty) or 1.0
+    # The U is traced down the left side, along the bottom and back up, so
+    # (ty, -tx) points INTO the kitchen. Outward is the other one.
+    return px, py, -ty / L, tx / L
 
 
 # ------------------------------------------------------------- the walls
@@ -155,34 +170,15 @@ NEW_WALLS = [
 
 
 
-    # --- the kitchen: ends pulled in, the bowl left where it was
-    # The counter used to spring off the two columns at 3125 and 8370, which
-    # held the kitchen out to the full 5245 of the north band and gave the
-    # rooms either side nothing. Its ends come in to 3900 and 7600 instead.
-    #
-    # The alternative was to curve the whole boundary off the north wall, so
-    # the kitchen became one lens with no side walls at all. Same area to the
-    # square millimetre, and a worse kitchen: the working wall ran to zero
-    # depth at both tips, so only the middle of it took a counter. Here the
-    # north end stays a plain rectangle 3700 x 1125, every millimetre of it
-    # usable, with the bowl hung below.
-    #
-    # The columns fall outside the kitchen now, standing in the living room
-    # until whatever divides that space picks them up.
-    (3900, 1670, 7600, 1670, 200,
-     [('window', _arc_x(0.12), _arc_x(0.38), 1050, 2400),
-      ('cased', _arc_x(0.38), _arc_x(0.62), 1050, 1800),
-      ('window', _arc_x(0.62), _arc_x(0.88), 1050, 2400)],
-     'partition', 'W-KIT-BAR',
-     'kitchen | living. Timber to 1050, brown tinted glass to 2400, and a '
-     'serving hatch at the bottom of the bowl. Openings are placed by '
-     'FRACTION OF THE ARC and converted to positions on the chord, because on '
-     'a bowed wall equal steps along the chord are not equal steps along the '
-     'wall.', 1730),
-    (3900, 545, 3900, 1670, 125, [], 'partition', 'W-KIT-W',
-     'kitchen | the room to the west', 0),
-    (7600, 545, 7600, 1670, 125, [], 'partition', 'W-KIT-E',
-     'kitchen | the room to the east', 0),
+    # --- the kitchen: a U with rounded corners
+    # The wall IS the polyline above. Timber to 1050, brown tinted glass to
+    # 2400, and the serving hatch at the middle of the flat bottom. 900 of
+    # solid at each top end, where the tall units and the fridge go.
+    (KX0, KTOP, KX1, KTOP, 200,
+     [('window', _arc_d(0.104), _arc_d(0.44), 1050, 2400),
+      ('cased', _arc_d(0.44), _arc_d(0.56), 1050, 1800),
+      ('window', _arc_d(0.56), _arc_d(0.896), 1050, 2400)],
+     'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -259,8 +255,9 @@ GLAZING = [
 # off inside it, and the two bedrooms the builder drew in the middle of the
 # plan give their space back to the living room and the kitchen.
 ROOMS = [
-    ('KITCHEN', '', (5700, 1400),
-     'behind the counter curve — 5245 of working wall north, the bowl south'),
+    ('KITCHEN', '', (5750, 1500),
+     'a U with 900 corners: 3700 of working wall north, 1955 down each side, '
+     'and the counter along the bottom'),
     ('LIVING / DINING', '', (4400, 7500),
      'everything the kitchen curve does not enclose, from the front door to '
      'the balcony and out to the blind east wall. Four stools at the counter.'),
@@ -268,51 +265,37 @@ ROOMS = [
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
 
-def _slab(sign, depth, n=80):
-    """One lens against the counter. sign +1 is the living-room side, -1 the
-    kitchen side; the geometry is otherwise identical, which is the point."""
-    t0, t1 = SPAN
+def _taper(f):
+    """Full depth through the middle, smoothstepped away at both ends, so a
+    slab dies into the wall instead of stopping against it with a cut end."""
+    u = min(f, 1.0 - f) / TAPER
+    return 1.0 if u >= 1.0 else u * u * (3.0 - 2.0 * u)
+
+
+def _slab(sign, depth, n=160):
+    """One slab against the kitchen wall. sign +1 is the living-room side,
+    -1 the kitchen side; the geometry is otherwise identical."""
+    f0, f1 = SPAN
     inner, outer = [], []
     for i in range(n + 1):
         f = i / n
-        px, py, nx, ny = _bar_point(t0 + (t1 - t0) * f)
+        px, py, nx, ny = _bar_point(f0 + (f1 - f0) * f)
         nx, ny = nx * sign, ny * sign
         inner.append((round(px + nx * FACE, 1), round(py + ny * FACE, 1)))
         d = FACE + depth * _taper(f)
         outer.append((round(px + nx * d, 1), round(py + ny * d, 1)))
     ring, out = inner + outer[::-1], []
-    for q in ring:                     # the tips coincide; drop the repeats
+    for q in ring:
         if not out or abs(q[0] - out[-1][0]) > 0.5 or abs(q[1] - out[-1][1]) > 0.5:
             out.append(q)
     return out
 
 
-def _even_t(t0, t1, count, n=400):
-    """Parameters spaced evenly BY ARC LENGTH along the counter.
-
-    Spacing by the Bezier parameter instead put the four stools where the
-    maths was even rather than where the seats are: bunched at the flat
-    bottom, spread up the steep ends. On a curve this steep the two are not
-    the same thing and only one of them is where people sit.
-    """
-    ts = [t0 + (t1 - t0) * i / n for i in range(n + 1)]
-    pts = [_bar_point(t)[:2] for t in ts]
-    run = [0.0]
-    for i in range(1, len(pts)):
-        run.append(run[-1] + math.hypot(pts[i][0] - pts[i - 1][0],
-                                        pts[i][1] - pts[i - 1][1]))
-    out, total = [], run[-1]
-    for k in range(count):
-        want = total * (k + 0.5) / count
-        i = min(range(len(run)), key=lambda j: abs(run[j] - want))
-        out.append(ts[i])
-    return out
-
-
-def _stools(count=4, size=450.0, t0=0.26, t1=0.74):
+def _stools(count=4, size=450.0):
+    f0, f1 = SEATS
     out = []
-    for t in _even_t(t0, t1, count):
-        px, py, nx, ny = _bar_point(t)
+    for k in range(count):
+        px, py, nx, ny = _bar_point(f0 + (f1 - f0) * (k + 0.5) / count)
         cx, cy = px + nx * SEAT, py + ny * SEAT
         h = size / 2
         out.append((round(cx - h, 1), round(cy - h, 1),

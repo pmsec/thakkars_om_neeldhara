@@ -3,7 +3,9 @@
 A GENERIC PLAN SHEET, for any home that provides the plain contract:
 
     ENVELOPE   outer polygon
-    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
+    NEW_WALLS  (x1, y1, x2, y2, thickness, openings, kind, id, note, bow, pts)
+               `pts` IS the wall when present; its openings are distances
+               along it rather than positions on an axis
                openings being (type, from, to) ABSOLUTE along the wall, and
                bow the wall's sagitta in mm, positive to the LEFT of travel
     SCREENS    (x1, y1, x2, y2, bow, height, id, name, note) — optional
@@ -157,6 +159,26 @@ def along(pts, f0, f1):
     return [p for p in pts if lo - 1e-6 <= (p[1] if vert else p[0]) <= hi + 1e-6]
 
 
+def arc_runs(pts, ops):
+    """Cumulative distance along a polyline, and the stretches of it that stay
+    solid. Openings on an explicit polyline are authored as distances ALONG
+    the wall — there is no axis to measure them against."""
+    run = [0.0]
+    for i in range(1, len(pts)):
+        run.append(run[-1] + math.hypot(pts[i][0] - pts[i - 1][0],
+                                        pts[i][1] - pts[i - 1][1]))
+    return run
+
+
+def sub_arc(pts, run, d0, d1):
+    """The stretch of a polyline between two distances along it."""
+    out = []
+    for i, d in enumerate(run):
+        if d0 - 1e-6 <= d <= d1 + 1e-6:
+            out.append(pts[i])
+    return out
+
+
 def solid_runs(x1, y1, x2, y2, ops):
     """The wall minus the openings that reach the floor.
 
@@ -296,24 +318,42 @@ def main():
         x1, y1, x2, y2, t = w[:5]
         ops = w[5] if len(w) > 5 else []
         bow = w[9] if len(w) > 9 else 0
-        curve = bezier(x1, y1, x2, y2, bow)
+        pts_in = w[10] if len(w) > 10 else None
+        curve = list(pts_in) if pts_in else bezier(x1, y1, x2, y2, bow)
         if t <= 0:
             s.line(x1, y1, x2, y2, '#b9b2a4', 1.2, dash='10 12')
             continue
-        for a, b in solid_runs(x1, y1, x2, y2, ops):
-            piece = along(curve, (a[1] if a[0] == b[0] else a[0]),
-                          (b[1] if a[0] == b[0] else b[0])) if bow else [a, b]
-            if len(piece) >= 2:
-                s.poly(band(piece, t), fill=WALL, stroke='none')
+        if pts_in:
+            run = arc_runs(curve, ops)
+            cuts = sorted((min(o[1], o[2]), max(o[1], o[2])) for o in ops
+                          if (o[3] if len(o) > 3 else 0) <= 0)
+            at, spans = 0.0, []
+            for c0, c1 in cuts:
+                if c0 > at:
+                    spans.append((at, c0))
+                at = max(at, c1)
+            if at < run[-1]:
+                spans.append((at, run[-1]))
+            for d0, d1 in spans:
+                piece = sub_arc(curve, run, d0, d1)
+                if len(piece) >= 2:
+                    s.poly(band(piece, t), fill=WALL, stroke='none')
+        else:
+            for a, b in solid_runs(x1, y1, x2, y2, ops):
+                piece = along(curve, (a[1] if a[0] == b[0] else a[0]),
+                              (b[1] if a[0] == b[0] else b[0])) if bow else [a, b]
+                if len(piece) >= 2:
+                    s.poly(band(piece, t), fill=WALL, stroke='none')
         for op in ops:
             kind, f0, f1 = op[:3]
             sill = op[3] if len(op) > 3 else 0
             if sill > 0:
                 # Glass, or a hatch, above a solid base: drawn as glazing on
                 # the line it actually follows, not as a hole in the wall.
-                gl = along(curve, f0, f1) if bow else (
+                gl = (sub_arc(curve, arc_runs(curve, ops), f0, f1) if pts_in
+                      else along(curve, f0, f1) if bow else (
                     [(x1, f0), (x1, f1)] if abs(x2 - x1) < abs(y2 - y1)
-                    else [(f0, y1), (f1, y1)])
+                    else [(f0, y1), (f1, y1)]))
                 col = GLAS if kind == 'window' else '#8a8378'
                 for k in range(len(gl) - 1):
                     s.line(gl[k][0], gl[k][1], gl[k + 1][0], gl[k + 1][1], col,

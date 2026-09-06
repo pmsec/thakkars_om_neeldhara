@@ -81,9 +81,11 @@ NEW_WALLS = [
      "kitchen | family bedroom. The bedroom's north-west return runs behind "
      'the kitchen: tall units one side, the child\'s desk and wardrobe the '
      'other.', 0),
-    (3125, 4195, 6875, 4195, 125, [('cased', 3900, 6200)], 'partition', 'W-KIT-S',
-     'kitchen | dining. A 2300 opening in a straight wall: the counter runs '
-     'along it and the kitchen is open to the room across that length.', 0),
+    (3125, 4195, 6875, 4195, 0, [], 'threshold', 'T-KIT',
+     'kitchen | living. NOTHING IS BUILT ON THIS LINE — the two returns that '
+     'were left either side of the opening are gone and the kitchen is open '
+     'to the room across its whole 3750. It stays a line only so the kitchen '
+     'keeps its own name and area; delete it and the two become one room.', 0),
 
     # --- the family bedroom's south-west corner
     (6875, 4195, 8370, 4195, 125, [], 'partition', 'W-BED-S',
@@ -91,21 +93,12 @@ NEW_WALLS = [
      'the vestibule opening opposite, so the room is not a corridor between '
      'the living room and its own far end.', 0),
 
-    # --- the vestibule: the way into the family wing
-    (6875, 4195, 6875, 5600, 125, [('cased', 4450, 5350)], 'partition', 'W-VEST-W',
-     'living | vestibule', 0),
-    (8370, 4195, 8370, 5600, 125, [('cased', 4450, 5350)], 'partition', 'W-VEST-E',
-     'vestibule | family bedroom. The two openings line up, so from the sofa '
-     'you see straight through into the bedroom.', 0),
-
-    # --- the family bathroom
-    (6875, 5600, 8370, 5600, 125, [], 'partition', 'W-FBATH-N',
-     'vestibule | family bath', 0),
-    (6875, 5600, 6875, 7820, 125, [], 'partition', 'W-FBATH-W',
-     'living | family bath', 0),
-    (8370, 5600, 8370, 7820, 125, [('door', 6100, 6900)], 'partition', 'W-FBATH-E',
-     'family bath | family bedroom. Entered from the bedroom, never from the '
-     'vestibule.', 0),
+    # --- the living room's east wall, which is the bedroom's front door
+    (8370, 4195, 8370, 7820, 125, [('door', 4450, 5350)], 'partition', 'W-BED-W',
+     'living | family bedroom. One run now: the vestibule and the bathroom '
+     'that used to sit west of it are both living room. The 900 opening is a '
+     'DOOR rather than a cased arch — it is the only thing between the sofa '
+     'and the beds.', 0),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -195,11 +188,10 @@ ROOMS = [
     ('FAMILY BEDROOM', '', (9950, 2200),
      "one room for all three: the adults south, the child's end north behind a "
      'screen, and an L returning west behind the kitchen'),
-    ('VESTIBULE', '', (7620, 4900),
-     'the arched threshold into the family wing, and the way to the common bath'),
-    ('BATH', 'FAMILY', (7620, 6700), 'on the south-east shaft, entered from the bedroom'),
     ('LIVING / DINING', '', (4400, 7500),
-     'one room from the front door to the balcony, read through three arches'),
+     'one room from the front door to the balcony and out to the east wall — '
+     'the kitchen opens straight off it. NO BATHROOM IN THE FLAT: the last one '
+     'was absorbed here and a new one has to be placed.'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]

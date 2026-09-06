@@ -1,6 +1,6 @@
 /**
- * Ekta — 14th floor, Neeldhara — GENERATED. No fixtures yet: this flat is imported,
- * not designed.
+ * Ekta — 14th floor, Neeldhara — GENERATED. This design authors no FIXTURES; what it
+ * holds is furniture, which is in furniture.ts.
  */
 
 import type { FixtureDef } from '../../data/schema'

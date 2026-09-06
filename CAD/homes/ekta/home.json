@@ -12,5 +12,10 @@
   "golden": [
     "plan.svg",
     "plan.png"
-  ]
+  ],
+  "frame": {
+    "x0": 73414.2,
+    "y1": 58679.0
+  },
+  "dxf": "homes/ekta/source/ekta.dxf"
 }

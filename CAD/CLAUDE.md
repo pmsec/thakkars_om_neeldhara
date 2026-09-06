@@ -47,7 +47,37 @@ tools/extract_dwg.py              flatten block inserts through their matrices
 homes/<id>/import.py              read the drawing; write design.py
 tools/draw_home.py --home <id>    the sheet
 tools/export_app.py --home <id>   the web app's building.ts / fixtures.ts / furniture.ts
+tools/build_dxf_home.py --home <id>   the DXF, for the architect
 ```
+
+**The DXF for an imported home is a DIFFERENT TOOL.** `build_dxf.py` is Om
+Neeldhara's end to end — it opens `source/floor14.dxf` by name, applies a frame
+tied to that drawing, and imports `retrofit.py`, which only Home 1 has. Bending
+it to take a second home would put Home 1's only shipped artefact at risk for a
+home that needs none of its machinery, so imported homes get
+`build_dxf_home.py` and `build_dxf.py` is not touched. Home 1 cannot change
+because nothing it reads has changed — and its DXF is checked byte-identical
+either side of any work here.
+
+It writes two files, for different people:
+
+```
+homes/<id>/out/<id>-layout.dxf              the builder's DXF with our design
+                                            added on PROP-* layers (~3 MB)
+homes/<id>/out/<id>-layout-standalone.dxf   the design and the shell alone,
+                                            no builder file (~110 KB)
+```
+
+Both carry the shell on `PROP-SHELL`, because in the builder's file it lives
+inside his unit blocks on the same `DA_*` layers as the partitions nobody
+built — switch those off to read our plan and the external walls, columns and
+glazing go with them. `import.py` already extracted that geometry into
+`source/shell.json`, in the design's frame, so it is copied through.
+
+**The frame is the importer's, read back.** `import.py` maps the drawing into
+the design frame with `local = (x - x0, y1 - y)`; that pair lives in
+`home.json` under `frame`, and the DXF tool maps back through it. Nothing is
+measured twice, so the layout cannot land anywhere but where it was read from.
 
 **Reading the lines is not reading the drawing.** The first version of this
 paired the two drawn faces of every wall into a centreline and stopped, and

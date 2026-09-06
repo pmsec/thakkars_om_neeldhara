@@ -710,14 +710,23 @@ CLAD_H = 2700.0     # to a shadow gap below the ceiling, not tight to it
 
 # (x, y, along face a, along face b, room). Directions are unit, and point the
 # way the face actually runs from the corner.
-CLAD_CORNERS = [
-    (0, 0, (1, 0), (0, 1), 'R-BEDROOM'),
-    (3050, 0, (-1, 0), (0, 1), 'R-BEDROOM'),
-    (0, 4120, (0, -1), (1, 0), 'R-BEDROOM'),
-    (8445, 0, (0, 1), (1, 0), 'R-LIVING-DINING'),
-    (11470, 0, (-1, 0), (0, 1), 'R-LIVING-DINING'),
-    (11470, 8355, (0, -1), (-1, 0), 'R-LIVING-DINING'),
-]
+# THE LIST IS EMPTY. Six corners were clad and it was too much — a 600 cove in
+# every corner of two rooms stops being a detail and becomes the wall
+# treatment, and it read as decoration applied to the plan rather than as the
+# plan, which is the same thing that killed the arches.
+#
+# Nothing is deleted. _clad() below still does both cases from one
+# construction, and the corners come back by putting any of these lines in.
+# One or two, in the places worth making something of, is a different
+# proposition from all of them:
+#
+#     (0, 0, (1, 0), (0, 1), 'R-BEDROOM'),
+#     (3050, 0, (-1, 0), (0, 1), 'R-BEDROOM'),
+#     (0, 4120, (0, -1), (1, 0), 'R-BEDROOM'),
+#     (8445, 0, (0, 1), (1, 0), 'R-LIVING-DINING'),
+#     (11470, 0, (-1, 0), (0, 1), 'R-LIVING-DINING'),
+#     (11470, 8355, (0, -1), (-1, 0), 'R-LIVING-DINING'),
+CLAD_CORNERS = []
 # THREE CORNERS CAME OUT OF THIS LIST when the bath was drawn round the
 # column. The notch's two arrises, (6800, 7745) and (8445, 7745): W-SEB now
 # springs off one and the other is inside the bathroom. And (8445, 8355),
@@ -832,12 +841,14 @@ FURNITURE.append(
 # 2000. 1900 clears it by 104 (4") and still gives 1900 x 600 (6'-3" x 2'-0"),
 # which is three bays.
 #
-# THE DESK ENDS AT y 1300 for the same kind of reason: the bath door swings
-# west into the bedroom from y 1400, so the desk stops 100 short of it.
+# THE DESK IS FLUSH IN THE CORNER, against the north wall at y 0 and the east
+# wall at x 3050. It was standing 100 (4") off the north wall for no reason.
+# It ends at y 1200, and the bath door — which swings west into the bedroom
+# from y 1770 since it moved clear of column 3 — is 570 (1'-10") below that.
 WARD = (0.0, 3520.0, 1900.0, 4120.0)          # 1900 x 600
 MURPHY = (80.0, 1050.0, 2080.0, 2550.0)       # queen, folded DOWN
 MURPHY_FOLDED = 900.0                          # cabinet + sofa, off the wall
-DESK = (2450.0, 100.0, 3050.0, 1300.0)        # 600 x 1200 against the east wall
+DESK = (2450.0, 0.0, 3050.0, 1200.0)          # 600 x 1200, flush in the corner
 DESK_CHAIR = (1950.0, 475.0, 2400.0, 925.0)
 
 FURNITURE += [

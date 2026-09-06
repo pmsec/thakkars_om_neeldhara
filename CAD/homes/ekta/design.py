@@ -69,9 +69,10 @@ PLATE = [
 # along the wall.
 NEW_WALLS = [
     # --- north-west: the guest room
-    (3125, -75, 3125, 4195, 125, [], 'partition', 'W-GUEST-E',
-     'guest room and study | kitchen. Blind: the kitchen runs its tall units '
-     'up this side and the bedroom puts its wardrobe against the same line.', 0),
+    (3125, -75, 3125, 1670, 125, [], 'partition', 'W-GUEST-E',
+     'the north-west return. It runs from the north wall to the south face of '
+     'the column at 3050-3280 x 770-1670 and stops there — the column stays, '
+     'the wall ahead of it is gone.', 0),
     (2220, 4195, 3125, 4195, 125, [('door', 2270, 3070)], 'partition', 'W-GUEST-S',
      "guest room | living. The room's only door, off the living room's "
      'north-west corner.', 0),
@@ -155,13 +156,11 @@ GLAZING = [
 # off inside it, and the two bedrooms the builder drew in the middle of the
 # plan give their space back to the living room and the kitchen.
 ROOMS = [
-    ('GUEST / STUDY', '', (1500, 2000),
-     'the one spare room: a desk under the north window, a bed for visitors'),
     ('LIVING / DINING', '', (4400, 7500),
-     'EVERYTHING EXCEPT THE GUEST ROOM. The kitchen had one wall left and now '
-     'it has none, so the north band is this room too. What is left of the flat '
-     'as drawn: the shell, five columns, three shafts, the guest room, the '
-     'foyer and the balcony.'),
+     'THE WHOLE FLOOR BAR THE FOYER AND THE BALCONY. The guest room went the '
+     'way of the rest when the wall ahead of the column came out. What is left '
+     'drawn: the shell, five columns, three shafts, two stubs of wall and the '
+     'front door.'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]

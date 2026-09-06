@@ -13,7 +13,7 @@
 <g id="L-furniture">
 </g>
 <g id="L-floor-walls">
-<polygon points="979.1,367.5 979.1,1199.8 1003.4,1199.8 1003.4,367.5" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="979.1,367.5 979.1,707.6 1003.4,707.6 1003.4,367.5" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="814.9,1212.0 824.6,1212.0 824.6,1187.6 814.9,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="980.5,1212.0 991.3,1212.0 991.3,1187.6 980.5,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <line x1="824.6" y1="1199.8" x2="824.6" y2="1355.8" stroke="#8a8378" stroke-width="1.4"/>
@@ -68,10 +68,8 @@
 <line x1="1139.4" y1="2539.9" x2="1692.0" y2="2539.9" stroke="#2e8b9a" stroke-width="3.0"/>
 </g>
 <g id="L-labels">
-<text x="674.5" y="754.4" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">GUEST / STUDY</text>
-<text x="674.5" y="832.4" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the one spare room: a desk under the north window, a bed for visitors</text>
 <text x="1239.8" y="1826.5" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">LIVING / DINING</text>
-<text x="1239.8" y="1904.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">EVERYTHING EXCEPT THE GUEST ROOM. The kitchen had one wall left and no</text>
+<text x="1239.8" y="1904.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">THE WHOLE FLOOR BAR THE FOYER AND THE BALCONY. The guest room went the</text>
 <text x="650.1" y="2372.3" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">FOYER</text>
 <text x="650.1" y="2450.2" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the way in</text>
 <text x="1415.2" y="2645.2" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BALCONY</text>

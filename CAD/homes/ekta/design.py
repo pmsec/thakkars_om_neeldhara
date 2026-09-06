@@ -68,28 +68,27 @@ PLATE = [
 #
 # Openings are (type, from, to) in absolute mm along the wall.
 NEW_WALLS = [
-    # --- north-west: the guest room and the flat's second bathroom
-    (3125, -75, 3125, 4195, 125, [('door', 3200, 4100)], 'partition', 'W-GUEST-E',
-     'guest room and study | hall. Straight: both sides are rooms to furnish.', 0),
-    (2220, 4195, 3125, 4195, 125, [], 'partition', 'W-GUEST-S',
-     'guest room | living. Solid — the room is entered off the hall, not the sofa.', 0),
-    (4650, 545, 4650, 4195, 125, [], 'partition', 'W-GBATH-E',
-     'guest bath and hall | kitchen', 0),
-    (3125, 2900, 4650, 2900, 125, [('door', 3450, 4150)], 'partition', 'W-GBATH-S',
-     'guest bath | hall. The bath keeps the west service shaft it was always on.', 0),
-    (3125, 4195, 4650, 4195, 125, [('arch', 3450, 4350)], 'partition', 'W-HALL-S',
-     'hall | living. Bows into the living room: the first arch you see from the sofa.', 300),
+    # --- north-west: the guest room
+    (3125, -75, 3125, 4195, 125, [], 'partition', 'W-GUEST-E',
+     'guest room and study | kitchen. Blind: the kitchen runs its tall units '
+     'up this side and the bedroom puts its wardrobe against the same line.', 0),
+    (2220, 4195, 3125, 4195, 125, [('door', 2270, 3070)], 'partition', 'W-GUEST-S',
+     "guest room | living. The room's only door, off the living room's "
+     'north-west corner — there is no hall left to enter it from.', 0),
 
-    # --- north-centre: kitchen and the utility behind it
-    (4650, 4195, 6875, 4195, 125, [('arch', 5250, 6350)], 'partition', 'W-KIT-S',
-     'kitchen | dining. The counter line, bowed into the room, with the arch over it.', 450),
-    (6875, 545, 6875, 4195, 125, [('door', 1200, 2000)], 'partition', 'W-KIT-E',
-     'kitchen | utility and store', 0),
-    (8370, 545, 8370, 4195, 125, [], 'partition', 'W-UTIL-E',
-     "utility | family bedroom. Blind on the bedroom side — the kid's wardrobe "
-     'backs onto it.', 0),
-    (6875, 4195, 8370, 4195, 125, [], 'partition', 'W-UTIL-S',
-     'utility | vestibule', 0),
+    # --- the kitchen, the whole width of the north band
+    (6875, 545, 6875, 4195, 125, [], 'partition', 'W-KIT-E',
+     'kitchen | bath and utility', 0),
+    (3125, 4195, 6875, 4195, 125, [('arch', 3900, 6200)], 'partition', 'W-KIT-S',
+     'kitchen | dining. The counter line, bowed into the room, with a 2300 arch '
+     'over it: from the sofa the kitchen is a lit alcove, not a doorway.', 550),
+
+    # --- the second bathroom, on the shaft the builder drained a toilet into
+    (8370, 545, 8370, 4195, 125, [], 'partition', 'W-GBATH-E',
+     "bath and utility | family bedroom. Blind on the bedroom side — the "
+     "child's wardrobe backs onto it.", 0),
+    (6875, 4195, 8370, 4195, 125, [('door', 7300, 8100)], 'partition', 'W-GBATH-S',
+     'bath and utility | vestibule', 0),
 
     # --- the vestibule: the arched threshold into the family wing
     (6875, 4195, 6875, 5600, 125, [('arch', 4450, 5350)], 'partition', 'W-VEST-W',
@@ -104,8 +103,8 @@ NEW_WALLS = [
     (6875, 5600, 6875, 7820, 125, [], 'partition', 'W-FBATH-W',
      'living | family bath', 0),
     (8370, 5600, 8370, 7820, 125, [('door', 6100, 6900)], 'partition', 'W-FBATH-E',
-     'family bath | family bedroom. The bath is entered from the bedroom, never '
-     'from the vestibule: the vestibule is a threshold, not a landing.', 0),
+     'family bath | family bedroom. Entered from the bedroom, never from the '
+     'vestibule.', 0),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('arch', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -193,14 +192,15 @@ GLAZING = [
 ROOMS = [
     ('GUEST / STUDY', '', (1500, 2000),
      'the one spare room: a desk under the north window, a bed for visitors'),
-    ('BATH', 'GUEST', (3890, 1700), 'on the west service shaft, as drawn'),
-    ('HALL', '', (3890, 3550), 'guest room, guest bath and the living room meet here'),
-    ('KITCHEN', '', (5760, 2300), 'open to the dining across a bowed counter'),
-    ('UTILITY & STORE', '', (7620, 2300), 'washing, drying and the deep shelves'),
+    ('KITCHEN', '', (5000, 2300),
+     'the whole north band, two windows, open to the dining across a bowed counter'),
+    ('BATH & UTILITY', 'COMMON', (7620, 2300),
+     "the builder's toilet position, on its shaft — bath, washing machine and store"),
     ('FAMILY BEDROOM', '', (9950, 2200),
      "one room for all three: the adults south, the child's end north behind a "
      'curved screen, a window at each end'),
-    ('VESTIBULE', '', (7620, 4900), 'the arched threshold into the family wing'),
+    ('VESTIBULE', '', (7620, 4900),
+     'the arched threshold into the family wing, and the way to the common bath'),
     ('BATH', 'FAMILY', (7620, 6700), 'on the south-east shaft, entered from the bedroom'),
     ('LIVING / DINING', '', (4400, 7500),
      'one room from the front door to the balcony, read through three arches'),

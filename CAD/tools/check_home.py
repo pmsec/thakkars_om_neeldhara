@@ -24,6 +24,7 @@ two pieces added two others — so the manifest records what each room holds.
 import json
 import os
 import sys
+from collections import Counter
 
 import numpy as np
 from matplotlib.path import Path
@@ -113,12 +114,17 @@ def main():
     was = json.load(open(path))
     lost = []
     for room in sorted(set(was) | set(now)):
-        a, b = sorted(was.get(room, [])), sorted(now.get(room, []))
+        # COUNTED, not just compared. A room that already holds a sofa and
+        # loses one still holds a sofa, so a set difference reports nothing —
+        # which is exactly the failure this check exists to catch.
+        a = Counter(was.get(room, []))
+        b = Counter(now.get(room, []))
         if a != b:
-            gone = [k for k in a if k not in b]
-            new = [k for k in b if k not in a]
-            lost.append(f'{room}: ' + ', '.join(
-                [f'-{k}' for k in gone] + [f'+{k}' for k in new]))
+            diff = []
+            for k in sorted(set(a) | set(b)):
+                if b[k] - a[k]:
+                    diff.append(f'{b[k] - a[k]:+d} {k}')
+            lost.append(f'{room}: ' + ', '.join(diff))
     for line in lost:
         print('  CHANGED ' + line)
 

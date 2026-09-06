@@ -1301,3 +1301,53 @@ FURNITURE += [
      'R-LIVING-DINING', 420, _round_rect(_s2_x0, a, _s2_x1, b, (110, 30, 30, 110)))
     for a, b in [(_s2_y0, _s2_mid - 18.0), (_s2_mid + 18.0, _s2_y1)]
 ]
+
+
+# ------------------------------- the diwan and the second recliner, west side
+# AN L IN THE NORTH-WEST, closing the living room's other half: a two-seater
+# across the top facing south, and a diwan down the west side facing east.
+# With the pair of swivels to the south-east and the first recliner on the
+# bath wall, the room finally has a middle instead of a long axis.
+#
+# BOTH BACKS ARE ON THE WEST WALL. Drawn free of it there was a 640 (2'-1")
+# slot behind them, which is a slot and not a passage — you cannot walk it and
+# you cannot reach into it. On the wall it is 640 of floor instead, and the
+# route from the front door up the west side to the bedroom keeps its width.
+#
+# THE NORTH ARM CAN BE A CONVENTIONAL RECLINER, unlike the one on the bath
+# wall: its back is free-standing with the whole width of the room behind it,
+# so it has the 400 (1'-4") to lean into that a wall-hugger mechanism exists
+# to avoid needing.
+LIV_W = 2145.0 + 150.0          # the west wall's inner face
+
+REC2_D = 950.0
+REC2 = (LIV_W, 5700.0, LIV_W + 1500.0, 5700.0 + REC2_D)
+DIWAN_D, DIWAN_L = 900.0, 1900.0
+DIWAN = (LIV_W, REC2[3], LIV_W + DIWAN_D, REC2[3] + DIWAN_L)
+
+_r2_x0, _r2_x1 = REC2[0] + SOFA2_ARM, REC2[2] - SOFA2_ARM
+_r2_y0, _r2_y1 = REC2[1] + SOFA2_BACK, REC2[3] - 60.0
+_r2_mid = (_r2_x0 + _r2_x1) / 2
+
+FURNITURE += [
+    ('sofa', *REC2,
+     f"two-seater recliner — {REC2[2] - REC2[0]:.0f} x {REC2_D:.0f} "
+     f"({_ft(REC2[2] - REC2[0])} x {_ft(REC2_D)}), facing south. Its back is "
+     'free-standing, so this one can be a conventional action',
+     'R-LIVING-DINING', 850, _round_rect(*REC2, (50, 50, 140, 140))),
+] + [
+    ('sofa', a, _r2_y0, b, _r2_y1,
+     f"seat — {b - a:.0f} ({_ft(b - a)}) wide",
+     'R-LIVING-DINING', 420, _round_rect(a, _r2_y0, b, _r2_y1, (30, 30, 110, 110)))
+    for a, b in [(_r2_x0, _r2_mid - 18.0), (_r2_mid + 18.0, _r2_x1)]
+] + [
+    ('daybed', *DIWAN,
+     f"diwan — {DIWAN_L:.0f} x {DIWAN_D:.0f} ({_ft(DIWAN_L)} x "
+     f"{_ft(DIWAN_D)}) against the west wall, facing east. A seat by day and "
+     'the flat’s spare bed',
+     'R-LIVING-DINING', 450, _round_rect(*DIWAN, 90)),
+    ('daybed', DIWAN[0], DIWAN[1], DIWAN[0] + 225.0, DIWAN[3],
+     f"the diwan’s bolster — 225 (0'-9\") along the wall",
+     'R-LIVING-DINING', 700,
+     _round_rect(DIWAN[0], DIWAN[1], DIWAN[0] + 225.0, DIWAN[3], 60)),
+]

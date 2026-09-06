@@ -789,3 +789,49 @@ FURNITURE.append(
      "the sliding screen, parked — three panels of 900 (2'-11\") stacked "
      "against the kitchen wall",
      'R-ROOM', 2400, ARM_PARK))
+
+# --------------------------------------------------------- the bedroom's three
+# A WARDROBE, A MURPHY BED AND A DESK — and between them they decide how big
+# each other can be, so the numbers are worked out here rather than picked.
+#
+# THE BED IS A QUEEN, 1500 x 2000 (4'-11" x 6'-7"), and that is the size the
+# room chooses rather than a preference. Folded down against the west wall it
+# leaves 970 (3'-2") in front of the wardrobe — exactly enough to stand and
+# open it. A king at 1830 would take that to 755 (2'-6"), which is a squeeze
+# past a bed to reach a wardrobe you use every day. Its projection is the same
+# either way; it is the width along the wall that costs.
+#
+# Its back sits at x 80, not 0: column 2 stands in the west wall from y 770 to
+# 1970 and its face is the 80. The cabinet packs out to it rather than fighting
+# it. Folded, cabinet and sofa together are about 900 (2'-11") deep and the
+# room has 2070 (6'-9") of clear floor — which is the whole point of a Murphy
+# bed in an 11.98 m2 (129 sq ft) room.
+#
+# THE WARDROBE STOPS AT 1900, not at the corner. The bedroom door's leaf is
+# 851 long and hinged at (2825, 3283); swung open into the room it sweeps a
+# quarter circle that reaches the wardrobe's north-east corner at anything past
+# 2000. 1900 clears it by 104 (4") and still gives 1900 x 600 (6'-3" x 2'-0"),
+# which is three bays.
+#
+# THE DESK ENDS AT y 1300 for the same kind of reason: the bath door swings
+# west into the bedroom from y 1400, so the desk stops 100 short of it.
+WARD = (0.0, 3520.0, 1900.0, 4120.0)          # 1900 x 600
+MURPHY = (80.0, 1050.0, 2080.0, 2550.0)       # queen, folded DOWN
+MURPHY_FOLDED = 900.0                          # cabinet + sofa, off the wall
+DESK = (2450.0, 100.0, 3050.0, 1300.0)        # 600 x 1200 against the east wall
+DESK_CHAIR = (1950.0, 475.0, 2400.0, 925.0)
+
+FURNITURE += [
+    ('wardrobe', *WARD,
+     "wardrobe — 1900 x 600 (6'-3\" x 2'-0\"), stopping 104 (4\") clear of "
+     'the bedroom door’s leaf',
+     'R-BEDROOM', 2400),
+    ('bed', *MURPHY,
+     "Murphy bed, DOWN — queen, 1500 x 2000 (4'-11\" x 6'-7\"). Folded it is "
+     "a sofa 900 (2'-11\") off the wall and the room has 2070 (6'-9\") clear",
+     'R-BEDROOM', 600),
+    ('table', *DESK,
+     "desk — 1200 x 600 (3'-11\" x 2'-0\") on the east wall, window to the left",
+     'R-BEDROOM', 750),
+    ('chair', *DESK_CHAIR, 'desk chair', 'R-BEDROOM', 850),
+]

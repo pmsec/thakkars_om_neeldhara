@@ -938,3 +938,41 @@ FURNITURE += [
      'north window',
      'R-KITCHEN', 1900),
 ]
+
+# --------------------------------------------------- what goes in the north bath
+# THREE OF THE FOUR. The shower does not fit, and the reason is the door rather
+# than the width.
+#
+# W-BED-E runs 545 to 3946 but column 3 blocks 770 to 1670, so the door can
+# only sit between 1670 and 2877 — it is at 1770-2520 — and the standing room
+# inside it takes x 3200-3900, y 1770-2520. That leaves the north band, 1180 x
+# 1150, and an east strip 480 x 618. A shower wants 900 of that 1150 and a WC
+# pan and cistern want 750: 1650 into 1150.
+#
+# Nor can the WC go against a side wall, which is where it was drawn. It
+# projects 750 floor-standing, 720 wall-hung once the cistern has a duct, 600 at
+# its most compact — leaving 430, 460 and 580 clear in front of a room that
+# wants 600. Against the NORTH wall the projection runs down the room's 1768
+# instead and the 1180 gives clearance either side of the pan, which is the
+# only orientation this width allows.
+#
+# So: WC on the north wall, the corner shelf beside its cistern in the corner
+# it was drawn in, and the basin on the east wall south of the door's zone.
+# The shower is 12 m (39'-4") away in BATH / COMMON, where it is 1345 x 1200.
+BATH_WC = (3400.0, 620.0, 4100.0, 1370.0)      # 700 x 750, against the north
+BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)    # 280 corner shelf
+BATH_BASIN = (3930.0, 1700.0, 4380.0, 2300.0)  # 450 x 600, 730 clear in front
+
+FURNITURE += [
+    ('stool', *BATH_WC,
+     "WC — 700 x 750 (2'-4\" x 2'-6\") against the north wall, the only "
+     'orientation 1180 allows',
+     'R-BATH', 800),
+    ('shelves', *BATH_SHELF,
+     "corner shelf — 280 (11\") square, beside the cistern",
+     'R-BATH', 1400),
+    ('console', *BATH_BASIN,
+     "basin, mirror and console — 600 x 450 (2'-0\" x 1'-6\"), 730 (2'-5\") "
+     'clear in front of it',
+     'R-BATH', 900),
+]

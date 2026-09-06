@@ -24,6 +24,8 @@ the other way round: every number there has a comment saying why. That is
 what this file becomes when somebody starts designing the flat.
 """
 
+import math
+
 # --------------------------------------------------------------- the shell
 # Outer face of the external walls: the floor plate (carpet + balcony) pushed
 # out by one 150 wall.
@@ -182,12 +184,99 @@ ROOMS = [
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
 
-# Loose furniture. (kind, x1, y1, x2, y2, label, room, height)
+# --------------------------------------------------- the live-edge shelf
+# The counter's eating side. A slab bolted to the south face of W-KIT-BAR at
+# 1050, sawn square at both ends and left natural along the front — so the
+# inner edge is the builder's curve to the millimetre and the outer edge is
+# whatever the tree did.
+#
+# Generated rather than typed, because 130 points of a natural edge is not
+# something to hand-key and not something to hand-check. The wobble is three
+# sine waves at incommensurate frequencies, which never repeats over the
+# length and stays smooth enough to run a router along. Change AMP and the
+# edge changes character; change nothing and it is the same slab every time.
+
+_BAR = ((3125.0, 1670.0), (5747.5, 5130.0), (8370.0, 1670.0))   # p0, control, p2
+FACE = 100.0        # half of the 200 counter, so the slab starts at its face
+DEPTH = 400.0       # projection: knee room under, plates on top
+AMP = 90.0          # how far the live edge wanders either side of that
+SEAT = 700.0        # stool centres, measured from the counter centreline
+
+
+def _bar_point(t):
+    """A point on the counter centreline, and the outward (south) normal."""
+    (x0, y0), (cx, cy), (x2, y2) = _BAR
+    u = 1.0 - t
+    px = u * u * x0 + 2 * u * t * cx + t * t * x2
+    py = u * u * y0 + 2 * u * t * cy + t * t * y2
+    tx = 2 * u * (cx - x0) + 2 * t * (x2 - cx)
+    ty = 2 * u * (cy - y0) + 2 * t * (y2 - cy)
+    L = math.hypot(tx, ty) or 1.0
+    nx, ny = ty / L, -tx / L
+    if ny < 0.0:
+        nx, ny = -nx, -ny
+    return px, py, nx, ny
+
+
+def _shelf(t0=0.22, t1=0.78, n=64):
+    inner, outer = [], []
+    for i in range(n + 1):
+        f = i / n
+        px, py, nx, ny = _bar_point(t0 + (t1 - t0) * f)
+        inner.append((round(px + nx * FACE, 1), round(py + ny * FACE, 1)))
+        w = (math.sin(f * 11.0 + 0.7) * 0.55
+             + math.sin(f * 23.0 + 2.1) * 0.30
+             + math.sin(f * 37.0 + 4.3) * 0.15)
+        d = FACE + DEPTH + w * AMP
+        outer.append((round(px + nx * d, 1), round(py + ny * d, 1)))
+    return inner + outer[::-1]
+
+
+def _even_t(t0, t1, count, n=400):
+    """Parameters spaced evenly BY ARC LENGTH along the counter.
+
+    Spacing by the Bezier parameter instead put the four stools where the
+    maths was even rather than where the seats are: bunched at the flat
+    bottom, spread up the steep ends. On a curve this steep the two are not
+    the same thing and only one of them is where people sit.
+    """
+    ts = [t0 + (t1 - t0) * i / n for i in range(n + 1)]
+    pts = [_bar_point(t)[:2] for t in ts]
+    run = [0.0]
+    for i in range(1, len(pts)):
+        run.append(run[-1] + math.hypot(pts[i][0] - pts[i - 1][0],
+                                        pts[i][1] - pts[i - 1][1]))
+    out, total = [], run[-1]
+    for k in range(count):
+        want = total * (k + 0.5) / count
+        i = min(range(len(run)), key=lambda j: abs(run[j] - want))
+        out.append(ts[i])
+    return out
+
+
+def _stools(count=4, size=450.0, t0=0.26, t1=0.74):
+    out = []
+    for t in _even_t(t0, t1, count):
+        px, py, nx, ny = _bar_point(t)
+        cx, cy = px + nx * SEAT, py + ny * SEAT
+        h = size / 2
+        out.append((round(cx - h, 1), round(cy - h, 1),
+                    round(cx + h, 1), round(cy + h, 1)))
+    return out
+
+
+SHELF = _shelf()
+STOOLS = _stools()
+_sx = [p[0] for p in SHELF]
+_sy = [p[1] for p in SHELF]
+
+# Loose furniture. (kind, x1, y1, x2, y2, label, room, height, poly)
 # Four stools, set on the curve's own outward normal 640 from the counter face
 # so they sit square to it rather than square to the plan.
 FURNITURE = [
-    ('stool', 4175, 3464, 4625, 3914, 'bar stool', 'R-LIVING-DINING', 750),
-    ('stool', 4971, 3757, 5421, 4207, 'bar stool', 'R-LIVING-DINING', 750),
-    ('stool', 6074, 3757, 6524, 4207, 'bar stool', 'R-LIVING-DINING', 750),
-    ('stool', 6870, 3464, 7320, 3914, 'bar stool', 'R-LIVING-DINING', 750),
+    ('table', min(_sx), min(_sy), max(_sx), max(_sy),
+     'live-edge counter shelf', 'R-LIVING-DINING', 1050, SHELF),
+] + [
+    ('stool', a, b, c, d, 'bar stool', 'R-LIVING-DINING', 750)
+    for a, b, c, d in STOOLS
 ]

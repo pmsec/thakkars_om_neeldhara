@@ -9,7 +9,9 @@ A GENERIC PLAN SHEET, for any home that provides the plain contract:
     SCREENS    (x1, y1, x2, y2, bow, height, id, name, note) — optional
     GLAZING    (x1, y1, x2, y2, kind)
     ROOMS      (name, subtitle, (ax, ay), note, ...)
-    FURNITURE  (kind, a, b, c, d, label)   — may be empty
+    FURNITURE  (kind, x1, y1, x2, y2, label[, room, height, poly])
+               poly, when given, is the DRAWN OUTLINE and the rect is only
+               its bounding box
 
 Om Neeldhara does NOT use this: it has draw_design.py, which knows about its
 curved pod screens, its apses and its bespoke joinery, and which must keep
@@ -280,7 +282,13 @@ def main():
 
     s.begin_layer('furniture')
     for f in getattr(D, 'FURNITURE', []):
-        s.rect(f[1], f[2], f[3], f[4], fill='#ffffff', stroke='#8a8378', sw=1.0)
+        poly = f[8] if len(f) > 8 else None
+        if poly:
+            # A piece whose shape matters is drawn by its own outline. The
+            # rect in the tuple is only the bounding box the app needs.
+            s.poly(poly, fill='#d9c9a8', stroke='#8a7d63', sw=1.2)
+        else:
+            s.rect(f[1], f[2], f[3], f[4], fill='#ffffff', stroke='#8a8378', sw=1.0)
     s.end_layer()
 
     s.begin_layer('floor-walls')

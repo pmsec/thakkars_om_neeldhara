@@ -768,6 +768,38 @@ def _clad(cx, cy, a, b, r=None, n=24):
     return out
 
 
+# ------------------------------------------------------------- shapes
+# Generic outlines, for any piece that deserves one instead of a
+# rectangle. They live here because everything below uses them.
+def _round_rect(x0, y0, x1, y1, r, n=10):
+    """A rectangle with a radius at each corner — top-left first, clockwise.
+    A radius of 0 leaves that corner square, so a piece against a wall can be
+    turned on the two edges you actually see and left sharp on the two you
+    do not."""
+    tl, tr, br, bl = r if isinstance(r, (tuple, list)) else (r, r, r, r)
+    out = []
+
+    def corner(cx, cy, rad, a0):
+        if rad <= 0:
+            out.append((cx, cy))
+            return
+        for i in range(n + 1):
+            a = a0 + (math.pi / 2) * i / n
+            out.append((cx + rad * math.cos(a), cy + rad * math.sin(a)))
+
+    corner(x0 + tl, y0 + tl, tl, math.pi)
+    corner(x1 - tr, y0 + tr, tr, -math.pi / 2)
+    corner(x1 - br, y1 - br, br, 0.0)
+    corner(x0 + bl, y1 - bl, bl, math.pi / 2)
+    return [(round(a, 1), round(b, 1)) for a, b in out]
+
+
+def _ellipse(cx, cy, rx, ry, n=32):
+    return [(round(cx + rx * math.cos(2 * math.pi * i / n), 1),
+             round(cy + ry * math.sin(2 * math.pi * i / n), 1))
+            for i in range(n)]
+
+
 # Loose furniture. (kind, x1, y1, x2, y2, label, room, height, poly)
 # 'screen' because that is the nearest thing the app already knows how to
 # stand up: a panel of a given height with a shape of its own.
@@ -862,10 +894,20 @@ FURNITURE += [
      "wardrobe — 1900 x 600 (6'-3\" x 2'-0\"), stopping 104 (4\") clear of "
      'the bedroom door’s leaf',
      'R-BEDROOM', 2400),
+    # THE SOFA IS WHAT IS THERE; the bed is what the room can become. So the
+    # sofa is drawn solid and the bed's footprint dashed around it — the plan
+    # shows the everyday state and says what happens to it, rather than showing
+    # a bed that is up against the wall for twenty-three hours a day.
+    ('sofa', MURPHY[0], MURPHY[1], MURPHY[0] + MURPHY_FOLDED, MURPHY[3],
+     "sofa — 1500 x 900 (4'-11\" x 2'-11\") over the Murphy cabinet; the bed "
+     'folds down inside the dashed line',
+     'R-BEDROOM', 800, _round_rect(MURPHY[0], MURPHY[1],
+                                   MURPHY[0] + MURPHY_FOLDED, MURPHY[3],
+                                   (40, 200, 200, 40))),
     ('bed', *MURPHY,
-     "Murphy bed, DOWN — queen, 1500 x 2000 (4'-11\" x 6'-7\"). Folded it is "
-     "a sofa 900 (2'-11\") off the wall and the room has 2070 (6'-9\") clear",
-     'R-BEDROOM', 600),
+     "Murphy bed DOWN — queen, 1500 x 2000 (4'-11\" x 6'-7\"): the footprint "
+     'it takes, not a bed standing there',
+     'R-BEDROOM', 600, None, True),
     ('table', *DESK,
      "desk — 1200 x 600 (3'-11\" x 2'-0\") on the east wall, window to the left",
      'R-BEDROOM', 750),
@@ -963,35 +1005,6 @@ BATH_BASIN = (3930.0, 1850.0, 4380.0, 2350.0)          # 450 x 500
 
 #     BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)      # 280 corner shelf
 #     BATH_WC = (3780.0, 1050.0, 4380.0, 1750.0)       # 600 projection x 700
-
-
-def _round_rect(x0, y0, x1, y1, r, n=10):
-    """A rectangle with a radius at each corner — top-left first, clockwise.
-    A radius of 0 leaves that corner square, so a piece against a wall can be
-    turned on the two edges you actually see and left sharp on the two you
-    do not."""
-    tl, tr, br, bl = r if isinstance(r, (tuple, list)) else (r, r, r, r)
-    out = []
-
-    def corner(cx, cy, rad, a0):
-        if rad <= 0:
-            out.append((cx, cy))
-            return
-        for i in range(n + 1):
-            a = a0 + (math.pi / 2) * i / n
-            out.append((cx + rad * math.cos(a), cy + rad * math.sin(a)))
-
-    corner(x0 + tl, y0 + tl, tl, math.pi)
-    corner(x1 - tr, y0 + tr, tr, -math.pi / 2)
-    corner(x1 - br, y1 - br, br, 0.0)
-    corner(x0 + bl, y1 - bl, bl, math.pi / 2)
-    return [(round(a, 1), round(b, 1)) for a, b in out]
-
-
-def _ellipse(cx, cy, rx, ry, n=32):
-    return [(round(cx + rx * math.cos(2 * math.pi * i / n), 1),
-             round(cy + ry * math.sin(2 * math.pi * i / n), 1))
-            for i in range(n)]
 
 
 BATH_TOP = _round_rect(*BATH_BASIN, (160, 40, 40, 160))

@@ -252,7 +252,11 @@ def main():
         'export const fixtures: FixtureDef[] = []\n')
 
     fitems = []
-    for i, f in enumerate(getattr(D, 'FURNITURE', []), 1):
+    # Ghosts are a drawing convention — the footprint a Murphy bed takes when
+    # it is down — not objects. The app models what is standing in the room, so
+    # they do not travel.
+    for i, f in enumerate([g for g in getattr(D, 'FURNITURE', [])
+                           if not (len(g) > 9 and g[9])], 1):
         kind, x1, y1, x2, y2, label = f[:6]
         room = f[6] if len(f) > 6 else ''
         height = f[7] if len(f) > 7 else 750

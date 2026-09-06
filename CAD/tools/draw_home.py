@@ -83,9 +83,28 @@ class Sheet:
         self.o.append(f'<polygon points="{p}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>')
 
     def line(self, a, b, c, d, col, lw=1.0, dash=None):
-        ds = f' stroke-dasharray="{dash}"' if dash else ''
-        self.o.append(f'<line x1="{self.X(a):.1f}" y1="{self.Y(b):.1f}" x2="{self.X(c):.1f}" '
-                      f'y2="{self.Y(d):.1f}" stroke="{col}" stroke-width="{lw}"{ds}/>')
+        x1, y1, x2, y2 = self.X(a), self.Y(b), self.X(c), self.Y(d)
+        if not dash:
+            self.o.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" '
+                          f'y2="{y2:.1f}" stroke="{col}" stroke-width="{lw}"/>')
+            return
+        # THE RASTERISER IGNORES stroke-dasharray. Every dashed line on this
+        # sheet came out solid until this was found, so a dashed line is drawn
+        # as its dashes; the attribute stays on each one so a vector reader
+        # still sees the pattern it was asked for.
+        on, off = (float(v) for v in str(dash).replace(',', ' ').split()[:2])
+        dx, dy = x2 - x1, y2 - y1
+        run = math.hypot(dx, dy)
+        if run <= 0:
+            return
+        t = 0.0
+        while t < run:
+            u = min(t + on, run)
+            self.o.append(
+                f'<line x1="{x1 + dx * t / run:.1f}" y1="{y1 + dy * t / run:.1f}" '
+                f'x2="{x1 + dx * u / run:.1f}" y2="{y1 + dy * u / run:.1f}" '
+                f'stroke="{col}" stroke-width="{lw}" stroke-dasharray="{dash}"/>')
+            t = u + off
 
     def rect(self, a, b, c, d, fill='none', stroke='none', sw=1.0):
         self.o.append(f'<rect x="{self.X(a):.1f}" y="{self.Y(b):.1f}" '
@@ -361,7 +380,16 @@ def main():
     s.begin_layer('furniture')
     for f in getattr(D, 'FURNITURE', []):
         poly = f[8] if len(f) > 8 else None
-        if poly:
+        # A GHOST IS A PIECE THAT IS NOT THERE YET — the footprint a Murphy bed
+        # takes when it comes down, a door leaf's clearance, a fridge's swing.
+        # It is drawn as a dashed outline and nothing else, because it is a
+        # note about the room rather than something standing in it.
+        if len(f) > 9 and f[9]:
+            ring = poly or [(f[1], f[2]), (f[3], f[2]), (f[3], f[4]), (f[1], f[4])]
+            for k in range(len(ring)):
+                a, b = ring[k], ring[(k + 1) % len(ring)]
+                s.line(a[0], a[1], b[0], b[1], '#9a9285', 1.2, dash='16 11')
+        elif poly:
             # A piece whose shape matters is drawn by its own outline. The
             # rect in the tuple is only the bounding box the app needs.
             s.poly(poly, fill='#d9c9a8', stroke='#8a7d63', sw=1.2)

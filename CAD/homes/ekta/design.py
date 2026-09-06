@@ -73,13 +73,30 @@ NEW_WALLS = [
      'the north-west return. It runs from the north wall to the south face of '
      'the column at 3050-3280 x 770-1670 and stops there — the column stays, '
      'the wall ahead of it is gone.', 0),
-    (2220, 4195, 3125, 4195, 125, [('door', 2270, 3070)], 'partition', 'W-GUEST-S',
-     "guest room | living. The room's only door, off the living room's "
-     'north-west corner.', 0),
 
     # --- the kitchen, the whole width of the north band
 
 
+
+    # --- the kitchen counter: one curve between the two columns
+    # Solid timber to 1050, the counter height, and brown tinted glass above it
+    # to 2400 — so from the sofa the kitchen is a lit band behind glass, and
+    # from inside it the cook is not shut in a box. The 1000 gap at 1050 to
+    # 1800 is the SERVING HATCH: an unglazed hole at counter level, plates
+    # over rather than around.
+    (3125, 1670, 8370, 1670, 200,
+     [('window', 3525, 5100, 1050, 2400),
+      ('cased', 5100, 6100, 1050, 1800),
+      ('window', 6100, 7970, 1050, 2400)],
+     'partition', 'W-KIT-BAR',
+     'kitchen | living. Springs off the south face of the column at 3050-3280 '
+     'and lands on the one at 8295-8525, bowing 1730 into the living room. '
+     'Deep in the middle, steep at the ends: the bowl is the kitchen and the '
+     'pinch points are where the tall units go. 200 thick because it is a '
+     'counter, not a partition.', 1730),
+    (8370, 545, 8370, 1670, 125, [], 'partition', 'W-KIT-E',
+     'kitchen | living, east. Packs out beside the column and closes the '
+     'kitchen against the east half of the flat.', 0),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -156,14 +173,21 @@ GLAZING = [
 # off inside it, and the two bedrooms the builder drew in the middle of the
 # plan give their space back to the living room and the kitchen.
 ROOMS = [
+    ('KITCHEN', '', (5700, 1400),
+     'behind the counter curve — 5245 of working wall north, the bowl south'),
     ('LIVING / DINING', '', (4400, 7500),
-     'THE WHOLE FLOOR BAR THE FOYER AND THE BALCONY. The guest room went the '
-     'way of the rest when the wall ahead of the column came out. What is left '
-     'drawn: the shell, five columns, three shafts, two stubs of wall and the '
-     'front door.'),
+     'everything the kitchen curve does not enclose, from the front door to '
+     'the balcony and out to the blind east wall. Four stools at the counter.'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
 
-# Loose furniture: nothing yet. This flat has not been designed.
-FURNITURE = []
+# Loose furniture. (kind, x1, y1, x2, y2, label, room, height)
+# Four stools, set on the curve's own outward normal 640 from the counter face
+# so they sit square to it rather than square to the plan.
+FURNITURE = [
+    ('stool', 4175, 3464, 4625, 3914, 'bar stool', 'R-LIVING-DINING', 750),
+    ('stool', 4971, 3757, 5421, 4207, 'bar stool', 'R-LIVING-DINING', 750),
+    ('stool', 6074, 3757, 6524, 4207, 'bar stool', 'R-LIVING-DINING', 750),
+    ('stool', 6870, 3464, 7320, 3914, 'bar stool', 'R-LIVING-DINING', 750),
+]

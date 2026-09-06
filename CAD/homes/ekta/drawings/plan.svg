@@ -11,24 +11,53 @@
 <rect x="1692.0" y="1921.0" width="44.8" height="239.8" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
 </g>
 <g id="L-furniture">
+<rect x="1195.9" y="1057.3" width="87.7" height="87.7" fill="#ffffff" stroke="#8a8378" stroke-width="1.0"/>
+<rect x="1351.1" y="1114.4" width="87.7" height="87.7" fill="#ffffff" stroke="#8a8378" stroke-width="1.0"/>
+<rect x="1566.1" y="1114.4" width="87.7" height="87.7" fill="#ffffff" stroke="#8a8378" stroke-width="1.0"/>
+<rect x="1721.2" y="1057.3" width="87.7" height="87.7" fill="#ffffff" stroke="#8a8378" stroke-width="1.0"/>
 </g>
 <g id="L-floor-walls">
 <polygon points="979.1,367.5 979.1,707.6 1003.4,707.6 1003.4,367.5" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="814.9,1212.0 824.6,1212.0 824.6,1187.6 814.9,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="980.5,1212.0 991.3,1212.0 991.3,1187.6 980.5,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="824.6" y1="1199.8" x2="824.6" y2="1355.8" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="824.6" y1="1355.8" x2="845.0" y2="1354.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="845.0" y1="1354.4" x2="865.0" y2="1350.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="865.0" y1="1350.4" x2="884.3" y2="1343.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="884.3" y1="1343.9" x2="902.6" y2="1334.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="902.6" y1="1334.9" x2="919.5" y2="1323.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="919.5" y1="1323.5" x2="934.9" y2="1310.1" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="934.9" y1="1310.1" x2="948.3" y2="1294.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="948.3" y1="1294.7" x2="959.6" y2="1277.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="959.6" y1="1277.8" x2="968.7" y2="1259.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="968.7" y1="1259.5" x2="975.2" y2="1240.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="975.2" y1="1240.2" x2="979.2" y2="1220.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="979.2" y1="1220.2" x2="980.5" y2="1199.8" stroke="#c3bcae" stroke-width="1.0"/>
+<polygon points="975.8,719.6 997.3,747.3 1018.8,773.9 1040.4,799.4 1062.0,823.8 1083.7,847.0 1105.3,869.0 1127.0,889.9 1148.8,909.6 1170.5,928.2 1192.4,945.6 1214.2,961.8 1236.1,976.8 1258.1,990.7 1280.1,1003.4 1302.1,1014.9 1324.2,1025.2 1346.3,1034.4 1368.5,1042.3 1390.8,1049.0 1413.1,1054.5 1435.4,1058.8 1457.7,1061.9 1480.1,1063.7 1502.4,1064.4 1524.8,1063.7 1547.2,1061.9 1569.5,1058.8 1591.8,1054.5 1614.1,1049.0 1636.3,1042.3 1658.5,1034.4 1680.7,1025.2 1702.8,1014.9 1724.8,1003.4 1746.8,990.7 1768.8,976.8 1790.7,961.8 1812.5,945.6 1834.3,928.2 1856.1,909.6 1877.8,889.9 1899.5,869.0 1921.2,847.0 1942.8,823.8 1964.5,799.4 1986.0,773.9 2007.6,747.3 2029.0,719.6 1998.2,695.7 1977.0,723.1 1956.0,749.1 1935.0,773.9 1914.0,797.6 1893.0,820.0 1872.1,841.3 1851.2,861.4 1830.4,880.4 1809.5,898.1 1788.7,914.7 1768.0,930.1 1747.3,944.3 1726.6,957.3 1706.0,969.2 1685.5,980.0 1665.0,989.5 1644.5,998.0 1624.1,1005.3 1603.8,1011.4 1583.4,1016.5 1563.2,1020.4 1542.9,1023.1 1522.7,1024.8 1502.4,1025.4 1482.2,1024.8 1462.0,1023.1 1441.7,1020.4 1421.4,1016.5 1401.1,1011.4 1380.7,1005.3 1360.3,998.0 1339.9,989.5 1319.4,980.0 1298.8,969.2 1278.2,957.3 1257.6,944.3 1236.9,930.1 1216.1,914.7 1195.3,898.1 1174.5,880.4 1153.7,861.4 1132.8,841.3 1111.8,820.0 1090.9,797.6 1069.9,773.9 1048.9,749.1 1027.8,723.1 1006.7,695.7" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="1076.5" y1="810.7" x2="1097.8" y2="833.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1097.8" y1="833.5" x2="1119.1" y2="855.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1119.1" y1="855.2" x2="1140.4" y2="875.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1140.4" y1="875.7" x2="1161.6" y2="895.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1161.6" y1="895.0" x2="1182.9" y2="913.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1182.9" y1="913.1" x2="1204.2" y2="930.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1204.2" y1="930.1" x2="1225.5" y2="945.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1225.5" y1="945.9" x2="1246.8" y2="960.6" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1246.8" y1="960.6" x2="1268.1" y2="974.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1268.1" y1="974.0" x2="1289.4" y2="986.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1289.4" y1="986.3" x2="1310.7" y2="997.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1310.7" y1="997.4" x2="1332.0" y2="1007.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1332.0" y1="1007.4" x2="1353.3" y2="1016.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1353.3" y1="1016.2" x2="1374.6" y2="1023.8" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1395.9" y1="1030.2" x2="1417.2" y2="1035.5" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1417.2" y1="1035.5" x2="1438.5" y2="1039.6" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1438.5" y1="1039.6" x2="1459.8" y2="1042.5" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1459.8" y1="1042.5" x2="1481.1" y2="1044.3" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1481.1" y1="1044.3" x2="1502.4" y2="1044.9" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1502.4" y1="1044.9" x2="1523.7" y2="1044.3" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1523.7" y1="1044.3" x2="1545.0" y2="1042.5" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1545.0" y1="1042.5" x2="1566.3" y2="1039.6" stroke="#8a8378" stroke-width="2.0" stroke-dasharray="10 8"/>
+<line x1="1587.6" y1="1035.5" x2="1608.9" y2="1030.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1608.9" y1="1030.2" x2="1630.2" y2="1023.8" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1630.2" y1="1023.8" x2="1651.5" y2="1016.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1651.5" y1="1016.2" x2="1672.8" y2="1007.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1672.8" y1="1007.4" x2="1694.1" y2="997.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1694.1" y1="997.4" x2="1715.4" y2="986.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1715.4" y1="986.3" x2="1736.7" y2="974.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1736.7" y1="974.0" x2="1758.0" y2="960.6" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1758.0" y1="960.6" x2="1779.3" y2="945.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1779.3" y1="945.9" x2="1800.6" y2="930.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1800.6" y1="930.1" x2="1821.9" y2="913.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1821.9" y1="913.1" x2="1843.2" y2="895.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1843.2" y1="895.0" x2="1864.5" y2="875.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1864.5" y1="875.7" x2="1885.8" y2="855.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1885.8" y1="855.2" x2="1907.1" y2="833.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1907.1" y1="833.5" x2="1928.4" y2="810.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<polygon points="2001.4,488.4 2001.4,707.6 2025.8,707.6 2025.8,488.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="802.7,2258.2 802.7,2307.0 827.0,2307.0 827.0,2258.2" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="802.7,2472.7 802.7,2525.3 827.0,2525.3 827.0,2472.7" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <line x1="814.9" y1="2307.0" x2="814.9" y2="2472.7" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
@@ -68,8 +97,10 @@
 <line x1="1139.4" y1="2539.9" x2="1692.0" y2="2539.9" stroke="#2e8b9a" stroke-width="3.0"/>
 </g>
 <g id="L-labels">
+<text x="1493.2" y="637.5" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">KITCHEN</text>
+<text x="1493.2" y="715.4" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">behind the counter curve — 5245 of working wall north, the bowl south</text>
 <text x="1239.8" y="1826.5" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">LIVING / DINING</text>
-<text x="1239.8" y="1904.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">THE WHOLE FLOOR BAR THE FOYER AND THE BALCONY. The guest room went the</text>
+<text x="1239.8" y="1904.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">everything the kitchen curve does not enclose, from the front door to </text>
 <text x="650.1" y="2372.3" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">FOYER</text>
 <text x="650.1" y="2450.2" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the way in</text>
 <text x="1415.2" y="2645.2" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BALCONY</text>

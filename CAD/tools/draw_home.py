@@ -156,13 +156,18 @@ def along(pts, f0, f1):
 
 
 def solid_runs(x1, y1, x2, y2, ops):
-    """The wall minus its openings. A gap in the builder's wall lines is a
-    door only where his door layer has a leaf in it; everywhere else the wall
-    is continuous, so what gets drawn here is the wall he built."""
+    """The wall minus the openings that reach the floor.
+
+    ONLY A SILL OF ZERO CUTS THE WALL. A window, or glass over a counter, or
+    a serving hatch at worktop height, leaves the wall standing underneath it
+    — in plan you are looking at the base, and the base is solid. Cutting for
+    those drew a counter wall as two stubs and a line.
+    """
     vert = abs(x2 - x1) < abs(y2 - y1)
     a0, a1 = (y1, y2) if vert else (x1, x2)
     lo, hi = min(a0, a1), max(a0, a1)
-    cuts = sorted((max(lo, min(f0, f1)), min(hi, max(f0, f1))) for _, f0, f1 in ops)
+    cuts = sorted((max(lo, min(o[1], o[2])), min(hi, max(o[1], o[2])))
+                  for o in ops if (o[3] if len(o) > 3 else 0) <= 0)
     runs, at = [], lo
     for c0, c1 in cuts:
         if c0 > at:
@@ -292,7 +297,21 @@ def main():
                           (b[1] if a[0] == b[0] else b[0])) if bow else [a, b]
             if len(piece) >= 2:
                 s.poly(band(piece, t), fill=WALL, stroke='none')
-        for kind, f0, f1 in ops:
+        for op in ops:
+            kind, f0, f1 = op[:3]
+            sill = op[3] if len(op) > 3 else 0
+            if sill > 0:
+                # Glass, or a hatch, above a solid base: drawn as glazing on
+                # the line it actually follows, not as a hole in the wall.
+                gl = along(curve, f0, f1) if bow else (
+                    [(x1, f0), (x1, f1)] if abs(x2 - x1) < abs(y2 - y1)
+                    else [(f0, y1), (f1, y1)])
+                col = GLAS if kind == 'window' else '#8a8378'
+                for k in range(len(gl) - 1):
+                    s.line(gl[k][0], gl[k][1], gl[k + 1][0], gl[k + 1][1], col,
+                           3.0 if kind == 'window' else 2.0,
+                           dash=None if kind == 'window' else '10 8')
+                continue
             if kind == 'door':
                 door_swing(s, x1, y1, x2, y2, f0, f1)
             else:

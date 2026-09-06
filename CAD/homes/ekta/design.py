@@ -65,16 +65,24 @@ PLATE = [
 # the ends. This shape is the opposite — it is mostly straight, and the only
 # curvature is in two corners with one radius between them.
 
-# Slid 595 east so the kitchen's east FACE lands on 8295, the west face of
-# the column at 8295-8525 — flush, with no sliver left between them. The
-# width is unchanged at 3700; the whole room moved rather than shrank, and
-# what it uncovers on the west is the only place in this flat a second
-# bathroom can go and still reach the north shaft.
-KX0, KX1 = 4495.0, 8195.0     # centrelines of the two sides
+# Slid east so the kitchen's right-hand wall lands ON column 1 rather than
+# beside it — same footprint, one thickness, not two. What the move uncovered
+# on the west is the only place in this flat a second bathroom can go and
+# still reach the north shaft.
+KX0, KX1 = 4495.0, 8410.0     # centrelines of the two sides
 KTOP, KBOT = 545.0, 3400.0    # the north wall, and how far south the U reaches
 KR = 900.0                    # corner radius — the "no sharp curve" number
 
-FACE = 100.0        # half of the 200 counter, so a slab starts at its face
+# THE WALL AND THE COLUMN ARE THE SAME RECTANGLE. Column 1 is 8295-8525, 230
+# thick; the kitchen wall is now 230 too and centred on 8410, so along the
+# column's whole length the two footprints coincide exactly. Before this the
+# wall's east face merely BUTTED the column's west face and the pair read as
+# 430 (1'-5") of solid on the kitchen's right-hand side — a wall with a column
+# stuck to it. Now only one thickness shows, and the kitchen gains the 230 it
+# was giving away.
+KT = 230.0          # kitchen wall thickness, = the column
+
+FACE = KT / 2       # a slab starts at the wall's face, not its centreline
 DEPTH = 400.0       # slab projection: knee room under, plates on top
 SEAT = 700.0        # stool centres, measured from the wall centreline
 TAPER = 0.22        # the fraction at each end over which a slab dies away
@@ -102,9 +110,6 @@ def _round_u(n=32):
     return out
 
 
-KITCHEN_LINE = _round_u()
-
-
 def _run(pts):
     r = [0.0]
     for i in range(1, len(pts)):
@@ -113,8 +118,21 @@ def _run(pts):
     return r
 
 
+U_LINE = _round_u()
+ARC = _run(U_LINE)[-1]      # the U as it reads: what openings are measured on
+
+# THE LAST 40 MM. Rooms are faces of the wall graph, and a wall that stops
+# short of the boundary leaves no face — the kitchen ran out into the living
+# room the first time this wall was moved onto the column. The external wall's
+# line turns north at x 8370 (its outer face is the 8295 the column stands on,
+# and it is 150 thick), so the U's right-hand leg, now centred on 8410, misses
+# that corner by exactly the 40 between them. T-KIT-NE below closes it: a
+# threshold, not a wall, because the gap is already solid — it is the inside of
+# the external wall — and drawing 40 mm of 230 wall there only put a mitred
+# notch across the column.
+ENV_NE = 8370.0
+KITCHEN_LINE = U_LINE
 KITCHEN_RUN = _run(KITCHEN_LINE)
-ARC = KITCHEN_RUN[-1]
 
 
 def _arc_d(frac):
@@ -179,11 +197,15 @@ NEW_WALLS = [
     # The wall IS the polyline above. Timber to 1050, brown tinted glass to
     # 2400, and the serving hatch at the middle of the flat bottom. 900 of
     # solid at each top end, where the tall units and the fridge go.
-    (KX0, KTOP, KX1, KTOP, 200,
+    (KX0, KTOP, KX1, KTOP, KT,
      [('window', _arc_d(0.104), _arc_d(0.44), 1050, 2400),
       ('cased', _arc_d(0.44), _arc_d(0.56), 1050, 1800),
       ('window', _arc_d(0.56), _arc_d(0.896), 1050, 2400)],
      'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),
+
+    # --- 40 mm of nothing, so the kitchen closes. See ENV_NE above.
+    (KX1, KTOP, ENV_NE, KTOP, 0, [], 'threshold', 'T-KIT-NE',
+     'the kitchen wall to the external wall corner — solid already', 0),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -261,11 +283,11 @@ GLAZING = [
 # plan give their space back to the living room and the kitchen.
 ROOMS = [
     ('KITCHEN', '', (6345, 1500),
-     'a U with 900 corners: 3700 of working wall north, 1955 down each side, '
-     'and the counter along the bottom'),
+     'a U with 900 corners: 3915 clear across the top, 1955 down each side, '
+     'and the run along the bottom'),
     ('LIVING / DINING', '', (4400, 7500),
-     'everything the kitchen curve does not enclose, from the front door to '
-     'the balcony and out to the blind east wall. Four stools at the counter.'),
+     'everything the kitchen does not enclose, from the front door to the '
+     'balcony and out to the blind east wall.'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
@@ -308,23 +330,29 @@ def _stools(count=4, size=450.0):
     return out
 
 
-SHELF = _slab(+1, DEPTH)     # the eating side, in the living room
-LEDGE = _slab(-1, DEPTH)     # its mirror, the serving side in the kitchen
-STOOLS = _stools()
-_sx = [p[0] for p in SHELF]
-_sy = [p[1] for p in SHELF]
-_lx = [p[0] for p in LEDGE]
-_ly = [p[1] for p in LEDGE]
+# THE COUNTER IS OFF. No shelf, no serving ledge, no bar stools — the kitchen
+# wall is bare timber-and-glass again while the sleeping and the bathrooms get
+# worked out, because a 400 (1'-4") slab either side of it was deciding how the
+# living room reads before anything else had a place.
+#
+# "For now": the machinery above is untouched and the whole thing comes back by
+# putting these three lines and the list under them back:
+#
+#     SHELF = _slab(+1, DEPTH)   # the eating side, in the living room
+#     LEDGE = _slab(-1, DEPTH)   # its mirror, the serving side in the kitchen
+#     STOOLS = _stools()
+#
+#     def _bb(poly):
+#         xs = [q[0] for q in poly]; ys = [q[1] for q in poly]
+#         return min(xs), min(ys), max(xs), max(ys)
+#
+#     FURNITURE = [
+#         ('table', *_bb(SHELF), 'counter shelf — the eating side',
+#          'R-LIVING-DINING', 1050, SHELF),
+#         ('table', *_bb(LEDGE), 'serving ledge — inside the kitchen',
+#          'R-KITCHEN', 1050, LEDGE),
+#     ] + [('stool', a, b, c, d, 'bar stool', 'R-LIVING-DINING', 750)
+#          for a, b, c, d in STOOLS]
 
 # Loose furniture. (kind, x1, y1, x2, y2, label, room, height, poly)
-# Four stools, set on the curve's own outward normal 640 from the counter face
-# so they sit square to it rather than square to the plan.
-FURNITURE = [
-    ('table', min(_sx), min(_sy), max(_sx), max(_sy),
-     'counter shelf — the eating side', 'R-LIVING-DINING', 1050, SHELF),
-    ('table', min(_lx), min(_ly), max(_lx), max(_ly),
-     'serving ledge — inside the kitchen', 'R-KITCHEN', 1050, LEDGE),
-] + [
-    ('stool', a, b, c, d, 'bar stool', 'R-LIVING-DINING', 750)
-    for a, b, c, d in STOOLS
-]
+FURNITURE = []

@@ -26,6 +26,8 @@ what this file becomes when somebody starts designing the flat.
 
 import math
 
+import immovables as IMM
+
 # --------------------------------------------------------------- the shell
 # Outer face of the external walls: the floor plate (carpet + balcony) pushed
 # out by one 150 wall.
@@ -250,6 +252,22 @@ def _nw_x_at_arc(d):
 _bed_arc = _nw_arc_at_x(BED_E)
 BED_S = round(next(NW_PTS[i][1] for i in range(len(NW_RUN))
                    if NW_RUN[i] >= _bed_arc), 1)
+
+
+def _col_face(name, i):
+    """A named column's face, read off the immovables list rather than typed.
+    A door set out to clear a column should not be able to drift from it."""
+    return next(c[i] for c in IMM.NAMED if c[0] == name)
+
+
+# COLUMN 3 STANDS IN THIS WALL. It is 3050-3280 x 770-1670, so it straddles
+# x 3125 for 900 (2'-11") of the wall's length, and the door was sitting with
+# its top 270 (11") inside it. It goes south of the column instead, 100 (4")
+# clear of its face — which also takes the leaf's swing further from the desk
+# and the Murphy bed, both of which it was crowding.
+BED_BATH_W = 750.0
+BED_BATH_DOOR = (_col_face('column 3', 4) + 100.0,
+                 _col_face('column 3', 4) + 100.0 + BED_BATH_W)
 
 # BOTH DOORS GO AT THE ENDS, not in the middle of their stretch. Centre them
 # and the wall comes out as three short fragments with nothing between; push
@@ -480,7 +498,8 @@ NEW_WALLS = [
     (BED_E, KTOP, BED_E, BED_S, 150,
      # -1: the leaf swings into the BEDROOM. A 1180-wide bath has nowhere
      # to put it.
-     [('door', 1400, 2150, 0, 2100, -1)], 'partition', 'W-BED-E',
+     [('door', BED_BATH_DOOR[0], BED_BATH_DOOR[1], 0, 2100, -1)],
+     'partition', 'W-BED-E',
      'bedroom | bath', 0),
     (NW_A[0], NW_A[1], NW_B[0], NW_B[1], 150,
      # Each opens into the room that has floor to spare for it: the bath's

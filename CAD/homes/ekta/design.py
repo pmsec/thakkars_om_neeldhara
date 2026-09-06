@@ -940,75 +940,45 @@ FURNITURE += [
 ]
 
 # --------------------------------------------------- what goes in the north bath
-# THREE OF THE FOUR. The shower does not fit, and the reason is the door rather
-# than the width.
+# THE TRIANGLE IS WHAT MAKES IT FIT. A rectangular shower wants 900 of depth
+# straight across the room and a WC pan and cistern want 750 more — 1650 into
+# the 1150 the door leaves. A corner tray takes its 900 diagonally instead, so
+# its hypotenuse gives the east side of the room back: at x 3780 the tray is
+# already finished by y 940, and the WC sits below that on the east wall with
+# the shower still beside it.
 #
-# W-BED-E runs 545 to 3946 but column 3 blocks 770 to 1670, so the door can
-# only sit between 1670 and 2877 — it is at 1770-2520 — and the standing room
-# inside it takes x 3200-3900, y 1770-2520. That leaves the north band, 1180 x
-# 1150, and an east strip 480 x 618. A shower wants 900 of that 1150 and a WC
-# pan and cistern want 750: 1650 into 1150.
+# So all four go in, in the order they were drawn, and the room does what the
+# reality check said it could not.
 #
-# Nor can the WC go against a side wall, which is where it was drawn. It
-# projects 750 floor-standing, 720 wall-hung once the cistern has a duct, 600 at
-# its most compact — leaving 430, 460 and 580 clear in front of a room that
-# wants 600. Against the NORTH wall the projection runs down the room's 1768
-# instead and the 1180 gives clearance either side of the pan, which is the
-# only orientation this width allows.
+# WHAT IT COSTS is the tray: legs of 900 (2'-11") make 0.405 m2 (4.4 sq ft) and
+# 636 (2'-1") from the corner to the hypotenuse. That is a corner shower, not a
+# cubicle — you stand in it, you do not move around in it.
 #
-# So: WC on the north wall, the corner shelf beside its cistern in the corner
-# it was drawn in, and the basin on the east wall south of the door's zone.
-# The shower is 12 m (39'-4") away in BATH / COMMON, where it is 1345 x 1200.
-BATH_WC = (3400.0, 620.0, 4100.0, 1370.0)      # 700 x 750, against the north
-BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)    # 280 corner shelf
-BATH_BASIN = (3930.0, 1700.0, 4380.0, 2300.0)  # 450 x 600, 730 clear in front
+# AND IT FREES THE WINDOW. The bath has one, 750 (2'-6") at x 3485-4235, and
+# the WC's cistern was standing under it. The shower goes under it instead,
+# which is where you want the ventilation anyway.
+BATH_TRI = 900.0
+BATH_SHOWER = [(3200.0, 620.0), (3200.0 + BATH_TRI, 620.0),
+               (3200.0, 620.0 + BATH_TRI)]
+BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)     # 280 corner shelf
+BATH_WC = (3780.0, 1050.0, 4380.0, 1750.0)      # 600 projection x 700
+BATH_BASIN = (3930.0, 1850.0, 4380.0, 2350.0)   # 450 x 500
+
+_tx = [q[0] for q in BATH_SHOWER]
+_ty = [q[1] for q in BATH_SHOWER]
 
 FURNITURE += [
-    ('stool', *BATH_WC,
-     "WC — 700 x 750 (2'-4\" x 2'-6\") against the north wall, the only "
-     'orientation 1180 allows',
-     'R-BATH', 800),
+    ('screen', min(_tx), min(_ty), max(_tx), max(_ty),
+     "shower — triangular corner tray, 900 (2'-11\") legs, under the window",
+     'R-BATH', 2100, BATH_SHOWER),
     ('shelves', *BATH_SHELF,
-     "corner shelf — 280 (11\") square, beside the cistern",
+     "corner shelf — 280 (11\") square",
      'R-BATH', 1400),
+    ('stool', *BATH_WC,
+     "WC — wall-hung, 600 (2'-0\") projection on the east wall, 580 (1'-11\") "
+     'clear in front',
+     'R-BATH', 800),
     ('console', *BATH_BASIN,
-     "basin, mirror and console — 600 x 450 (2'-0\" x 1'-6\"), 730 (2'-5\") "
-     'clear in front of it',
+     "basin, mirror and console — 500 x 450 (1'-8\" x 1'-6\")",
      'R-BATH', 900),
-]
-
-# ------------------------------------------------------- what goes in the arm
-# THE BED IS TURNED 90 DEGREES FROM THE SKETCH, and it is what buys the king.
-#
-# Drawn with its length running north-south, the bed's WIDTH has to fit across
-# the room's 2945 (9'-8"). A king is 1830 of that, leaving 1115 to split
-# between the two sides — 557 each, or everything on one side and none on the
-# other. A queen leaves 722 each, still under the 750 (2'-6") you want beside a
-# bed you get out of in the dark.
-#
-# Turned, the LENGTH crosses the room instead: 2000 from the east wall leaves
-# 945 (3'-1") at the foot, and the two long sides now face north and south with
-# 800 (2'-7") and 2770 (9'-1") in front of them. Both sides work, and it takes
-# the king.
-#
-# The head goes on the EAST wall because that wall is the blind party wall —
-# 8355 (27'-5") of it with nothing to lose. Both windows stay clear, which is
-# the whole argument for this room: it is lit from its two ends only.
-BED_W, BED_L = 1830.0, 2000.0       # king
-ARM_BED = (11470.0 - BED_L, 800.0, 11470.0, 800.0 + BED_W)
-
-# THE WARDROBES GO IN THE TAIL, on the same blind wall, below where the room
-# narrows to 1945 (6'-5"). 600 deep and 2855 (9'-4") long — which is why it is
-# wardrobes and not a wardrobe — leaving 1345 (4'-5") of floor in front and
-# stopping 100 short of the south window rather than dying into its reveal.
-ARM_WARD = (11470.0 - 600.0, 5400.0, 11470.0, 8255.0)
-
-FURNITURE += [
-    ('bed', *ARM_BED,
-     "king — 1830 x 2000 (6'-0\" x 6'-7\"), head on the blind party wall, "
-     "945 (3'-1\") at the foot and both sides open",
-     'R-ROOM', 600),
-    ('wardrobe', *ARM_WARD,
-     "wardrobes — 600 x 2855 (2'-0\" x 9'-4\") down the party wall in the tail",
-     'R-ROOM', 2400),
 ]

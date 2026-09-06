@@ -976,3 +976,39 @@ FURNITURE += [
      'clear in front of it',
      'R-BATH', 900),
 ]
+
+# ------------------------------------------------------- what goes in the arm
+# THE BED IS TURNED 90 DEGREES FROM THE SKETCH, and it is what buys the king.
+#
+# Drawn with its length running north-south, the bed's WIDTH has to fit across
+# the room's 2945 (9'-8"). A king is 1830 of that, leaving 1115 to split
+# between the two sides — 557 each, or everything on one side and none on the
+# other. A queen leaves 722 each, still under the 750 (2'-6") you want beside a
+# bed you get out of in the dark.
+#
+# Turned, the LENGTH crosses the room instead: 2000 from the east wall leaves
+# 945 (3'-1") at the foot, and the two long sides now face north and south with
+# 800 (2'-7") and 2770 (9'-1") in front of them. Both sides work, and it takes
+# the king.
+#
+# The head goes on the EAST wall because that wall is the blind party wall —
+# 8355 (27'-5") of it with nothing to lose. Both windows stay clear, which is
+# the whole argument for this room: it is lit from its two ends only.
+BED_W, BED_L = 1830.0, 2000.0       # king
+ARM_BED = (11470.0 - BED_L, 800.0, 11470.0, 800.0 + BED_W)
+
+# THE WARDROBES GO IN THE TAIL, on the same blind wall, below where the room
+# narrows to 1945 (6'-5"). 600 deep and 2855 (9'-4") long — which is why it is
+# wardrobes and not a wardrobe — leaving 1345 (4'-5") of floor in front and
+# stopping 100 short of the south window rather than dying into its reveal.
+ARM_WARD = (11470.0 - 600.0, 5400.0, 11470.0, 8255.0)
+
+FURNITURE += [
+    ('bed', *ARM_BED,
+     "king — 1830 x 2000 (6'-0\" x 6'-7\"), head on the blind party wall, "
+     "945 (3'-1\") at the foot and both sides open",
+     'R-ROOM', 600),
+    ('wardrobe', *ARM_WARD,
+     "wardrobes — 600 x 2855 (2'-0\" x 9'-4\") down the party wall in the tail",
+     'R-ROOM', 2400),
+]

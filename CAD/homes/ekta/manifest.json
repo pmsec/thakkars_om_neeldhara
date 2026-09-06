@@ -1,0 +1,37 @@
+{
+  "R-BATH": [
+    "screen",
+    "console",
+    "console"
+  ],
+  "R-BATH-COMMON": [
+    "screen",
+    "console",
+    "console",
+    "console",
+    "console"
+  ],
+  "R-BEDROOM": [
+    "wardrobe",
+    "sofa",
+    "bed (ghost)",
+    "table",
+    "chair"
+  ],
+  "R-KITCHEN": [
+    "table",
+    "shelves"
+  ],
+  "R-LIVING-DINING": [
+    "table",
+    "chair",
+    "chair",
+    "chair",
+    "chair"
+  ],
+  "R-ROOM": [
+    "screen",
+    "bed",
+    "wardrobe"
+  ]
+}

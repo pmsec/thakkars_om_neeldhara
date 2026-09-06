@@ -28,6 +28,18 @@ import math
 
 import immovables as IMM
 
+
+# ------------------------------------------------------ how a number is said
+# Metric governs and imperial is the gloss, but a label that carries both has
+# to carry them CONSISTENTLY, and a typed conversion goes stale the moment the
+# number it describes moves. Anything a label quotes is measured and passed
+# through here.
+def _ft(mm):
+    """mm as feet and inches, rounded to the nearest inch."""
+    n = int(round(mm / 25.4))
+    return f"{n // 12}'-{n % 12}\""
+
+
 # --------------------------------------------------------------- the shell
 # Outer face of the external walls: the floor plate (carpet + balcony) pushed
 # out by one 150 wall.
@@ -948,36 +960,47 @@ def _counter(fx, n=24):
     return [(round(a, 1), round(b, 1)) for a, b in out]
 
 
-# THE FRIDGE, AND WHAT IT COSTS. The north wall has two windows — 5035-6435 and
+# THE FRIDGE IS OFF THE WINDOW. The north wall has two windows — 5035-6435 and
 # 7235-7985 — which leaves three solid piers: 425, 800 and 310. A fridge is
 # 1800-2000 tall, so anywhere in a window band it blocks it, and the corner
-# pier is 310 (1'-0") wide. Standing it in the north-east corner as marked
-# therefore costs 440 (1'-5") of the 750 (2'-6") window.
+# pier is only 310 (1'-0") wide. Standing it hard in the north-east corner, as
+# first marked, cost 440 (1'-5") of the 750 (2'-6") window.
 #
-# The alternative is 900 (2'-11") further south, still on the east wall and
-# still in that corner of the room, below the window band: both windows stay
-# clear and the run goes the full length of the north wall. What it stands in
-# front of there is the tinted glass on the east leg, which now looks into a
-# bedroom. One line: FRIDGE_Y = 1520.
+# It is now on the east wall directly BELOW the worktop's north run, which
+# ends at y 1220. Both windows stay clear, the worktop goes the full length of
+# the north wall instead of stopping short, and the fridge closes the corner
+# rather than leaving a slot: worktop and fridge meet on the same line. What
+# it stands in front of there is the tinted glass on the east leg, which now
+# looks into a bedroom — the price, and it is worth 750 (2'-6") of worktop and
+# a window back.
 FRIDGE_W, FRIDGE_D = 900.0, 750.0
-FRIDGE_Y = KTOP + 75                    # hard in the corner, as marked
+FRIDGE_Y = KTOP + 75 + CTOP_D           # 1220 — under the end of the worktop
 FRIDGE = (KX1 - KT / 2 - FRIDGE_D, FRIDGE_Y,
           KX1 - KT / 2, FRIDGE_Y + FRIDGE_W)
 
 # The run stops at the fridge only when the fridge is in the corner; dropped
 # south it clears the north wall and the worktop goes the whole way.
 COUNTER = _counter(FRIDGE[0] if FRIDGE_Y < KTOP + 75 + CTOP_D else KX1 - KT / 2)
+_CTOP_FX = FRIDGE[0] if FRIDGE_Y < KTOP + 75 + CTOP_D else KX1 - KT / 2
+
+
+def _ctop_run():
+    """How long the worktop is, measured rather than typed: the quarter round
+    the south-west corner, up the west leg, along the north wall to the end."""
+    return (math.pi / 2 * (KR - KT / 2)
+            + (KBOT - KR) - (KTOP + 75)
+            + _CTOP_FX - (KX0 + KT / 2))
 _cx = [q[0] for q in COUNTER]
 _cy = [q[1] for q in COUNTER]
 
 FURNITURE += [
     ('table', min(_cx), min(_cy), max(_cx), max(_cy),
-     "worktop — 600 (2'-0\") deep, 6048 (19'-10\") in one run from the serving "
-     'counter round the corner to the fridge',
+     f"worktop — 600 (2'-0\") deep, {_ctop_run():.0f} ({_ft(_ctop_run())}) in "
+     'one run from the serving counter round the corner to the fridge',
      'R-KITCHEN', 900, COUNTER),
     ('shelves', *FRIDGE,
-     "fridge — 900 x 750 (2'-11\" x 2'-6\"), taking 440 (1'-5\") off the "
-     'north window',
+     "fridge — 900 x 750 (2'-11\" x 2'-6\") on the east wall, under the end "
+     'of the worktop and clear of both north windows',
      'R-KITCHEN', 1900),
 ]
 
@@ -998,9 +1021,15 @@ FURNITURE += [
 # THE BASIN IS A CONSOLE NOW, not a box: a 450 x 500 top with its two exposed
 # corners turned on 160 (6") and the wall corners on 40, and the bowl drawn as
 # the oval it is.
+# AND THE TRAY STARTS AT THE COLUMN, NOT THE WALL. Column 3 stands 80 (3")
+# proud of the bath's west face for 900 (2'-11") of its height, so a tray set
+# out from the wall had the column inside it — 0.069 m2 (0.7 sq ft) of it,
+# which is a notch cut in a moulded tray or a leak. Both legs now run off the
+# column's own faces: east face for the corner, south face for the length.
 BATH_TRI = _col_face('column 3', 4) - (KTOP + 75)      # 1050
-BATH_SHOWER = [(3200.0, 620.0), (3200.0 + BATH_TRI, 620.0),
-               (3200.0, 620.0 + BATH_TRI)]
+BATH_X = _col_face('column 3', 3)                      # 3280, the east face
+BATH_SHOWER = [(BATH_X, 620.0), (BATH_X + BATH_TRI, 620.0),
+               (BATH_X, 620.0 + BATH_TRI)]
 BATH_BASIN = (3930.0, 1850.0, 4380.0, 2350.0)          # 450 x 500
 
 #     BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)      # 280 corner shelf
@@ -1016,8 +1045,8 @@ _ty = [q[1] for q in BATH_SHOWER]
 
 FURNITURE += [
     ('screen', min(_tx), min(_ty), max(_tx), max(_ty),
-     "shower — triangular corner tray, 1050 (3'-5\") legs, down to where "
-     'column 3 ends, under the window',
+     f"shower — triangular corner tray, {BATH_TRI:.0f} ({_ft(BATH_TRI)}) legs, "
+     "off column 3's east face and down to where it ends, under the window",
      'R-BATH', 2100, BATH_SHOWER),
     ('console', *BATH_BASIN,
      "basin console — 500 x 450 (1'-8\" x 1'-6\"), turned on 160 (6\") where "
@@ -1064,4 +1093,97 @@ FURNITURE += [
     ('wardrobe', *ARM_WARD,
      "wardrobes — 600 x 2855 (2'-0\" x 9'-4\") down the party wall in the tail",
      'R-ROOM', 2400),
+]
+
+
+# ------------------------------------------ what goes in BATH / COMMON (SE)
+# THE ROOM IS AN L WITH A FIN IN IT. Derived, it comes out 5.90 m2 (63 sq ft):
+# a body 2425 x 2270 (7'-11" x 7'-5") with a 900 (2'-11") curve on the
+# north-west corner and a 400 (1'-4") one on the north-east, plus a tail
+# 930 x 610 (3'-1" x 2'-0") at the south-east where the door is. Column 4
+# stands inside it, showing as a fin 150 wide and 1050 (3'-5") long off the
+# south wall's east end.
+#
+# THE FIN DECIDES THE PLAN. It leaves a pocket east of it only 930 (3'-1")
+# wide — a WC needs 600 of pan and 600 in front of it, so nothing can face
+# across that pocket, and the east wall is out for anything you sit on or
+# stand at. West of the fin the south wall is clear for 1345 (4'-5"), which is
+# a shower, and it is the wall the only window is in.
+#
+# So: WET SOUTH-WEST, DRY NORTH. You come in at the south-east, the shower is
+# ahead and left with the window in it, and the two dry fittings are on the
+# north — the WC against the straight run of it with 1670 (5'-6") in front,
+# and the basin on the 900 curve.
+SEB_SHOWER = (SEB_X0, 6545.0, _col_face('column 4', 1), SEB_Y1)   # 1345 x 1200
+
+# THE WC IS ON THE NORTH WALL, not the east one, and it faces south down the
+# length of the room. Against the east wall it would have had the fin 330
+# (1'-1") in front of it; here it has the whole room.
+SEB_WC = (8367.0, SEB_Y0, 9067.0, SEB_Y0 + 600.0)                 # 700 x 600
+SEB_WC_CIST = _round_rect(SEB_WC[0], SEB_WC[1], SEB_WC[2], SEB_WC[1] + 200., 20)
+SEB_WC_PAN = _round_rect((SEB_WC[0] + SEB_WC[2]) / 2 - 200., SEB_WC[1] + 200.,
+                         (SEB_WC[0] + SEB_WC[2]) / 2 + 200., SEB_WC[3],
+                         (40, 40, 190, 190))
+
+# THE BASIN IS THE CURVE. The 900 corner was drawn to soften the room and had
+# nothing on it; a console struck from the same centre turns it into the one
+# fitting in the flat that could not have been bought off a shelf. 500 deep on
+# the inner face, so it runs 825 out and 325 in, and it dies into the wall at
+# both ends instead of stopping against it.
+SEB_ARC_C = (SEB_WX + SEB_RW, SEB_NY + SEB_RW)      # (7775, 6300)
+SEB_VAN_RO = SEB_RW - SEB_T / 2                     # 825, the wall face
+SEB_VAN_RI = SEB_VAN_RO - 500.0                     # 325, its own front edge
+
+
+def _seb_vanity(n=20):
+    """The console on the north-west curve: out along the wall, back along
+    the front. Angles run from due west of the centre round to due north."""
+    cx, cy = SEB_ARC_C
+    out = [(cx - SEB_VAN_RO * math.cos(math.pi / 2 * i / n),
+            cy - SEB_VAN_RO * math.sin(math.pi / 2 * i / n))
+           for i in range(n + 1)]
+    out += [(cx - SEB_VAN_RI * math.cos(math.pi / 2 * i / n),
+             cy - SEB_VAN_RI * math.sin(math.pi / 2 * i / n))
+            for i in range(n, -1, -1)]
+    return [(round(a, 1), round(b, 1)) for a, b in out]
+
+
+SEB_VANITY = _seb_vanity()
+_va = math.pi / 4                                   # the bowl sits on the 45
+_vr = (SEB_VAN_RO + SEB_VAN_RI) / 2                 # 575, mid-depth
+SEB_BOWL = _ellipse(SEB_ARC_C[0] - _vr * math.cos(_va),
+                    SEB_ARC_C[1] - _vr * math.sin(_va), 230, 180)
+
+_sx = [q[0] for q in SEB_VANITY]
+_sy = [q[1] for q in SEB_VANITY]
+
+FURNITURE += [
+    ('screen', *SEB_SHOWER,
+     f"shower — {SEB_SHOWER[2] - SEB_SHOWER[0]:.0f} x "
+     f"{SEB_SHOWER[3] - SEB_SHOWER[1]:.0f} "
+     f"({_ft(SEB_SHOWER[2] - SEB_SHOWER[0])} x "
+     f"{_ft(SEB_SHOWER[3] - SEB_SHOWER[1])}), column 4's west face as its "
+     'east wall and the window in it',
+     'R-BATH-COMMON', 2100,
+     [(SEB_SHOWER[0], SEB_SHOWER[1]), (SEB_SHOWER[2], SEB_SHOWER[1]),
+      (SEB_SHOWER[2], SEB_SHOWER[3]), (SEB_SHOWER[0], SEB_SHOWER[3])]),
+    ('console', SEB_WC[0], SEB_WC[1], SEB_WC[2], SEB_WC[1] + 200.,
+     f"WC cistern — {SEB_WC[2] - SEB_WC[0]:.0f} ({_ft(SEB_WC[2] - SEB_WC[0])}) "
+     'wide against the north wall',
+     'R-BATH-COMMON', 900, SEB_WC_CIST),
+    ('console', (SEB_WC[0] + SEB_WC[2]) / 2 - 200., SEB_WC[1] + 200.,
+     (SEB_WC[0] + SEB_WC[2]) / 2 + 200., SEB_WC[3],
+     f"WC — 400 x 600 (1'-4\" x {_ft(SEB_WC[3] - SEB_WC[1])}) projection, "
+     f"facing south with {_ft(SEB_Y1 - SEB_WC[3])} clear in front",
+     'R-BATH-COMMON', 400, SEB_WC_PAN),
+    ('console', min(_sx), min(_sy), max(_sx), max(_sy),
+     "basin console — 500 (1'-8\") deep on the 825 (2'-8\") curve, "
+     f"{_ft(math.pi / 2 * SEB_VAN_RO)} of it round the corner",
+     'R-BATH-COMMON', 900, SEB_VANITY),
+    ('console', SEB_ARC_C[0] - _vr * math.cos(_va) - 230,
+     SEB_ARC_C[1] - _vr * math.sin(_va) - 180,
+     SEB_ARC_C[0] - _vr * math.cos(_va) + 230,
+     SEB_ARC_C[1] - _vr * math.sin(_va) + 180,
+     "basin — 460 x 360 (1'-6\" x 1'-2\") oval, mirror over, on the 45",
+     'R-BATH-COMMON', 880, SEB_BOWL),
 ]

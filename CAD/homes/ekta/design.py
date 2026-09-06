@@ -71,7 +71,7 @@ PLATE = [
 # at both ends so the slab dies into the counter rather than stopping against
 # it with a cut end in mid-air.
 
-_BAR = ((3500.0, 545.0), (5750.0, 6255.0), (8000.0, 545.0))   # p0, control, p2
+_BAR = ((3900.0, 1670.0), (5750.0, 5130.0), (7600.0, 1670.0))   # p0, control, p2
 FACE = 100.0        # half of the 200 counter, so the slab starts at its face
 DEPTH = 400.0       # projection: knee room under, plates on top
 SEAT = 700.0        # stool centres, measured from the counter centreline
@@ -155,17 +155,21 @@ NEW_WALLS = [
 
 
 
-    # --- the kitchen: ONE curve, north wall to north wall
-    # It used to spring off the two columns and need a short straight wall at
-    # each end to close the corners. Those corners were the problem: they held
-    # the kitchen out to the full 5245 of the north band and gave the rooms
-    # either side nothing. So the curve now starts and finishes ON THE NORTH
-    # WALL, and the whole boundary is one line — the counter at the bottom of
-    # it, the kitchen's own side walls where it stands up at the ends.
+    # --- the kitchen: ends pulled in, the bowl left where it was
+    # The counter used to spring off the two columns at 3125 and 8370, which
+    # held the kitchen out to the full 5245 of the north band and gave the
+    # rooms either side nothing. Its ends come in to 3900 and 7600 instead.
     #
-    # The columns fall outside it now, standing in the living room until
-    # whatever divides that space picks them up.
-    (3500, 545, 8000, 545, 200,
+    # The alternative was to curve the whole boundary off the north wall, so
+    # the kitchen became one lens with no side walls at all. Same area to the
+    # square millimetre, and a worse kitchen: the working wall ran to zero
+    # depth at both tips, so only the middle of it took a counter. Here the
+    # north end stays a plain rectangle 3700 x 1125, every millimetre of it
+    # usable, with the bowl hung below.
+    #
+    # The columns fall outside the kitchen now, standing in the living room
+    # until whatever divides that space picks them up.
+    (3900, 1670, 7600, 1670, 200,
      [('window', _arc_x(0.12), _arc_x(0.38), 1050, 2400),
       ('cased', _arc_x(0.38), _arc_x(0.62), 1050, 1800),
       ('window', _arc_x(0.62), _arc_x(0.88), 1050, 2400)],
@@ -173,8 +177,12 @@ NEW_WALLS = [
      'kitchen | living. Timber to 1050, brown tinted glass to 2400, and a '
      'serving hatch at the bottom of the bowl. Openings are placed by '
      'FRACTION OF THE ARC and converted to positions on the chord, because on '
-     'a curve this steep equal steps along the chord are nothing like equal '
-     'steps along the wall.', 2855),
+     'a bowed wall equal steps along the chord are not equal steps along the '
+     'wall.', 1730),
+    (3900, 545, 3900, 1670, 125, [], 'partition', 'W-KIT-W',
+     'kitchen | the room to the west', 0),
+    (7600, 545, 7600, 1670, 125, [], 'partition', 'W-KIT-E',
+     'kitchen | the room to the east', 0),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',

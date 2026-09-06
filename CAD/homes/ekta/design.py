@@ -87,18 +87,7 @@ NEW_WALLS = [
      'to the room across its whole 3750. It stays a line only so the kitchen '
      'keeps its own name and area; delete it and the two become one room.', 0),
 
-    # --- the family bedroom's south-west corner
-    (6875, 4195, 8370, 4195, 125, [], 'partition', 'W-BED-S',
-     "vestibule | family bedroom. Solid: the bedroom is entered once, through "
-     'the vestibule opening opposite, so the room is not a corridor between '
-     'the living room and its own far end.', 0),
 
-    # --- the living room's east wall, which is the bedroom's front door
-    (8370, 4195, 8370, 7820, 125, [('door', 4450, 5350)], 'partition', 'W-BED-W',
-     'living | family bedroom. One run now: the vestibule and the bathroom '
-     'that used to sit west of it are both living room. The 900 opening is a '
-     'DOOR rather than a cased arch — it is the only thing between the sofa '
-     'and the beds.', 0),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -185,13 +174,11 @@ ROOMS = [
      'the one spare room: a desk under the north window, a bed for visitors'),
     ('KITCHEN', '', (5000, 2300),
      'the whole north band, two windows, open to the dining across a bowed counter'),
-    ('FAMILY BEDROOM', '', (9950, 2200),
-     "one room for all three: the adults south, the child's end north behind a "
-     'screen, and an L returning west behind the kitchen'),
     ('LIVING / DINING', '', (4400, 7500),
-     'one room from the front door to the balcony and out to the east wall — '
-     'the kitchen opens straight off it. NO BATHROOM IN THE FLAT: the last one '
-     'was absorbed here and a new one has to be placed.'),
+     'THE WHOLE EAST HALF OF THE FLAT, from the front door to the balcony and '
+     'from the kitchen out to the east wall. The bedroom had no boundary left '
+     'once its two walls went, so it is this room now. Nothing wet and nothing '
+     'private survives here: both have to be placed again.'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]

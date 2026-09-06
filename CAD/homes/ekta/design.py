@@ -399,12 +399,18 @@ ARM_PARK = [(ARM_PARK_X, ARM_N - ARM_LEAF), (ARM_PARK_X + 140.0, ARM_N - ARM_LEA
 # drops to the counter top at 900 (2'-11") and is open from there to
 # 2100 (6'-11").
 #
-# ONE SLAB THROUGH THE WALL. Inside the kitchen it is 400 (1'-4") of serving
-# counter to put plates down on; outside it runs 1400 (4'-7") into the living
+# ONE SLAB THROUGH THE WALL. Inside the kitchen it is 600 (2'-0") of serving
+# counter, flush with the worktop; outside it runs 1400 (4'-7") into the living
 # room as the eating bar, two chairs a side. The wall under it stays solid — a
 # sill above zero never cuts a wall in plan, and the base of this one is
 # holding the slab up.
-BAR_IN, BAR_OUT = 400.0, 1400.0     # kitchen side, living side
+# THE SERVING COUNTER IS AS DEEP AS THE WORKTOP. One number, used twice: the
+# slab reaches 600 (2'-0") into the kitchen, which is where the worktop's front
+# edge comes round the corner to, so the two are one continuous surface and
+# neither can drift from the other. It was 400 and stood 200 (8") proud of the
+# counter it is supposed to serve.
+CTOP_D = 600.0                      # worktop depth, everywhere
+BAR_IN, BAR_OUT = CTOP_D, 1400.0    # kitchen side, living side
 BAR_TOP = 900.0                     # counter height, and the hatch's sill
 BAR_W = 800.0                       # the slab, and the hatch, 800 (2'-7")
 BAR_SEATS = 2                       # a side

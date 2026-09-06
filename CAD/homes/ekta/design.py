@@ -194,11 +194,19 @@ ROOMS = [
 # straight wall, where the wobble is the only thing moving; against a curve
 # this strong it just fought it, and two competing curves read as one badly
 # drawn one.
+#
+# BOTH FACES CARRY ONE. The eating side is the living room's; the mirror of it
+# inside the kitchen is where plates are put down and picked up through the
+# hatch. Each is a lens: full depth across the seats, tapering away to nothing
+# at both ends so the slab dies into the counter rather than stopping against
+# it with a cut end in mid-air.
 
 _BAR = ((3125.0, 1670.0), (5747.5, 5130.0), (8370.0, 1670.0))   # p0, control, p2
 FACE = 100.0        # half of the 200 counter, so the slab starts at its face
 DEPTH = 400.0       # projection: knee room under, plates on top
 SEAT = 700.0        # stool centres, measured from the counter centreline
+TAPER = 0.28        # the fraction at each end over which the slab dies away
+SPAN = (0.12, 0.88) # how far along the counter the slabs run
 
 
 def _bar_point(t):
@@ -216,16 +224,37 @@ def _bar_point(t):
     return px, py, nx, ny
 
 
-def _shelf(t0=0.22, t1=0.78, n=64):
-    """The slab: the counter face on the inside, the same curve pushed out by
-    DEPTH on the outside, and a square cut across each end."""
+def _taper(f):
+    """Full depth through the middle, smoothstepped away at both ends.
+
+    Smoothstep rather than a sine because it leaves the slab at FULL width
+    across every seat and spends the taper where nobody sits; and because it
+    reaches zero with zero slope, so the edge runs into the counter face
+    tangentially instead of arriving at it as a spike.
+    """
+    u = min(f, 1.0 - f) / TAPER
+    if u >= 1.0:
+        return 1.0
+    return u * u * (3.0 - 2.0 * u)
+
+
+def _slab(sign, depth, n=80):
+    """One lens against the counter. sign +1 is the living-room side, -1 the
+    kitchen side; the geometry is otherwise identical, which is the point."""
+    t0, t1 = SPAN
     inner, outer = [], []
     for i in range(n + 1):
-        px, py, nx, ny = _bar_point(t0 + (t1 - t0) * i / n)
+        f = i / n
+        px, py, nx, ny = _bar_point(t0 + (t1 - t0) * f)
+        nx, ny = nx * sign, ny * sign
         inner.append((round(px + nx * FACE, 1), round(py + ny * FACE, 1)))
-        outer.append((round(px + nx * (FACE + DEPTH), 1),
-                      round(py + ny * (FACE + DEPTH), 1)))
-    return inner + outer[::-1]
+        d = FACE + depth * _taper(f)
+        outer.append((round(px + nx * d, 1), round(py + ny * d, 1)))
+    ring, out = inner + outer[::-1], []
+    for q in ring:                     # the tips coincide; drop the repeats
+        if not out or abs(q[0] - out[-1][0]) > 0.5 or abs(q[1] - out[-1][1]) > 0.5:
+            out.append(q)
+    return out
 
 
 def _even_t(t0, t1, count, n=400):
@@ -261,17 +290,22 @@ def _stools(count=4, size=450.0, t0=0.26, t1=0.74):
     return out
 
 
-SHELF = _shelf()
+SHELF = _slab(+1, DEPTH)     # the eating side, in the living room
+LEDGE = _slab(-1, DEPTH)     # its mirror, the serving side in the kitchen
 STOOLS = _stools()
 _sx = [p[0] for p in SHELF]
 _sy = [p[1] for p in SHELF]
+_lx = [p[0] for p in LEDGE]
+_ly = [p[1] for p in LEDGE]
 
 # Loose furniture. (kind, x1, y1, x2, y2, label, room, height, poly)
 # Four stools, set on the curve's own outward normal 640 from the counter face
 # so they sit square to it rather than square to the plan.
 FURNITURE = [
     ('table', min(_sx), min(_sy), max(_sx), max(_sy),
-     'counter shelf', 'R-LIVING-DINING', 1050, SHELF),
+     'counter shelf — the eating side', 'R-LIVING-DINING', 1050, SHELF),
+    ('table', min(_lx), min(_ly), max(_lx), max(_ly),
+     'serving ledge — inside the kitchen', 'R-KITCHEN', 1050, LEDGE),
 ] + [
     ('stool', a, b, c, d, 'bar stool', 'R-LIVING-DINING', 750)
     for a, b, c, d in STOOLS

@@ -348,7 +348,23 @@ SEB_Y1, SEB_Y2 = 7745.0, 8355.0     # the notch wall, and the arm's south wall
 # vertex of KITCHEN_LINE, and (8410, 5400) is on W-SEB's straight top run.
 ARM_X = 8410.0
 ARM_N, ARM_S = 2500.0, 5400.0
-ARM_PANEL = 970.0       # the fixed panel the two sliding ones park over
+ARM_REVEAL = 100.0      # a jamb at each end for the track to die into
+ARM_LEAF = 900.0        # three of them, and nothing fixed
+
+# WHERE THE PANELS GO WHEN THEY ARE OPEN. Not a fixed panel across the north
+# third of the opening — that was the first version and it meant a third of
+# the screen could never move. They run north instead, past the top of the
+# opening, and stack flat against the kitchen wall's EAST face, on the room's
+# side of it, where there is 1955 (6'-5") of wall and nothing in front of it.
+# Open, the whole 2700 (8'-10") is clear.
+#
+# The track is face-fixed to that wall, so the panels' plane is 115 (4-1/2")
+# east of the line the screen is drawn on. Every surface-mounted slider has
+# that offset and no plan at this scale draws it; what is drawn is where the
+# stack ends up, because that is the part that decides whether the room works.
+ARM_PARK_X = 8525.0     # the kitchen wall's east face
+ARM_PARK = [(ARM_PARK_X, ARM_N - ARM_LEAF), (ARM_PARK_X + 140.0, ARM_N - ARM_LEAF),
+            (ARM_PARK_X + 140.0, ARM_N), (ARM_PARK_X, ARM_N)]
 
 # ------------------------------------------- the hatch and the eating counter
 # THE HATCH WAS ALREADY THERE. The middle stretch of the U's flat bottom —
@@ -455,14 +471,13 @@ NEW_WALLS = [
     # from the living room the kitchen's east side and this screen read as one
     # plane 2900 (9'-6") long, not as two things that nearly line up.
     #
-    # 125 thick, because it is a screen and not masonry: three panels of 970
-    # (3'-2"), two of them sliding and one fixed. The fixed one is at the north
-    # end against the kitchen, so the leaves park there and the way through
-    # opens at the south, which is the side the living room comes from. Closed,
-    # the arm is a room; open, 1930 (6'-4") of it is living room again.
+    # 125 thick, because it is a screen and not masonry: three panels of 900
+    # (2'-11"), all three sliding, running north to stack against the kitchen
+    # wall. Closed, the arm is a room; open, the whole 2700 (8'-10") of it is
+    # living room again — there is nothing fixed left in the way.
     (ARM_X, ARM_N, ARM_X, ARM_S, 125,
-     [('slider', ARM_N + ARM_PANEL, ARM_S, 0, 2400, -1)], 'partition', 'W-ARM',
-     'room | living — the sliding screen', 0),
+     [('slider', ARM_N + ARM_REVEAL, ARM_S - ARM_REVEAL, 0, 2400, +1)],
+     'partition', 'W-ARM', 'room | living — the sliding screen', 0),
 
     # --- the south-east bath: one wall, round the column
     (SEB_WX, SEB_S, SEB_EX, SEB_SY, SEB_T,
@@ -740,3 +755,11 @@ FURNITURE += [
      'R-LIVING-DINING', 850)
     for a, b, c, d in BAR_CHAIRS
 ]
+
+# The three panels shown where they park: stacked against the kitchen wall's
+# east face, clear of the opening.
+FURNITURE.append(
+    ('screen', ARM_PARK[0][0], ARM_PARK[0][1], ARM_PARK[2][0], ARM_PARK[2][1],
+     "the sliding screen, parked — three panels of 900 (2'-11\") stacked "
+     "against the kitchen wall",
+     'R-ROOM', 2400, ARM_PARK))

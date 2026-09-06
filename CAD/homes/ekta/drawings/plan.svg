@@ -33,22 +33,7 @@
 <polygon points="991.3,1212.0 1142.3,1212.0 1142.3,1187.6 991.3,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="1590.6,1212.0 1722.2,1212.0 1722.2,1187.6 1590.6,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <line x1="1142.3" y1="1199.8" x2="1590.6" y2="1199.8" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
-<polygon points="2001.4,488.4 2001.4,1199.8 2025.8,1199.8 2025.8,488.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1722.2,1212.0 1805.1,1212.0 1805.1,1187.6 1722.2,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<polygon points="1961.0,1212.0 2013.6,1212.0 2013.6,1187.6 1961.0,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="1805.1" y1="1199.8" x2="1805.1" y2="1355.8" stroke="#8a8378" stroke-width="1.4"/>
-<line x1="1805.1" y1="1355.8" x2="1825.4" y2="1354.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1825.4" y1="1354.4" x2="1845.4" y2="1350.4" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1845.4" y1="1350.4" x2="1864.7" y2="1343.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1864.7" y1="1343.9" x2="1883.0" y2="1334.9" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1883.0" y1="1334.9" x2="1900.0" y2="1323.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1900.0" y1="1323.5" x2="1915.3" y2="1310.1" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1915.3" y1="1310.1" x2="1928.8" y2="1294.7" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1928.8" y1="1294.7" x2="1940.1" y2="1277.8" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1940.1" y1="1277.8" x2="1949.1" y2="1259.5" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1949.1" y1="1259.5" x2="1955.7" y2="1240.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1955.7" y1="1240.2" x2="1959.7" y2="1220.2" stroke="#c3bcae" stroke-width="1.0"/>
-<line x1="1959.7" y1="1220.2" x2="1961.0" y2="1199.8" stroke="#c3bcae" stroke-width="1.0"/>
+<polygon points="1722.2,1212.0 2013.6,1212.0 2013.6,1187.6 1722.2,1187.6" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="1710.0,1199.8 1710.0,1249.5 1734.4,1249.5 1734.4,1199.8" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="1710.0,1425.0 1710.0,1473.7 1734.4,1473.7 1734.4,1425.0" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <line x1="1722.2" y1="1249.5" x2="1722.2" y2="1425.0" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
@@ -116,9 +101,6 @@
 <text x="674.5" y="832.4" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the one spare room: a desk under the north window, a bed for visitors</text>
 <text x="1356.7" y="812.9" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">KITCHEN</text>
 <text x="1356.7" y="890.9" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the whole north band, two windows, open to the dining across a bowed c</text>
-<text x="1867.4" y="812.9" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BATH &amp; UTILITY</text>
-<text x="1867.4" y="846.0" font-family="Helvetica,Arial" font-size="10" fill="#2c5c61" font-weight="normal" letter-spacing="2" text-anchor="middle">COMMON</text>
-<text x="1867.4" y="906.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the builder's toilet position, on its shaft — bath, washing machine an</text>
 <text x="2321.6" y="793.4" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">FAMILY BEDROOM</text>
 <text x="2321.6" y="871.4" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">one room for all three: the adults south, the child's end north behind</text>
 <text x="1867.4" y="1319.7" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">VESTIBULE</text>

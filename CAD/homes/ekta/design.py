@@ -78,17 +78,18 @@ NEW_WALLS = [
 
     # --- the kitchen, the whole width of the north band
     (6875, 545, 6875, 4195, 125, [], 'partition', 'W-KIT-E',
-     'kitchen | bath and utility', 0),
+     "kitchen | family bedroom. The bedroom's north-west return runs behind "
+     'the kitchen: tall units one side, the child\'s desk and wardrobe the '
+     'other.', 0),
     (3125, 4195, 6875, 4195, 125, [('cased', 3900, 6200)], 'partition', 'W-KIT-S',
      'kitchen | dining. A 2300 opening in a straight wall: the counter runs '
      'along it and the kitchen is open to the room across that length.', 0),
 
-    # --- the second bathroom, on the shaft the builder drained a toilet into
-    (8370, 545, 8370, 4195, 125, [], 'partition', 'W-GBATH-E',
-     "bath and utility | family bedroom. Blind on the bedroom side — the "
-     "child's wardrobe backs onto it.", 0),
-    (6875, 4195, 8370, 4195, 125, [('door', 7300, 8100)], 'partition', 'W-GBATH-S',
-     'bath and utility | vestibule', 0),
+    # --- the family bedroom's south-west corner
+    (6875, 4195, 8370, 4195, 125, [], 'partition', 'W-BED-S',
+     "vestibule | family bedroom. Solid: the bedroom is entered once, through "
+     'the vestibule opening opposite, so the room is not a corridor between '
+     'the living room and its own far end.', 0),
 
     # --- the vestibule: the way into the family wing
     (6875, 4195, 6875, 5600, 125, [('cased', 4450, 5350)], 'partition', 'W-VEST-W',
@@ -191,11 +192,9 @@ ROOMS = [
      'the one spare room: a desk under the north window, a bed for visitors'),
     ('KITCHEN', '', (5000, 2300),
      'the whole north band, two windows, open to the dining across a bowed counter'),
-    ('BATH & UTILITY', 'COMMON', (7620, 2300),
-     "the builder's toilet position, on its shaft — bath, washing machine and store"),
     ('FAMILY BEDROOM', '', (9950, 2200),
      "one room for all three: the adults south, the child's end north behind a "
-     'curved screen, a window at each end'),
+     'screen, and an L returning west behind the kitchen'),
     ('VESTIBULE', '', (7620, 4900),
      'the arched threshold into the family wing, and the way to the common bath'),
     ('BATH', 'FAMILY', (7620, 6700), 'on the south-east shaft, entered from the bedroom'),

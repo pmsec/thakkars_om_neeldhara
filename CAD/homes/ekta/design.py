@@ -392,7 +392,11 @@ ARM_LEAF = 900.0        # three of them, and nothing fixed
 # east of the line the screen is drawn on. Every surface-mounted slider has
 # that offset and no plan at this scale draws it; what is drawn is where the
 # stack ends up, because that is the part that decides whether the room works.
-ARM_PARK_X = 8525.0     # the kitchen wall's east face
+# 10 (0.4") off the kitchen wall's east face, which is 8525. Hard against it
+# the screen's south end stood 3.5 mm inside the wall: the wall mitres where it
+# turns west at y 2500 and its face flares east through the corner. Nothing
+# anybody would see, and wrong in the model.
+ARM_PARK_X = 8535.0
 ARM_PARK = [(ARM_PARK_X, ARM_N - ARM_LEAF), (ARM_PARK_X + 140.0, ARM_N - ARM_LEAF),
             (ARM_PARK_X + 140.0, ARM_N), (ARM_PARK_X, ARM_N)]
 
@@ -1012,11 +1016,23 @@ FURNITURE += [
 # and 742 (2'-5") from the corner to the hypotenuse instead of 636 — a better
 # shower for nothing, and read off immovables so it cannot drift.
 #
-# THE SHELF AND THE WC ARE OFF. Both were drawn as plain rectangles and both
-# were struck out. Taking the WC out leaves this room a shower and a basin: a
-# bathroom without a lavatory, which the flat can carry only because BATH /
-# COMMON has one — but it means the bedroom's occupant crosses the living room
-# at night. Putting it back is the commented line below.
+# THE WC IS BACK, AND IT SWAPS WITH THE BASIN. It was asked for in the pocket
+# between the tray's hypotenuse and the console, and that pocket cannot hold
+# one: with the back on the east wall, its depth and its width trade off along
+# the hypotenuse — 3800 west face gives 580 deep and 700 wide, 3780 gives 600
+# deep and 680 wide. A WC needs 600 and 700 at once, and no line on that
+# diagonal gives both.
+#
+# South of the tray the room is its full 1180 (3'-10") and the WC fits, so the
+# two fittings change places: WC on the east wall below the tray, basin on the
+# east wall beside it in the wedge. Both stay on one wall, which is one run of
+# soil and one run of waste.
+#
+# WHAT IT COSTS is the clearance in front of the pan: 580 (1'-11") to the west
+# wall, against the 600 you would want. That is not a placing error, it is the
+# room — 1180 wide less 600 of WC leaves 580, wherever it stands. What is in
+# front of it is the doorway, so with the door open the space reads as more
+# than it measures.
 #
 # THE BASIN IS A CONSOLE NOW, not a box: a 450 x 500 top with its two exposed
 # corners turned on 160 (6") and the wall corners on 40, and the bowl drawn as
@@ -1030,10 +1046,22 @@ BATH_TRI = _col_face('column 3', 4) - (KTOP + 75)      # 1050
 BATH_X = _col_face('column 3', 3)                      # 3280, the east face
 BATH_SHOWER = [(BATH_X, 620.0), (BATH_X + BATH_TRI, 620.0),
                (BATH_X, 620.0 + BATH_TRI)]
-BATH_BASIN = (3930.0, 1850.0, 4380.0, 2350.0)          # 450 x 500
+BATH_E = 4380.0                                        # the east wall's face
+BATH_WC_D, BATH_WC_W = 600.0, 700.0
+# The WC's north edge IS the tray's south vertex, so it starts exactly where
+# the shower stops and the room goes full width.
+BATH_WC = (BATH_E - BATH_WC_D, 620.0 + BATH_TRI,
+           BATH_E, 620.0 + BATH_TRI + BATH_WC_W)
+BATH_WC_CIST = _round_rect(BATH_E - 200.0, BATH_WC[1], BATH_E, BATH_WC[3], 20)
+BATH_WC_PAN = _round_rect(BATH_WC[0], (BATH_WC[1] + BATH_WC[3]) / 2 - 200.0,
+                          BATH_E - 200.0, (BATH_WC[1] + BATH_WC[3]) / 2 + 200.0,
+                          (190, 40, 40, 190))
+
+# The basin takes the wedge north of it, 20 (1") clear so the two read as one
+# fitted run rather than as two things that happen to be on the same wall.
+BATH_BASIN = (3930.0, BATH_WC[1] - 20.0 - 500.0, BATH_E, BATH_WC[1] - 20.0)
 
 #     BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)      # 280 corner shelf
-#     BATH_WC = (3780.0, 1050.0, 4380.0, 1750.0)       # 600 projection x 700
 
 
 BATH_TOP = _round_rect(*BATH_BASIN, (160, 40, 40, 160))
@@ -1056,6 +1084,16 @@ FURNITURE += [
      BATH_BASIN[2] - 20, BATH_BASIN[3] - 100,
      "basin — 360 x 300 (1'-2\" x 1'-0\") oval, mirror over",
      'R-BATH', 880, BATH_BOWL),
+    ('console', BATH_E - 200.0, BATH_WC[1], BATH_E, BATH_WC[3],
+     f"WC cistern — {BATH_WC_W:.0f} ({_ft(BATH_WC_W)}) wide against the east "
+     'wall, below the shower',
+     'R-BATH', 900, BATH_WC_CIST),
+    ('console', BATH_WC[0], (BATH_WC[1] + BATH_WC[3]) / 2 - 200.0,
+     BATH_E - 200.0, (BATH_WC[1] + BATH_WC[3]) / 2 + 200.0,
+     f"WC — 400 x {BATH_WC_D:.0f} (1'-4\" x {_ft(BATH_WC_D)}) projection, "
+     f"facing west with {_ft(BATH_WC[0] - 3200.0)} clear in front — which is "
+     'the room, not the placing: 1180 wide less 600 of WC',
+     'R-BATH', 400, BATH_WC_PAN),
 ]
 
 

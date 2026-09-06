@@ -1,7 +1,7 @@
 {
   "id": "ekta",
   "name": "Ekta \u2014 14th floor, Neeldhara",
-  "subtitle": "imported from the builder's DWG \u00b7 1073 sq ft RERA",
+  "subtitle": "designed on the builder's DWG \u00b7 1073 sq ft RERA \u00b7 8 rooms",
   "source": "homes/ekta/source/14th_floor_neeldhara_ekta.dwg",
   "sheet": "homes/ekta/drawings/plan.svg",
   "origin": "imported",
@@ -17,5 +17,11 @@
     "x0": 73414.2,
     "y1": 58679.0
   },
-  "dxf": "homes/ekta/source/ekta.dxf"
+  "dxf": "homes/ekta/source/ekta.dxf",
+  "titleBlock": {
+    "drawing": "A-201",
+    "revision": "Design round 1",
+    "date": "September 2026",
+    "scaleNote": "Designed on the builder\u2019s DWG. The import read his drawing \u2014 wall centrelines paired from his drawn faces, doors off his door layer, envelope from the RERA carpet boundary, every room checked against his own dimension text \u2014 and that record is frozen as design.imported.py. What is drawn here is what replaces it: his thirteen rooms rebuilt as eight, every internal wall new, and the flat furnished throughout."
+  }
 }

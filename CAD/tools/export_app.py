@@ -141,14 +141,22 @@ def main():
     A('')
     A('export const building: BuildingData = {')
     A('  meta: {')
+    # THE TITLE BLOCK IS THE HOME'S TO SAY. It was hard-coded to BUILDER /
+    # imported / "not yet designed", which was true of a flat the day it came
+    # off the DWG and is a lie the day somebody starts drawing on it. A home
+    # that has been designed sets `titleBlock` in home.json; one that has not
+    # gets the import wording, unchanged.
+    tb = meta.get('titleBlock') or {}
+    _imported_note = (
+        'Imported from the builder\u2019s DWG: wall centrelines paired from '
+        'his drawn faces, doors off his door layer, envelope from the RERA '
+        'carpet boundary. Every room checked against his own dimension text. '
+        'Not yet designed.')
     A(f"    project: {meta['name']!r},")
-    A("    drawing: 'BUILDER',")
-    A(f"    revision: {meta.get('subtitle', 'imported')!r},")
-    A("    date: 'imported',")
-    A("    scaleNote: 'Imported from the builder\\u2019s DWG: wall centrelines paired "
-      "from his drawn faces, doors off his door layer, envelope from the RERA "
-      "carpet boundary. Every room checked against his own dimension text. "
-      "Not yet designed.',")
+    A(f"    drawing: {tb.get('drawing', 'BUILDER')!r},")
+    A(f"    revision: {tb.get('revision', meta.get('subtitle', 'imported'))!r},")
+    A(f"    date: {tb.get('date', 'imported')!r},")
+    A(f"    scaleNote: {tb.get('scaleNote', _imported_note)!r},")
     A('  },')
     A('  envelope: [' + ', '.join(pt(x, y) for x, y in D.ENVELOPE) + '],')
     A('  thickness: { exterior: 150, interior: 150, partition: 125 },')
@@ -245,9 +253,13 @@ def main():
     A('')
     open(os.path.join(a.out, 'building.ts'), 'w').write('\n'.join(o))
 
+    # A FIXTURE IS NOT A PIECE OF FURNITURE. Fixtures are the built-in things
+    # the app models separately — Home 1's joinery. A design can be complete
+    # and have none, so say that rather than calling the home undesigned.
     open(os.path.join(a.out, 'fixtures.ts'), 'w').write(
-        f"/**\n * {meta['name']} — GENERATED. No fixtures yet: this flat is "
-        "imported,\n * not designed.\n */\n\n"
+        f"/**\n * {meta['name']} — GENERATED. This design authors no "
+        "FIXTURES; what it\n * holds is furniture, which is in furniture.ts."
+        "\n */\n\n"
         "import type { FixtureDef } from '../../data/schema'\n\n"
         'export const fixtures: FixtureDef[] = []\n')
 

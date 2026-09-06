@@ -135,6 +135,18 @@ KITCHEN_LINE = U_LINE
 KITCHEN_RUN = _run(KITCHEN_LINE)
 
 
+def _kit_bot_arc(x):
+    """The distance along the kitchen wall to a point on its FLAT BOTTOM.
+
+    Openings on a polyline are distances along it, and the bottom of the U is
+    two arcs and a leg from the start — a number nobody should be typing. The
+    run is measured off the line itself, so the arcs can be re-cut and the
+    hatch stays where it was put.
+    """
+    i0 = next(i for i, q in enumerate(KITCHEN_LINE) if abs(q[1] - KBOT) < 0.5)
+    return round(KITCHEN_RUN[i0] + (x - KITCHEN_LINE[i0][0]), 1)
+
+
 def _arc_d(frac):
     """A distance along the kitchen wall, from a fraction of it. Openings on
     this wall are authored this way because there is no axis to measure
@@ -338,6 +350,56 @@ ARM_X = 8410.0
 ARM_N, ARM_S = 2500.0, 5400.0
 ARM_PANEL = 970.0       # the fixed panel the two sliding ones park over
 
+# ------------------------------------------- the hatch and the eating counter
+# THE HATCH WAS ALREADY THERE. The middle stretch of the U's flat bottom —
+# 0.44 to 0.56 of the way round, 1062 (3'-6") of it — has been a cased opening
+# since the wall was drawn, from when a counter ran round the whole inside. A
+# second one next to it is not a second hatch, it is a mistake; this is the
+# one, and the counter goes through it.
+#
+# What changes is its sill: 1050 (3'-5") was the line of the tinted glass all
+# round, and this stretch drops to 900 (2'-11") because that is the top of the
+# counter passing through it. Open from there to 2100 (6'-11").
+#
+# ONE SLAB THROUGH THE WALL. Inside the kitchen it is 400 (1'-4") of serving
+# counter to put plates down on; outside it runs 1400 (4'-7") into the living
+# room as the eating bar, two chairs a side. The wall under it stays solid — a
+# sill above zero never cuts a wall in plan, and the base of this one is
+# holding the slab up.
+BAR_IN, BAR_OUT = 400.0, 1400.0     # kitchen side, living side
+BAR_TOP = 900.0                     # counter height, and the hatch's sill
+BAR_W = 800.0                       # the slab, 800 (2'-7") across
+BAR_SEATS = 2                       # a side
+SEAT, SEAT_OFF, SEAT_GAP = 450.0, 400.0, 700.0
+
+# Centred on the hatch, which is measured off the wall rather than typed: the
+# flat bottom's own start, plus however far along it the opening begins.
+def _kit_bot_x(d):
+    i0 = next(i for i, q in enumerate(KITCHEN_LINE) if abs(q[1] - KBOT) < 0.5)
+    return KITCHEN_LINE[i0][0] + (d - KITCHEN_RUN[i0])
+
+
+_BAR_MID = round((_kit_bot_x(_arc_d(0.44)) + _kit_bot_x(_arc_d(0.56))) / 2, 1)
+BAR_X0, BAR_X1 = _BAR_MID - BAR_W / 2, _BAR_MID + BAR_W / 2
+
+_BAR_N = KBOT - KT / 2 - BAR_IN     # 2885
+_BAR_S = KBOT + KT / 2 + BAR_OUT    # 4915
+BAR_SLAB = [(BAR_X0, _BAR_N), (BAR_X1, _BAR_N), (BAR_X1, _BAR_S), (BAR_X0, _BAR_S)]
+
+
+def _bar_chairs():
+    """Two a side, set out from the counter's own edges."""
+    out = []
+    for sx in (BAR_X0 - SEAT_OFF, BAR_X1 + SEAT_OFF):
+        for k in range(BAR_SEATS):
+            cy = KBOT + KT / 2 + 350.0 + k * SEAT_GAP
+            out.append((round(sx - SEAT / 2, 1), round(cy - SEAT / 2, 1),
+                        round(sx + SEAT / 2, 1), round(cy + SEAT / 2, 1)))
+    return out
+
+
+BAR_CHAIRS = _bar_chairs()
+
 # ------------------------------------------------------------- the walls
 # (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
 #
@@ -365,7 +427,7 @@ NEW_WALLS = [
     # solid at each top end, where the tall units and the fridge go.
     (KX0, KTOP, KX1, KTOP, KT,
      [('window', _arc_d(0.104), _arc_d(0.44), 1050, 2400),
-      ('cased', _arc_d(0.44), _arc_d(0.56), 1050, 1800),
+      ('cased', _arc_d(0.44), _arc_d(0.56), BAR_TOP, 2100),   # the hatch
       ('window', _arc_d(0.56), _arc_d(0.896), 1050, 2400)],
      'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),
 
@@ -657,3 +719,24 @@ for _cx, _cy, _a, _b, _room in CLAD_CORNERS:
 # than in front of it.
 COL4_W = 8295.0     # column 4's west face — what the shower closes against
 COL4_E = 8525.0     # and its east face, where the way past it starts
+
+# ------------------------------------------------- the counter and its chairs
+# The slab is ONE piece and it is drawn as one: the wall is painted over it,
+# so in plan it comes out as a serving counter on the kitchen side and an
+# eating bar on the living side, which is what it is.
+#
+# 900 (2'-11") is a worktop inside and a counter-height bar outside, so the
+# chairs are counter chairs — 600 (2'-0") to the seat, not 450 (1'-6"). If they
+# should be ordinary dining chairs the living-room leg has to step down to 750
+# (2'-6"), which makes it two slabs, not one.
+FURNITURE += [
+    ('table', BAR_X0, _BAR_N, BAR_X1, _BAR_S,
+     "serving counter and eating bar — 800 (2'-7\") through the hatch, "
+     "400 (1'-4\") in the kitchen and 1400 (4'-7\") out",
+     'R-LIVING-DINING', BAR_TOP, BAR_SLAB),
+] + [
+    ('chair', a, b, c, d,
+     "counter chair — 600 (2'-0\") seat to a 900 (2'-11\") top",
+     'R-LIVING-DINING', 850)
+    for a, b, c, d in BAR_CHAIRS
+]

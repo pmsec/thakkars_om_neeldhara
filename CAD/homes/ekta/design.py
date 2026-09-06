@@ -323,6 +323,21 @@ SEB_X0, SEB_X1 = SEB_WX + SEB_T / 2, SEB_EX - SEB_T / 2   # 6950 .. 9375
 SEB_Y0 = SEB_NY + SEB_T / 2                               # 5475
 SEB_Y1, SEB_Y2 = 7745.0, 8355.0     # the notch wall, and the arm's south wall
 
+# ------------------------------------------------- the east arm, closed off
+# THE ARM BECOMES A ROOM. 3025 (9'-11") wide and the length of the flat, with
+# windows at both ends and a blind party wall down its side, it was the last
+# big piece of the plan still reading as leftover living room. A screen on the
+# kitchen's own line closes it.
+#
+# The line is not chosen, it is inherited: the kitchen's east wall is already
+# at x 8410 — on column 1 — and it turns west at y 2500. Carrying that same x
+# south to the bath's top wall at 5400 costs nothing and lines the two up
+# exactly. Both ends land on a wall that is already there: (8410, 2500) is a
+# vertex of KITCHEN_LINE, and (8410, 5400) is on W-SEB's straight top run.
+ARM_X = 8410.0
+ARM_N, ARM_S = 2500.0, 5400.0
+ARM_PANEL = 970.0       # the fixed panel the two sliding ones park over
+
 # ------------------------------------------------------------- the walls
 # (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
 #
@@ -371,6 +386,21 @@ NEW_WALLS = [
       ('door', NW_BED_DOOR[0], NW_BED_DOOR[1], 0, 2100, -1)],    # bedroom | living
      'partition', 'W-NW',
      'bedroom and bath | living — one curve, both doors', NW_BOW),
+
+    # --- the sliding screen that makes the east arm a room
+    # It runs on the KITCHEN'S OWN LINE, x 8410, carried south from the point
+    # where the kitchen turns west (8410, 2500) to the bath's top wall — so
+    # from the living room the kitchen's east side and this screen read as one
+    # plane 2900 (9'-6") long, not as two things that nearly line up.
+    #
+    # 125 thick, because it is a screen and not masonry: three panels of 970
+    # (3'-2"), two of them sliding and one fixed. The fixed one is at the north
+    # end against the kitchen, so the leaves park there and the way through
+    # opens at the south, which is the side the living room comes from. Closed,
+    # the arm is a room; open, 1930 (6'-4") of it is living room again.
+    (ARM_X, ARM_N, ARM_X, ARM_S, 125,
+     [('slider', ARM_N + ARM_PANEL, ARM_S, 0, 2400, -1)], 'partition', 'W-ARM',
+     'room | living — the sliding screen', 0),
 
     # --- the south-east bath: one wall, round the column
     (SEB_WX, SEB_S, SEB_EX, SEB_SY, SEB_T,
@@ -469,6 +499,10 @@ ROOMS = [
      "2425 (7'-11\") wide, with column 4 taken inside it as the shower's east "
      'wall — where the builder had his second toilet, on the only other stack '
      'in the flat'),
+    ('ROOM', '', (10100, 3200),
+     "the east arm: 3025 (9'-11\") wide, windows north and south, the party "
+     'wall blind down one side. Shut off from the living room by a sliding '
+     'screen on the kitchen’s line'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]

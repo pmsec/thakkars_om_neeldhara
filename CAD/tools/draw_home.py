@@ -416,19 +416,38 @@ def main():
                            3.0 if kind == 'window' else 2.0,
                            dash=None if kind == 'window' else '10 8')
                 continue
+            # Openings on a polyline are already distances along the wall; on
+            # any other wall they are authored on its axis, so they are
+            # converted before anything is set out.
+            dd = arc_runs(curve, ops)
+            if pts_in:
+                a0, a1 = f0, f1
+            else:
+                vert = abs(x2 - x1) < abs(y2 - y1)
+                a0 = _axis_arc(curve, dd, vert, f0)
+                a1 = _axis_arc(curve, dd, vert, f1)
+            a0, a1 = min(a0, a1), max(a0, a1)
             if kind == 'door':
-                # Openings on a polyline are already distances along the wall;
-                # on any other wall they are authored on its axis, so they are
-                # converted before the leaf is set out.
-                dd = arc_runs(curve, ops)
-                if pts_in:
-                    a0, a1 = f0, f1
-                else:
-                    vert = abs(x2 - x1) < abs(y2 - y1)
-                    a0 = _axis_arc(curve, dd, vert, f0)
-                    a1 = _axis_arc(curve, dd, vert, f1)
                 door_swing(s, curve, dd, a0, a1,
                            op[5] if len(op) > 5 else 1)
+            elif kind == 'slider':
+                # A SLIDER HAS A LEAF BUT NO ARC. The panel is drawn beside the
+                # track, in the position it is parked in — which is the only
+                # thing a plan can say about a sliding door that a cased
+                # opening does not already say.
+                lead = sub_arc(curve, dd, a0, a1)
+                for k in range(len(lead) - 1):
+                    s.line(lead[k][0], lead[k][1], lead[k + 1][0], lead[k + 1][1],
+                           '#b0a897', 1.4, dash='7 9')
+                side = op[5] if len(op) > 5 else 1
+                hx, hy = _at(curve, dd, a0)
+                ex, ey = _at(curve, dd, a1)
+                tx, ty = ex - hx, ey - hy
+                L = math.hypot(tx, ty) or 1.0
+                nx, ny = ty / L * side, -tx / L * side
+                off = t / 2 + 45.0
+                s.line(hx + nx * off, hy + ny * off, ex + nx * off, ey + ny * off,
+                       '#8a8378', 2.6)
             else:
                 # An arched or cased opening has no leaf. Drawn as the line of
                 # the reveal plus, for an arch, the head projected down into

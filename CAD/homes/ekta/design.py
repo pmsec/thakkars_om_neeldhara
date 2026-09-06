@@ -396,6 +396,28 @@ BAR_X0 = KX0 + KR                   # the tangent point: 5395
 BAR_X1 = BAR_X0 + BAR_W
 HATCH = (_kit_bot_arc(BAR_X0), _kit_bot_arc(BAR_X1))
 
+# ----------------------------------------------------- the way into the kitchen
+# THE KITCHEN HAD NO DOOR. Every opening in the U was a window at 1050 (3'-5")
+# or the hatch at 900 (2'-11"), and the two legs die into the external wall, so
+# the room closed on itself — you could see in and pass a plate through, and
+# that was all. The U was cut for a counter that ran the whole way round and
+# nobody ever put the doorway back.
+#
+# It goes in the SOUTH-EAST CORNER, starting at the tangent point where the
+# flat bottom ends, so the flat bottom runs between two tangent points — the
+# counter at one end and the door at the other — and the glass fills what is
+# left. A corner is also the cheapest 850 (2'-9") of a kitchen to give up: the
+# inside of a 900 (2'-11") turn is the one stretch of a U where a counter is
+# reaching round a corner rather than being worked at.
+#
+# The opening curves, because the wall does. An 850 arc on a 900 radius has an
+# 819 (2'-8") chord and 98 (4") of sagitta, so the frame is set on the chord
+# and the reveal behind it splays — a flat leaf, a curved jamb. It swings OUT,
+# into the living room, because everything on the inside of that corner is
+# counter.
+KDOOR_W = 850.0
+KDOOR = (_kit_bot_arc(KX1 - KR), _kit_bot_arc(KX1 - KR) + KDOOR_W)
+
 _BAR_N = KBOT - KT / 2 - BAR_IN     # 2885
 _BAR_S = KBOT + KT / 2 + BAR_OUT    # 4915
 BAR_SLAB = [(BAR_X0, _BAR_N), (BAR_X1, _BAR_N), (BAR_X1, _BAR_S), (BAR_X0, _BAR_S)]
@@ -445,7 +467,9 @@ NEW_WALLS = [
      # solid is left at each top end, where the tall units and the fridge go.
      [('window', _arc_d(0.104), HATCH[0], 1050, 2400),
       ('cased', HATCH[0], HATCH[1], BAR_TOP, 2100),           # the hatch
-      ('window', HATCH[1], _arc_d(0.896), 1050, 2400)],
+      ('window', HATCH[1], KDOOR[0], 1050, 2400),
+      ('door', KDOOR[0], KDOOR[1], 0, 2100, -1),              # the way in
+      ('window', KDOOR[1], _arc_d(0.896), 1050, 2400)],
      'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),
 
     # --- 40 mm of nothing, so the kitchen closes. See ENV_NE above.
@@ -562,8 +586,9 @@ GLAZING = [
 # plan give their space back to the living room and the kitchen.
 ROOMS = [
     ('KITCHEN', '', (6345, 1500),
-     'a U with 900 corners: 3915 clear across the top, 1955 down each side, '
-     'and the run along the bottom'),
+     "a U with 900 (2'-11\") corners: 3685 (12'-1\") clear across the top, "
+     "1880 (6'-2\") of straight wall down each side, and the counter and the "
+     'door at the two ends of the bottom'),
     ('LIVING / DINING', '', (4400, 7500),
      'everything the kitchen does not enclose, from the front door to the '
      'balcony and out to the blind east wall.'),

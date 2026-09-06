@@ -189,12 +189,28 @@ def _axis_arc(pts, run, vert, v):
 
 
 def sub_arc(pts, run, d0, d1):
-    """The stretch of a polyline between two distances along it."""
+    """The stretch of a polyline between two distances along it.
+
+    THE ENDS ARE INTERPOLATED, not snapped to the nearest vertex. Taking only
+    the vertices inside the range is fine on a polyline made of many short
+    segments — the kitchen U is 130 of them — but a run drawn as ONE long
+    segment has a vertex only at each end, so a stretch that starts part way
+    along it came back with a single point and was not drawn at all. That is
+    what left the south-east bath's east wall as nothing below its corner.
+    """
     out = []
+    if d0 > run[0] + 1e-6:
+        out.append(_at(pts, run, d0))
     for i, d in enumerate(run):
         if d0 - 1e-6 <= d <= d1 + 1e-6:
             out.append(pts[i])
-    return out
+    if d1 < run[-1] - 1e-6:
+        out.append(_at(pts, run, d1))
+    clean = []
+    for q in out:
+        if not clean or math.hypot(q[0] - clean[-1][0], q[1] - clean[-1][1]) > 0.5:
+            clean.append(q)
+    return clean
 
 
 def solid_runs(x1, y1, x2, y2, ops):

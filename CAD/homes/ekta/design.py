@@ -302,12 +302,21 @@ def _seb_line(n=32):
 SEB_LINE = _seb_line()
 SEB_RUN = _run(SEB_LINE)
 
-# The door is in the top run, which is the only side of this room with wall
-# spare: the west side has the shower behind it and the east side the WC.
-# Openings on a polyline are distances ALONG it, so the top run's start is
-# measured rather than typed.
-_SEB_TOP0 = (SEB_S - SEB_NY - SEB_RW) + math.pi / 2 * SEB_RW    # start of the top
-SEB_DOOR = (_SEB_TOP0 + 240.0, _SEB_TOP0 + 1040.0)              # 800 clear
+# THE DOOR IS IN THE EAST RUN, at its far end, and the top of the room is
+# solid. It was in the top run first, which put the way in on the side the
+# living room sees most of and broke the wall's best stretch of curve; down
+# here it is in the corner the arm already leads to, and the doorway's far
+# jamb is the external wall itself.
+#
+# Openings on a polyline are distances ALONG it, so the runs are measured
+# rather than typed: down the west side, round the big corner, across the top,
+# round the tight one, and only then south.
+_SEB_EAST0 = ((SEB_S - SEB_NY - SEB_RW)
+              + math.pi / 2 * SEB_RW
+              + (SEB_EX - SEB_RE) - (SEB_WX + SEB_RW)
+              + math.pi / 2 * SEB_RE)
+SEB_DOOR = (_SEB_EAST0 + (7555.0 - (SEB_NY + SEB_RE)),
+            _SEB_EAST0 + (8355.0 - (SEB_NY + SEB_RE)))          # 800 clear
 
 # Inner faces, which is what the fixtures are set out from.
 SEB_X0, SEB_X1 = SEB_WX + SEB_T / 2, SEB_EX - SEB_T / 2   # 6950 .. 9375
@@ -599,30 +608,18 @@ for _cx, _cy, _a, _b, _room in CLAD_CORNERS:
     FURNITURE.append(('screen', min(_xs), min(_ys), max(_xs), max(_ys),
                       'corner cladding — curved timber', _room, CLAD_H, _poly))
 
-# --------------------------------------------- what goes in the south-east bath
-# THE FIXTURES ARE DRAWN, not assumed, because the column decides where they go
-# and there is no reading it off a sketch. It stands 230 x 1200 in the room's
-# south-east; the shower closes against its west face, the WC sits past its
-# east face in the corner nearest the stack, and the console takes the east
-# wall between them. What is left is the top band, which is how you get in and
-# where you turn round.
+# ------------------------------------------- what went in the south-east bath
+# THE FIXTURES ARE OFF THE DRAWING. They were there to prove the room worked
+# rather than to fix where anything goes, and they had done that: the point was
+# that 1345 (4'-5") could not face a 900 cubicle at a 450 console, and that
+# taking the column in solves it. The wall wraps the column now, the room is
+# 2425 (7'-11") wide and the argument is over, so the boxes come off and the
+# floor is left clear.
 #
-# 'screen' / 'stool' / 'console' are the nearest kinds the app already stands
-# up. The label is what says which is which.
-COL4_W = 8295.0     # column 4's west face — the shower's east side
-COL4_E = 8525.0     # and its east face — the passage runs from here
-
-FURNITURE += [
-    ('screen', SEB_X0, 6545, COL4_W, SEB_Y1,
-     "shower — 1345 x 1200 (4'-5\" x 3'-11\") walk-in against the column, "
-     'glass screen, no door',
-     'R-BATH-COMMON', 2100),
-    # It stops at 6650 rather than running on: below that the column starts,
-    # and a console reaching past it would pinch the way to the WC to 400.
-    ('console', 8925, 5900, SEB_X1, 6650,
-     "basin, console and mirror — 750 x 450 (2'-6\" x 1'-6\") on the east wall",
-     'R-BATH-COMMON', 900),
-    ('stool', 8600, SEB_Y2 - 750, 9300, SEB_Y2,
-     "WC — 700 x 750 (2'-4\" x 2'-6\") in the corner nearest the stack",
-     'R-BATH-COMMON', 800),
-]
+# Two numbers worth keeping out of it: the shower closes against the column's
+# west face at 8295, and the WC wants the corner nearest the stack. That was
+# the south-east one until the door moved into it, so the WC goes to the
+# south-west instead — still over the notch, and now behind the door rather
+# than in front of it.
+COL4_W = 8295.0     # column 4's west face — what the shower closes against
+COL4_E = 8525.0     # and its east face, where the way past it starts

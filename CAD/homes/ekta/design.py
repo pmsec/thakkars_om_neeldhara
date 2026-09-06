@@ -854,3 +854,70 @@ FURNITURE += [
      'R-BEDROOM', 750),
     ('chair', *DESK_CHAIR, 'desk chair', 'R-BEDROOM', 850),
 ]
+
+# ------------------------------------------------- the kitchen's working run
+# ONE RUN, NOT AN L. It starts at the serving counter's west edge — which is
+# also the tangent point where the south wall stops and the corner begins —
+# turns the 785 (2'-7") inner radius, goes up the west leg and along the north
+# wall to the fridge. 6048 (19'-10") of 600 (2'-0") worktop in one unbroken
+# piece, and it does extend from the serving counter: they meet at x 5395 with
+# nothing between them.
+#
+# Drawing it as an L would have needed two pieces and a joint in the corner.
+# The U already has the corner turned, so the counter turns with it: at 600
+# deep against a 785 radius the front edge comes round on 185 (7"), which is a
+# corner cabinet with a curved face rather than the dead square that a 90
+# degree corner leaves.
+CTOP_D = 600.0
+
+
+def _counter(fx, n=24):
+    """The worktop, from the serving counter round to the fridge."""
+    cx, cy = KX0 + KR, KBOT - KR        # the south-west corner's centre
+    ro = KR - KT / 2                    # 785, the face it sits against
+    ri = ro - CTOP_D                    # 185, its own front edge
+    wx, ny = KX0 + KT / 2, KTOP + 75    # the west and north inner faces
+    out = []
+    for i in range(n + 1):              # along the wall: south, round, west
+        t = (math.pi / 2) * i / n
+        out.append((cx - ro * math.sin(t), cy + ro * math.cos(t)))
+    out += [(wx, ny), (fx, ny),
+            (fx, ny + CTOP_D), (wx + CTOP_D, ny + CTOP_D), (wx + CTOP_D, cy)]
+    for i in range(1, n + 1):           # and back along the front
+        t = (math.pi / 2) * (n - i) / n
+        out.append((cx - ri * math.sin(t), cy + ri * math.cos(t)))
+    return [(round(a, 1), round(b, 1)) for a, b in out]
+
+
+# THE FRIDGE, AND WHAT IT COSTS. The north wall has two windows — 5035-6435 and
+# 7235-7985 — which leaves three solid piers: 425, 800 and 310. A fridge is
+# 1800-2000 tall, so anywhere in a window band it blocks it, and the corner
+# pier is 310 (1'-0") wide. Standing it in the north-east corner as marked
+# therefore costs 440 (1'-5") of the 750 (2'-6") window.
+#
+# The alternative is 900 (2'-11") further south, still on the east wall and
+# still in that corner of the room, below the window band: both windows stay
+# clear and the run goes the full length of the north wall. What it stands in
+# front of there is the tinted glass on the east leg, which now looks into a
+# bedroom. One line: FRIDGE_Y = 1520.
+FRIDGE_W, FRIDGE_D = 900.0, 750.0
+FRIDGE_Y = KTOP + 75                    # hard in the corner, as marked
+FRIDGE = (KX1 - KT / 2 - FRIDGE_D, FRIDGE_Y,
+          KX1 - KT / 2, FRIDGE_Y + FRIDGE_W)
+
+# The run stops at the fridge only when the fridge is in the corner; dropped
+# south it clears the north wall and the worktop goes the whole way.
+COUNTER = _counter(FRIDGE[0] if FRIDGE_Y < KTOP + 75 + CTOP_D else KX1 - KT / 2)
+_cx = [q[0] for q in COUNTER]
+_cy = [q[1] for q in COUNTER]
+
+FURNITURE += [
+    ('table', min(_cx), min(_cy), max(_cx), max(_cy),
+     "worktop — 600 (2'-0\") deep, 6048 (19'-10\") in one run from the serving "
+     'counter round the corner to the fridge',
+     'R-KITCHEN', 900, COUNTER),
+    ('shelves', *FRIDGE,
+     "fridge — 900 x 750 (2'-11\" x 2'-6\"), taking 440 (1'-5\") off the "
+     'north window',
+     'R-KITCHEN', 1900),
+]

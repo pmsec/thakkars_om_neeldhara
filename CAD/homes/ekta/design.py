@@ -172,6 +172,87 @@ def _bar_point(f, h=90.0):
     return px, py, -ty / L, tx / L
 
 
+# ------------------------------------------------- the north-west quarter
+# THE WING BECOMES A ROOM. The flat's north-west arm — 3050 (10'-0") wide and
+# 4120 (13'-6") deep, with windows on two sides — was hanging open into the
+# living room. Two walls close it and put the flat's first bathroom in the only
+# pocket that can hold one:
+#
+#   W-BED-E   straight down x 3125, which is the external return wall's own
+#             centreline carried south, so the wall reads as that wall
+#             continuing rather than as a new one starting.
+#   W-NW      ONE curve, from the kitchen to the wing's outside corner. It is
+#             what closes the quarter off from the living room, and it carries
+#             both doors: the bedroom's, and the bathroom's second one.
+#
+# The pocket between them, 1180 (3'-10") wide and reaching the north wall where
+# the drainage is, is the bath. It opens BOTH ways: a door west into the
+# bedroom, and a door south out of the curve, so the living room has a WC
+# without going through the bedroom.
+#
+# THE CURVE BOWS INTO THE BEDROOM, not out into the living room. W-BED-E lands
+# on it and splits it into the bath's stretch and the bedroom's, and which way
+# it bows decides how that split falls: bowed out into the living room, as it
+# was first drawn, the bedroom's share collapses to 942 (3'-1") and its door
+# has no jamb at either end. Bowed this way the two stretches come out
+# 1483 (4'-10") and 1498 (4'-11"), and each takes a 900 (2'-11") door with
+# room to spare. The sweep also opens the living room's corner instead of
+# pushing into it.
+BED_E = 3125.0                  # the return wall's line, carried south
+NW_A = (4495.0, 2500.0)         # on the kitchen wall, where its corner begins
+NW_B = (2220.0, 4195.0)         # the wing's outside corner
+NW_BOW = 400.0
+NW_DOOR = 850.0                 # both doors in the curve
+
+
+def _bez(a, b, bow, t):
+    """A point on a bowed wall. Same construction the tools use: the control
+    point is offset by TWICE the sagitta, so `bow` is a distance you can
+    measure on the sheet."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    L = math.hypot(dx, dy) or 1.0
+    cx = (a[0] + b[0]) / 2 - dy / L * 2 * bow
+    cy = (a[1] + b[1]) / 2 + dx / L * 2 * bow
+    u = 1 - t
+    return (u * u * a[0] + 2 * u * t * cx + t * t * b[0],
+            u * u * a[1] + 2 * u * t * cy + t * t * b[1])
+
+
+NW_PTS = [_bez(NW_A, NW_B, NW_BOW, i / 2000) for i in range(2001)]
+NW_RUN = _run(NW_PTS)
+NW_ARC = NW_RUN[-1]
+
+
+def _nw_arc_at_x(x):
+    return next((NW_RUN[i] for i in range(len(NW_PTS)) if NW_PTS[i][0] <= x),
+                NW_ARC)
+
+
+def _nw_x_at_arc(d):
+    return round(next((NW_PTS[i][0] for i in range(len(NW_RUN))
+                       if NW_RUN[i] >= d), NW_PTS[-1][0]), 1)
+
+
+# Where W-BED-E dies ON the curve. A wall that stops short of another leaves
+# the two rooms it separates as one face, so this is solved, not estimated.
+_bed_arc = _nw_arc_at_x(BED_E)
+BED_S = round(next(NW_PTS[i][1] for i in range(len(NW_RUN))
+                   if NW_RUN[i] >= _bed_arc), 1)
+
+# BOTH DOORS GO AT THE ENDS, not in the middle of their stretch. Centre them
+# and the wall comes out as three short fragments with nothing between; push
+# them out to the junctions and the 1180 (3'-10") in the middle survives as one
+# unbroken piece of curve, which is the only part of it anybody reads. The
+# jambs are the walls the doors butt against — the kitchen at one end, the
+# outside wall at the other — so nothing is lost by it.
+# Given in x because that is what the wall table takes; the export turns them
+# back into arc length. Nothing here is typed in twice.
+NW_REVEAL = 250.0               # so the curve still lands on something
+NW_BATH_DOOR = (_nw_x_at_arc(NW_REVEAL),
+                _nw_x_at_arc(NW_REVEAL + NW_DOOR))
+NW_BED_DOOR = (_nw_x_at_arc(NW_ARC - NW_REVEAL - NW_DOOR),
+               _nw_x_at_arc(NW_ARC - NW_REVEAL))
+
 # ------------------------------------------------------------- the walls
 # (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
 #
@@ -206,6 +287,16 @@ NEW_WALLS = [
     # --- 40 mm of nothing, so the kitchen closes. See ENV_NE above.
     (KX1, KTOP, ENV_NE, KTOP, 0, [], 'threshold', 'T-KIT-NE',
      'the kitchen wall to the external wall corner — solid already', 0),
+
+    # --- the north-west quarter
+    (BED_E, KTOP, BED_E, BED_S, 150,
+     [('door', 1400, 2150, 0, 2100)], 'partition', 'W-BED-E',
+     'bedroom | bath', 0),
+    (NW_A[0], NW_A[1], NW_B[0], NW_B[1], 150,
+     [('door', NW_BATH_DOOR[0], NW_BATH_DOOR[1], 0, 2100),   # bath | living
+      ('door', NW_BED_DOOR[0], NW_BED_DOOR[1], 0, 2100)],    # bedroom | living
+     'partition', 'W-NW',
+     'bedroom and bath | living — one curve, both doors', NW_BOW),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -288,6 +379,12 @@ ROOMS = [
     ('LIVING / DINING', '', (4400, 7500),
      'everything the kitchen does not enclose, from the front door to the '
      'balcony and out to the blind east wall.'),
+    ('BEDROOM', '', (1400, 2200),
+     "the flat's north-west arm, closed off: 3050 (10'-0\") wide, windows "
+     'north and west'),
+    ('BATH', '', (3750, 1500),
+     "1180 (3'-10\") wide against the north wall, where the drainage is — "
+     'reached from the bedroom and, separately, from the living room'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
@@ -354,5 +451,65 @@ def _stools(count=4, size=450.0):
 #     ] + [('stool', a, b, c, d, 'bar stool', 'R-LIVING-DINING', 750)
 #          for a, b, c, d in STOOLS]
 
+# ----------------------------------------------------- the corner cladding
+# EVERY CORNER OF THE LIVING ROOM AND THE BEDROOM IS TURNED IN TIMBER. A piece
+# runs 600 (2'-0") along each face and swaps the 90 degrees for an arc tangent
+# to both — a cove where the corner is an inside one, a bullnose where it is an
+# arris. Paintings hang on the flat between them and the accent lights are set
+# to wash the curve, which is the whole reason the corners are rounded: a sharp
+# corner throws a hard line and a curved one graduates.
+#
+# ONE construction covers both cases. From the corner C, walk R along each face
+# to P and Q; the arc that is tangent at both is centred on C + R*(a + b), and
+# the timber is what lies between the corner and it. Where the room is on the
+# open side that point is out in the room and the piece is a cove; where the
+# room wraps the corner it is inside the wall and the piece is the arris taken
+# off. Nothing else changes.
+CLAD_R = 600.0
+CLAD_H = 2700.0     # to a shadow gap below the ceiling, not tight to it
+
+# (x, y, along face a, along face b, room). Directions are unit, and point the
+# way the face actually runs from the corner.
+CLAD_CORNERS = [
+    (0, 0, (1, 0), (0, 1), 'R-BEDROOM'),
+    (3050, 0, (-1, 0), (0, 1), 'R-BEDROOM'),
+    (0, 4120, (0, -1), (1, 0), 'R-BEDROOM'),
+    (8445, 0, (0, 1), (1, 0), 'R-LIVING-DINING'),
+    (11470, 0, (-1, 0), (0, 1), 'R-LIVING-DINING'),
+    (11470, 8355, (0, -1), (-1, 0), 'R-LIVING-DINING'),
+    (8445, 8355, (1, 0), (0, -1), 'R-LIVING-DINING'),
+    (8445, 7745, (-1, 0), (0, 1), 'R-LIVING-DINING'),
+    (6800, 7745, (1, 0), (0, 1), 'R-LIVING-DINING'),
+]
+# The wing's fourth corner, (2295, 4120), is not in the list: W-NW now springs
+# off it, so there is no longer a corner there to turn.
+
+
+def _clad(cx, cy, a, b, r=None, n=24):
+    r = CLAD_R if r is None else r
+    px, py = cx + a[0] * r, cy + a[1] * r
+    qx, qy = cx + b[0] * r, cy + b[1] * r
+    ox, oy = cx + (a[0] + b[0]) * r, cy + (a[1] + b[1]) * r
+    a0 = math.atan2(py - oy, px - ox)
+    a1 = math.atan2(qy - oy, qx - ox)
+    while a1 - a0 > math.pi:
+        a1 -= 2 * math.pi
+    while a0 - a1 > math.pi:
+        a1 += 2 * math.pi
+    out = [(cx, cy)]
+    for i in range(n + 1):
+        t = a0 + (a1 - a0) * i / n
+        out.append((round(ox + r * math.cos(t), 1), round(oy + r * math.sin(t), 1)))
+    return out
+
+
 # Loose furniture. (kind, x1, y1, x2, y2, label, room, height, poly)
+# 'screen' because that is the nearest thing the app already knows how to
+# stand up: a panel of a given height with a shape of its own.
 FURNITURE = []
+for _cx, _cy, _a, _b, _room in CLAD_CORNERS:
+    _poly = _clad(_cx, _cy, _a, _b)
+    _xs = [q[0] for q in _poly]
+    _ys = [q[1] for q in _poly]
+    FURNITURE.append(('screen', min(_xs), min(_ys), max(_xs), max(_ys),
+                      'corner cladding — curved timber', _room, CLAD_H, _poly))

@@ -77,15 +77,6 @@ NEW_WALLS = [
      'north-west corner.', 0),
 
     # --- the kitchen, the whole width of the north band
-    (6875, 545, 6875, 4195, 125, [], 'partition', 'W-KIT-E',
-     "kitchen | family bedroom. The bedroom's north-west return runs behind "
-     'the kitchen: tall units one side, the child\'s desk and wardrobe the '
-     'other.', 0),
-    (3125, 4195, 6875, 4195, 0, [], 'threshold', 'T-KIT',
-     'kitchen | living. NOTHING IS BUILT ON THIS LINE — the two returns that '
-     'were left either side of the opening are gone and the kitchen is open '
-     'to the room across its whole 3750. It stays a line only so the kitchen '
-     'keeps its own name and area; delete it and the two become one room.', 0),
 
 
 
@@ -104,13 +95,7 @@ NEW_WALLS = [
 # A SCREEN IS NOT A WALL. It stops short of the 3050 ceiling and it takes no
 # part in deciding what a room is, so the family bedroom stays ONE room in the
 # model — which is the truth of it, and the whole point of the brief.
-SCREENS = [
-    (9200, 4195, 11545, 4195, 0, 2100, 'S-KID', "the kid's section",
-     "A straight screen 2100 high in a 3050 room, open for 830 mm at its west "
-     "end. It gives the child a bed, a desk and the north window to himself "
-     "without making a second bedroom out of it: over the top the ceiling runs "
-     "through, and from the doorway you see both ends at once."),
-]
+SCREENS = []
 
 # ------------------------------------------------------- openings in the shell
 # (x1, y1, x2, y2, type, id, note) — endpoints on the OUTER face of the
@@ -172,13 +157,11 @@ GLAZING = [
 ROOMS = [
     ('GUEST / STUDY', '', (1500, 2000),
      'the one spare room: a desk under the north window, a bed for visitors'),
-    ('KITCHEN', '', (5000, 2300),
-     'the whole north band, two windows, open to the dining across a bowed counter'),
     ('LIVING / DINING', '', (4400, 7500),
-     'THE WHOLE EAST HALF OF THE FLAT, from the front door to the balcony and '
-     'from the kitchen out to the east wall. The bedroom had no boundary left '
-     'once its two walls went, so it is this room now. Nothing wet and nothing '
-     'private survives here: both have to be placed again.'),
+     'EVERYTHING EXCEPT THE GUEST ROOM. The kitchen had one wall left and now '
+     'it has none, so the north band is this room too. What is left of the flat '
+     'as drawn: the shell, five columns, three shafts, the guest room, the '
+     'foyer and the balcony.'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]

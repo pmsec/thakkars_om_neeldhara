@@ -29,13 +29,10 @@
 <line x1="968.7" y1="1259.5" x2="975.2" y2="1240.2" stroke="#c3bcae" stroke-width="1.0"/>
 <line x1="975.2" y1="1240.2" x2="979.2" y2="1220.2" stroke="#c3bcae" stroke-width="1.0"/>
 <line x1="979.2" y1="1220.2" x2="980.5" y2="1199.8" stroke="#c3bcae" stroke-width="1.0"/>
-<polygon points="1710.0,488.4 1710.0,1199.8 1734.4,1199.8 1734.4,488.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
-<line x1="991.3" y1="1199.8" x2="1722.2" y2="1199.8" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
 <polygon points="802.7,2258.2 802.7,2307.0 827.0,2307.0 827.0,2258.2" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <polygon points="802.7,2472.7 802.7,2525.3 827.0,2525.3 827.0,2472.7" fill="#2b2825" stroke="none" stroke-width="1.0"/>
 <line x1="814.9" y1="2307.0" x2="814.9" y2="2472.7" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
 <line x1="1108.2" y1="2525.3" x2="1722.2" y2="2525.3" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
-<polygon points="2175.4,1208.6 2632.5,1208.6 2632.5,1191.1 2175.4,1191.1" fill="#6f6a61" stroke="none" stroke-width="1.0"/>
 <line x1="397.7" y1="352.9" x2="976.6" y2="352.9" stroke="#2e8b9a" stroke-width="3.0"/>
 <line x1="2028.2" y1="352.9" x2="2617.9" y2="352.9" stroke="#2e8b9a" stroke-width="3.0"/>
 <line x1="397.7" y1="364.6" x2="976.6" y2="364.6" stroke="#2e8b9a" stroke-width="3.0"/>
@@ -73,10 +70,8 @@
 <g id="L-labels">
 <text x="674.5" y="754.4" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">GUEST / STUDY</text>
 <text x="674.5" y="832.4" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the one spare room: a desk under the north window, a bed for visitors</text>
-<text x="1356.7" y="812.9" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">KITCHEN</text>
-<text x="1356.7" y="890.9" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the whole north band, two windows, open to the dining across a bowed c</text>
 <text x="1239.8" y="1826.5" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">LIVING / DINING</text>
-<text x="1239.8" y="1904.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">THE WHOLE EAST HALF OF THE FLAT, from the front door to the balcony an</text>
+<text x="1239.8" y="1904.5" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">EVERYTHING EXCEPT THE GUEST ROOM. The kitchen had one wall left and no</text>
 <text x="650.1" y="2372.3" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">FOYER</text>
 <text x="650.1" y="2450.2" font-family="Helvetica,Arial" font-size="9" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the way in</text>
 <text x="1415.2" y="2645.2" font-family="Helvetica,Arial" font-size="15" fill="#1d1b18" font-weight="bold" letter-spacing="1.1" text-anchor="middle">BALCONY</text>

@@ -258,30 +258,61 @@ NW_BED_DOOR = (_nw_x_at_arc(NW_ARC - NW_REVEAL - NW_DOOR),
 # 4'-6" x 8'-0", 36 sq ft on his own dimension text — sitting on the notch wall
 # with its stack dropping into the south-east re-entrant below. That re-entrant
 # is one of only two points in this flat a soil stack can reach; the other is
-# the north notch, where BATH is. So this corner is not a preference, it is
-# where the drainage is.
+# the north notch, where BATH is.
 #
-# BOTH SIDE WALLS LAND ON SOMETHING THAT IS ALREADY THERE.
-#   west   x 6875 — the external wall of the notch, its line carried north, so
-#          the two faces at 6800 read as one wall rather than two.
-#   east   x 8370 — 150 inside column 4's 230, so the wall's west face is the
-#          column's west face and the pair show ONE thickness, the same move
-#          the kitchen's right-hand wall makes.
-# What is left between them is 1345 (4'-5") clear, and that number is fixed by
-# the structure: it is the gap from the notch arris to the column, less the two
-# walls. Depth is the only free dimension.
-SEB_W, SEB_E = 6875.0, 8370.0   # centrelines
-SEB_N = 4770.0                  # centreline of the north wall
+# THE WALL GOES ROUND THE COLUMN, and the column ends up inside the room. The
+# first version of this stopped short of it and took only the 1345 (4'-5") gap
+# between the notch arris and the column's west face — a slot you could not do
+# anything in but stand in single file. Taking the column in instead buys the
+# whole width of the arm's south-west corner, and the column stops being an
+# obstruction and starts being the shower's east wall.
+#
+# ONE WALL, four straight runs and two turns: up the notch wall's own line,
+# a 900 corner, across the top, a 400 corner, and down to the flat's south wall
+# in the arm. The 900 is the kitchen's radius; a curve that big is what makes
+# the room read from the living side as a shape rather than as a box.
+SEB_WX = 6875.0     # the notch wall's centreline, carried north
+SEB_NY = 5400.0     # the top
+SEB_EX = 9450.0     # the east side, out in the arm
+SEB_S = 7820.0      # the notch wall — where the run starts
+SEB_SY = 8430.0     # the arm's south wall — where it ends
 SEB_T = 150.0
-SEB_S = 7820.0                  # the notch wall's own centreline
+SEB_RW, SEB_RE = 900.0, 400.0
 
-# 2900 (9'-6") of clear depth, spent: 900 shower, 1250 to stand in, 750 of
-# fixture. Shorter and the middle drops under a metre; longer and 1345 wide
-# starts to read as a corridor.
-SEB_X0, SEB_X1 = SEB_W + SEB_T / 2, SEB_E - SEB_T / 2      # 6950 .. 8295
-SEB_Y0, SEB_Y1 = SEB_N + SEB_T / 2, 7745.0                 # 4845 .. 7745
-SEB_SHOWER = 900.0
-SEB_FIX = 750.0                 # WC pan and console projection
+
+def _seb_line(n=32):
+    pts = [(SEB_WX, SEB_S), (SEB_WX, SEB_NY + SEB_RW)]
+    cx, cy = SEB_WX + SEB_RW, SEB_NY + SEB_RW
+    for i in range(1, n + 1):                       # the big corner
+        a = (math.pi / 2) * i / n
+        pts.append((cx - SEB_RW * math.cos(a), cy - SEB_RW * math.sin(a)))
+    cx, cy = SEB_EX - SEB_RE, SEB_NY + SEB_RE
+    for i in range(1, n + 1):                       # the tight one
+        a = (math.pi / 2) * i / n
+        pts.append((cx + SEB_RE * math.sin(a), cy - SEB_RE * math.cos(a)))
+    pts.append((SEB_EX, SEB_SY))
+    out = []
+    for q in pts:
+        q = (round(q[0], 1), round(q[1], 1))
+        if not out or abs(q[0] - out[-1][0]) > 0.5 or abs(q[1] - out[-1][1]) > 0.5:
+            out.append(q)
+    return out
+
+
+SEB_LINE = _seb_line()
+SEB_RUN = _run(SEB_LINE)
+
+# The door is in the top run, which is the only side of this room with wall
+# spare: the west side has the shower behind it and the east side the WC.
+# Openings on a polyline are distances ALONG it, so the top run's start is
+# measured rather than typed.
+_SEB_TOP0 = (SEB_S - SEB_NY - SEB_RW) + math.pi / 2 * SEB_RW    # start of the top
+SEB_DOOR = (_SEB_TOP0 + 240.0, _SEB_TOP0 + 1040.0)              # 800 clear
+
+# Inner faces, which is what the fixtures are set out from.
+SEB_X0, SEB_X1 = SEB_WX + SEB_T / 2, SEB_EX - SEB_T / 2   # 6950 .. 9375
+SEB_Y0 = SEB_NY + SEB_T / 2                               # 5475
+SEB_Y1, SEB_Y2 = 7745.0, 8355.0     # the notch wall, and the arm's south wall
 
 # ------------------------------------------------------------- the walls
 # (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
@@ -328,16 +359,11 @@ NEW_WALLS = [
      'partition', 'W-NW',
      'bedroom and bath | living — one curve, both doors', NW_BOW),
 
-    # --- the south-east bath. The door is in the WEST wall and in the middle
-    # band, so you arrive between the two ends instead of into one of them;
-    # it opens outward, because 1345 of width has nowhere to put a leaf.
-    (SEB_W, SEB_S, SEB_W, SEB_N, SEB_T,
-     [('door', 5970, 6770, 0, 2100)], 'partition', 'W-SEB-W',
-     'bath 02 | living', 0),
-    (SEB_W, SEB_N, SEB_E, SEB_N, SEB_T, [], 'partition', 'W-SEB-N',
-     'bath 02 | living — the end of the peninsula', 0),
-    (SEB_E, SEB_N, SEB_E, SEB_S, SEB_T, [], 'partition', 'W-SEB-E',
-     'bath 02 | living — sitting inside column 4', 0),
+    # --- the south-east bath: one wall, round the column
+    (SEB_WX, SEB_S, SEB_EX, SEB_SY, SEB_T,
+     [('door', SEB_DOOR[0], SEB_DOOR[1], 0, 2100)], 'partition', 'W-SEB',
+     'bath 02 | living — up the notch line, round the top, down into the arm',
+     0, SEB_LINE),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -426,9 +452,9 @@ ROOMS = [
     ('BATH', '', (3750, 1500),
      "1180 (3'-10\") wide against the north wall, where the drainage is — "
      'reached from the bedroom and, separately, from the living room'),
-    ('BATH', 'COMMON', (7600, 6400),
-     "1345 (4'-5\") clear between the notch arris and column 4, 2900 (9'-6\") "
-     'deep — where the builder had his second toilet, on the only other stack '
+    ('BATH', 'COMMON', (8000, 6100),
+     "2425 (7'-11\") wide, with column 4 taken inside it as the shower's east "
+     'wall — where the builder had his second toilet, on the only other stack '
      'in the flat'),
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
@@ -566,25 +592,29 @@ for _cx, _cy, _a, _b, _room in CLAD_CORNERS:
                       'corner cladding — curved timber', _room, CLAD_H, _poly))
 
 # --------------------------------------------- what goes in the south-east bath
-# THE FIXTURES ARE DRAWN, not assumed. 1345 (4'-5") will not let a 900 cubicle
-# face a 450 console across the room — that is 1350 of fixture and 0 of floor —
-# so the three run END TO END instead: the shower takes a whole end at full
-# width, the WC and the basin sit side by side on the stack wall at the other,
-# and the 1250 (4'-1") between them is the room.
+# THE FIXTURES ARE DRAWN, not assumed, because the column decides where they go
+# and there is no reading it off a sketch. It stands 230 x 1200 in the room's
+# south-east; the shower closes against its west face, the WC sits past its
+# east face in the corner nearest the stack, and the console takes the east
+# wall between them. What is left is the top band, which is how you get in and
+# where you turn round.
 #
 # 'screen' / 'stool' / 'console' are the nearest kinds the app already stands
 # up. The label is what says which is which.
-_SEB_SHOWER_Y = SEB_Y0 + SEB_SHOWER                 # 5745
-_SEB_FIX_Y = SEB_Y1 - SEB_FIX                       # 6995
+COL4_W = 8295.0     # column 4's west face — the shower's east side
+COL4_E = 8525.0     # and its east face — the passage runs from here
+
 FURNITURE += [
-    ('screen', SEB_X0, SEB_Y0, SEB_X1, _SEB_SHOWER_Y,
-     "shower — 1345 x 900 (4'-5\" x 2'-11\") walk-in, glass screen, no door",
+    ('screen', SEB_X0, 6545, COL4_W, SEB_Y1,
+     "shower — 1345 x 1200 (4'-5\" x 3'-11\") walk-in against the column, "
+     'glass screen, no door',
      'R-BATH-COMMON', 2100),
-    ('stool', 7000, _SEB_FIX_Y, 7700, SEB_Y1,
-     "WC — 700 x 750 (2'-4\" x 2'-6\"), centreline 400 off the wall, hard on "
-     'the stack',
-     'R-BATH-COMMON', 800),
-    ('console', 7695, SEB_Y1 - 450, SEB_X1, SEB_Y1,
-     "basin, console and mirror — 600 x 450 (2'-0\" x 1'-6\")",
+    # It stops at 6650 rather than running on: below that the column starts,
+    # and a console reaching past it would pinch the way to the WC to 400.
+    ('console', 8925, 5900, SEB_X1, 6650,
+     "basin, console and mirror — 750 x 450 (2'-6\" x 1'-6\") on the east wall",
      'R-BATH-COMMON', 900),
+    ('stool', 8600, SEB_Y2 - 750, 9300, SEB_Y2,
+     "WC — 700 x 750 (2'-4\" x 2'-6\") in the corner nearest the stack",
+     'R-BATH-COMMON', 800),
 ]

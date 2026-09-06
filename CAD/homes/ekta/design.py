@@ -54,6 +54,86 @@ PLATE = [
     (0, 4120)
 ]
 
+# ------------------------------------------------------- the counter shelf
+# The counter's eating side. A slab bolted to the south face of W-KIT-BAR at
+# 1050, sawn square at both ends. Its inner edge is the counter's own curve
+# and its outer edge is that curve offset — so the shelf is a true crescent of
+# constant width, not a slab that happens to sit near a curve.
+#
+# It was a live edge for one round. A natural edge is a good idea beside a
+# straight wall, where the wobble is the only thing moving; against a curve
+# this strong it just fought it, and two competing curves read as one badly
+# drawn one.
+#
+# BOTH FACES CARRY ONE. The eating side is the living room's; the mirror of it
+# inside the kitchen is where plates are put down and picked up through the
+# hatch. Each is a lens: full depth across the seats, tapering away to nothing
+# at both ends so the slab dies into the counter rather than stopping against
+# it with a cut end in mid-air.
+
+_BAR = ((3500.0, 545.0), (5750.0, 6255.0), (8000.0, 545.0))   # p0, control, p2
+FACE = 100.0        # half of the 200 counter, so the slab starts at its face
+DEPTH = 400.0       # projection: knee room under, plates on top
+SEAT = 700.0        # stool centres, measured from the counter centreline
+TAPER = 0.28        # the fraction at each end over which the slab dies away
+SPAN = (0.12, 0.88) # how far along the counter the slabs run
+
+
+def _bar_point(t):
+    """A point on the counter centreline, and the outward (south) normal."""
+    (x0, y0), (cx, cy), (x2, y2) = _BAR
+    u = 1.0 - t
+    px = u * u * x0 + 2 * u * t * cx + t * t * x2
+    py = u * u * y0 + 2 * u * t * cy + t * t * y2
+    tx = 2 * u * (cx - x0) + 2 * t * (x2 - cx)
+    ty = 2 * u * (cy - y0) + 2 * t * (y2 - cy)
+    L = math.hypot(tx, ty) or 1.0
+    nx, ny = ty / L, -tx / L
+    if ny < 0.0:
+        nx, ny = -nx, -ny
+    return px, py, nx, ny
+
+
+def _taper(f):
+    """Full depth through the middle, smoothstepped away at both ends.
+
+    Smoothstep rather than a sine because it leaves the slab at FULL width
+    across every seat and spends the taper where nobody sits; and because it
+    reaches zero with zero slope, so the edge runs into the counter face
+    tangentially instead of arriving at it as a spike.
+    """
+    u = min(f, 1.0 - f) / TAPER
+    if u >= 1.0:
+        return 1.0
+    return u * u * (3.0 - 2.0 * u)
+
+
+def _arc_run(t0=0.0, t1=1.0, n=400):
+    """Cumulative length along the counter, and the parameters that go with
+    it. Everything that has to be evenly spread on this wall — the openings,
+    the stools — is spread on THIS, not on the Bezier parameter."""
+    ts = [t0 + (t1 - t0) * i / n for i in range(n + 1)]
+    pts = [_bar_point(t)[:2] for t in ts]
+    run = [0.0]
+    for i in range(1, len(pts)):
+        run.append(run[-1] + math.hypot(pts[i][0] - pts[i - 1][0],
+                                        pts[i][1] - pts[i - 1][1]))
+    return ts, run
+
+
+def _t_at_arc(frac, t0=0.0, t1=1.0):
+    ts, run = _arc_run(t0, t1)
+    want = run[-1] * frac
+    i = min(range(len(run)), key=lambda j: abs(run[j] - want))
+    return ts[i]
+
+
+def _arc_x(frac):
+    """The x an opening sits at, given where along the ARC it belongs. Wall
+    openings are authored against the chord, so this is the translation."""
+    return round(_bar_point(_t_at_arc(frac))[0], 1)
+
+
 # ------------------------------------------------------------- the walls
 # (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
 #
@@ -70,35 +150,31 @@ PLATE = [
 # three fixed shafts wants to be. Openings are (type, from, to) in absolute mm
 # along the wall.
 NEW_WALLS = [
-    # --- north-west: the guest room
-    (3125, -75, 3125, 1670, 125, [], 'partition', 'W-GUEST-E',
-     'the north-west return. It runs from the north wall to the south face of '
-     'the column at 3050-3280 x 770-1670 and stops there — the column stays, '
-     'the wall ahead of it is gone.', 0),
 
     # --- the kitchen, the whole width of the north band
 
 
 
-    # --- the kitchen counter: one curve between the two columns
-    # Solid timber to 1050, the counter height, and brown tinted glass above it
-    # to 2400 — so from the sofa the kitchen is a lit band behind glass, and
-    # from inside it the cook is not shut in a box. The 1000 gap at 1050 to
-    # 1800 is the SERVING HATCH: an unglazed hole at counter level, plates
-    # over rather than around.
-    (3125, 1670, 8370, 1670, 200,
-     [('window', 3525, 5100, 1050, 2400),
-      ('cased', 5100, 6100, 1050, 1800),
-      ('window', 6100, 7970, 1050, 2400)],
+    # --- the kitchen: ONE curve, north wall to north wall
+    # It used to spring off the two columns and need a short straight wall at
+    # each end to close the corners. Those corners were the problem: they held
+    # the kitchen out to the full 5245 of the north band and gave the rooms
+    # either side nothing. So the curve now starts and finishes ON THE NORTH
+    # WALL, and the whole boundary is one line — the counter at the bottom of
+    # it, the kitchen's own side walls where it stands up at the ends.
+    #
+    # The columns fall outside it now, standing in the living room until
+    # whatever divides that space picks them up.
+    (3500, 545, 8000, 545, 200,
+     [('window', _arc_x(0.12), _arc_x(0.38), 1050, 2400),
+      ('cased', _arc_x(0.38), _arc_x(0.62), 1050, 1800),
+      ('window', _arc_x(0.62), _arc_x(0.88), 1050, 2400)],
      'partition', 'W-KIT-BAR',
-     'kitchen | living. Springs off the south face of the column at 3050-3280 '
-     'and lands on the one at 8295-8525, bowing 1730 into the living room. '
-     'Deep in the middle, steep at the ends: the bowl is the kitchen and the '
-     'pinch points are where the tall units go. 200 thick because it is a '
-     'counter, not a partition.', 1730),
-    (8370, 545, 8370, 1670, 125, [], 'partition', 'W-KIT-E',
-     'kitchen | living, east. Packs out beside the column and closes the '
-     'kitchen against the east half of the flat.', 0),
+     'kitchen | living. Timber to 1050, brown tinted glass to 2400, and a '
+     'serving hatch at the bottom of the bowl. Openings are placed by '
+     'FRACTION OF THE ARC and converted to positions on the chord, because on '
+     'a curve this steep equal steps along the chord are nothing like equal '
+     'steps along the wall.', 2855),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -183,60 +259,6 @@ ROOMS = [
     ('FOYER', '', (1375, 10300), 'the way in'),
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
-
-# ------------------------------------------------------- the counter shelf
-# The counter's eating side. A slab bolted to the south face of W-KIT-BAR at
-# 1050, sawn square at both ends. Its inner edge is the counter's own curve
-# and its outer edge is that curve offset — so the shelf is a true crescent of
-# constant width, not a slab that happens to sit near a curve.
-#
-# It was a live edge for one round. A natural edge is a good idea beside a
-# straight wall, where the wobble is the only thing moving; against a curve
-# this strong it just fought it, and two competing curves read as one badly
-# drawn one.
-#
-# BOTH FACES CARRY ONE. The eating side is the living room's; the mirror of it
-# inside the kitchen is where plates are put down and picked up through the
-# hatch. Each is a lens: full depth across the seats, tapering away to nothing
-# at both ends so the slab dies into the counter rather than stopping against
-# it with a cut end in mid-air.
-
-_BAR = ((3125.0, 1670.0), (5747.5, 5130.0), (8370.0, 1670.0))   # p0, control, p2
-FACE = 100.0        # half of the 200 counter, so the slab starts at its face
-DEPTH = 400.0       # projection: knee room under, plates on top
-SEAT = 700.0        # stool centres, measured from the counter centreline
-TAPER = 0.28        # the fraction at each end over which the slab dies away
-SPAN = (0.12, 0.88) # how far along the counter the slabs run
-
-
-def _bar_point(t):
-    """A point on the counter centreline, and the outward (south) normal."""
-    (x0, y0), (cx, cy), (x2, y2) = _BAR
-    u = 1.0 - t
-    px = u * u * x0 + 2 * u * t * cx + t * t * x2
-    py = u * u * y0 + 2 * u * t * cy + t * t * y2
-    tx = 2 * u * (cx - x0) + 2 * t * (x2 - cx)
-    ty = 2 * u * (cy - y0) + 2 * t * (y2 - cy)
-    L = math.hypot(tx, ty) or 1.0
-    nx, ny = ty / L, -tx / L
-    if ny < 0.0:
-        nx, ny = -nx, -ny
-    return px, py, nx, ny
-
-
-def _taper(f):
-    """Full depth through the middle, smoothstepped away at both ends.
-
-    Smoothstep rather than a sine because it leaves the slab at FULL width
-    across every seat and spends the taper where nobody sits; and because it
-    reaches zero with zero slope, so the edge runs into the counter face
-    tangentially instead of arriving at it as a spike.
-    """
-    u = min(f, 1.0 - f) / TAPER
-    if u >= 1.0:
-        return 1.0
-    return u * u * (3.0 - 2.0 * u)
-
 
 def _slab(sign, depth, n=80):
     """One lens against the counter. sign +1 is the living-room side, -1 the

@@ -806,30 +806,6 @@ def _round_rect(x0, y0, x1, y1, r, n=10):
     return [(round(a, 1), round(b, 1)) for a, b in out]
 
 
-def _fillet(pts, r, n=6):
-    """Every corner of a polygon pulled back r along each edge and bent
-    through the corner. Furniture is drawn to be recognised, not to be
-    manufactured from, so a quadratic through the corner is the right amount
-    of effort — and unlike _round_rect it does not care about the shape."""
-    out = []
-    for i in range(len(pts)):
-        p0, p1, p2 = pts[i - 1], pts[i], pts[(i + 1) % len(pts)]
-
-        def pull(a, b):
-            dx, dy = a[0] - b[0], a[1] - b[1]
-            run = math.hypot(dx, dy) or 1.0
-            t = min(r, run / 2)
-            return (b[0] + dx / run * t, b[1] + dy / run * t)
-
-        a, b = pull(p0, p1), pull(p2, p1)
-        for k in range(n + 1):
-            u = k / n
-            w = 1 - u
-            out.append((w * w * a[0] + 2 * w * u * p1[0] + u * u * b[0],
-                        w * w * a[1] + 2 * w * u * p1[1] + u * u * b[1]))
-    return [(round(x, 1), round(y, 1)) for x, y in out]
-
-
 def _ellipse(cx, cy, rx, ry, n=32):
     return [(round(cx + rx * math.cos(2 * math.pi * i / n), 1),
              round(cy + ry * math.sin(2 * math.pi * i / n), 1))
@@ -1284,46 +1260,4 @@ FURNITURE += [
      f"({_ft(OTTO[2] - OTTO[0])} x {_ft(OTTO[3] - OTTO[1])}), shared, "
      f"{_ft(SWIV_Y - SWIV_R - OTTO[3])} off both seats",
      'R-LIVING-DINING', 420, _round_rect(*OTTO, 160)),
-]
-
-
-# --------------------------------------------- the sectional, facing the pair
-# THE LIVING ROOM'S LONG SEAT. An L, with its back to the north so it faces
-# the two swivels, the ottoman and the balcony beyond them — one group, not
-# two, which is the only way a 37.8 m2 (407 sq ft) room reads as a room and
-# not as a corridor with furniture down it.
-#
-# NEITHER END IS CHOSEN. The east face is the south-east bath's own west face,
-# so the sofa lands on a wall instead of leaving a 250 (10") gap behind it to
-# lose things down. The chaise runs south until column 5 stops it — the column
-# projects to 6720 and the chaise is 6800 wide, so anything longer would have
-# been standing in it.
-#
-# THE BACK IS FREE-STANDING, with 1450 (4'-9") of floor between it and the
-# dining chairs. That is what makes recliners possible in the main run: a seat
-# that leans has somewhere to lean into, which it would not have against a
-# wall.
-SOFA_D = 950.0                  # depth, both arms
-# The back starts BELOW where the bath wall's curve dies into its straight
-# run — (6875, 6300) is the tangent — so the sofa's whole east face lands on
-# straight wall. Set 150 higher it overlapped the curve's last chord by 4 mm,
-# which is nothing on site and a lie in the model.
-SOFA_N = SEB_NY + SEB_RW + 100.0    # 6400, clear of the tangent
-SOFA_W0 = 3450.0                # the west end
-SOFA_E = SEB_WX - SEB_T / 2     # 6800 — the bath's west face
-SOFA_S = _col_face('column 5', 2)   # 7895 — where column 5 begins
-SOFA_CH_W = SOFA_E - SOFA_D     # the chaise's west side
-
-SOFA = _fillet([(SOFA_W0, SOFA_N), (SOFA_E, SOFA_N), (SOFA_E, SOFA_S),
-                (SOFA_CH_W, SOFA_S), (SOFA_CH_W, SOFA_N + SOFA_D),
-                (SOFA_W0, SOFA_N + SOFA_D)], 120)
-
-FURNITURE += [
-    ('sofa', SOFA_W0, SOFA_N, SOFA_E, SOFA_S,
-     f"sectional — {SOFA_E - SOFA_W0:.0f} x {SOFA_S - SOFA_N:.0f} "
-     f"({_ft(SOFA_E - SOFA_W0)} x {_ft(SOFA_S - SOFA_N)}) overall, "
-     f"{SOFA_D:.0f} ({_ft(SOFA_D)}) deep: four seats in the run, with a "
-     f"chaise {_ft(SOFA_S - SOFA_N)} long down the bath wall. The run's back "
-     'is free-standing, so its seats can recline',
-     'R-LIVING-DINING', 800, SOFA),
 ]

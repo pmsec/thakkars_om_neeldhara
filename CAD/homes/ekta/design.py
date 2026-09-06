@@ -55,18 +55,18 @@ PLATE = [
 # ------------------------------------------------------------- the walls
 # (x1, y1, x2, y2, thickness, openings, kind, id, note, bow)
 #
-# BOW is the whole idea of this plan. It is the wall's sagitta in mm — how far
-# the middle of it stands off the straight line between its ends, positive to
-# the LEFT of the direction of travel. Nothing else changes: a bowed wall has
-# the same two endpoints as a straight one, so it meets its neighbours exactly
-# where a straight wall would and the plan still closes.
+# BOW is a wall's sagitta in mm — how far its middle stands off the straight
+# line between its ends. EVERY WALL HERE IS 0. An earlier round curved the
+# five walls that face the living room and sprang arches over their openings;
+# it read as decoration applied to a plan rather than as the plan, so it is
+# gone. The field and the machinery behind it stay: they are generic, they are
+# what Om Neeldhara's pod screens are built from, and a curve that is doing
+# real work — holding a stair, turning a corner the structure turns — can be
+# put back in one number.
 #
-# Where the bows are is the argument. Every wall that faces the living room
-# bows into it and carries an arched opening; every wall that only divides two
-# private rooms is straight. So the public room is read as a sequence of
-# arches and apses, and the private ones stay square and easy to furnish.
-#
-# Openings are (type, from, to) in absolute mm along the wall.
+# What is left is straight, which is what a 96 m2 flat with five columns and
+# three fixed shafts wants to be. Openings are (type, from, to) in absolute mm
+# along the wall.
 NEW_WALLS = [
     # --- north-west: the guest room
     (3125, -75, 3125, 4195, 125, [], 'partition', 'W-GUEST-E',
@@ -74,14 +74,14 @@ NEW_WALLS = [
      'up this side and the bedroom puts its wardrobe against the same line.', 0),
     (2220, 4195, 3125, 4195, 125, [('door', 2270, 3070)], 'partition', 'W-GUEST-S',
      "guest room | living. The room's only door, off the living room's "
-     'north-west corner — there is no hall left to enter it from.', 0),
+     'north-west corner.', 0),
 
     # --- the kitchen, the whole width of the north band
     (6875, 545, 6875, 4195, 125, [], 'partition', 'W-KIT-E',
      'kitchen | bath and utility', 0),
-    (3125, 4195, 6875, 4195, 125, [('arch', 3900, 6200)], 'partition', 'W-KIT-S',
-     'kitchen | dining. The counter line, bowed into the room, with a 2300 arch '
-     'over it: from the sofa the kitchen is a lit alcove, not a doorway.', 550),
+    (3125, 4195, 6875, 4195, 125, [('cased', 3900, 6200)], 'partition', 'W-KIT-S',
+     'kitchen | dining. A 2300 opening in a straight wall: the counter runs '
+     'along it and the kitchen is open to the room across that length.', 0),
 
     # --- the second bathroom, on the shaft the builder drained a toilet into
     (8370, 545, 8370, 4195, 125, [], 'partition', 'W-GBATH-E',
@@ -90,12 +90,12 @@ NEW_WALLS = [
     (6875, 4195, 8370, 4195, 125, [('door', 7300, 8100)], 'partition', 'W-GBATH-S',
      'bath and utility | vestibule', 0),
 
-    # --- the vestibule: the arched threshold into the family wing
-    (6875, 4195, 6875, 5600, 125, [('arch', 4450, 5350)], 'partition', 'W-VEST-W',
-     'living | vestibule. Bows west into the living room.', 320),
-    (8370, 4195, 8370, 5600, 125, [('arch', 4450, 5350)], 'partition', 'W-VEST-E',
-     'vestibule | family bedroom. Bows east, so the two arches face each other '
-     'across a room that is wider in the middle than at either end.', 320),
+    # --- the vestibule: the way into the family wing
+    (6875, 4195, 6875, 5600, 125, [('cased', 4450, 5350)], 'partition', 'W-VEST-W',
+     'living | vestibule', 0),
+    (8370, 4195, 8370, 5600, 125, [('cased', 4450, 5350)], 'partition', 'W-VEST-E',
+     'vestibule | family bedroom. The two openings line up, so from the sofa '
+     'you see straight through into the bedroom.', 0),
 
     # --- the family bathroom
     (6875, 5600, 8370, 5600, 125, [], 'partition', 'W-FBATH-N',
@@ -107,9 +107,8 @@ NEW_WALLS = [
      'vestibule.', 0),
 
     # --- the way in
-    (2220, 9625, 2220, 10995, 125, [('arch', 9875, 10725)], 'partition', 'W-FOYER-E',
-     'foyer | living. Bows into the foyer, so the front door opens onto a curve '
-     'rather than into the side of the sofa.', -250),
+    (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
+     'foyer | living', 0),
 
     # --- the balcony line: an opening, not a wall
     (3725, 10995, 6875, 10995, 0, [], 'threshold', 'T-BALC',
@@ -123,13 +122,11 @@ NEW_WALLS = [
 # part in deciding what a room is, so the family bedroom stays ONE room in the
 # model — which is the truth of it, and the whole point of the brief.
 SCREENS = [
-    (9200, 4195, 11545, 4195, 550, 2100, 'S-KID', "the kid's section",
-     "A curved screen 2100 high in a 3050 room, open for 830 mm at its west "
-     "end. It gives the kid a bed, a desk and the north window to himself "
+    (9200, 4195, 11545, 4195, 0, 2100, 'S-KID', "the kid's section",
+     "A straight screen 2100 high in a 3050 room, open for 830 mm at its west "
+     "end. It gives the child a bed, a desk and the north window to himself "
      "without making a second bedroom out of it: over the top the ceiling runs "
-     "through, and from the doorway you see both ends at once. It bows south, "
-     "into the adults' end, so his side is the squarer of the two and their bed "
-     "gets a curved head wall to stand against."),
+     "through, and from the doorway you see both ends at once."),
 ]
 
 # ------------------------------------------------------- openings in the shell

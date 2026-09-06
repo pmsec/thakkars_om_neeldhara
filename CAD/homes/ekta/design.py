@@ -1102,23 +1102,27 @@ FURNITURE += [
 # north-west corner and a 400 (1'-4") one on the north-east, plus a tail
 # 930 x 610 (3'-1" x 2'-0") at the south-east where the door is. Column 4
 # stands inside it, showing as a fin 150 wide and 1050 (3'-5") long off the
-# south wall's east end.
+# south wall's east end, with 850 (2'-9") between it and the east wall.
 #
-# THE FIN DECIDES THE PLAN. It leaves a pocket east of it only 930 (3'-1")
-# wide — a WC needs 600 of pan and 600 in front of it, so nothing can face
-# across that pocket, and the east wall is out for anything you sit on or
-# stand at. West of the fin the south wall is clear for 1345 (4'-5"), which is
-# a shower, and it is the wall the only window is in.
+# THE FIN DECIDES THE PLAN. It leaves a pocket east of it only 850 wide — a WC
+# needs 600 of pan and 600 in front of it, so nothing can face across that
+# pocket, and the east wall is out for anything you sit on. West of the fin
+# the south wall is clear for 1345 (4'-5"), which is a shower, and it is the
+# wall the only window is in.
 #
 # So: WET SOUTH-WEST, DRY NORTH. You come in at the south-east, the shower is
 # ahead and left with the window in it, and the two dry fittings are on the
-# north — the WC against the straight run of it with 1670 (5'-6") in front,
-# and the basin on the 900 curve.
+# north — the WC against the straight run of it, and the basin on the curve.
+#
+# THE WC AND THE BASIN CANNOT CHANGE PLACES, and the figure that decides it is
+# depth, not width. The curve is in the north-WEST, directly above the shower,
+# so what stands on it has 1070 (3'-6") to the shower's face — a WC there
+# would sit with 470 (1'-6") in front of it. The WC's present spot is EAST of
+# the shower, where the floor runs all the way down to the south wall, so it
+# has 1670 (5'-6"). A basin only needs somewhere to stand; a WC needs somewhere
+# to sit, and only one of the two places offers it.
 SEB_SHOWER = (SEB_X0, 6545.0, _col_face('column 4', 1), SEB_Y1)   # 1345 x 1200
 
-# THE WC IS ON THE NORTH WALL, not the east one, and it faces south down the
-# length of the room. Against the east wall it would have had the fin 330
-# (1'-1") in front of it; here it has the whole room.
 SEB_WC = (8367.0, SEB_Y0, 9067.0, SEB_Y0 + 600.0)                 # 700 x 600
 SEB_WC_CIST = _round_rect(SEB_WC[0], SEB_WC[1], SEB_WC[2], SEB_WC[1] + 200., 20)
 SEB_WC_PAN = _round_rect((SEB_WC[0] + SEB_WC[2]) / 2 - 200., SEB_WC[1] + 200.,
@@ -1154,6 +1158,18 @@ _vr = (SEB_VAN_RO + SEB_VAN_RI) / 2                 # 575, mid-depth
 SEB_BOWL = _ellipse(SEB_ARC_C[0] - _vr * math.cos(_va),
                     SEB_ARC_C[1] - _vr * math.sin(_va), 230, 180)
 
+# THE CORNER SHELF goes in the tail, where you come in — the one corner of
+# this room with nothing standing in it, and out of the way of everything that
+# has to be reached. A quarter round, and its radius is not chosen: it is the
+# gap between the south wall and where column 4 ends, so the shelves run from
+# the wall up to the column and stop on it.
+SEB_SHELF_C = (8445.0, SEB_Y2)
+SEB_SHELF_R = SEB_Y2 - _col_face('column 4', 4)    # 460
+SEB_SHELF = ([SEB_SHELF_C] +
+             [(round(SEB_SHELF_C[0] + SEB_SHELF_R * math.sin(math.pi / 2 * i / 16), 1),
+               round(SEB_SHELF_C[1] - SEB_SHELF_R * math.cos(math.pi / 2 * i / 16), 1))
+              for i in range(17)])
+
 _sx = [q[0] for q in SEB_VANITY]
 _sy = [q[1] for q in SEB_VANITY]
 
@@ -1186,4 +1202,9 @@ FURNITURE += [
      SEB_ARC_C[1] - _vr * math.sin(_va) + 180,
      "basin — 460 x 360 (1'-6\" x 1'-2\") oval, mirror over, on the 45",
      'R-BATH-COMMON', 880, SEB_BOWL),
+    ('shelves', SEB_SHELF_C[0], SEB_SHELF_C[1] - SEB_SHELF_R,
+     SEB_SHELF_C[0] + SEB_SHELF_R, SEB_SHELF_C[1],
+     f"corner shelves — a quarter round of {SEB_SHELF_R:.0f} "
+     f"({_ft(SEB_SHELF_R)}), from the south wall up to where column 4 ends",
+     'R-BATH-COMMON', 1500, SEB_SHELF),
 ]

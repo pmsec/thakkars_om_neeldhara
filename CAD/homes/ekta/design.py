@@ -940,48 +940,82 @@ FURNITURE += [
 ]
 
 # --------------------------------------------------- what goes in the north bath
-# THE TRIANGLE IS WHAT MAKES IT FIT. A rectangular shower wants 900 of depth
-# straight across the room and a WC pan and cistern want 750 more — 1650 into
-# the 1150 the door leaves. A corner tray takes its 900 diagonally instead, so
-# its hypotenuse gives the east side of the room back: at x 3780 the tray is
-# already finished by y 940, and the WC sits below that on the east wall with
-# the shower still beside it.
+# THE TRAY'S LEG IS THE COLUMN'S. It runs down the west wall to where column 3
+# ends, at y 1670, so the shower finishes on a line the structure already
+# draws instead of stopping 150 short of it for no reason. That makes the legs
+# 1050 (3'-5") rather than 900, the tray 0.551 m2 (5.9 sq ft) instead of 0.405,
+# and 742 (2'-5") from the corner to the hypotenuse instead of 636 — a better
+# shower for nothing, and read off immovables so it cannot drift.
 #
-# So all four go in, in the order they were drawn, and the room does what the
-# reality check said it could not.
+# THE SHELF AND THE WC ARE OFF. Both were drawn as plain rectangles and both
+# were struck out. Taking the WC out leaves this room a shower and a basin: a
+# bathroom without a lavatory, which the flat can carry only because BATH /
+# COMMON has one — but it means the bedroom's occupant crosses the living room
+# at night. Putting it back is the commented line below.
 #
-# WHAT IT COSTS is the tray: legs of 900 (2'-11") make 0.405 m2 (4.4 sq ft) and
-# 636 (2'-1") from the corner to the hypotenuse. That is a corner shower, not a
-# cubicle — you stand in it, you do not move around in it.
-#
-# AND IT FREES THE WINDOW. The bath has one, 750 (2'-6") at x 3485-4235, and
-# the WC's cistern was standing under it. The shower goes under it instead,
-# which is where you want the ventilation anyway.
-BATH_TRI = 900.0
+# THE BASIN IS A CONSOLE NOW, not a box: a 450 x 500 top with its two exposed
+# corners turned on 160 (6") and the wall corners on 40, and the bowl drawn as
+# the oval it is.
+BATH_TRI = _col_face('column 3', 4) - (KTOP + 75)      # 1050
 BATH_SHOWER = [(3200.0, 620.0), (3200.0 + BATH_TRI, 620.0),
                (3200.0, 620.0 + BATH_TRI)]
-BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)     # 280 corner shelf
-BATH_WC = (3780.0, 1050.0, 4380.0, 1750.0)      # 600 projection x 700
-BATH_BASIN = (3930.0, 1850.0, 4380.0, 2350.0)   # 450 x 500
+BATH_BASIN = (3930.0, 1850.0, 4380.0, 2350.0)          # 450 x 500
+
+#     BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)      # 280 corner shelf
+#     BATH_WC = (3780.0, 1050.0, 4380.0, 1750.0)       # 600 projection x 700
+
+
+def _round_rect(x0, y0, x1, y1, r, n=10):
+    """A rectangle with a radius at each corner — top-left first, clockwise.
+    A radius of 0 leaves that corner square, so a piece against a wall can be
+    turned on the two edges you actually see and left sharp on the two you
+    do not."""
+    tl, tr, br, bl = r if isinstance(r, (tuple, list)) else (r, r, r, r)
+    out = []
+
+    def corner(cx, cy, rad, a0):
+        if rad <= 0:
+            out.append((cx, cy))
+            return
+        for i in range(n + 1):
+            a = a0 + (math.pi / 2) * i / n
+            out.append((cx + rad * math.cos(a), cy + rad * math.sin(a)))
+
+    corner(x0 + tl, y0 + tl, tl, math.pi)
+    corner(x1 - tr, y0 + tr, tr, -math.pi / 2)
+    corner(x1 - br, y1 - br, br, 0.0)
+    corner(x0 + bl, y1 - bl, bl, math.pi / 2)
+    return [(round(a, 1), round(b, 1)) for a, b in out]
+
+
+def _ellipse(cx, cy, rx, ry, n=32):
+    return [(round(cx + rx * math.cos(2 * math.pi * i / n), 1),
+             round(cy + ry * math.sin(2 * math.pi * i / n), 1))
+            for i in range(n)]
+
+
+BATH_TOP = _round_rect(*BATH_BASIN, (160, 40, 40, 160))
+BATH_BOWL = _ellipse((BATH_BASIN[0] + BATH_BASIN[2]) / 2 + 30,
+                     (BATH_BASIN[1] + BATH_BASIN[3]) / 2, 180, 150)
 
 _tx = [q[0] for q in BATH_SHOWER]
 _ty = [q[1] for q in BATH_SHOWER]
 
 FURNITURE += [
     ('screen', min(_tx), min(_ty), max(_tx), max(_ty),
-     "shower — triangular corner tray, 900 (2'-11\") legs, under the window",
+     "shower — triangular corner tray, 1050 (3'-5\") legs, down to where "
+     'column 3 ends, under the window',
      'R-BATH', 2100, BATH_SHOWER),
-    ('shelves', *BATH_SHELF,
-     "corner shelf — 280 (11\") square",
-     'R-BATH', 1400),
-    ('stool', *BATH_WC,
-     "WC — wall-hung, 600 (2'-0\") projection on the east wall, 580 (1'-11\") "
-     'clear in front',
-     'R-BATH', 800),
     ('console', *BATH_BASIN,
-     "basin, mirror and console — 500 x 450 (1'-8\" x 1'-6\")",
-     'R-BATH', 900),
+     "basin console — 500 x 450 (1'-8\" x 1'-6\"), turned on 160 (6\") where "
+     'it is seen',
+     'R-BATH', 900, BATH_TOP),
+    ('console', BATH_BASIN[0] + 50, BATH_BASIN[1] + 100,
+     BATH_BASIN[2] - 20, BATH_BASIN[3] - 100,
+     "basin — 360 x 300 (1'-2\" x 1'-0\") oval, mirror over",
+     'R-BATH', 880, BATH_BOWL),
 ]
+
 
 # ------------------------------------------------------- what goes in the arm
 # THE BED IS TURNED 90 DEGREES FROM THE SKETCH, and it is what buys the king.

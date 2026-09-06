@@ -637,8 +637,10 @@ ROOMS = [
      "the flat's north-west arm, closed off: 3050 (10'-0\") wide, windows "
      'north and west'),
     ('BATH', '', (3750, 1500),
-     "1180 (3'-10\") wide against the north wall, where the drainage is — "
-     'reached from the bedroom and, separately, from the living room'),
+     "1180 (3'-10\") wide against the north wall, where the drainage is. "
+     'Shower and WC only — the basin is on the curve outside the door, so '
+     'this room holds two fittings instead of three. Reached from the bedroom '
+     'and, separately, from the living room'),
     ('BATH', 'COMMON', (8000, 6100),
      "2425 (7'-11\") wide, with column 4 taken inside it as the shower's east "
      'wall — where the builder had his second toilet, on the only other stack '
@@ -1057,16 +1059,18 @@ BATH_WC_PAN = _round_rect(BATH_WC[0], (BATH_WC[1] + BATH_WC[3]) / 2 - 200.0,
                           BATH_E - 200.0, (BATH_WC[1] + BATH_WC[3]) / 2 + 200.0,
                           (190, 40, 40, 190))
 
-# The basin takes the wedge north of it, 20 (1") clear so the two read as one
-# fitted run rather than as two things that happen to be on the same wall.
-BATH_BASIN = (3930.0, BATH_WC[1] - 20.0 - 500.0, BATH_E, BATH_WC[1] - 20.0)
+# AND THE BASIN COMES OUT ALTOGETHER. Tray, WC and basin in 1180 (3'-10") was
+# congested however it was arranged — the wedge north of the WC is 450 (1'-6")
+# deep at its widest and you stood in it with the shower screen 380 (1'-3")
+# away. It goes onto the curve outside the door instead, which is where a wash
+# basin belongs in a flat this size: off the living room, reachable without
+# opening the bathroom.
+#
+# WHAT IT COSTS is that the bedroom's occupant has no basin behind a closed
+# door. That is the trade, and it is the ordinary one.
 
 #     BATH_SHELF = (4100.0, 620.0, 4380.0, 900.0)      # 280 corner shelf
 
-
-BATH_TOP = _round_rect(*BATH_BASIN, (160, 40, 40, 160))
-BATH_BOWL = _ellipse((BATH_BASIN[0] + BATH_BASIN[2]) / 2 + 30,
-                     (BATH_BASIN[1] + BATH_BASIN[3]) / 2, 180, 150)
 
 _tx = [q[0] for q in BATH_SHOWER]
 _ty = [q[1] for q in BATH_SHOWER]
@@ -1076,14 +1080,6 @@ FURNITURE += [
      f"shower — triangular corner tray, {BATH_TRI:.0f} ({_ft(BATH_TRI)}) legs, "
      "off column 3's east face and down to where it ends, under the window",
      'R-BATH', 2100, BATH_SHOWER),
-    ('console', *BATH_BASIN,
-     "basin console — 500 x 450 (1'-8\" x 1'-6\"), turned on 160 (6\") where "
-     'it is seen',
-     'R-BATH', 900, BATH_TOP),
-    ('console', BATH_BASIN[0] + 50, BATH_BASIN[1] + 100,
-     BATH_BASIN[2] - 20, BATH_BASIN[3] - 100,
-     "basin — 360 x 300 (1'-2\" x 1'-0\") oval, mirror over",
-     'R-BATH', 880, BATH_BOWL),
     ('console', BATH_E - 200.0, BATH_WC[1], BATH_E, BATH_WC[3],
      f"WC cistern — {BATH_WC_W:.0f} ({_ft(BATH_WC_W)}) wide against the east "
      'wall, below the shower',
@@ -1403,4 +1399,63 @@ FURNITURE += [
      f"the diwan’s bolster — 225 (0'-9\") along the wall",
      'R-LIVING-DINING', 700,
      _round_rect(DIWAN[0], DIWAN[1], DIWAN[0] + 225.0, DIWAN[3], 60)),
+]
+
+
+# --------------------------------------------- the wash basin, on the curve
+# THE ONE UNBROKEN PIECE OF THE CURVE. Both doors were pushed out to the
+# junctions so the middle of the bow survives whole, and what survives is 780
+# (2'-7") of it between the bath's door and the bedroom's. That is where the
+# basin goes: on the living-room face, immediately beside the bathroom door,
+# so it is reached without opening anything.
+#
+# A console struck on the curve rather than a box in front of it — the wall is
+# a bezier, not a circle, so it is offset point by point off its own normal
+# and cannot drift from it.
+def _nw_sub(d0, d1):
+    return [NW_PTS[i] for i in range(len(NW_RUN)) if d0 <= NW_RUN[i] <= d1]
+
+
+def _nw_offset(pts, d):
+    """A stretch of the curve pushed d to its LIVING-ROOM side."""
+    out = []
+    for i, p in enumerate(pts):
+        a, b = pts[max(i - 1, 0)], pts[min(i + 1, len(pts) - 1)]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        run = math.hypot(dx, dy) or 1.0
+        out.append((round(p[0] + dy / run * d, 1), round(p[1] - dx / run * d, 1)))
+    return out
+
+
+WASH_JAMB = 40.0
+WASH_D = 450.0
+# 40 (1.5") off the curve's face, not flush on it. W-BED-E lands on this wall
+# at an angle, so its foot's corner projects 37 (1.5") past the face into the
+# living room, and a console sitting flush had that corner inside it. Nothing
+# visible at any scale anybody will look at this; wrong in the model.
+WASH_BACK = 75.0 + 40.0
+_wash_a = _nw_arc_at_x(NW_BATH_DOOR[1]) + WASH_JAMB
+_wash_b = _nw_arc_at_x(NW_BED_DOOR[0]) - WASH_JAMB
+WASH_W = _wash_b - _wash_a
+_wash_c = _nw_sub(_wash_a, _wash_b)
+WASH_TOP = (_nw_offset(_wash_c, WASH_BACK)
+            + _nw_offset(_wash_c, WASH_BACK + WASH_D)[::-1])
+_wash_mid = _wash_c[len(_wash_c) // 2]
+_wash_n = _nw_offset([_wash_c[len(_wash_c) // 2 - 1], _wash_mid,
+                      _wash_c[len(_wash_c) // 2 + 1]], WASH_BACK + WASH_D / 2)[1]
+WASH_BOWL = _ellipse(_wash_n[0], _wash_n[1], 230, 180)
+
+_wx = [q[0] for q in WASH_TOP]
+_wy = [q[1] for q in WASH_TOP]
+
+FURNITURE += [
+    ('console', min(_wx), min(_wy), max(_wx), max(_wy),
+     f"wash basin console — {WASH_W:.0f} ({_ft(WASH_W)}) of the curve, "
+     f"{WASH_D:.0f} ({_ft(WASH_D)}) deep, on the living-room side beside the "
+     'bathroom door',
+     'R-LIVING-DINING', 900, WASH_TOP),
+    ('console', _wash_n[0] - 230, _wash_n[1] - 180,
+     _wash_n[0] + 230, _wash_n[1] + 180,
+     "basin — 460 x 360 (1'-6\" x 1'-2\") oval, mirror over",
+     'R-LIVING-DINING', 880, WASH_BOWL),
 ]

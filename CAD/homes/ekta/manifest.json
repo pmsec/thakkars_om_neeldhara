@@ -2,8 +2,6 @@
   "R-BATH": [
     "screen",
     "console",
-    "console",
-    "console",
     "console"
   ],
   "R-BATH-COMMON": [
@@ -43,7 +41,9 @@
     "sofa",
     "sofa",
     "daybed",
-    "daybed"
+    "daybed",
+    "console",
+    "console"
   ],
   "R-ROOM": [
     "screen",

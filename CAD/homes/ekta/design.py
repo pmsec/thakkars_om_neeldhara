@@ -184,22 +184,20 @@ ROOMS = [
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
 
-# --------------------------------------------------- the live-edge shelf
+# ------------------------------------------------------- the counter shelf
 # The counter's eating side. A slab bolted to the south face of W-KIT-BAR at
-# 1050, sawn square at both ends and left natural along the front — so the
-# inner edge is the builder's curve to the millimetre and the outer edge is
-# whatever the tree did.
+# 1050, sawn square at both ends. Its inner edge is the counter's own curve
+# and its outer edge is that curve offset — so the shelf is a true crescent of
+# constant width, not a slab that happens to sit near a curve.
 #
-# Generated rather than typed, because 130 points of a natural edge is not
-# something to hand-key and not something to hand-check. The wobble is three
-# sine waves at incommensurate frequencies, which never repeats over the
-# length and stays smooth enough to run a router along. Change AMP and the
-# edge changes character; change nothing and it is the same slab every time.
+# It was a live edge for one round. A natural edge is a good idea beside a
+# straight wall, where the wobble is the only thing moving; against a curve
+# this strong it just fought it, and two competing curves read as one badly
+# drawn one.
 
 _BAR = ((3125.0, 1670.0), (5747.5, 5130.0), (8370.0, 1670.0))   # p0, control, p2
 FACE = 100.0        # half of the 200 counter, so the slab starts at its face
 DEPTH = 400.0       # projection: knee room under, plates on top
-AMP = 90.0          # how far the live edge wanders either side of that
 SEAT = 700.0        # stool centres, measured from the counter centreline
 
 
@@ -219,16 +217,14 @@ def _bar_point(t):
 
 
 def _shelf(t0=0.22, t1=0.78, n=64):
+    """The slab: the counter face on the inside, the same curve pushed out by
+    DEPTH on the outside, and a square cut across each end."""
     inner, outer = [], []
     for i in range(n + 1):
-        f = i / n
-        px, py, nx, ny = _bar_point(t0 + (t1 - t0) * f)
+        px, py, nx, ny = _bar_point(t0 + (t1 - t0) * i / n)
         inner.append((round(px + nx * FACE, 1), round(py + ny * FACE, 1)))
-        w = (math.sin(f * 11.0 + 0.7) * 0.55
-             + math.sin(f * 23.0 + 2.1) * 0.30
-             + math.sin(f * 37.0 + 4.3) * 0.15)
-        d = FACE + DEPTH + w * AMP
-        outer.append((round(px + nx * d, 1), round(py + ny * d, 1)))
+        outer.append((round(px + nx * (FACE + DEPTH), 1),
+                      round(py + ny * (FACE + DEPTH), 1)))
     return inner + outer[::-1]
 
 
@@ -275,7 +271,7 @@ _sy = [p[1] for p in SHELF]
 # so they sit square to it rather than square to the plan.
 FURNITURE = [
     ('table', min(_sx), min(_sy), max(_sx), max(_sy),
-     'live-edge counter shelf', 'R-LIVING-DINING', 1050, SHELF),
+     'counter shelf', 'R-LIVING-DINING', 1050, SHELF),
 ] + [
     ('stool', a, b, c, d, 'bar stool', 'R-LIVING-DINING', 750)
     for a, b, c, d in STOOLS

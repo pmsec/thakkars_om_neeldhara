@@ -367,15 +367,19 @@ ARM_PARK = [(ARM_PARK_X, ARM_N - ARM_LEAF), (ARM_PARK_X + 140.0, ARM_N - ARM_LEA
             (ARM_PARK_X + 140.0, ARM_N), (ARM_PARK_X, ARM_N)]
 
 # ------------------------------------------- the hatch and the eating counter
-# THE HATCH WAS ALREADY THERE. The middle stretch of the U's flat bottom —
-# 0.44 to 0.56 of the way round, 1062 (3'-6") of it — has been a cased opening
-# since the wall was drawn, from when a counter ran round the whole inside. A
-# second one next to it is not a second hatch, it is a mistake; this is the
-# one, and the counter goes through it.
+# THE COUNTER STARTS WHERE THE WALL STOPS TURNING. Its west edge is KX0 + KR —
+# the tangent point where the U's south-west corner runs out and the flat
+# bottom begins — so the slab has straight wall under the whole of it, and the
+# hatch's west jamb has a reason to be where it is. It sat in the middle of
+# the bottom run before, which was where an old opening happened to be rather
+# than anywhere in particular.
 #
-# What changes is its sill: 1050 (3'-5") was the line of the tinted glass all
-# round, and this stretch drops to 900 (2'-11") because that is the top of the
-# counter passing through it. Open from there to 2100 (6'-11").
+# THE HATCH IS THE COUNTER. Not an opening with a counter somewhere in it: the
+# slab is the sill and the gap above it is the hatch, so the two are the same
+# 800 (2'-7") and neither number can drift from the other. The tinted glass
+# either side runs at 1050 (3'-5") as it does all round the U; this stretch
+# drops to the counter top at 900 (2'-11") and is open from there to
+# 2100 (6'-11").
 #
 # ONE SLAB THROUGH THE WALL. Inside the kitchen it is 400 (1'-4") of serving
 # counter to put plates down on; outside it runs 1400 (4'-7") into the living
@@ -384,19 +388,13 @@ ARM_PARK = [(ARM_PARK_X, ARM_N - ARM_LEAF), (ARM_PARK_X + 140.0, ARM_N - ARM_LEA
 # holding the slab up.
 BAR_IN, BAR_OUT = 400.0, 1400.0     # kitchen side, living side
 BAR_TOP = 900.0                     # counter height, and the hatch's sill
-BAR_W = 800.0                       # the slab, 800 (2'-7") across
+BAR_W = 800.0                       # the slab, and the hatch, 800 (2'-7")
 BAR_SEATS = 2                       # a side
 SEAT, SEAT_OFF, SEAT_GAP = 450.0, 400.0, 700.0
 
-# Centred on the hatch, which is measured off the wall rather than typed: the
-# flat bottom's own start, plus however far along it the opening begins.
-def _kit_bot_x(d):
-    i0 = next(i for i, q in enumerate(KITCHEN_LINE) if abs(q[1] - KBOT) < 0.5)
-    return KITCHEN_LINE[i0][0] + (d - KITCHEN_RUN[i0])
-
-
-_BAR_MID = round((_kit_bot_x(_arc_d(0.44)) + _kit_bot_x(_arc_d(0.56))) / 2, 1)
-BAR_X0, BAR_X1 = _BAR_MID - BAR_W / 2, _BAR_MID + BAR_W / 2
+BAR_X0 = KX0 + KR                   # the tangent point: 5395
+BAR_X1 = BAR_X0 + BAR_W
+HATCH = (_kit_bot_arc(BAR_X0), _kit_bot_arc(BAR_X1))
 
 _BAR_N = KBOT - KT / 2 - BAR_IN     # 2885
 _BAR_S = KBOT + KT / 2 + BAR_OUT    # 4915
@@ -442,9 +440,12 @@ NEW_WALLS = [
     # 2400, and the serving hatch at the middle of the flat bottom. 900 of
     # solid at each top end, where the tall units and the fridge go.
     (KX0, KTOP, KX1, KTOP, KT,
-     [('window', _arc_d(0.104), _arc_d(0.44), 1050, 2400),
-      ('cased', _arc_d(0.44), _arc_d(0.56), BAR_TOP, 2100),   # the hatch
-      ('window', _arc_d(0.56), _arc_d(0.896), 1050, 2400)],
+     # The glass runs up to the hatch and picks up again after it, so moving
+     # the counter moves the break in the glazing with it. 900 (2'-11") of
+     # solid is left at each top end, where the tall units and the fridge go.
+     [('window', _arc_d(0.104), HATCH[0], 1050, 2400),
+      ('cased', HATCH[0], HATCH[1], BAR_TOP, 2100),           # the hatch
+      ('window', HATCH[1], _arc_d(0.896), 1050, 2400)],
      'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),
 
     # --- 40 mm of nothing, so the kitchen closes. See ENV_NE above.

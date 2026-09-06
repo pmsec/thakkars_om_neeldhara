@@ -204,16 +204,17 @@ def _bar_point(f, h=90.0):
 # living room. Two walls close it and put the flat's first bathroom in the only
 # pocket that can hold one:
 #
-#   W-BED-E   down the bath's west side, flush with column 3 as far as the
-#             column goes and stepping 235 (9") west below it.
-#   W-BATH-S  the bath's south wall, straight across to the kitchen.
-#   W-NW      ONE curve, from where those two meet to the wing's outside
-#             corner. It closes the bedroom off from the living room.
+#   W-BED-E   straight down x 3125, which is the external return wall's own
+#             centreline carried south, so the wall reads as that wall
+#             continuing rather than as a new one starting.
+#   W-NW      ONE curve, from the kitchen to the wing's outside corner. It is
+#             what closes the quarter off from the living room, and it carries
+#             both doors: the bedroom's, and the bathroom's second one.
 #
-# The pocket, 1415 (4'-8") wide below the column and reaching the north wall
-# where the drainage is, is the bath. It opens BOTH ways: a door west into the
-# bedroom, and a door south into the living room, so the living room has a
-# bathroom without going through the bedroom.
+# The pocket between them, 1180 (3'-10") wide and reaching the north wall where
+# the drainage is, is the bath. It opens BOTH ways: a door west into the
+# bedroom, and a door south out of the curve, so the living room has a WC
+# without going through the bedroom.
 #
 # THE CURVE BOWS INTO THE BEDROOM, not out into the living room. W-BED-E lands
 # on it and splits it into the bath's stretch and the bedroom's, and which way
@@ -223,55 +224,11 @@ def _bar_point(f, h=90.0):
 # 1483 (4'-10") and 1498 (4'-11"), and each takes a 900 (2'-11") door with
 # room to spare. The sweep also opens the living room's corner instead of
 # pushing into it.
-def _col_face(name, i):
-    """A named column's face, read off the immovables list rather than typed.
-    A door set out to clear a column should not be able to drift from it."""
-    return next(c[i] for c in IMM.NAMED if c[0] == name)
-
-
-_COL3_W, _COL3_S = _col_face('column 3', 1), _col_face('column 3', 4)
-
-
-# THE BATH WAS 1180 (3'-10") WIDE AND THAT IS NOT A BATHROOM. A basin, a
-# door leaf and a person do not fit across it; the shower only worked because
-# a triangular tray gave the corner back diagonally. The wall comes west off
-# the external return's line — which it no longer follows, so it is now a
-# figure with a reason rather than one inherited from the shell.
-BED_E = 2890.0                  # the bath's west wall, below the column
-BED_E_N = _COL3_W + 75.0        # 3125 — flush with column 3, above it
-BED_STEP = _COL3_S              # 1670, where the column ends
-
-
-# AND THE BOW IS WHAT WAS EATING IT. Widening the wall bought 0.29 m2 (3 sq ft)
-# and no more, because the curve came off the kitchen at y 2500 and cut the
-# bath's south-east corner away diagonally: 1415 (4'-8") wide at the door and
-# 620 (2'-0") of usable depth beside it. The bath now gets a SOUTH WALL of its
-# own, straight across to the kitchen, and the curve starts where that wall
-# ends instead of where the kitchen does.
-#
-# The wall has to END ON THE GRAPH, not near it — the planar subdivision welds
-# on 2 mm and the kitchen's corner is drawn as chords, so the point is taken
-# off that line rather than solved on the true arc. Everything else follows
-# from it: the bath's south wall, where W-BED-E stops, and where the curve
-# springs.
-def _kit_vertex_near(y):
-    """The vertex of the kitchen's south-west corner nearest a given y."""
-    return min((q for q in KITCHEN_LINE
-                if q[0] < KX0 + KR and q[1] > KBOT - KR),
-               key=lambda q: abs(q[1] - y))
-
-
-BATH_SE = _kit_vertex_near(3110.0)
-BATH_S = BATH_SE[1]             # the bath's south wall
-BED_S = BATH_S                  # where W-BED-E stops, now a junction not a die
-
-NW_A = (BED_E, BATH_S)          # the corner the three walls share
+BED_E = 3125.0                  # the return wall's line, carried south
+NW_A = (4495.0, 2500.0)         # on the kitchen wall, where its corner begins
 NW_B = (2220.0, 4195.0)         # the wing's outside corner
-# 180, not 400: the bow was a seventh of a 2837 chord, and the chord is now
-# 1275. Kept at 400 it would have bulged a third of its own length into a
-# bedroom that has just given 235 away.
-NW_BOW = 180.0
-NW_DOOR = 850.0
+NW_BOW = 400.0
+NW_DOOR = 850.0                 # both doors in the curve
 
 
 def _bez(a, b, bow, t):
@@ -287,19 +244,32 @@ def _bez(a, b, bow, t):
             u * u * a[1] + 2 * u * t * cy + t * t * b[1])
 
 
-# The curve is carried as an explicit polyline and given to the wall table as
-# one, so its door is a distance ALONG it. Authored on an axis instead, the
-# figure would have to change meaning — x while the chord ran mostly east, y
-# now that it runs mostly south — which is a trap and not a measurement.
-NW_PTS = [_bez(NW_A, NW_B, NW_BOW, i / 200) for i in range(201)]
+NW_PTS = [_bez(NW_A, NW_B, NW_BOW, i / 2000) for i in range(2001)]
 NW_RUN = _run(NW_PTS)
 NW_ARC = NW_RUN[-1]
 
 
+def _nw_arc_at_x(x):
+    return next((NW_RUN[i] for i in range(len(NW_PTS)) if NW_PTS[i][0] <= x),
+                NW_ARC)
+
+
+def _nw_x_at_arc(d):
+    return round(next((NW_PTS[i][0] for i in range(len(NW_RUN))
+                       if NW_RUN[i] >= d), NW_PTS[-1][0]), 1)
+
+
 # Where W-BED-E dies ON the curve. A wall that stops short of another leaves
 # the two rooms it separates as one face, so this is solved, not estimated.
+_bed_arc = _nw_arc_at_x(BED_E)
+BED_S = round(next(NW_PTS[i][1] for i in range(len(NW_RUN))
+                   if NW_RUN[i] >= _bed_arc), 1)
 
 
+def _col_face(name, i):
+    """A named column's face, read off the immovables list rather than typed.
+    A door set out to clear a column should not be able to drift from it."""
+    return next(c[i] for c in IMM.NAMED if c[0] == name)
 
 
 # COLUMN 3 STANDS IN THIS WALL. It is 3050-3280 x 770-1670, so it straddles
@@ -308,37 +278,22 @@ NW_ARC = NW_RUN[-1]
 # clear of its face — which also takes the leaf's swing further from the desk
 # and the Murphy bed, both of which it was crowding.
 BED_BATH_W = 750.0
+BED_BATH_DOOR = (_col_face('column 3', 4) + 100.0,
+                 _col_face('column 3', 4) + 100.0 + BED_BATH_W)
 
-# THE WALL STEPS AT THE COLUMN. Widening the bath means taking the wall west
-# of column 3 — and the column, 3050-3280, would then have stood free in the
-# bathroom with a 235 (9") slot behind it, which is a dust trap, not a niche.
-# So the wall runs flush with the column down to where the column ends and
-# steps west only below it: 1180 (3'-10") across the shower, which is what the
-# triangular tray was cut for, and 1415 (4'-8") across the basin and the door,
-# which is where the width is stood in. The step lands on the column's own
-# south face, and the door starts 100 (4") past it, so the jamb is not on the
-# corner.
-BED_PTS = [(BED_E_N, KTOP), (BED_E_N, BED_STEP),
-           (BED_E, BED_STEP), (BED_E, BED_S)]
-
-# Openings on a polyline are distances ALONG it, so the door is measured down
-# the wall rather than given in y: north leg, the step, then 100 clear.
-BED_BATH_D = (BED_STEP - KTOP) + (BED_E_N - BED_E) + 100.0
-BED_BATH_DOOR = (BED_BATH_D, BED_BATH_D + BED_BATH_W)
-
-# ONE DOOR EACH NOW, so each goes in the middle of its own wall instead of
-# being pushed to a junction to keep the piece between them whole. The curve
-# carries the bedroom's; the bath's second door moves to the bath's own south
-# wall, where it opens straight off the living room instead of off the corner.
-NW_BED_DOOR = ((NW_ARC - NW_DOOR) / 2, (NW_ARC + NW_DOOR) / 2)
-
-# --------------------------------------------- the bath's own south wall
-# Straight from the curve's springing to the kitchen. The bath's south-east
-# corner is the kitchen's curve, so the room opens out from 1415 (4'-8") at
-# the shower to the full width of the wall at the door.
-BATH_S_W = BATH_SE[0] - BED_E
-BATH_S_DOOR = (BED_E + (BATH_S_W - NW_DOOR) / 2,
-               BED_E + (BATH_S_W + NW_DOOR) / 2)
+# BOTH DOORS GO AT THE ENDS, not in the middle of their stretch. Centre them
+# and the wall comes out as three short fragments with nothing between; push
+# them out to the junctions and the 1180 (3'-10") in the middle survives as one
+# unbroken piece of curve, which is the only part of it anybody reads. The
+# jambs are the walls the doors butt against — the kitchen at one end, the
+# outside wall at the other — so nothing is lost by it.
+# Given in x because that is what the wall table takes; the export turns them
+# back into arc length. Nothing here is typed in twice.
+NW_REVEAL = 250.0               # so the curve still lands on something
+NW_BATH_DOOR = (_nw_x_at_arc(NW_REVEAL),
+                _nw_x_at_arc(NW_REVEAL + NW_DOOR))
+NW_BED_DOOR = (_nw_x_at_arc(NW_ARC - NW_REVEAL - NW_DOOR),
+               _nw_x_at_arc(NW_ARC - NW_REVEAL))
 
 # --------------------------------------------------- the south-east bath
 # THE SECOND BATHROOM GOES WHERE THE BUILDER PUT HIS. His TOILET 02 was here —
@@ -558,23 +513,19 @@ NEW_WALLS = [
      'the kitchen wall to the external wall corner — solid already', 0),
 
     # --- the north-west quarter
-    (BED_PTS[0][0], BED_PTS[0][1], BED_PTS[-1][0], BED_PTS[-1][1], 150,
-     # -1: the leaf swings into the BEDROOM. Even widened, the bath has
-     # nowhere to put it.
+    (BED_E, KTOP, BED_E, BED_S, 150,
+     # -1: the leaf swings into the BEDROOM. A 1180-wide bath has nowhere
+     # to put it.
      [('door', BED_BATH_DOOR[0], BED_BATH_DOOR[1], 0, 2100, -1)],
      'partition', 'W-BED-E',
-     'bedroom | bath', 0, BED_PTS),
+     'bedroom | bath', 0),
     (NW_A[0], NW_A[1], NW_B[0], NW_B[1], 150,
-     # -1: into the bedroom, which has the floor to spare for it.
-     [('door', NW_BED_DOOR[0], NW_BED_DOOR[1], 0, 2100, -1)],
+     # Each opens into the room that has floor to spare for it: the bath's
+     # into the living room, the bedroom's into the bedroom.
+     [('door', NW_BATH_DOOR[0], NW_BATH_DOOR[1], 0, 2100, +1),   # bath | living
+      ('door', NW_BED_DOOR[0], NW_BED_DOOR[1], 0, 2100, -1)],    # bedroom | living
      'partition', 'W-NW',
-     'bedroom | living — the curve, now springing off the bath', NW_BOW,
-     NW_PTS),
-    (BED_E, BATH_S, BATH_SE[0], BATH_SE[1], 150,
-     # -1: into the living room. The bath cannot take a leaf and the living
-     # room does not notice one.
-     [('door', BATH_S_DOOR[0], BATH_S_DOOR[1], 0, 2100, -1)],
-     'partition', 'W-BATH-S', 'bath | living', 0),
+     'bedroom and bath | living — one curve, both doors', NW_BOW),
 
     # --- the sliding screen that makes the east arm a room
     # It runs on the KITCHEN'S OWN LINE, x 8410, carried south from the point
@@ -681,10 +632,9 @@ ROOMS = [
     ('BEDROOM', '', (1400, 2200),
      "the flat's north-west arm, closed off: 3050 (10'-0\") wide, windows "
      'north and west'),
-    ('BATH', '', (3600, 2400),
-     "1415 (4'-8\") wide below column 3 and 1180 (3'-10\") across the shower, "
-     'with a south wall of its own instead of the curve cutting the corner '
-     'off. Reached from the bedroom and, separately, from the living room'),
+    ('BATH', '', (3750, 1500),
+     "1180 (3'-10\") wide against the north wall, where the drainage is — "
+     'reached from the bedroom and, separately, from the living room'),
     ('BATH', 'COMMON', (8000, 6100),
      "2425 (7'-11\") wide, with column 4 taken inside it as the shower's east "
      'wall — where the builder had his second toilet, on the only other stack '
@@ -942,16 +892,14 @@ FURNITURE.append(
 # which is three bays.
 #
 # THE DESK IS FLUSH IN THE CORNER, against the north wall at y 0 and the east
-# wall. It was standing 100 (4") off the north wall for no reason. It ends at
-# y 1200, and the bath door — which swings west into the bedroom from y 1770
-# since it moved clear of column 3 — is 570 (1'-10") below that. The east wall
-# is read off BED_E rather than typed, so the desk follows it west.
+# wall at x 3050. It was standing 100 (4") off the north wall for no reason.
+# It ends at y 1200, and the bath door — which swings west into the bedroom
+# from y 1770 since it moved clear of column 3 — is 570 (1'-10") below that.
 WARD = (0.0, 3520.0, 1900.0, 4120.0)          # 1900 x 600
 MURPHY = (80.0, 1050.0, 2080.0, 2550.0)       # queen, folded DOWN
 MURPHY_FOLDED = 900.0                          # cabinet + sofa, off the wall
-BED_EF = BED_E_N - 75.0        # the bedroom's east face, above the step
-DESK = (BED_EF - 600.0, 0.0, BED_EF, 1200.0)  # 600 x 1200, flush in the corner
-DESK_CHAIR = (BED_EF - 1100.0, 475.0, BED_EF - 650.0, 925.0)
+DESK = (2450.0, 0.0, 3050.0, 1200.0)          # 600 x 1200, flush in the corner
+DESK_CHAIR = (1950.0, 475.0, 2400.0, 925.0)
 
 FURNITURE += [
     ('wardrobe', *WARD,

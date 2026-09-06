@@ -1218,13 +1218,25 @@ FURNITURE += [
 # (3'-11") a seated person takes to come round — because a swivel chair that
 # cannot complete the turn is just a chair.
 #
-# The pair is set back 795 (2'-7") from the balcony threshold, so you walk in
-# front of them to get out rather than between them. Across the room it is set
-# out from the EAST WALL and not from the balcony's centre: put on the centre
-# the eastern sweep came within 125 (5") of the wall. From the wall it clears
-# by 350 (1'-2"), and 1550 (5'-1") between centres leaves the same 350 between
-# the two sweeps — they turn without meeting anything. The pair ends up 225
-# (9") west of the balcony's middle, which nobody will find with a tape.
+# THE PAIR COMES SOUTH UNTIL THE SWEEPS TOUCH THE BALCONY LINE, which is as
+# far as they can go: turn in them there and your feet reach the threshold and
+# no further. That puts the seats 150 (6") off the opening, which is where a
+# chair bought for a view belongs.
+#
+# THE WAY OUT IS BETWEEN THEM, not round them. The pair spans 2750 (9'-0")
+# across its sweeps in an opening 3150 (10'-4") wide, so there was never a
+# route past either end — 50 (2") at the west and 350 (1'-2") at the east.
+# What there is, and always was, is the 650 (2'-2") between the two chairs:
+# you walk down through it and step out. Held back far enough to walk in FRONT
+# of them instead, they sat 795 (2'-7") off the glass, which is a chair in a
+# room rather than a chair at a window.
+#
+# Across the room the pair is set out from the EAST WALL and not from the
+# balcony's centre: put on the centre the eastern sweep came within 125 (5") of
+# the wall. From the wall it clears by 350 (1'-2"), and 1550 (5'-1") between
+# centres leaves the same 350 between the two sweeps — they turn without
+# meeting anything. The pair ends up 225 (9") west of the balcony's middle,
+# which nobody will find with a tape.
 #
 # THE OTTOMAN IS NORTH OF THEM, not in front of the view. Facing into the room
 # it is a footstool 300 (1'-0") off the seats; facing the balcony it is behind
@@ -1232,13 +1244,16 @@ FURNITURE += [
 # stepped over every time somebody went out.
 SWIV_R = 450.0                  # the chair
 SWIV_SWEEP = 600.0              # and what a seated person needs to come round
-SWIV_Y = 9750.0
+BALC_Y = next(w[1] for w in NEW_WALLS if w[7] == 'T-BALC')   # 10995
+SWIV_Y = BALC_Y - 600.0         # SWIV_SWEEP, below — the sweep, tangent
 SWIV_CLEAR = 350.0              # sweep to the east wall, and sweep to sweep
 _liv_e = 6950.0 - 75.0          # the envelope's inner face down this side
 SWIV_X = (_liv_e - SWIV_CLEAR - SWIV_SWEEP - (2 * SWIV_SWEEP + SWIV_CLEAR),
           _liv_e - SWIV_CLEAR - SWIV_SWEEP)
+# The ottoman keeps its 150 (6") off the sweeps, so it travels with them.
 _otto_c = sum(SWIV_X) / 2
-OTTO = (_otto_c - 400.0, 8500.0, _otto_c + 400.0, 9000.0)   # 800 x 500
+_otto_s = SWIV_Y - SWIV_SWEEP - 150.0
+OTTO = (_otto_c - 400.0, _otto_s - 500.0, _otto_c + 400.0, _otto_s)   # 800 x 500
 
 FURNITURE += [
     (kind, cx - r, SWIV_Y - r, cx + r, SWIV_Y + r, label, 'R-LIVING-DINING',

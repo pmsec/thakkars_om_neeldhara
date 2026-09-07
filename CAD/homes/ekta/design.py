@@ -317,9 +317,29 @@ SEB_WX = 6875.0     # the notch wall's centreline, carried north
 SEB_NY = 5400.0     # the top
 SEB_EX = 9450.0     # the east side, out in the arm
 SEB_S = 7820.0      # the notch wall — where the run starts
-SEB_SY = 8430.0     # the arm's south wall — where it ends
+SEB_SY = 8430.0     # the arm's south wall — where it ONCE ended
 SEB_T = 150.0
 SEB_RW, SEB_RE = 900.0, 400.0
+
+# THE ROOM IS CUT BACK OFF COLUMN 4'S NORTH FACE. It came out 5.90 m2 (63 sq
+# ft), and 1.5 of that was the pocket east of the column and the tail below it
+# — 850 (2'-9") of throat and a corner, floor you walked through to reach the
+# fittings and never stood in. The east room, which is the only room that door
+# opens off, has better use for it.
+#
+# So the east run stops at the column instead of carrying on to the flat's
+# south wall, and a new wall closes the room across. NEITHER LINE IS CHOSEN:
+# the cut is column 4's own north face, and the return south is the flat's
+# notch wall carried north — the same move the arm screen makes with the
+# kitchen's line. The return also gives the shower a built east wall where it
+# had only the column's face.
+# The room's id is DERIVED IN THE EXPORTER from its name and subtitle, so
+# renaming the subtitle renames the id and every piece of furniture pointing at
+# the old one falls on the floor. It is written once here and used by name.
+SEB_ROOM = 'R-BATH-EAST-ROOM'
+
+SEB_CUT = _col_face('column 4', 2) + SEB_T / 2      # 6770, on the north face
+SEB_RET = 8370.0                                    # the notch wall's own line
 
 
 def _seb_line(n=32):
@@ -332,7 +352,7 @@ def _seb_line(n=32):
     for i in range(1, n + 1):                       # the tight one
         a = (math.pi / 2) * i / n
         pts.append((cx + SEB_RE * math.sin(a), cy - SEB_RE * math.cos(a)))
-    pts.append((SEB_EX, SEB_SY))
+    pts.append((SEB_EX, SEB_CUT))
     out = []
     for q in pts:
         q = (round(q[0], 1), round(q[1], 1))
@@ -344,11 +364,10 @@ def _seb_line(n=32):
 SEB_LINE = _seb_line()
 SEB_RUN = _run(SEB_LINE)
 
-# THE DOOR IS IN THE EAST RUN, at its far end, and the top of the room is
-# solid. It was in the top run first, which put the way in on the side the
-# living room sees most of and broke the wall's best stretch of curve; down
-# here it is in the corner the arm already leads to, and the doorway's far
-# jamb is the external wall itself.
+# THE DOOR IS STILL IN THE EAST RUN, but that run is now 895 (2'-11") long
+# instead of 2630, so the door is what fits in it rather than what was wanted:
+# 700 (2'-4") with a 98 (4") jamb each side. It opens EAST into the room, which
+# is the only room it can open off now.
 #
 # Openings on a polyline are distances ALONG it, so the runs are measured
 # rather than typed: down the west side, round the big corner, across the top,
@@ -357,8 +376,11 @@ _SEB_EAST0 = ((SEB_S - SEB_NY - SEB_RW)
               + math.pi / 2 * SEB_RW
               + (SEB_EX - SEB_RE) - (SEB_WX + SEB_RW)
               + math.pi / 2 * SEB_RE)
-SEB_DOOR = (_SEB_EAST0 + (7555.0 - (SEB_NY + SEB_RE)),
-            _SEB_EAST0 + (8355.0 - (SEB_NY + SEB_RE)))          # 800 clear
+SEB_DOOR_W = 700.0
+_seb_east_run = SEB_CUT - SEB_T / 2 - (SEB_NY + SEB_RE)         # 895
+_seb_jamb = (_seb_east_run - SEB_DOOR_W) / 2
+SEB_DOOR = (_SEB_EAST0 + _seb_jamb,
+            _SEB_EAST0 + _seb_jamb + SEB_DOOR_W)
 
 # Inner faces, which is what the fixtures are set out from.
 SEB_X0, SEB_X1 = SEB_WX + SEB_T / 2, SEB_EX - SEB_T / 2   # 6950 .. 9375
@@ -546,10 +568,16 @@ NEW_WALLS = [
      'partition', 'W-ARM', 'room | living — the sliding screen', 0),
 
     # --- the south-east bath: one wall, round the column
-    (SEB_WX, SEB_S, SEB_EX, SEB_SY, SEB_T,
+    (SEB_WX, SEB_S, SEB_EX, SEB_CUT, SEB_T,
      [('door', SEB_DOOR[0], SEB_DOOR[1], 0, 2100, +1)], 'partition', 'W-SEB',
-     'bath 02 | living — up the notch line, round the top, down into the arm',
-     0, SEB_LINE),
+     'bath 02 | living and room — up the notch line, round the top, and down '
+     'only as far as column 4', 0, SEB_LINE),
+
+    # --- and the wall that closes it across, off the column's north face and
+    # back down the notch wall's own line to where that wall starts.
+    (SEB_EX, SEB_CUT, SEB_RET, SEB_S, SEB_T, [], 'partition', 'W-SEB-S',
+     'bath 02 | room — the cut, and the shower’s east wall', 0,
+     [(SEB_EX, SEB_CUT), (SEB_RET, SEB_CUT), (SEB_RET, SEB_S)]),
 
     # --- the way in
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
@@ -641,10 +669,12 @@ ROOMS = [
      'Shower and WC only — the basin is on the curve outside the door, so '
      'this room holds two fittings instead of three. Reached from the bedroom '
      'and, separately, from the living room'),
-    ('BATH', 'COMMON', (8000, 6100),
-     "2425 (7'-11\") wide, with column 4 taken inside it as the shower's east "
-     'wall — where the builder had his second toilet, on the only other stack '
-     'in the flat'),
+    ('BATH', 'EAST ROOM', (7900, 5900),
+     "cut back off column 4's north face: 2425 (7'-11\") wide and 1220 (4'-0\") "
+     'deep across the top, with the shower reaching south beside the column. '
+     'Its one door opens east, into the room — it was never common, whatever '
+     'the old label said. The builder had his second toilet here, on the only '
+     'other stack in the flat'),
     ('ROOM', '', (10100, 3200),
      "the east arm: 3025 (9'-11\") wide, windows north and south, the party "
      'wall blind down one side. Shut off from the living room by a sliding '
@@ -1192,17 +1222,12 @@ _vr = (SEB_VAN_RO + SEB_VAN_RI) / 2                 # 575, mid-depth
 SEB_BOWL = _ellipse(SEB_ARC_C[0] - _vr * math.cos(_va),
                     SEB_ARC_C[1] - _vr * math.sin(_va), 230, 180)
 
-# THE CORNER SHELF goes in the tail, where you come in — the one corner of
-# this room with nothing standing in it, and out of the way of everything that
-# has to be reached. A quarter round, and its radius is not chosen: it is the
-# gap between the south wall and where column 4 ends, so the shelves run from
-# the wall up to the column and stop on it.
-SEB_SHELF_C = (8445.0, SEB_Y2)
-SEB_SHELF_R = SEB_Y2 - _col_face('column 4', 4)    # 460
-SEB_SHELF = ([SEB_SHELF_C] +
-             [(round(SEB_SHELF_C[0] + SEB_SHELF_R * math.sin(math.pi / 2 * i / 16), 1),
-               round(SEB_SHELF_C[1] - SEB_SHELF_R * math.cos(math.pi / 2 * i / 16), 1))
-              for i in range(17)])
+# THE CORNER SHELVES ARE GONE WITH THE TAIL. They stood in the corner where
+# the old door came in, between the south wall and column 4's south face, and
+# that corner is in the east room now. There is nowhere left in this bath to
+# put them: the north wall is the WC, the curve is the basin, the west and
+# south are the shower, and the east is the door. Wall-hung inside the shower,
+# or a niche, is what a room this size takes.
 
 _sx = [q[0] for q in SEB_VANITY]
 _sy = [q[1] for q in SEB_VANITY]
@@ -1214,33 +1239,28 @@ FURNITURE += [
      f"({_ft(SEB_SHOWER[2] - SEB_SHOWER[0])} x "
      f"{_ft(SEB_SHOWER[3] - SEB_SHOWER[1])}), column 4's west face as its "
      'east wall and the window in it',
-     'R-BATH-COMMON', 2100,
+     SEB_ROOM, 2100,
      [(SEB_SHOWER[0], SEB_SHOWER[1]), (SEB_SHOWER[2], SEB_SHOWER[1]),
       (SEB_SHOWER[2], SEB_SHOWER[3]), (SEB_SHOWER[0], SEB_SHOWER[3])]),
     ('console', SEB_WC[0], SEB_WC[1], SEB_WC[2], SEB_WC[1] + 200.,
      f"WC cistern — {SEB_WC[2] - SEB_WC[0]:.0f} ({_ft(SEB_WC[2] - SEB_WC[0])}) "
      'wide against the north wall',
-     'R-BATH-COMMON', 900, SEB_WC_CIST),
+     SEB_ROOM, 900, SEB_WC_CIST),
     ('console', (SEB_WC[0] + SEB_WC[2]) / 2 - 200., SEB_WC[1] + 200.,
      (SEB_WC[0] + SEB_WC[2]) / 2 + 200., SEB_WC[3],
      f"WC — 400 x 600 (1'-4\" x {_ft(SEB_WC[3] - SEB_WC[1])}) projection, "
      f"facing south with {_ft(SEB_Y1 - SEB_WC[3])} clear in front",
-     'R-BATH-COMMON', 400, SEB_WC_PAN),
+     SEB_ROOM, 400, SEB_WC_PAN),
     ('console', min(_sx), min(_sy), max(_sx), max(_sy),
      "basin console — 500 (1'-8\") deep on the 825 (2'-8\") curve, "
      f"{_ft(math.pi / 2 * SEB_VAN_RO)} of it round the corner",
-     'R-BATH-COMMON', 900, SEB_VANITY),
+     SEB_ROOM, 900, SEB_VANITY),
     ('console', SEB_ARC_C[0] - _vr * math.cos(_va) - 230,
      SEB_ARC_C[1] - _vr * math.sin(_va) - 180,
      SEB_ARC_C[0] - _vr * math.cos(_va) + 230,
      SEB_ARC_C[1] - _vr * math.sin(_va) + 180,
      "basin — 460 x 360 (1'-6\" x 1'-2\") oval, mirror over, on the 45",
-     'R-BATH-COMMON', 880, SEB_BOWL),
-    ('shelves', SEB_SHELF_C[0], SEB_SHELF_C[1] - SEB_SHELF_R,
-     SEB_SHELF_C[0] + SEB_SHELF_R, SEB_SHELF_C[1],
-     f"corner shelves — a quarter round of {SEB_SHELF_R:.0f} "
-     f"({_ft(SEB_SHELF_R)}), from the south wall up to where column 4 ends",
-     'R-BATH-COMMON', 1500, SEB_SHELF),
+     SEB_ROOM, 880, SEB_BOWL),
 ]
 
 

@@ -99,8 +99,38 @@ def main():
         print('  CLASH   ' + b)
     if not bad:
         print('  clear   nothing stands in a column, beam or shaft')
+    _clashes = len(bad)
 
-    # ---------------------------------------------------- 2. against the record
+    # ------------------------------------------- 2. against the rooms that exist
+    # A ROOM'S ID IS DERIVED FROM ITS NAME AND SUBTITLE, so renaming a room
+    # renames its id and every piece pointing at the old one is orphaned —
+    # silently, because it still draws on the sheet and only vanishes in the
+    # app. That happened the day BATH / COMMON became BATH / EAST ROOM.
+    rooms = set()
+    used = set()
+    for r in getattr(D, 'ROOMS', []):
+        name, sub = r[0], r[1]
+        b = ''.join(c if c.isalnum() else '-'
+                    for c in (name if not sub else f'{name}-{sub}').upper()).strip('-')
+        while '--' in b:
+            b = b.replace('--', '-')
+        rid = f'R-{b}'
+        n2 = 1
+        while rid in rooms:
+            n2 += 1
+            rid = f'R-{b}-{n2}'
+        rooms.add(rid)
+    for f in furn:
+        if len(f) > 6 and f[6]:
+            used.add(f[6])
+    orphans = sorted(used - rooms)
+    for o in orphans:
+        print(f'  ORPHAN  furniture points at {o!r}, which is not a room')
+        bad.append(o)
+    if not orphans:
+        print('  clear   every piece names a room that exists')
+
+    # ---------------------------------------------------- 3. against the record
     now = manifest()
     if update:
         with open(path, 'w') as fh:

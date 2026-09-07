@@ -4,13 +4,12 @@
     "console",
     "console"
   ],
-  "R-BATH-COMMON": [
+  "R-BATH-EAST-ROOM": [
     "screen",
     "console",
     "console",
     "console",
-    "console",
-    "shelves"
+    "console"
   ],
   "R-BEDROOM": [
     "wardrobe",

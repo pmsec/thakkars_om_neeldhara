@@ -1143,11 +1143,40 @@ FURNITURE += [
 BED_W, BED_L = 1830.0, 2000.0       # king
 ARM_BED = (11470.0 - BED_L, 800.0, 11470.0, 800.0 + BED_W)
 
-# THE WARDROBES GO IN THE TAIL, on the same blind wall, below where the room
-# narrows to 1945 (6'-5"). 600 deep and 2855 (9'-4") long — which is why it is
-# wardrobes and not a wardrobe — leaving 1345 (4'-5") of floor in front and
-# stopping 100 short of the south window rather than dying into its reveal.
-ARM_WARD = (11470.0 - 600.0, 5400.0, 11470.0, 8255.0)
+# THE DAYBED IS THE SOUTH END, flush to the window, and it is what everything
+# else in the tail is now set out from. A single mattress is 900 (2'-11") wide,
+# so that is the depth; the seat is built to it rather than the other way
+# round. Its top is 7455 and the wardrobes stop there.
+ARM_DAY_D = 900.0
+ARM_DAY_N = 8355.0 - ARM_DAY_D                      # 7455, the seat's back
+
+# ITS WEST END IS THE BATH'S EAST WALL LINE carried south. Run the full width
+# of the tail, as marked, the daybed would have left the dressing console 310
+# (1'-0") in front of it — the pocket between the bath's south wall and the
+# window is 1510 (4'-11") deep, and a 400 console plus a 900 seat plus a
+# person is 1900. Started on the wall line instead, the console gets 1110
+# (3'-8") to sit at and the daybed is still 2020 (6'-8"), which is longer than
+# a single bed.
+ARM_DAY = (SEB_EX, ARM_DAY_N, 11470.0, 8355.0)
+ARM_DAY_TOP = _round_rect(*ARM_DAY, (60, 60, 140, 140))
+ARM_DAY_MAT = _round_rect(ARM_DAY[0] + 70, ARM_DAY[1] + 70,
+                          ARM_DAY[2] - 70, ARM_DAY[3] - 130, 90)
+
+# THE DRESSING CONSOLE goes on the bath's south wall, where it is marked, with
+# a bowed front. 800 x 400 (2'-7" x 1'-4") and 1110 (3'-8") of floor in front
+# of it — enough for a stool and to get past it to the daybed.
+# Its west end is COLUMN 4'S EAST FACE. Started 25 (1") west of it the console
+# stood 0.006 m2 inside the column — nothing you would see and a lie in the
+# model, which is what the clash check is for.
+_dress_w = _col_face('column 4', 3)                 # 8525
+ARM_DRESS = (_dress_w, SEB_CUT + SEB_T / 2,
+             _dress_w + 800.0, SEB_CUT + SEB_T / 2 + 400.0)
+ARM_DRESS_TOP = _round_rect(*ARM_DRESS, (30, 30, 200, 200))
+
+# THE WARDROBES ARE CUT SHORT AT THE DAYBED. 600 deep and 2055 (6'-9") long
+# now, not 2855 — the last 800 (2'-7") of them was where the seat goes, and a
+# wardrobe door over a daybed opens onto the cushions.
+ARM_WARD = (11470.0 - 600.0, 5400.0, 11470.0, ARM_DAY_N)
 
 FURNITURE += [
     ('bed', *ARM_BED,
@@ -1155,8 +1184,25 @@ FURNITURE += [
      "945 (3'-1\") at the foot and both sides open",
      'R-ROOM', 600),
     ('wardrobe', *ARM_WARD,
-     "wardrobes — 600 x 2855 (2'-0\" x 9'-4\") down the party wall in the tail",
+     f"wardrobes — 600 x {ARM_WARD[3] - ARM_WARD[1]:.0f} (2'-0\" x "
+     f"{_ft(ARM_WARD[3] - ARM_WARD[1])}) down the party wall, stopping where "
+     'the daybed starts',
      'R-ROOM', 2400),
+    ('daybed', *ARM_DAY,
+     f"daybed — {ARM_DAY[2] - ARM_DAY[0]:.0f} x {ARM_DAY_D:.0f} "
+     f"({_ft(ARM_DAY[2] - ARM_DAY[0])} x {_ft(ARM_DAY_D)}), built in flush to "
+     'the south window, with drawers under the seat',
+     'R-ROOM', 450, ARM_DAY_TOP),
+    ('daybed', ARM_DAY[0] + 70, ARM_DAY[1] + 70, ARM_DAY[2] - 70,
+     ARM_DAY[3] - 130,
+     "the mattress — 900 (2'-11\") wide, which is what set the depth",
+     'R-ROOM', 500, ARM_DAY_MAT),
+    ('console', *ARM_DRESS,
+     f"dressing console — {ARM_DRESS[2] - ARM_DRESS[0]:.0f} x 400 "
+     f"({_ft(ARM_DRESS[2] - ARM_DRESS[0])} x 1'-4\") with a bowed front, on "
+     f"the bath's south wall. The daybed starts east of it, so what is in "
+     f"front is the floor to the window: {_ft(8355.0 - ARM_DRESS[3])}",
+     'R-ROOM', 780, ARM_DRESS_TOP),
 ]
 
 

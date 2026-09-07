@@ -1160,109 +1160,109 @@ FURNITURE += [
 ]
 
 
-# ------------------------------------------ what goes in BATH / COMMON (SE)
-# THE ROOM IS AN L WITH A FIN IN IT. Derived, it comes out 5.90 m2 (63 sq ft):
-# a body 2425 x 2270 (7'-11" x 7'-5") with a 900 (2'-11") curve on the
-# north-west corner and a 400 (1'-4") one on the north-east, plus a tail
-# 930 x 610 (3'-1" x 2'-0") at the south-east where the door is. Column 4
-# stands inside it, showing as a fin 150 wide and 1050 (3'-5") long off the
-# south wall's east end, with 850 (2'-9") between it and the east wall.
+# ------------------------------------------ what goes in BATH 02 (east room)
+# THE ROOM IS AN L NOW: a strip 2425 x 1220 (7'-11" x 4'-0") across the top,
+# and a leg 1345 x 1050 (4'-5" x 3'-5") reaching south beside column 4. Four
+# things have to go in it and the L decides which goes where.
 #
-# THE FIN DECIDES THE PLAN. It leaves a pocket east of it only 850 wide — a WC
-# needs 600 of pan and 600 in front of it, so nothing can face across that
-# pocket, and the east wall is out for anything you sit on. West of the fin
-# the south wall is clear for 1345 (4'-5"), which is a shower, and it is the
-# wall the only window is in.
+# THE SHOWER TAKES THE NORTH-WEST, and it is a QUADRANT because the corner it
+# sits in is not a corner — the wall turns through a 900 (2'-11") curve there,
+# and a rectangular tray in a round corner leaves two slivers nobody can clean.
 #
-# So: WET SOUTH-WEST, DRY NORTH. You come in at the south-east, the shower is
-# ahead and left with the window in it, and the two dry fittings are on the
-# north — the WC against the straight run of it, and the basin on the curve.
+# ITS RADIUS IS SET BY THE ROUTE, not by the shower. Struck at 1220 — the depth
+# of the strip, which is the figure that wants to be used — the screen came
+# within 432 (1'-5") of the console's corner, and the walk from the basin to
+# the WC went through that. Backed off to 1050 it leaves 602 (2'-0"), which is
+# the passage. The tray is still a 1050 quadrant, which is a shower.
 #
-# THE WC AND THE BASIN CANNOT CHANGE PLACES, and the figure that decides it is
-# depth, not width. The curve is in the north-WEST, directly above the shower,
-# so what stands on it has 1070 (3'-6") to the shower's face — a WC there
-# would sit with 470 (1'-6") in front of it. The WC's present spot is EAST of
-# the shower, where the floor runs all the way down to the south wall, so it
-# has 1670 (5'-6"). A basin only needs somewhere to stand; a WC needs somewhere
-# to sit, and only one of the two places offers it.
-SEB_SHOWER = (SEB_X0, 6545.0, _col_face('column 4', 1), SEB_Y1)   # 1345 x 1200
-
-SEB_WC = (8367.0, SEB_Y0, 9067.0, SEB_Y0 + 600.0)                 # 700 x 600
-SEB_WC_CIST = _round_rect(SEB_WC[0], SEB_WC[1], SEB_WC[2], SEB_WC[1] + 200., 20)
-SEB_WC_PAN = _round_rect((SEB_WC[0] + SEB_WC[2]) / 2 - 200., SEB_WC[1] + 200.,
-                         (SEB_WC[0] + SEB_WC[2]) / 2 + 200., SEB_WC[3],
-                         (40, 40, 190, 190))
-
-# THE BASIN IS THE CURVE. The 900 corner was drawn to soften the room and had
-# nothing on it; a console struck from the same centre turns it into the one
-# fitting in the flat that could not have been bought off a shelf. 500 deep on
-# the inner face, so it runs 825 out and 325 in, and it dies into the wall at
-# both ends instead of stopping against it.
-SEB_ARC_C = (SEB_WX + SEB_RW, SEB_NY + SEB_RW)      # (7775, 6300)
-SEB_VAN_RO = SEB_RW - SEB_T / 2                     # 825, the wall face
-SEB_VAN_RI = SEB_VAN_RO - 500.0                     # 325, its own front edge
+# THE BASIN GOES ON THE NORTH WALL, east of the shower, where the mirror is
+# flat and the wall is straight for 1275 (4'-2").
+#
+# THE WC GOES DOWN THE LEG, on the south wall under the window. It faces north
+# up the leg and out into the strip, which is why it has room: 1531 (5'-0") in
+# front of it, where against any wall in the strip it would have had 620.
+#
+# THE CONSOLE IS SHALLOW, 200 (8"), against the cut wall, and the basin is
+# 400 (1'-4") rather than the 450 a vanity would like. Between them is the way
+# from the door to the WC and it comes to 620 (2'-0") — the minimum passage,
+# and every millimetre of it was taken off one of those two.
+SEB_SH_R = 1050.0                                   # what the route leaves
+SEB_SH_C = (SEB_X0, SEB_Y0)                         # the corner it is struck from
+SEB_ARC_C = (SEB_WX + SEB_RW, SEB_NY + SEB_RW)      # (7775, 6300), the wall's
 
 
-def _seb_vanity(n=20):
-    """The console on the north-west curve: out along the wall, back along
-    the front. Angles run from due west of the centre round to due north."""
-    cx, cy = SEB_ARC_C
-    out = [(cx - SEB_VAN_RO * math.cos(math.pi / 2 * i / n),
-            cy - SEB_VAN_RO * math.sin(math.pi / 2 * i / n))
-           for i in range(n + 1)]
-    out += [(cx - SEB_VAN_RI * math.cos(math.pi / 2 * i / n),
-             cy - SEB_VAN_RI * math.sin(math.pi / 2 * i / n))
-            for i in range(n, -1, -1)]
-    return [(round(a, 1), round(b, 1)) for a, b in out]
+def _seb_tray(n=28):
+    """The shower floor: down the west wall, round the room's own 900 curve,
+    along the north wall, and back on the tray's own arc. Two curves bending
+    opposite ways, which is what the corner actually is."""
+    cx, cy = SEB_ARC_C                              # the wall's curve
+    ro = SEB_RW - SEB_T / 2                         # 825
+    out = [(SEB_X0, SEB_SH_C[1] + SEB_SH_R)]
+    out.append((SEB_X0, cy))                        # up to where the wall turns
+    for i in range(n + 1):                          # round the wall
+        a = (math.pi / 2) * i / n
+        out.append((cx - ro * math.cos(a), cy - ro * math.sin(a)))
+    out.append((SEB_SH_C[0] + SEB_SH_R, SEB_Y0))    # east along the north wall
+    for i in range(n + 1):                          # and back on the tray's arc
+        a = (math.pi / 2) * i / n
+        out.append((SEB_SH_C[0] + SEB_SH_R * math.cos(a),
+                    SEB_SH_C[1] + SEB_SH_R * math.sin(a)))
+    return [(round(q[0], 1), round(q[1], 1)) for q in out]
 
 
-SEB_VANITY = _seb_vanity()
-_va = math.pi / 4                                   # the bowl sits on the 45
-_vr = (SEB_VAN_RO + SEB_VAN_RI) / 2                 # 575, mid-depth
-SEB_BOWL = _ellipse(SEB_ARC_C[0] - _vr * math.cos(_va),
-                    SEB_ARC_C[1] - _vr * math.sin(_va), 230, 180)
+SEB_TRAY = _seb_tray()
 
-# THE CORNER SHELVES ARE GONE WITH THE TAIL. They stood in the corner where
-# the old door came in, between the south wall and column 4's south face, and
-# that corner is in the east room now. There is nowhere left in this bath to
-# put them: the north wall is the WC, the curve is the basin, the west and
-# south are the shower, and the east is the door. Wall-hung inside the shower,
-# or a niche, is what a room this size takes.
+SEB_VAN = (8250.0, SEB_Y0, 9050.0, SEB_Y0 + 400.0)          # 800 x 400
+SEB_VAN_TOP = _round_rect(*SEB_VAN, (40, 40, 200, 200))
+SEB_BOWL = _ellipse((SEB_VAN[0] + SEB_VAN[2]) / 2, (SEB_VAN[1] + SEB_VAN[3]) / 2,
+                    220, 150)
 
-_sx = [q[0] for q in SEB_VANITY]
-_sy = [q[1] for q in SEB_VANITY]
+SEB_CON_D = 200.0
+SEB_CON = (8250.0, SEB_CUT - SEB_T / 2 - SEB_CON_D, 9150.0, SEB_CUT - SEB_T / 2)
+SEB_CON_TOP = _round_rect(*SEB_CON, (90, 90, 30, 30))
+
+# The WC is centred on the leg, which is also centred on the window it sits
+# under — the window is 7235-7985 and the leg is 6950-8295.
+SEB_WC_W, SEB_WC_D = 700.0, 600.0
+_wc_c = (SEB_X0 + _col_face('column 4', 1)) / 2             # 7622, the leg's middle
+SEB_WC = (_wc_c - SEB_WC_W / 2, SEB_Y1 - SEB_WC_D,
+          _wc_c + SEB_WC_W / 2, SEB_Y1)
+SEB_WC_CIST = _round_rect(SEB_WC[0], SEB_WC[3] - 200.0, SEB_WC[2], SEB_WC[3], 20)
+SEB_WC_PAN = _round_rect(_wc_c - 200.0, SEB_WC[1], _wc_c + 200.0,
+                         SEB_WC[3] - 200.0, (190, 190, 40, 40))
+
+_sx = [q[0] for q in SEB_TRAY]
+_sy = [q[1] for q in SEB_TRAY]
 
 FURNITURE += [
-    ('screen', *SEB_SHOWER,
-     f"shower — {SEB_SHOWER[2] - SEB_SHOWER[0]:.0f} x "
-     f"{SEB_SHOWER[3] - SEB_SHOWER[1]:.0f} "
-     f"({_ft(SEB_SHOWER[2] - SEB_SHOWER[0])} x "
-     f"{_ft(SEB_SHOWER[3] - SEB_SHOWER[1])}), column 4's west face as its "
-     'east wall and the window in it',
-     SEB_ROOM, 2100,
-     [(SEB_SHOWER[0], SEB_SHOWER[1]), (SEB_SHOWER[2], SEB_SHOWER[1]),
-      (SEB_SHOWER[2], SEB_SHOWER[3]), (SEB_SHOWER[0], SEB_SHOWER[3])]),
-    ('console', SEB_WC[0], SEB_WC[1], SEB_WC[2], SEB_WC[1] + 200.,
-     f"WC cistern — {SEB_WC[2] - SEB_WC[0]:.0f} ({_ft(SEB_WC[2] - SEB_WC[0])}) "
-     'wide against the north wall',
-     SEB_ROOM, 900, SEB_WC_CIST),
-    ('console', (SEB_WC[0] + SEB_WC[2]) / 2 - 200., SEB_WC[1] + 200.,
-     (SEB_WC[0] + SEB_WC[2]) / 2 + 200., SEB_WC[3],
-     f"WC — 400 x 600 (1'-4\" x {_ft(SEB_WC[3] - SEB_WC[1])}) projection, "
-     f"facing south with {_ft(SEB_Y1 - SEB_WC[3])} clear in front",
-     SEB_ROOM, 400, SEB_WC_PAN),
-    ('console', min(_sx), min(_sy), max(_sx), max(_sy),
-     "basin console — 500 (1'-8\") deep on the 825 (2'-8\") curve, "
-     f"{_ft(math.pi / 2 * SEB_VAN_RO)} of it round the corner",
-     SEB_ROOM, 900, SEB_VANITY),
-    ('console', SEB_ARC_C[0] - _vr * math.cos(_va) - 230,
-     SEB_ARC_C[1] - _vr * math.sin(_va) - 180,
-     SEB_ARC_C[0] - _vr * math.cos(_va) + 230,
-     SEB_ARC_C[1] - _vr * math.sin(_va) + 180,
-     "basin — 460 x 360 (1'-6\" x 1'-2\") oval, mirror over, on the 45",
+    ('screen', min(_sx), min(_sy), max(_sx), max(_sy),
+     f"shower — a quadrant of {SEB_SH_R:.0f} ({_ft(SEB_SH_R)}), which is the "
+     'depth of the room: it runs from the north wall to the cut wall and '
+     'touches both. Curved screen, because the corner it sits in is a curve',
+     SEB_ROOM, 2100, SEB_TRAY),
+    ('console', *SEB_VAN,
+     f"basin console — {SEB_VAN[2] - SEB_VAN[0]:.0f} x "
+     f"{SEB_VAN[3] - SEB_VAN[1]:.0f} ({_ft(SEB_VAN[2] - SEB_VAN[0])} x "
+     f"{_ft(SEB_VAN[3] - SEB_VAN[1])}) on the north wall, mirror flat above it",
+     SEB_ROOM, 900, SEB_VAN_TOP),
+    ('console', SEB_VAN[0] + 180., SEB_VAN[1] + 75.,
+     SEB_VAN[2] - 180., SEB_VAN[3] - 75.,
+     "basin — 440 x 300 (1'-5\" x 1'-0\") oval",
      SEB_ROOM, 880, SEB_BOWL),
+    ('console', *SEB_CON,
+     f"console — {SEB_CON[2] - SEB_CON[0]:.0f} x {SEB_CON_D:.0f} "
+     f"({_ft(SEB_CON[2] - SEB_CON[0])} x {_ft(SEB_CON_D)}) against the cut "
+     'wall. Shallow on purpose: every millimetre of it comes off the way past',
+     SEB_ROOM, 850, SEB_CON_TOP),
+    ('console', SEB_WC[0], SEB_WC[3] - 200., SEB_WC[2], SEB_WC[3],
+     f"WC cistern — {SEB_WC_W:.0f} ({_ft(SEB_WC_W)}) against the south wall, "
+     'under the window',
+     SEB_ROOM, 900, SEB_WC_CIST),
+    ('console', _wc_c - 200., SEB_WC[1], _wc_c + 200., SEB_WC[3] - 200.,
+     f"WC — 400 x {SEB_WC_D:.0f} (1'-4\" x {_ft(SEB_WC_D)}) projection, facing "
+     'north up the leg',
+     SEB_ROOM, 400, SEB_WC_PAN),
 ]
-
 
 # ------------------------------------------ the two swivels, at the balcony
 # THE POINT OF THESE CHAIRS IS THAT THEY TURN. Set facing the balcony they are

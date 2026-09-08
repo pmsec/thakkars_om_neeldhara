@@ -43,6 +43,7 @@ export function runFidelity(): FidelityReport {
   for (const [renderer, build] of builders) {
     for (const f of furniture) {
       if (f.kind === 'tree') continue // crowns overhang the planting square, as drawn
+      if (f.kind === 'planter' && /parapet/i.test(f.label)) continue // the planted strips carry small trees; their crowns overhang the bed
       const o = build(f)
       if (!o) continue
       piecesChecked++

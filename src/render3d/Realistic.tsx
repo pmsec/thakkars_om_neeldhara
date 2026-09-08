@@ -444,17 +444,17 @@ export function makeMaterials() {
     // the fountain: polished veined marble under a clear coat, and still water
     // that mirrors the sky - both take the environment map once the renderer exists
     fountainMarble: new THREE.MeshPhysicalMaterial({
-      map: marbleTexture(), color: 0xffffff, roughness: 0.16, metalness: 0.0,
-      clearcoat: 0.7, clearcoatRoughness: 0.12, envMapIntensity: 0.9,
+      map: marbleTexture(), color: 0xf1ede6, roughness: 0.3, metalness: 0.0,
+      clearcoat: 0.35, clearcoatRoughness: 0.2, envMapIntensity: 0.35,
     }),
     fountainWater: new THREE.MeshPhysicalMaterial({
-      color: 0x9fcfe0, transparent: true, opacity: 0.72, roughness: 0.03, metalness: 0.05,
-      clearcoat: 1.0, clearcoatRoughness: 0.02, envMapIntensity: 1.4, side: THREE.DoubleSide,
+      color: 0x8fb8c8, transparent: true, opacity: 0.7, roughness: 0.05, metalness: 0.05,
+      clearcoat: 0.8, clearcoatRoughness: 0.05, envMapIntensity: 0.6, side: THREE.DoubleSide,
     }),
     fountainJet: new THREE.MeshPhysicalMaterial({
-      color: 0xd8f0f8, transparent: true, opacity: 0.45, roughness: 0.05, metalness: 0.0,
+      color: 0xd8f0f8, transparent: true, opacity: 0.28, roughness: 0.05, metalness: 0.0,
     }),
-    poolLamp: new THREE.MeshStandardMaterial({ color: 0xfff1c0, emissive: 0xffc352, emissiveIntensity: 2.4, roughness: 0.3 }),
+    poolLamp: new THREE.MeshStandardMaterial({ color: 0xf0dcae, emissive: 0xffb45a, emissiveIntensity: 0.6, roughness: 0.3 }),
     // carved stone of the fountain: warmer and duller than the polished marble tops
     carved: new THREE.MeshStandardMaterial({ color: 0xd6cdbb, roughness: 0.7 }),
     acrylic: new THREE.MeshStandardMaterial({ color: 0xeef2f2, roughness: 0.18, metalness: 0.05 }),
@@ -799,7 +799,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       if (/parapet/i.test(f.label)) {
         // the planted strip inside a parapet: the clipped hedge, tall enough to
         // hide the city from inside (see hedge.ts)
-        return hedgeGroup(f, { bed: M.pot, leaf: M.leaf, leafDark: M.leafDark }, bed)
+        return hedgeGroup(f, { bed: M.pot, leaf: M.leaf, leafDark: M.leafDark, trunk: M.trunk }, bed)
       }
       if (/sofa/i.test(f.label)) {
         // the great room's planter box: joinery to match the sofa, eased corners as
@@ -2442,7 +2442,7 @@ function tieredFountain(M: Mats, F: { x: number; y: number; r: number }): THREE.
       g.add(lens)
     }
     // one real light per basin does the lighting; the lenses are the glow points
-    const glow = new THREE.PointLight(0xffc860, 1.4, 2.6 * k, 1.8)
+    const glow = new THREE.PointLight(0xffc860, 0.45, 2.2 * k, 1.8)
     glow.position.set(F.x * S, (b.top - 40) * k * S, F.y * S)
     g.add(glow)
   }
@@ -2470,18 +2470,8 @@ function tieredFountain(M: Mats, F: { x: number; y: number; r: number }): THREE.
       g.add(m)
     }
   }
-  fall(212, 10, 2170, 1700)
-  fall(372, 14, 1680, 860)
-  // ripple rings where the falls land: faint pale discs on the water
-  for (const [r, y, n] of [[372, 1676, 14], [212, 2166, 10]] as const) {
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2
-      const ring = new THREE.Mesh(new THREE.RingGeometry(mm(28), mm(40), 20), M.fountainJet)
-      ring.rotation.x = -Math.PI / 2
-      ring.position.set((F.x + r * k * Math.cos(a)) * S, y * k * S, (F.y + r * k * Math.sin(a)) * S)
-      g.add(ring)
-    }
-  }
+  fall(212, 8, 2170, 1700)
+  fall(372, 10, 1680, 860)
   return g
 }
 

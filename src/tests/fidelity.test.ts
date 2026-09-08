@@ -150,6 +150,7 @@ describe('2D↔3D fidelity', () => {
     for (const [builderName, build] of builders) {
       for (const f of furniture) {
         if (f.kind === 'tree') continue
+        if (f.kind === 'planter' && /parapet/i.test(f.label)) continue // small trees in the strips: crowns overhang
         const o = build(f)
         if (!o) continue
         o.updateMatrixWorld(true)

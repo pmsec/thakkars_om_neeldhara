@@ -646,8 +646,12 @@ _ONCE = [
     # against the wall they are the dressing zone's console when the bed is up
     # and the bed's side tables when it is down.
     ('counter-r', -450, 6945, 30, 7445, "side table  ·  500 x 480"),
-    ('murphy-e',  -370, 7445, 30, 8945,
-     "wall bed  ·  QUEEN 1500 x 2000, shown folded down"),
+    # The wall bed is a SOFA WALL BED: a 400 cabinet on the wall and a two-seat
+    # sofa, 550 deep, in front of it with its back to the cabinet.  Closed, the
+    # dressing zone has a sofa; open, the queen folds down over the sofa.  The
+    # unit's front is at X 580, 1730 clear to the mirror wall.
+    ('murphy-e',  -370, 7445, 580, 8945,
+     "wall bed  ·  QUEEN 1500 x 2000 folds down over a 2-seat sofa  ·  shown down, dashed"),
     ('counter-r', -450, 8945, 30, 9445, "side table  ·  500 x 480"),
     # A MIRROR ON THE BATH WALL AND NOTHING ELSE — no console under it.  It is in
     # the corner where the bath wall meets the south window, so you face east
@@ -1133,11 +1137,9 @@ _ONCE = [
     # take a piece 800 deep and still leave a lane wider than the arch at the
     # far end of it.
     #
-    # Console west, TWO CHAIRS east, all centred on the legs' own 1800 so they
-    # read as a set rather than as things that happened to fit.  The mirror
-    # goes on the leg above the console — 'console-w' draws it — because the
-    # one thing an entry hall is actually for is the last look before you
-    # leave.
+    # TWO CHAIRS east, centred on the leg's own 1800.  The west leg is bare
+    # wood now (see below); the mirror for the last look before you leave
+    # hangs on it, and needs nothing under it.
     #
     # A 2-SEAT SOFA WAS DRAWN THERE FIRST and taken out.  A hall is somewhere
     # you sit for a minute to put a shoe on, not somewhere two people settle
@@ -1145,12 +1147,12 @@ _ONCE = [
     # reading as a pair of pieces rather than one long lump.
     #
     # WHAT THE LANE BETWEEN THEM HAS TO CARRY is the walk from the front door
-    # to the great room: 2020 clear even with the console 100 deeper, against
-    # the arched portal's own 1050 at the far end of it.  Nothing on this
-    # route narrows below the door it leads to.
-    ('console-w', 10630, 9525, 11080, 10925,
-     'console  ·  1400 x 450, against the U\'s west leg, corners eased 110  ·  '
-     'mirror over'),
+    # to the great room, against the arched portal's own 1050 at the far end
+    # of it.  Nothing on this route narrows below the door it leads to.
+    #
+    # THE CONSOLE THAT STOOD AGAINST THE WEST LEG IS GONE — the client saw it
+    # in the walkthrough as a block in the way and had it taken out.  The west
+    # leg is bare wood, and the lane is the full 2470 between the legs.
     ('sofa-e',    13100, 9425, 13850, 10125,
      'chair  ·  700 x 750, against the U\'s east leg, facing west'),
     ('sofa-e',    13100, 10325, 13850, 11025,

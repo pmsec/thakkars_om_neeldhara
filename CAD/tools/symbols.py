@@ -411,18 +411,25 @@ def symbol(kind, a, b, c, d):
         return [('poly', [(a, b)] + arc, 'light'),
                 ('line', a, b, a, b + r, 'solid')]
     if kind.startswith('murphy'):
-        # A WALL BED.  The cabinet is what is really there — solid, 400 deep,
-        # closed 51 weeks of the year.  The bed is drawn DASHED in the position
+        # A WALL BED WITH A SOFA IN FRONT.  The cabinet is what is really there —
+        # solid, 400 deep, closed 51 weeks of the year — and what shows in front
+        # of it while it is closed is a two-seat sofa, its back to the cabinet,
+        # which the bed folds down OVER.  The bed is drawn DASHED in the position
         # it takes when it is folded down, because that is the thing you need to
         # see the room around, and it is not there in plan the rest of the time.
+        # The rectangle given is the whole closed unit: cabinet plus sofa.
         L = 2000                                   # the bed, folded down
-        out = [_rr(a, b, c, d, 'solid')]
+        CAB = 400                                  # the cabinet
         if kind.endswith('-e'):
-            out += [_rr(c, b, c + L, d, 'dash'),
-                    _rr(c, b + 90, c + 320, d - 90, 'dash')]        # the pillow end
+            out = [_rr(a, b, a + CAB, d, 'solid')]
+            out += symbol('sofa-w', a + CAB, b, c, d)
+            out += [_rr(a + CAB, b, a + CAB + L, d, 'dash'),
+                    _rr(a + CAB, b + 90, a + CAB + 320, d - 90, 'dash')]   # the pillow end
         else:
-            out += [_rr(a - L, b, a, d, 'dash'),
-                    _rr(a - 320, b + 90, a, d - 90, 'dash')]
+            out = [_rr(c - CAB, b, c, d, 'solid')]
+            out += symbol('sofa-e', a, b, c - CAB, d)
+            out += [_rr(c - CAB - L, b, c - CAB, d, 'dash'),
+                    _rr(c - CAB - 320, b + 90, c - CAB, d - 90, 'dash')]
         return out
     if kind.startswith('bed'):
         out = [_rr(a, b, c, d, 'solid')]

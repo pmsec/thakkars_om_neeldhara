@@ -1154,8 +1154,10 @@ def emit_furniture():
         'The tree growing off the sofa’s end', 2400)
     # the terraces as DRAWN by terrace_pieces(): the grass field, and the
     # jhoola where its frame actually stands (posts at x -200 and 610)
-    add('grass', -350, 0, 3100, 1200, 'R-P-TERRACE', 'real grass', 25)
-    add('grass', 21730, 0, 3100, 1200, 'R-K-TERRACE', 'real grass', 25)
+    add('planter', -350, 0, 3100, 200, 'R-P-TERRACE', 'Planted strip inside the parapet', 340)
+    add('planter', 21730, 0, 3100, 200, 'R-K-TERRACE', 'Planted strip inside the parapet', 340)
+    add('grass', -350, 200, 3100, 1000, 'R-P-TERRACE', 'real grass', 25)
+    add('grass', 21730, 200, 3100, 1000, 'R-K-TERRACE', 'real grass', 25)
     add('bench', -200, 250, 900, 700, 'R-P-TERRACE', 'Jhoola', 1900)
     add('bench', 23780, 250, 900, 700, 'R-K-TERRACE', 'Jhoola', 1900)
 

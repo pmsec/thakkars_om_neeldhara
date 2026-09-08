@@ -537,11 +537,13 @@
 <polygon points="2528.0,960.1 2522.8,960.7 2519.6,962.3 2517.3,964.3 2515.7,966.6 2514.9,969.3 2514.9,972.4 2515.7,975.8 2518.6,980.2 2528.0,960.1 2530.9,964.5 2531.8,968.0 2531.7,971.0 2530.9,973.7 2529.4,976.1 2527.1,978.1 2523.9,979.6 2518.6,980.2" fill="#dfe3d4" stroke="#a9b598" stroke-width="0.7"/>
 </g>
 <g id="L-furniture">
-<rect x="474.5" y="413.8" width="418.2" height="161.9" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
-<line x1="558.1" y1="421.9" x2="558.1" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
-<line x1="641.7" y1="421.9" x2="641.7" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
-<line x1="725.4" y1="421.9" x2="725.4" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
-<line x1="809.0" y1="421.9" x2="809.0" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<rect x="474.5" y="413.8" width="418.2" height="27.0" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
+<line x1="474.5" y1="440.7" x2="892.7" y2="440.7" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="474.5" y="440.7" width="418.2" height="134.9" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
+<line x1="558.1" y1="448.8" x2="558.1" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<line x1="641.7" y1="448.8" x2="641.7" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<line x1="725.4" y1="448.8" x2="725.4" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<line x1="809.0" y1="448.8" x2="809.0" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
 <circle cx="683.6" cy="494.7" r="47.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <circle cx="683.6" cy="494.7" r="35.7" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
 <circle cx="683.6" cy="494.7" r="80.9" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
@@ -558,11 +560,13 @@
 <rect x="604.0" y="447.5" width="12.1" height="94.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="511.6" y="464.3" width="87.7" height="60.7" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="511.6" y="464.3" width="87.7" height="17.5" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
-<rect x="3453.0" y="413.8" width="418.2" height="161.9" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
-<line x1="3536.7" y1="421.9" x2="3536.7" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
-<line x1="3620.3" y1="421.9" x2="3620.3" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
-<line x1="3704.0" y1="421.9" x2="3704.0" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
-<line x1="3787.6" y1="421.9" x2="3787.6" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<rect x="3453.0" y="413.8" width="418.2" height="27.0" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
+<line x1="3453.0" y1="440.7" x2="3871.2" y2="440.7" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="3453.0" y="440.7" width="418.2" height="134.9" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
+<line x1="3536.7" y1="448.8" x2="3536.7" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<line x1="3620.3" y1="448.8" x2="3620.3" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<line x1="3704.0" y1="448.8" x2="3704.0" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
+<line x1="3787.6" y1="448.8" x2="3787.6" y2="567.5" stroke="#93a884" stroke-width="1.0"/>
 <circle cx="3662.1" cy="494.7" r="47.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <circle cx="3662.1" cy="494.7" r="35.7" fill="#cdd9c2" stroke="#93a884" stroke-width="1.0"/>
 <circle cx="3662.1" cy="494.7" r="80.9" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>

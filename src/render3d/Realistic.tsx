@@ -2261,6 +2261,65 @@ function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | nul
   return g
 }
 
+/**
+ * A retractable vault as the telescoping roof it is: split at its centre into two
+ * halves, each half made of bays that nest one inside the next (each bay a little
+ * smaller in section than the one outboard of it), riding on the landing rail
+ * and the foot sill. Shut, the bays sit end to end and read as one belly with a
+ * rib at every joint; open, each half's bays slide out to its own end and stack
+ * inside the outermost bay, which stays put and carries the glazed gable, so the
+ * middle of the deck is open to the sky. Both states are built; the Roof switch
+ * shows one.
+ */
+function telescopingVault(M: Mats, roof: (typeof solids.roofs)[number], mode: 'shut' | 'open'): THREE.Group {
+  const g = new THREE.Group()
+  const [x0, y0, x1, y1] = roof.extent
+  const sec = roof.section!
+  const mid = (x0 + x1) / 2
+  const BAYS = 6                                  // per half
+  const NEST = 0.014                              // each bay this much smaller than the last
+  const STACK = 45                                // mm between stacked bays' ribs
+  const landZ = sec.p2.x                          // the landing line, the pivot the bays nest about
+  const profile = barrelProfile(sec, 48)
+  for (const side of [-1, 1] as const) {
+    const endX = side < 0 ? x0 : x1
+    const halfL = mid - x0
+    const bayL = halfL / BAYS
+    for (let i = 0; i < BAYS; i++) {
+      // bay i counts from the end wall inward: 0 is the fixed outermost bay
+      const near = endX - side * i * bayL             // the bay's end-wall side
+      const far = near - side * bayL                  // its inboard side
+      const bx0 = Math.min(near, far), bx1 = Math.max(near, far)
+      const bay = new THREE.Group()
+      const sub = { ...roof, extent: [bx0, y0, bx1, y1] as [number, number, number, number] }
+      const glass = new THREE.Mesh(vaultGeometry(sub), M.roofGlass)
+      glass.receiveShadow = true
+      bay.add(glass)
+      // a rib at each end of the bay, so shut it reads as one ribbed belly and
+      // open the stack shows every leaf
+      for (const rx of [bx0, bx1]) {
+        const curve = new THREE.CatmullRomCurve3(profile.map((q) => new THREE.Vector3(rx * S, q.y * S, q.x * S)))
+        const rib = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.03, 6, false), M.metal)
+        rib.castShadow = true
+        bay.add(rib)
+      }
+      // a slim runner along the bay's foot and its landing edge, on the tracks
+      for (const q of [sec.p0, sec.p2]) {
+        const runner = box(bx1 - bx0 - 20, 36, 36, M.metal, (bx0 + bx1) / 2, q.y + 28, q.x)
+        bay.add(runner)
+      }
+      // nesting: scale the bay's section about the landing line at floor level
+      const sc = 1 - NEST * i
+      bay.scale.set(1, sc, sc)
+      bay.position.z = landZ * (1 - sc) * S
+      // open: the bay slides to its end wall and stacks just inside the bay before it
+      if (mode === 'open') bay.position.x = side * i * (bayL - STACK) * S
+      g.add(bay)
+    }
+  }
+  return g
+}
+
 export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group {
   const root = new THREE.Group()
 
@@ -2404,22 +2463,32 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
       // The bellied vault: springs from the parapet, bulges out past it, peaks above the
       // ceiling and lands on the wall head. Same mesh as the 3D tab, from canopy.ts, so
       // the walkthrough cannot show a different roof from the model.
-      const vault = new THREE.Mesh(vaultGeometry(roof), M.roofGlass)
-      vault.receiveShadow = true
-      root.add(vault)
-      const profile = barrelProfile(roof.section, 48)
-      for (let x = x0; x <= x1 + 1; x += 1500) {
-        const curve = new THREE.CatmullRomCurve3(
-          profile.map((q) => new THREE.Vector3(x * S, q.y * S, q.x * S)))
-        const rib = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.03, 6, false), M.metal)
-        rib.castShadow = true
-        root.add(rib)
+      if (roof.retractable) {
+        // the telescoping roof, both states; the Roof switch shows one
+        for (const mode of ['shut', 'open'] as const) {
+          const set = telescopingVault(M, roof, mode)
+          set.name = `roof-${mode}`
+          root.add(set)
+        }
+      } else {
+        const vault = new THREE.Mesh(vaultGeometry(roof), M.roofGlass)
+        vault.receiveShadow = true
+        root.add(vault)
+        const profile = barrelProfile(roof.section, 48)
+        for (let x = x0; x <= x1 + 1; x += 1500) {
+          const curve = new THREE.CatmullRomCurve3(
+            profile.map((q) => new THREE.Vector3(x * S, q.y * S, q.x * S)))
+          const rib = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.03, 6, false), M.metal)
+          rib.castShadow = true
+          root.add(rib)
+        }
       }
       // the landing edge: a slim metal channel where the glass meets the home's
-      // ceiling edge, the full length of the vault, and a matching sill at the foot
+      // ceiling edge, the full length of the vault, and a matching sill at the foot.
+      // On the retractable roof these are the tracks the bays run on.
       const land = roof.section.p2
       const foot = roof.section.p0
-      for (const [q, size] of [[land, 70], [foot, 50]] as const) {
+      for (const [q, size] of [[land, roof.retractable ? 90 : 70], [foot, roof.retractable ? 70 : 50]] as const) {
         const rail = box((x1 - x0) * S / S, size, size, M.metal)
         rail.position.set(((x0 + x1) / 2) * S, (q.y - size / 2 + 10) * S, q.x * S)
         rail.castShadow = true
@@ -2828,23 +2897,28 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const doorsShut = uiState.show3d.doorsShut
   const wallBed = uiState.show3d.wallBedDown
   const ceilingOn = uiState.show3d.ceiling
+  const roofOpen = uiState.show3d.roofOpen
   const shutRef = useRef(doorsShut)
   shutRef.current = doorsShut
   const bedRef = useRef(wallBed)
   bedRef.current = wallBed
   const ceilingRef = useRef(ceilingOn)
   ceilingRef.current = ceilingOn
-  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean): void => {
+  const roofRef = useRef(roofOpen)
+  roofRef.current = roofOpen
+  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean, roof: boolean): void => {
     sc.traverse((o) => {
       if (o.name === 'doors-open') o.visible = !shut
       if (o.name === 'doors-shut') o.visible = shut
       if (o.name === 'wallbed-down') o.visible = down
       if (o.name === 'ceiling') o.visible = ceiling
+      if (o.name === 'roof-open') o.visible = roof
+      if (o.name === 'roof-shut') o.visible = !roof
     })
   }
   useEffect(() => {
-    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn)
-  }, [doorsShut, wallBed, ceilingOn])
+    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn, roofOpen)
+  }, [doorsShut, wallBed, ceilingOn, roofOpen])
 
   const [styleTick, setStyleTick] = useState(0)
   useEffect(() => {
@@ -2891,7 +2965,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     }
     pmrem.dispose()
     scene.add(buildScene(M))
-    applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current)
+    applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current, roofRef.current)
     scene.add(buildFixtures(M))
 
     const furn = new THREE.Group()
@@ -3178,6 +3252,14 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           >
             Ceiling: {ceilingOn ? 'on' : 'off'}
           </button>
+          {solids.roofs.some((r) => r.kind === 'barrel' && r.retractable) && (
+            <button
+              onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, roofOpen: !st.show3d.roofOpen } }))}
+              title="The telescoping glass roof: split at the centre, each half stacks at its own end"
+            >
+              Roof: {roofOpen ? 'open' : 'closed'}
+            </button>
+          )}
         </div>
       )}
       <button

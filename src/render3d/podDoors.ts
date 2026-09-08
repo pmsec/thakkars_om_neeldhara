@@ -30,20 +30,12 @@ export interface DoorLeaf {
 
 export type PodDoorMode = 'open' | 'shut'
 
-const LEAF_T = 40
-const TRACK_GAP = 30
-const OVERLAP = 60
+const LEAF_T = 32
+const TRACK_GAP = 38
+const OVERLAP = 50
 
 export function podDoorLeaves(building: BuildingData, mode: PodDoorMode): DoorLeaf[] {
   const out: DoorLeaf[] = []
-  const xs = building.envelope.map((p) => p.x)
-  const centreX = (Math.min(...xs) + Math.max(...xs)) / 2
-  // the deck glazing line: the northernmost glazing wall that runs east-west
-  const deckLine = Math.min(
-    ...building.walls
-      .filter((w) => w.kind === 'glazing' && w.points && Math.abs(w.points[0].y - w.points[1].y) < 1)
-      .map((w) => w.points![0].y),
-  )
 
   for (const w of building.walls) {
     if (!w.points || w.points.length !== 2) continue
@@ -57,29 +49,24 @@ export function podDoorLeaves(building: BuildingData, mode: PodDoorMode): DoorLe
     const from = y0 + a0
     const to = y0 + a1
     const span = to - from
-    const L = span / 2 + OVERLAP
     const top = (op.head ?? 2100) - 20
-    // the deck side of the wall is toward the home's centre
-    const deckSide = wx < centreX ? 1 : -1
-
-    if (mode === 'shut') {
-      const xa = wx - TRACK_GAP
-      const xb = wx + TRACK_GAP
-      out.push({ wallId: w.id, x0: xa - LEAF_T / 2, x1: xa + LEAF_T / 2, y0: from, y1: from + L, base: 0, top, handleAt: 1 })
-      out.push({ wallId: w.id, x0: xb - LEAF_T / 2, x1: xb + LEAF_T / 2, y0: to - L, y1: to, base: 0, top, handleAt: -1 })
-    } else {
-      // parked in the wall's own line: both leaves slide north on their tracks, past
-      // the deck glazing line, into the pocket the wall makes for them - so from
-      // the deck they are inside the wall, behind the spa and the strength trainer
-      void deckSide
-      const yEnd = Number.isFinite(deckLine) ? Math.min(deckLine, from) : from
-      for (const xc of [wx - TRACK_GAP, wx + TRACK_GAP]) {
-        out.push({
-          wallId: w.id,
-          x0: xc - LEAF_T / 2, x1: xc + LEAF_T / 2,
-          y0: yEnd - L, y1: yEnd,
-          base: 0, top, handleAt: 1,
-        })
+    // The pocket is the wall's own run north of the opening. Split the span into
+    // as few leaves as will park inside it, each on its own track - 3555 into a
+    // 1345 pocket takes three leaves of 1235, on tracks 38 apart within the wall.
+    const pocket = from - y0
+    let n = 1
+    while (n < 4 && span / n + OVERLAP > pocket) n++
+    const L = span / n + OVERLAP
+    const tracks = n === 1 ? [wx] : n === 2 ? [wx - TRACK_GAP / 2, wx + TRACK_GAP / 2] : [wx - TRACK_GAP, wx, wx + TRACK_GAP]
+    for (let i = 0; i < n; i++) {
+      const xc = tracks[i]
+      if (mode === 'shut') {
+        // spread along the opening, each leaf overlapping the next
+        const y0l = from + (i * (span - L)) / Math.max(1, n - 1)
+        out.push({ wallId: w.id, x0: xc - LEAF_T / 2, x1: xc + LEAF_T / 2, y0: y0l, y1: y0l + L, base: 0, top, handleAt: i === 0 ? 1 : -1 })
+      } else {
+        // all parked in the pocket, inside the wall's own line
+        out.push({ wallId: w.id, x0: xc - LEAF_T / 2, x1: xc + LEAF_T / 2, y0: from - L, y1: from, base: 0, top, handleAt: 1 })
       }
     }
   }

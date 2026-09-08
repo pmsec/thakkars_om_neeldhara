@@ -1101,10 +1101,12 @@ _ONCE = [
     # --- the fridge, west of the hob run, flush with the wall.  It sits clear
     #     of the window, which starts at 7800, so nothing stands in front of it.
     ('appliance', 7000, 10275, 7800, 10975, 'fridge  ·  flush with the wall'),
-    # --- the appliance corner — the L's north leg, flush with the gallery column
-    ('under',    9860, 9770, 10340, 10190, 'microwave'),
-    ('under',    9860, 10250, 10340, 10600, 'air fryer  ·  toaster'),
-    ('under',    9860, 10660, 10340, 10920, 'coffee  ·  soda maker'),
+    # --- the small appliances: on the north run east of the sink, under the
+    #     wall cabinets, where Karan wants them - the microwave and the air
+    #     fryer, one each, and nothing else. The L's north leg by the gallery
+    #     column is clear worktop with a condiment rack against the wall.
+    ('under',    9500, 7965, 9950, 8345, 'microwave'),
+    ('under',    10050, 7965, 10430, 8345, 'air fryer'),
     # The two pod corner units — mandir and coffee / pantry — are behind the
     # retained deck void, in the corner between its back wall and the pod
     # glazing.  Their shape follows the curve, so they are built in

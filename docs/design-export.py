@@ -109,8 +109,8 @@ EXT_OPENINGS = [
     ('W-05', 'window', (25080, 5585), (25080, 9465),
      "Karan's suite — the long east light, headboard jamb to jamb"),
     ('W-06', 'window', (7800, 11125), (9800, 11125), 'Kitchen south light'),
-    ('W-07', 'window', (14300, 11125), (15900, 11125), None),
-    ('W-08', 'window', (16350, 11125), (16800, 11125), None),
+    # no windows on the south wall at help's room or the guest WC: that wall
+    # faces the building's common passage, and the client has it closed
     ('F-MAIN', 'door', (11715, 11125), (12765, 11125), 'MAIN ENTRANCE'),
 ]
 

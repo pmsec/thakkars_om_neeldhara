@@ -39,8 +39,6 @@ export const building: BuildingData = {
     { id: 'W-04', type: 'window', abs: [{ x: 25080, y: 1350 }, { x: 25080, y: 1950 }], head: 2400, nonCirculating: true, sill: 900 },
     { id: 'W-05', type: 'window', abs: [{ x: 25080, y: 5585 }, { x: 25080, y: 9465 }], head: 2400, nonCirculating: true, sill: 900, label: "Karan's suite — the long east light, headboard jamb to jamb" },
     { id: 'W-06', type: 'window', abs: [{ x: 7800, y: 11125 }, { x: 9800, y: 11125 }], head: 2400, nonCirculating: true, sill: 900, label: 'Kitchen south light' },
-    { id: 'W-07', type: 'window', abs: [{ x: 14300, y: 11125 }, { x: 15900, y: 11125 }], head: 2400, nonCirculating: true, sill: 900 },
-    { id: 'W-08', type: 'window', abs: [{ x: 16350, y: 11125 }, { x: 16800, y: 11125 }], head: 2400, nonCirculating: true, sill: 900 },
     { id: 'F-MAIN', type: 'door', abs: [{ x: 11715, y: 11125 }, { x: 12765, y: 11125 }], head: 2100, hinge: 0, side: 1, label: 'MAIN ENTRANCE' },
   ],
 

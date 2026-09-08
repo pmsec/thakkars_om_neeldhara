@@ -324,6 +324,9 @@ export function makeMaterials() {
     lamp: new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffc46a, emissiveIntensity: 1.6, roughness: 0.6 }),
     brass: new THREE.MeshStandardMaterial({ color: 0xc9a24a, roughness: 0.3, metalness: 0.8 }),
     gasket: new THREE.MeshStandardMaterial({ color: 0x2b2d30, roughness: 0.6 }),
+    graphite: new THREE.MeshStandardMaterial({ color: 0x24262a, roughness: 0.35, metalness: 0.4 }),
+    chrome: new THREE.MeshStandardMaterial({ color: 0xe4e7ea, roughness: 0.12, metalness: 0.95 }),
+    porcelain: new THREE.MeshStandardMaterial({ color: 0xfaf7f0, roughness: 0.22 }),
   }
 }
 export type Mats = ReturnType<typeof makeMaterials>
@@ -476,6 +479,10 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     return g
   }
 
+  // Karan's pod corner unit is the coffee bar: the sheet's pantry run, built as one
+  if (f.kind === 'console' && /corner unit/i.test(f.label) && /DEN/i.test(f.room) && f.poly && w > 1000) {
+    return coffeeBar(M, f)
+  }
   // A piece with its drawn 2D outline extrudes THAT — the shape on the sheet,
   // clipped at the walls — instead of a box that squares its curves back off.
   if (f.poly && EXTRUDED_KINDS.has(f.kind)) {
@@ -1720,6 +1727,141 @@ function kitchenOverheads(M: Mats): THREE.Group {
  * the unit, a trishul standing beside him, a brass diya in front. Drawn only
  * where that unit exists, so no other home grows a shrine.
  */
+/**
+ * The coffee bar in Karan's pod: the pantry run the sheet draws along the
+ * void's back wall, built as a bar rather than a cabinet. Dark timber base
+ * with door fronts and brass pulls, a marble top with an upstand along the
+ * back, the sink where the sheet puts it with a brass tap, the machine where
+ * the sheet's 320 rectangle is — a Nespresso, graphite and chrome, with its
+ * lever, tank and a cup on the drip tray — a capsule dispenser and a tray of
+ * mugs beside it, and a floating shelf over with more mugs and a warm strip
+ * light under it. Everything stays inside the drawn outline.
+ */
+function coffeeBar(M: Mats, f: FurnitureItem): THREE.Group | null {
+  if (!f.poly) return null
+  const g = new THREE.Group()
+  const TOP = 900
+  const poly = f.poly
+  const xs = poly.map((q) => q.x), ys = poly.map((q) => q.y)
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys)
+  // the back wall is the long straight edge; the front is the far one
+  const backY = y0, depth = y1 - y0
+  const frontY = backY + depth
+  // where the run has its full depth (the sheet tapers one end to the glass)
+  const fullFrom = poly.filter((q) => Math.abs(q.y - frontY) < 20).reduce((a, q) => Math.min(a, q.x), Infinity)
+  const fullTo = poly.filter((q) => Math.abs(q.y - frontY) < 20).reduce((a, q) => Math.max(a, q.x), -Infinity)
+  const cxm = (x0 + x1) / 2, cym = (y0 + y1) / 2
+
+  // base: plinth, carcass, top, upstand
+  const plinth = polyPiece(poly.map((q) => ({ x: cxm + (q.x - cxm) * 0.97, y: cym + (q.y - cym) * 0.94 })), 0, 90, M.gasket, f.room)
+  if (plinth) g.add(plinth)
+  const carcass = polyPiece(poly, 90, TOP - 30, M.trunk, f.room)
+  if (carcass) g.add(carcass)
+  const slab = polyPiece(poly, TOP - 30, TOP, M.marble, f.room)
+  if (slab) g.add(slab)
+  g.add(box(x1 - x0 - 20, 100, 20, M.marble, cxm, TOP + 50, backY + 12))       // the upstand
+  // door fronts along the full-depth stretch, brass pulls
+  const runL = fullTo - fullFrom
+  const nDoors = Math.max(2, Math.round(runL / 450))
+  for (let i = 0; i < nDoors; i++) {
+    const dw = runL / nDoors
+    const dx = fullFrom + dw * (i + 0.5)
+    g.add(box(dw - 12, TOP - 150, 14, M.timber, dx, (TOP - 30 + 100) / 2, frontY - 4))
+    const pull = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, 140 * S, 8), M.brass)
+    pull.position.set((dx + dw / 2 - 50) * S, ((TOP - 30 + 100) / 2) * S, (frontY + 12) * S)
+    g.add(pull)
+  }
+
+  // the sink, where the sheet draws it: an undermount bowl and a brass swan tap
+  const sinkX = x1 - 240, sinkY = backY + 300
+  g.add(box(400, 30, 320, M.chrome, sinkX, TOP - 14, sinkY))
+  g.add(box(330, 120, 250, M.gasket, sinkX, TOP - 76, sinkY))
+  const tapBase = new THREE.Mesh(new THREE.CylinderGeometry(16 * S, 20 * S, 260 * S, 12), M.brass)
+  tapBase.position.set((sinkX + 120) * S, (TOP + 130) * S, (backY + 90) * S)
+  g.add(tapBase)
+  const spout = new THREE.Mesh(new THREE.TorusGeometry(90 * S, 8 * S, 8, 20, Math.PI), M.brass)
+  spout.position.set((sinkX + 120) * S, (TOP + 260) * S, (backY + 180) * S)
+  spout.rotation.y = Math.PI / 2
+  g.add(spout)
+
+  // the Nespresso, on the sheet's machine rectangle: 320 across, 300 deep
+  const mx = fullFrom + 360, mz = backY + 190
+  const body = box(180, 250, 300, M.graphite, mx, TOP + 125, mz)
+  g.add(body)
+  g.add(box(184, 26, 304, M.chrome, mx, TOP + 262, mz))                       // brushed top
+  g.add(box(90, 210, 110, M.acrylic, mx + 60, TOP + 120, mz - 80))            // the water tank behind
+  const lever = box(160, 18, 22, M.chrome, mx, TOP + 285, mz + 70)
+  lever.rotation.x = -0.25
+  g.add(lever)
+  g.add(box(150, 10, 150, M.chrome, mx, TOP + 5, mz + 60))                    // drip tray
+  const head = box(70, 60, 60, M.chrome, mx, TOP + 150, mz + 140)
+  g.add(head)
+  const spoutN = new THREE.Mesh(new THREE.CylinderGeometry(7 * S, 9 * S, 30 * S, 10), M.chrome)
+  spoutN.position.set(mx * S, (TOP + 110) * S, (mz + 140) * S)
+  g.add(spoutN)
+  const mug = (x: number, z: number, h = 0, small = false) => {
+    const r = small ? 30 : 42, hh = small ? 60 : 95
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(r * S, (r - 6) * S, hh * S, 18, 1, true), M.porcelain)
+    ;(cup.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide
+    cup.position.set(x * S, (h + hh / 2) * S, z * S)
+    cup.castShadow = true
+    g.add(cup)
+    const base = new THREE.Mesh(new THREE.CircleGeometry((r - 6) * S, 18), M.porcelain)
+    base.rotation.x = -Math.PI / 2
+    base.position.set(x * S, (h + 2) * S, z * S)
+    g.add(base)
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(r * S, 2.2 * S, 6, 24), M.brass)
+    rim.rotation.x = Math.PI / 2
+    rim.position.set(x * S, (h + hh - 2) * S, z * S)
+    g.add(rim)
+    const handle = new THREE.Mesh(new THREE.TorusGeometry((small ? 16 : 24) * S, 5 * S, 6, 14, Math.PI), M.porcelain)
+    handle.position.set((x + r + 2) * S, (h + hh * 0.5) * S, z * S)
+    handle.rotation.z = -Math.PI / 2
+    g.add(handle)
+  }
+  mug(mx, mz + 60, TOP + 10, true)                                            // an espresso cup on the tray
+  // capsule dispenser: a chrome tower of coloured pods beside the machine
+  const tower = new THREE.Mesh(new THREE.CylinderGeometry(38 * S, 38 * S, 240 * S, 16), M.chrome)
+  tower.position.set((mx + 180) * S, (TOP + 120) * S, (mz - 40) * S)
+  g.add(tower)
+  const podColors = [0x6b3fa0, 0xb8862b, 0x2f6f4f, 0x9c2f2f, 0x2b4a7a, 0xd8a13a]
+  for (let i = 0; i < 6; i++) {
+    const pod = new THREE.Mesh(new THREE.CylinderGeometry(20 * S, 14 * S, 26 * S, 10),
+      new THREE.MeshStandardMaterial({ color: podColors[i], roughness: 0.3, metalness: 0.6 }))
+    pod.position.set((mx + 180) * S, (TOP + 20 + i * 36) * S, (mz - 40 + 40) * S)
+    g.add(pod)
+  }
+  // a timber tray of mugs, and two more on the tapering shelf end
+  const trayX = mx + 360, trayZ = backY + 260
+  g.add(box(360, 14, 240, M.timber, trayX, TOP + 7, trayZ))
+  g.add(box(360, 34, 12, M.timber, trayX, TOP + 24, trayZ - 114))
+  g.add(box(360, 34, 12, M.timber, trayX, TOP + 24, trayZ + 114))
+  for (const [ox, oz] of [[-110, -50], [10, -50], [-50, 55], [70, 55]] as const) mug(trayX + ox, trayZ + oz, TOP + 14)
+  mug(fullFrom - 40, backY + 120, TOP)
+  mug(fullFrom - 130, backY + 70, TOP)
+  // the shelf over, with its mugs and a warm light strip under
+  const shelfX = (mx + trayX) / 2, shelfL = trayX - mx + 320
+  g.add(box(shelfL, 30, 200, M.timber, shelfX, 1380, backY + 100))
+  g.add(box(shelfL - 60, 8, 20, M.lamp, shelfX, 1362, backY + 150))
+  const strip = new THREE.PointLight(0xffd8a8, 0.5, 1.6, 1.6)
+  strip.position.set(shelfX * S, 1350 * S, (backY + 200) * S)
+  g.add(strip)
+  for (let i = 0; i < 5; i++) mug(shelfX - shelfL / 2 + 80 + i * (shelfL - 160) / 4, backY + 100, 1395)
+  // two glass jars on the shelf end: beans and sugar
+  for (const [ox, mat] of [[shelfL / 2 - 70, M.trunk], [shelfL / 2 - 150, M.porcelain]] as const) {
+    const jar = new THREE.Mesh(new THREE.CylinderGeometry(40 * S, 40 * S, 130 * S, 14), M.acrylic)
+    jar.position.set((shelfX + ox) * S, 1460 * S, (backY + 100) * S)
+    g.add(jar)
+    const fill = new THREE.Mesh(new THREE.CylinderGeometry(34 * S, 34 * S, 100 * S, 14), mat)
+    fill.position.set((shelfX + ox) * S, 1448 * S, (backY + 100) * S)
+    g.add(fill)
+    const lid = new THREE.Mesh(new THREE.CylinderGeometry(42 * S, 42 * S, 14 * S, 14), M.timber)
+    lid.position.set((shelfX + ox) * S, 1532 * S, (backY + 100) * S)
+    g.add(lid)
+  }
+  return g
+}
+
 function mandirIdol(M: Mats): THREE.Group | null {
   const units = furniture.filter((f) => /corner unit/i.test(f.label) && f.room === 'R-P-FAMILY')
   if (!units.length) return null
@@ -2735,6 +2877,16 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // Pinch or scroll from arm's length right out to the whole block and beyond.
     orbit.minDistance = 0.3
     orbit.maxDistance = 160
+    // A fixed viewpoint from the URL, in plan mm: #cam=x,y,z,tx,ty,tz (eye, then the
+    // point looked at). For review screenshots and for sharing a particular view.
+    const camHash = /[#&]cam=([-\d.,]+)/.exec(window.location.hash)
+    if (camHash) {
+      const v = camHash[1].split(',').map(Number)
+      if (v.length === 6 && v.every((n) => Number.isFinite(n))) {
+        camera.position.set(v[0] * S, v[1] * S, v[2] * S)
+        orbit.target.set(v[3] * S, v[4] * S, v[5] * S)
+      }
+    }
     orbit.update()
     const undoPageZoom = preventPageZoom(mount)
 

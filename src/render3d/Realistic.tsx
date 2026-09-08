@@ -1262,8 +1262,9 @@ function tieredFountain(M: Mats, F: { x: number; y: number; r: number }): THREE.
   fall(360, 8, 1668, 840)
   // flowers and creepers over the two lower rims: a green wreath, blooms on it,
   // and strands trailing down
+  // no ring of foliage around the rims: the blooms sit on the stone edge and the
+  // creepers trail from it, as on the reference
   const wreath = (r: number, tube: number, y: number, blooms: number, strands: number, drop: number) => {
-    add(new THREE.Mesh(new THREE.TorusGeometry(mm(r), mm(tube), 8, 40), M.leafDark), y)
     for (let i = 0; i < blooms; i++) {
       const a = (i / blooms) * Math.PI * 2 + (i % 3) * 0.07
       const rr = r + (i % 2 ? tube * 0.6 : -tube * 0.3)

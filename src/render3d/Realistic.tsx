@@ -36,6 +36,8 @@ import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWa
 import { PRESETS, presetCamera } from './cameras'
 import { podDoorLeaves, type PodDoorMode } from './podDoors'
 import { isStrengthTrainer, strengthTrainer } from './gym'
+import { hedgeGroup } from './hedge'
+import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
 import { useStore } from '../ui/store'
 
 const model = getModel()
@@ -390,25 +392,11 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return m
     }
     case 'planter': {
-      // the planted strip: a low bed with a run of shrubs standing in it
+      // the planted strip: a low bed with a clipped hedge standing in it, tall
+      // enough to hide the city from inside (see hedge.ts)
       const bed = f.poly ? polyPiece(f.poly, 0, 300, M.pot, f.room) : box(w, 300, d, M.pot)
-      if (bed) {
-        if (!f.poly) place(bed, cx, cy, 150)
-        g.add(bed)
-      }
-      const long = Math.max(w, d)
-      const n = Math.max(2, Math.round(long / 1250))
-      const r = Math.min(220, Math.min(w, d) / 2 - 20)
-      for (let i = 0; i < n; i++) {
-        const t = (i + 0.5) / n
-        const sx = w >= d ? f.x + t * w : cx
-        const sy = w >= d ? cy : f.y + t * d
-        const s = new THREE.Mesh(new THREE.SphereGeometry(r * S, 8, 6), i % 2 ? M.leaf : M.leafDark)
-        s.position.set(sx * S, (300 + r * 0.7) * S, sy * S)
-        s.castShadow = true
-        g.add(s)
-      }
-      return g
+      if (bed && !f.poly) place(bed, cx, cy, 150)
+      return hedgeGroup(f, { bed: M.pot, leaf: M.leaf, leafDark: M.leafDark }, bed)
     }
     case 'sofa': {
       const seatH = 420
@@ -1122,8 +1110,13 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const scene = new THREE.Scene()
     sceneRef.current = scene
     scene.background = new THREE.Color(rig.background)
-    // Far enough out that the whole block, seen from 40 m up and back, is still crisp.
-    scene.fog = new THREE.Fog(rig.background, 120, 320)
+    // The haze thickens with distance so the city reads as far away and a little
+    // smoggy; the block itself, seen from the overview, stays crisp.
+    scene.fog = new THREE.Fog(rig.background, 160, 380)
+    // sky, clouds and the city below and around - the things the hedge is there to hide
+    const sky = skyDome(new THREE.Vector3(rig.sunOffset[0], rig.sunOffset[1], rig.sunOffset[2]))
+    scene.add(sky)
+    scene.add(cityscape({ bbox: model.envelopeBBox }))
 
     const M = makeMaterials()
     scene.add(buildScene(M))
@@ -1164,11 +1157,11 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       scene.add(p)
     }
 
-    // ground far below, so looking over the parapet reads as height
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600),
-      new THREE.MeshStandardMaterial({ color: 0x9aa48e, roughness: 1 }))
+    // the street, far below, so looking over the parapet reads as height
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(1400, 1400),
+      new THREE.MeshStandardMaterial({ color: 0x7d7f78, roughness: 1 }))
     ground.rotation.x = -Math.PI / 2
-    ground.position.y = -42
+    ground.position.y = -STREET_DROP
     ground.receiveShadow = true
     scene.add(ground)
 
@@ -1297,6 +1290,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       } else {
         orbit.update()
       }
+      followCamera(sky, camera)
       renderer.render(scene, camera)
     }
 

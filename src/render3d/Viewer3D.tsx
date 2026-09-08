@@ -15,6 +15,7 @@ import { barrelProfile, buildSolids, type Prism } from '../geometry/solid'
 import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWalk } from './touchWalk'
 import { podDoorLeaves } from './podDoors'
 import { isStrengthTrainer, strengthTrainer } from './gym'
+import { hedgeGroup } from './hedge'
 import { building } from '../data/building'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
@@ -770,17 +771,8 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
         abs.add(polyPrisms(f.poly, f.room, 0, 25, MAT.green, clip))
         break
       case 'planter': {
-        abs.add(polyPrisms(f.poly, f.room, 0, 300, MAT.pot, clip))
-        const n = Math.max(2, Math.round(Math.max(f.w, f.d) / 1250))
-        const r = Math.min(220, Math.min(f.w, f.d) / 2 - 20)
-        for (let i = 0; i < n; i++) {
-          const t = (i + 0.5) / n
-          const sx = f.w >= f.d ? f.x + t * f.w : f.x + f.w / 2
-          const sy = f.w >= f.d ? f.y + f.d / 2 : f.y + t * f.d
-          const s = sphere(r, MAT.green, 0, 0, 0, clip)
-          s.position.set(sx * S, (300 + r * 0.7) * S, sy * S)
-          abs.add(s)
-        }
+        abs.add(hedgeGroup(f, { bed: withClip(MAT.pot, clip), leaf: withClip(MAT.green, clip), leafDark: withClip(MAT.foliage, clip) },
+          polyPrisms(f.poly, f.room, 0, 300, MAT.pot, clip)))
         break
       }
       case 'dining': {

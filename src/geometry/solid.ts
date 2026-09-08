@@ -57,6 +57,8 @@ export interface Prism {
   archProfile?: { springing: number; rise: number }
   wallId?: string
   transparent?: boolean
+  /** Glass tint, carried from the wall so both renderers pick the same material. */
+  glass?: 'clear' | 'tinted'
 }
 
 export interface Slab {
@@ -236,7 +238,8 @@ export function buildSolids(model: BuiltModel): SolidModel {
 
   for (const w of model.walls) {
     const kind = kindOf(w)
-    const transparent = kind === 'wall-curved-glass' || kind === 'glazing'
+    const glass = w.def.glass
+    const transparent = kind === 'wall-curved-glass' || kind === 'glazing' || !!glass
     const acc = cumulative(w.points)
     const total = acc[acc.length - 1]
     void acc
@@ -305,6 +308,13 @@ export function buildSolids(model: BuiltModel): SolidModel {
       }
       const sill = op.sill ?? 0
       const head = op.head ?? model.data.levels.doorHead
+      if (glass && op.type !== 'door') {
+        // A slider or fixed light in a glass wall is more of the same glass: the leaf is
+        // drawn shut, floor to ceiling, so the partition reads as one translucent plane.
+        pushRun(prisms, w, runPoints, accPts, from, to, 0, ceiling, kind, solidThickness, transparent, ':leaf')
+        cursor = Math.max(cursor, to)
+        continue
+      }
       if (sill > 0) {
         pushRun(prisms, w, runPoints, accPts, from, to, 0, sill, kind, solidThickness, transparent, ':sill')
       }
@@ -316,6 +326,12 @@ export function buildSolids(model: BuiltModel): SolidModel {
     if (cursor < total - 1e-6) {
       pushRun(prisms, w, runPoints, accPts, cursor, total, 0, ceiling, kind, solidThickness, transparent)
     }
+  }
+  // Tag every transparent prism of a tinted wall with its tint, arch spandrels excepted:
+  // the spandrel over a pod portal is the arch, and stays plaster.
+  for (const p of prisms) {
+    const def = model.walls.find((w) => w.id === p.wallId)?.def
+    if (def?.glass && p.transparent) p.glass = def.glass
   }
 
   // Curved sliding screens (day bed). Not a room divider, so it never reaches the

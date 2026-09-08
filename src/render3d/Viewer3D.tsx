@@ -12,6 +12,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { getModel } from '../geometry/model'
 import { barrelProfile, buildSolids, type Prism } from '../geometry/solid'
+import { createTouchWalk, isTouchDevice, type TouchWalk } from './touchWalk'
 import { building } from '../data/building'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
@@ -48,6 +49,18 @@ const MAT = {
     thickness: 0.02,
     transparent: true,
     opacity: 0.55,
+    side: THREE.DoubleSide,
+  }),
+  // The bronze translucent glass of the dressing partitions and the pod screens: it has
+  // to read as brown glass you half see through, not as a plaster wall and not as air.
+  tintGlass: new THREE.MeshPhysicalMaterial({
+    color: 0x8d5f2e,
+    roughness: 0.12,
+    metalness: 0,
+    transmission: 0.3,
+    thickness: 0.02,
+    transparent: true,
+    opacity: 0.62,
     side: THREE.DoubleSide,
   }),
   roofGlass: new THREE.MeshPhysicalMaterial({
@@ -95,6 +108,7 @@ function prismMesh(poly: Poly, base: number, top: number, mat: THREE.Material): 
 }
 
 function prismMaterial(p: Prism): THREE.Material {
+  if (p.glass === 'tinted') return MAT.tintGlass
   switch (p.kind) {
     case 'wall-exterior':
       return MAT.exterior
@@ -120,6 +134,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     camera: THREE.PerspectiveCamera
     orbit: OrbitControls
     lock: PointerLockControls
+    touchWalk: TouchWalk
     sun: THREE.DirectionalLight
     hemi: THREE.HemisphereLight
     groups: Record<string, THREE.Group>
@@ -129,6 +144,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     highlight: THREE.Mesh | null
   } | null>(null)
   const [walk, setWalk] = useState(false)
+  const touch = isTouchDevice()
   const [roomLabel, setRoomLabel] = useState('')
   const [measure, setMeasure] = useState<THREE.Vector3[]>([])
   const [measureText, setMeasureText] = useState('')
@@ -164,6 +180,9 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
 
     const lock = new PointerLockControls(camera, renderer.domElement)
     scene.add(lock.object)
+    // On a touch screen there is no mouse to lock and no WASD: a thumb stick and a
+    // drag-to-look stand in for them.
+    const touchWalk = createTouchWalk(camera, renderer.domElement, el, { eye: 1.6, speed: 1.9 })
 
     const hemi = new THREE.HemisphereLight(0xdce8f0, 0x9c9484, 0.68)
     scene.add(hemi)
@@ -409,6 +428,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       camera,
       orbit,
       lock,
+      touchWalk,
       sun,
       hemi,
       groups,
@@ -433,8 +453,9 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     const loop = (): void => {
       raf = requestAnimationFrame(loop)
       const dt = Math.min(0.05, clock.getDelta())
-      if (lock.isLocked) {
+      if (lock.isLocked || touchWalk.enabled) {
         const speed = (keys.current['shift'] ? 4.2 : 1.9) * dt
+        if (touchWalk.enabled) touchWalk.update(dt)
         if (keys.current['w']) lock.moveForward(speed)
         if (keys.current['s']) lock.moveForward(-speed)
         if (keys.current['a']) lock.moveRight(-speed)
@@ -468,6 +489,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       ro.disconnect()
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
+      touchWalk.dispose()
       renderer.dispose()
       el.removeChild(renderer.domElement)
     }
@@ -635,16 +657,22 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
               const a = api.current
               if (!a) return
               if (walk) {
-                a.lock.unlock()
+                if (touch) {
+                  a.touchWalk.disable()
+                  a.orbit.enabled = true
+                } else a.lock.unlock()
                 setWalk(false)
               } else {
                 a.camera.position.y = 1.6
-                a.lock.lock()
+                if (touch) {
+                  a.orbit.enabled = false
+                  a.touchWalk.enable()
+                } else a.lock.lock()
                 setWalk(true)
               }
             }}
           >
-            Walk (WASD)
+            {walk ? 'Exit walk' : touch ? 'Walk' : 'Walk (WASD)'}
           </button>
           <button className="btn tiny" onClick={screenshot}>
             Screenshot
@@ -653,7 +681,11 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       )}
       <div className="hud">
         <div>
-          {walk ? `In: ${roomLabel} · Esc to exit` : `Sun ${hourLabel(state.sun.hour)} · alt ${sunPos.altitude.toFixed(1)}° · az ${sunPos.azimuth.toFixed(0)}°`}
+          {walk
+            ? touch
+              ? `In: ${roomLabel} · stick to walk · drag to look · Exit walk to stop`
+              : `In: ${roomLabel} · Esc to exit`
+            : `Sun ${hourLabel(state.sun.hour)} · alt ${sunPos.altitude.toFixed(1)}° · az ${sunPos.azimuth.toFixed(0)}°`}
         </div>
         <div>
           {measureText ? `3D measure: ${measureText}` : state.tool === 'measure' ? 'Click two corners' : `Cutaway ${state.cutaway} mm`}

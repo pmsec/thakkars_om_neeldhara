@@ -45,9 +45,9 @@ export const building: BuildingData = {
   ],
 
   envelopeGlazing: [
-    { id: 'EG-P-TERRACE', p1: { x: -350, y: 0 }, p2: { x: 2750, y: 0 }, pane: true, label: "Parents' terrace — glass parapet under the high glass roof" },
-    { id: 'EG-DECK', p1: { x: 4530, y: -150 }, p2: { x: 19950, y: -150 }, pane: true, label: 'Deck parapet — planted strip and trellis behind glass, retractable roof over' },
-    { id: 'EG-K-TERRACE', p1: { x: 21730, y: 0 }, p2: { x: 24830, y: 0 }, pane: true, label: "Karan's terrace — glass parapet under the high glass roof" },
+    { id: 'EG-P-TERRACE', p1: { x: -350, y: 0 }, p2: { x: 2750, y: 0 }, pane: false, label: "Parents' terrace — open to the curved glass canopy, no pane on this line" },
+    { id: 'EG-DECK', p1: { x: 4530, y: -150 }, p2: { x: 19950, y: -150 }, pane: false, label: 'Deck edge — the bellied glass vault springs from this parapet line; planted strip and trellis inside it' },
+    { id: 'EG-K-TERRACE', p1: { x: 21730, y: 0 }, p2: { x: 24830, y: 0 }, pane: false, label: "Karan's terrace — open to the curved glass canopy, no pane on this line" },
   ],
 
   walls: [
@@ -373,6 +373,7 @@ export const building: BuildingData = {
       points: [{ x: -600, y: 5935 }, { x: 2732, y: 5935 }, { x: 2940, y: 6300 }],
       thickness: 120,
       kind: 'partition',
+      glass: 'tinted',
       openings: [
         { id: 'SL-P-DRESS', type: 'slider', at: [2000, 3332], head: 2100, label: 'Tinted-glass leaf — pockets into the cupboard backs' },
       ],
@@ -383,6 +384,7 @@ export const building: BuildingData = {
       points: [{ x: 21540, y: 6300 }, { x: 21748, y: 5935 }, { x: 25080, y: 5935 }],
       thickness: 120,
       kind: 'partition',
+      glass: 'tinted',
       openings: [
         { id: 'SL-K-DRESS', type: 'slider', at: [420, 1752], head: 2100, label: 'Tinted-glass leaf — pockets into the cupboard backs' },
       ],
@@ -536,6 +538,7 @@ export const building: BuildingData = {
       ],
       thickness: 150,
       kind: 'curved-glass',
+      glass: 'tinted',
       openings: [
         { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [2155.254, 2978.772], head: 2400, label: 'Arched portal — always open' },
       ],
@@ -581,6 +584,7 @@ export const building: BuildingData = {
       ],
       thickness: 150,
       kind: 'curved-glass',
+      glass: 'tinted',
       openings: [
         { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2400, label: 'Arched portal — always open' },
       ],
@@ -774,9 +778,9 @@ export const building: BuildingData = {
   ],
 
   glassRoofs: [
-    { id: 'ROOF-DECK', name: 'Retractable glass roof over the deck', kind: 'flat', extent: [4530, -150, 19950, 2545], height: 3400, retractable: true, glazing: 'Laminated acoustic glass', notes: 'The deck is in AND out: cooled under glass, open when the roof retracts.' },
-    { id: 'ROOF-P-TERRACE', name: "High glass roof over the parents' terrace", kind: 'flat', extent: [-600, 0, 2750, 1275], height: 3050, retractable: false, glazing: 'Laminated glass', notes: 'Real grass and a real tree under it; rain never lands, light always does.' },
-    { id: 'ROOF-K-TERRACE', name: "High glass roof over Karan's terrace", kind: 'flat', extent: [21730, 0, 25080, 1275], height: 3050, retractable: false, glazing: 'Laminated glass' },
+    { id: 'ROOF-DECK', name: 'Retractable curved glass vault over the deck', kind: 'barrel', extent: [4530, -920, 19950, 2620], section: { p0: { x: -150, y: 0 }, p1: { x: -2550, y: 8000 }, p2: { x: 2620, y: 3050 } }, gableEnds: ['x0', 'x1'], retractable: true, glazing: 'Laminated acoustic glass', notes: 'Roof AND wall: springs from the parapet line, bellies out over the street, peaks 1.9 m above the ceiling and lands on the pod line. The deck is in AND out: cooled under glass, open when the roof retracts.' },
+    { id: 'ROOF-P-TERRACE', name: "Curved glass canopy over the parents' terrace", kind: 'barrel', extent: [-600, -520, 2750, 1350], section: { p0: { x: 0, y: 0 }, p1: { x: -1500, y: 6600 }, p2: { x: 1350, y: 3050 } }, gableEnds: ['x0', 'x1'], retractable: false, glazing: 'Laminated acoustic glass', notes: 'Same family as the deck vault, landing on the terrace wall head. Real grass and a real tree under it; rain never lands, light always does.' },
+    { id: 'ROOF-K-TERRACE', name: "Curved glass canopy over Karan's terrace", kind: 'barrel', extent: [21730, -520, 25080, 1350], section: { p0: { x: 0, y: 0 }, p1: { x: -1500, y: 6600 }, p2: { x: 1350, y: 3050 } }, gableEnds: ['x0', 'x1'], retractable: false, glazing: 'Laminated acoustic glass', notes: 'Mirror of ROOF-P-TERRACE about x = 12 240.' },
     { id: 'ROOF-FAMILY', name: 'Glass roof over the family-room bay', kind: 'flat', extent: [4650, 2620, 8315, 4900], height: 3050, retractable: false, glazing: 'Laminated glass' },
     { id: 'ROOF-DEN', name: 'Glass roof over the den bay', kind: 'flat', extent: [16165, 2620, 19830, 4900], height: 3050, retractable: false, glazing: 'Laminated glass' },
   ],

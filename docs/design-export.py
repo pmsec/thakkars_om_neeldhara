@@ -87,12 +87,16 @@ ENVELOPE = [
 ]
 
 ENV_GLAZING = [
-    ('EG-P-TERRACE', (-350, 0), (2750, 0), True,
-     "Parents' terrace — glass parapet under the high glass roof"),
-    ('EG-DECK', (4530, -150), (19950, -150), True,
-     'Deck parapet — planted strip and trellis behind glass, retractable roof over'),
-    ('EG-K-TERRACE', (21730, 0), (24830, 0), True,
-     "Karan's terrace — glass parapet under the high glass roof"),
+    # No upright pane on any of these lines. The curved glass canopies (ROOFS below)
+    # spring from floor datum ON the parapet line, belly out past it and rise clear
+    # above the ceiling before landing on the wall head: they are the enclosure.
+    ('EG-P-TERRACE', (-350, 0), (2750, 0), False,
+     "Parents' terrace — open to the curved glass canopy, no pane on this line"),
+    ('EG-DECK', (4530, -150), (19950, -150), False,
+     'Deck edge — the bellied glass vault springs from this parapet line; planted '
+     'strip and trellis inside it'),
+    ('EG-K-TERRACE', (21730, 0), (24830, 0), False,
+     "Karan's terrace — open to the curved glass canopy, no pane on this line"),
 ]
 
 # ------------------------------------------------------- exterior openings
@@ -112,10 +116,11 @@ EXT_OPENINGS = [
 
 
 # ---------------------------------------------------------------- walls
-def w(id_, points, th, kind, openings=(), label=None, notes=None, pane=None):
+def w(id_, points, th, kind, openings=(), label=None, notes=None, pane=None,
+      glass=None):
     return {'id': id_, 'points': points, 'th': th, 'kind': kind,
             'openings': list(openings), 'label': label, 'notes': notes,
-            'pane': pane}
+            'pane': pane, 'glass': glass}
 
 
 def op(id_, type_, a, b, head=2100, sill=None, label=None, extra=''):
@@ -220,16 +225,17 @@ WALLS += [
     w('W-DECK-E-STUB', [(19830, 2545), (20013, 2545)], 150, 'interior'),
 ]
 
-# --- dressing partitions: joinery pocket + tinted-glass leaf, both suites
+# --- dressing partitions: bronze translucent glass floor to ceiling, the leaf
+# pocketing into the cupboard backs; both suites
 WALLS += [
     w('W-P-DRESS', [(-600, 5935), (2732, 5935), (2940, 6300)], 120, 'partition',
       [op('SL-P-DRESS', 'slider', 2000, 3332, head=2100,
           label='Tinted-glass leaf — pockets into the cupboard backs')],
-      label="Parents' dressing partition"),
+      label="Parents' dressing partition", glass='tinted'),
     w('W-K-DRESS', [(mx(2940), 6300), (mx(2732), 5935), (mx(-600), 5935)], 120, 'partition',
       [op('SL-K-DRESS', 'slider', 420, 1752, head=2100,
           label='Tinted-glass leaf — pockets into the cupboard backs')],
-      label="Karan's dressing partition"),
+      label="Karan's dressing partition", glass='tinted'),
 ]
 
 # --- master bath arched sweeps, from the CAD geometry (polyline centreline)
@@ -305,7 +311,7 @@ def pod_wall(P, portal, wid, label, y_end):
     return w(wid, line, 150, 'curved-glass',
              [op(wid.replace('W-', 'PORTAL-'), 'arch', a, b, head=2400,
                  label='Arched portal — always open')],
-             label=label)
+             label=label, glass='tinted')
 
 
 WALLS += [
@@ -450,15 +456,46 @@ STACKS = [
      'At the sink and dishwasher run.'),
 ]
 
+# The bellied glass. Sections are ABSOLUTE (model y, height): each canopy springs
+# from floor datum on its parapet line, bellies OUT past the building line on the
+# way up, peaks well above the 3050 ceiling and lands on the wall head. Both ends
+# of every vault are closed with a glazed gable cut to the same curve.
+CEIL = 3050
+VAULTS = {
+    # id: (springs at y, control, lands at y)
+    'ROOF-DECK': ((-150, 0), (-2550, 8000), (2620, CEIL)),
+    'ROOF-P-TERRACE': ((0, 0), (-1500, 6600), (1350, CEIL)),
+    'ROOF-K-TERRACE': ((0, 0), (-1500, 6600), (1350, CEIL)),
+}
+
+
+def _bez(p0, p1, p2, t):
+    return tuple((1 - t) ** 2 * p0[i] + 2 * t * (1 - t) * p1[i] + t * t * p2[i]
+                 for i in range(2))
+
+
+def vault_extent(rid, x0, x1):
+    """Plan extent of a vault: x range, and y from the belly's outermost point
+    to the landing line, so the extent is the true plan footprint."""
+    p0, p1, p2 = VAULTS[rid]
+    ys = [_bez(p0, p1, p2, i / 400)[0] for i in range(401)]
+    return (x0, math.floor(min(ys) / 10) * 10, x1, p2[0])
+
+
 ROOFS = [
-    ('ROOF-DECK', 'Retractable glass roof over the deck', 'flat',
-     (4530, -150, 19950, 2545), 3400, True, 'Laminated acoustic glass',
-     'The deck is in AND out: cooled under glass, open when the roof retracts.'),
-    ('ROOF-P-TERRACE', "High glass roof over the parents' terrace", 'flat',
-     (-600, 0, 2750, 1275), 3050, False, 'Laminated glass',
-     'Real grass and a real tree under it; rain never lands, light always does.'),
-    ('ROOF-K-TERRACE', "High glass roof over Karan's terrace", 'flat',
-     (21730, 0, 25080, 1275), 3050, False, 'Laminated glass', None),
+    ('ROOF-DECK', 'Retractable curved glass vault over the deck', 'barrel',
+     vault_extent('ROOF-DECK', 4530, 19950), None, True, 'Laminated acoustic glass',
+     'Roof AND wall: springs from the parapet line, bellies out over the street, '
+     'peaks 1.9 m above the ceiling and lands on the pod line. The deck is in AND '
+     'out: cooled under glass, open when the roof retracts.'),
+    ('ROOF-P-TERRACE', "Curved glass canopy over the parents' terrace", 'barrel',
+     vault_extent('ROOF-P-TERRACE', -600, 2750), None, False,
+     'Laminated acoustic glass',
+     'Same family as the deck vault, landing on the terrace wall head. Real grass '
+     'and a real tree under it; rain never lands, light always does.'),
+    ('ROOF-K-TERRACE', "Curved glass canopy over Karan's terrace", 'barrel',
+     vault_extent('ROOF-K-TERRACE', 21730, 25080), None, False,
+     'Laminated acoustic glass', 'Mirror of ROOF-P-TERRACE about x = 12 240.'),
     ('ROOF-FAMILY', 'Glass roof over the family-room bay', 'flat',
      (4650, 2620, 8315, 4900), 3050, False, 'Laminated glass', None),
     ('ROOF-DEN', 'Glass roof over the den bay', 'flat',
@@ -539,6 +576,8 @@ def emit_building():
         A(f'      kind: {wd["kind"]!r},')
         if wd.get('pane') is not None:
             A(f'      renderPane: {str(wd["pane"]).lower()},')
+        if wd.get('glass'):
+            A(f'      glass: {wd["glass"]!r},')
         if wd['openings']:
             A('      openings: [')
             for o2 in wd['openings']:
@@ -584,8 +623,14 @@ def emit_building():
     A('  glassRoofs: [')
     for rid, name, kind, ext, ht, retr, glz, notes in ROOFS:
         n = f', notes: {notes!r}' if notes else ''
+        if kind == 'barrel':
+            p0, p1, p2 = VAULTS[rid]
+            sec = (f'section: {{ p0: {pt(*p0)}, p1: {pt(*p1)}, p2: {pt(*p2)} }}, '
+                   f"gableEnds: ['x0', 'x1'], ")
+        else:
+            sec = f'height: {ht}, '
         A(f'    {{ id: {rid!r}, name: {name!r}, kind: {kind!r}, '
-          f'extent: [{", ".join(fnum(v) for v in ext)}], height: {ht}, '
+          f'extent: [{", ".join(fnum(v) for v in ext)}], {sec}'
           f'retractable: {str(retr).lower()}, glazing: {glz!r}{n} }},')
     A('  ],')
     A('')

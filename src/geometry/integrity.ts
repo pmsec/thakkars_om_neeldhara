@@ -636,8 +636,25 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       const cage = building.cages.find(
         (c) => c.from <= r.extent[0] + TOL && c.to >= r.extent[2] - TOL,
       )
-      if (!cage) {
-        problems.push(`${r.id} has no tree cage under its full length to come down on`)
+      // No cage: the canopy has to come down ON a glazed envelope line itself — the
+      // parapet — or it lands on air. Where the vault runs on past the glazed stretch to
+      // the building corner, the foot skims the outer face of the solid wall there, which
+      // is the same line, so the parapet only has to lie under the vault, not fill it.
+      const parapet = (building.envelopeGlazing ?? []).find(
+        (g) =>
+          Math.abs(g.p1.y - g.p2.y) < TOL &&
+          Math.abs(g.p1.y - foot) < TOL &&
+          Math.min(g.p1.x, g.p2.x) >= r.extent[0] - TOL &&
+          Math.max(g.p1.x, g.p2.x) <= r.extent[2] + TOL,
+      )
+      if (!cage && parapet) {
+        const beyond = (Math.min(parapet.p1.x, parapet.p2.x) - r.extent[0]) + (r.extent[2] - Math.max(parapet.p1.x, parapet.p2.x))
+        landings.push(
+          `${r.id} comes down at y ${foot}, on the parapet line ${parapet.id}` +
+            (beyond > TOL ? `, and skims the solid wall's outer face for the remaining ${beyond.toFixed(0)} mm` : ''),
+        )
+      } else if (!cage) {
+        problems.push(`${r.id} has neither a tree cage nor a parapet line under its full length to come down on`)
       } else {
         const outer = cage.at - cage.projection
         landings.push(
@@ -658,7 +675,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       requirement:
         'Each glazed envelope run either carries an upright pane, or is covered by a canopy ' +
         'that comes down to floor level outboard of it, or is closed by that canopy\u2019s gable. ' +
-        'Every canopy meets the wall head, and comes down exactly on its tree cage.',
+        'Every canopy meets the wall head, and comes down exactly on its tree cage or its parapet line.',
       pass: problems.length === 0,
       actual:
         `${(building.envelopeGlazing ?? []).length} glazed runs, ` +

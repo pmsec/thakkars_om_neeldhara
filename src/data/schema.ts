@@ -50,6 +50,12 @@ export interface WallDef {
   openings?: OpeningDef[]
   /** Zero-thickness glazing only: false suppresses the 3D pane. */
   renderPane?: boolean
+  /**
+   * The wall is glass, and this is its tint. 'tinted' is the bronze translucent glass
+   * of the dressing partitions and the pod screens: it is drawn as glass floor to
+   * ceiling in 3D and the walkthrough, and a slider in it is a glass leaf, not a gap.
+   */
+  glass?: 'clear' | 'tinted'
   label?: string
   notes?: string
 }

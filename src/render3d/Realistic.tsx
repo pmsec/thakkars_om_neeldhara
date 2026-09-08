@@ -11,7 +11,9 @@
  * has arms and cushions, a tree has a crown.
  *
  * Click to walk: WASD + mouse, Shift to hurry, Esc to release the mouse.
- * Orbit with the pointer when not walking.
+ * Orbit with the pointer when not walking. On a touch screen (iPad) there is no
+ * mouse to lock and no keys, so Walk shows a thumb stick and a drag-to-look
+ * instead — see touchWalk.ts.
  */
 
 import React, { useEffect, useRef, useState } from 'react'
@@ -20,7 +22,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { getModel } from '../geometry/model'
 import { pointInPolygon } from '../geometry/vec'
-import { buildSolids } from '../geometry/solid'
+import { barrelProfile, buildSolids } from '../geometry/solid'
+import { gableGeometry, gableJamb, vaultGeometry } from './canopy'
 import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
@@ -29,6 +32,7 @@ import { StylePanel } from './StylePanel'
 import { decimate, prismGeometry, S } from './prism'
 import { customObject, floorMaterial, getAssign, primeStyle, wallMaterial } from './styleOverrides'
 import { lightRig } from './lighting'
+import { createTouchWalk, isTouchDevice, type TouchWalk } from './touchWalk'
 
 const model = getModel()
 const solids = buildSolids(model)
@@ -610,8 +614,9 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   for (const p of solids.prisms) {
     if (p.kind === 'lintel' && p.top - p.base < 60) continue
     const mat =
-      p.kind === 'glazing' ? M.glass
-      : p.kind === 'wall-curved-glass' ? (p.wallId === 'W-CURVE-KARAN' ? M.tintGlass : M.glass)
+      p.glass === 'tinted' ? M.tintGlass
+      : p.kind === 'glazing' ? M.glass
+      : p.kind === 'wall-curved-glass' ? M.glass
       : p.kind === 'screen' ? M.wallWood
       : wallMaterial() ?? M.plaster
     const mesh = new THREE.Mesh(prismGeometry(p.polygon, p.base, p.top), mat)
@@ -633,6 +638,30 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {
     const [x0, y0, x1, y1] = roof.extent
+    if (roof.kind === 'barrel' && roof.section) {
+      // The bellied vault: springs from the parapet, bulges out past it, peaks above the
+      // ceiling and lands on the wall head. Same mesh as the 3D tab, from canopy.ts, so
+      // the walkthrough cannot show a different roof from the model.
+      const vault = new THREE.Mesh(vaultGeometry(roof), M.roofGlass)
+      vault.receiveShadow = true
+      root.add(vault)
+      const profile = barrelProfile(roof.section, 48)
+      for (let x = x0; x <= x1 + 1; x += 1500) {
+        const curve = new THREE.CatmullRomCurve3(
+          profile.map((q) => new THREE.Vector3(x * S, q.y * S, q.x * S)))
+        const rib = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, 0.03, 6, false), M.metal)
+        rib.castShadow = true
+        root.add(rib)
+      }
+      for (const end of roof.gableEnds) {
+        root.add(new THREE.Mesh(gableGeometry(roof, end), M.roofGlass))
+        const j = gableJamb(roof, end)
+        const jamb = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, j.height, 6), M.metal)
+        jamb.position.set(j.x, j.height / 2, j.z)
+        root.add(jamb)
+      }
+      continue
+    }
     const h = (roof.height ?? model.data.levels.ceiling) * S
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry((x1 - x0) * S, (y1 - y0) * S), M.roofGlass)
@@ -738,7 +767,11 @@ export function buildFixtures(M: Mats): THREE.Group {
 export function Realistic({ compact = false }: { compact?: boolean }): React.ReactElement {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const [walking, setWalking] = useState(false)
+  const [touchWalking, setTouchWalking] = useState(false)
   const [hint, setHint] = useState(true)
+  const touch = isTouchDevice()
+  const touchRef = useRef<TouchWalk | null>(null)
+  const walkRef = useRef<((on: boolean) => void) | null>(null)
   const captureRef = useRef<(() => string | null) | null>(null)
   const standRef = useRef<((roomId: string, dir: 'N' | 'S' | 'E' | 'W') => void) | null>(null)
   const [standRoom, setStandRoom] = useState('R-GREAT')
@@ -859,10 +892,23 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       const d = dir === 'N' ? [0, -3] : dir === 'S' ? [0, 3] : dir === 'E' ? [3, 0] : [-3, 0]
       camera.position.set(px, 1.62, pz)
       orbit.target.set(px + d[0], 1.45, pz + d[1])
-      orbit.update()
+      if (touchWalk.enabled) {
+        camera.lookAt(orbit.target)
+        touchWalk.sync()
+      } else orbit.update()
     }
 
     const lock = new PointerLockControls(camera, renderer.domElement)
+    const touchWalk = createTouchWalk(camera, renderer.domElement, mount, { eye: 1.62, speed: 2.3 })
+    touchRef.current = touchWalk
+    walkRef.current = (on) => {
+      if (touch) {
+        if (on) { touchWalk.enable(); orbit.enabled = false; setTouchWalking(true); setHint(false) }
+        else { touchWalk.disable(); orbit.enabled = true; setTouchWalking(false) }
+      } else if (on) {
+        if (!lock.isLocked) lock.lock()
+      } else if (lock.isLocked) lock.unlock()
+    }
     const keys = new Set<string>()
     const onKey = (e: KeyboardEvent, down: boolean): void => {
       if (down) keys.add(e.code)
@@ -877,7 +923,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     lock.addEventListener('unlock', () => { setWalking(false); orbit.enabled = true })
 
     const onClick = (): void => {
-      if (!lock.isLocked) lock.lock()
+      if (touch) walkRef.current?.(true)
+      else if (!lock.isLocked) lock.lock()
     }
     renderer.domElement.addEventListener('dblclick', onClick)
 
@@ -887,7 +934,11 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const animate = (): void => {
       raf = requestAnimationFrame(animate)
       const dt = Math.min(clock.getDelta(), 0.1)
-      if (lock.isLocked) {
+      if (touchWalk.enabled) {
+        touchWalk.update(dt)
+        camera.position.x = THREE.MathUtils.clamp(camera.position.x, (bb.minX - 2000) * S, (bb.maxX + 2000) * S)
+        camera.position.z = THREE.MathUtils.clamp(camera.position.z, (bb.minY - 3500) * S, (bb.maxY + 2000) * S)
+      } else if (lock.isLocked) {
         const speed = (keys.has('ShiftLeft') || keys.has('ShiftRight') ? 4.6 : 2.3) * dt
         const fwd = Number(keys.has('KeyW')) - Number(keys.has('KeyS'))
         const side = Number(keys.has('KeyD')) - Number(keys.has('KeyA'))
@@ -916,6 +967,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     return () => {
       captureRef.current = null
       standRef.current = null
+      walkRef.current = null
+      touchRef.current = null
+      touchWalk.dispose()
       cancelAnimationFrame(raf)
       ro.disconnect()
       window.removeEventListener('keydown', kd)
@@ -959,6 +1013,18 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           ))}
         </div>
       )}
+      <button
+        onClick={() => walkRef.current?.(!(walking || touchWalking))}
+        aria-pressed={walking || touchWalking}
+        style={{
+          position: 'absolute', right: 12, bottom: 12, padding: '8px 14px', fontSize: 13,
+          background: walking || touchWalking ? '#2b4a52' : 'rgba(250,248,244,0.95)',
+          color: walking || touchWalking ? '#f3ecdd' : '#1e1c18',
+          border: '1px solid #d5cdbb', borderRadius: 8, cursor: 'pointer', zIndex: 6,
+        }}
+      >
+        {walking || touchWalking ? 'Exit walk' : 'Walk'}
+      </button>
       <div
         style={{
           position: 'absolute', left: 12, bottom: 12, padding: '6px 12px',
@@ -966,8 +1032,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           fontSize: 12.5, pointerEvents: 'none', letterSpacing: 0.3,
         }}
       >
-        {walking
+        {touchWalking
+          ? 'Thumb stick to walk, push to the rim to hurry · drag the view to look · Exit walk to release'
+          : walking
           ? 'W A S D to walk · mouse to look · Shift to hurry · Esc to release'
+          : touch
+          ? 'Drag to orbit · tap Walk to step inside'
           : 'Drag to orbit · double-click to enter and walk the home'}
       </div>
       {hint && !compact && (
@@ -978,7 +1048,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
             borderRadius: 6, fontSize: 13, pointerEvents: 'none',
           }}
         >
-          The home in its materials — oak, stone, grass and glass. Double-click to step inside.
+          The home in its materials — oak, stone, grass and glass. {touch ? 'Tap Walk' : 'Double-click'} to step inside.
         </div>
       )}
     </div>

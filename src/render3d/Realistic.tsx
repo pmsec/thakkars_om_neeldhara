@@ -248,6 +248,7 @@ export function makeMaterials() {
     appliance: new THREE.MeshStandardMaterial({ color: 0xd8d5cc, roughness: 0.4, metalness: 0.25 }),
     steel: new THREE.MeshStandardMaterial({ color: 0xc6c9cc, roughness: 0.32, metalness: 0.7 }),
     idol: new THREE.MeshStandardMaterial({ color: 0xf3efe6, roughness: 0.35, metalness: 0.02 }),
+    lamp: new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffc46a, emissiveIntensity: 1.6, roughness: 0.6 }),
     brass: new THREE.MeshStandardMaterial({ color: 0xc9a24a, roughness: 0.3, metalness: 0.8 }),
     gasket: new THREE.MeshStandardMaterial({ color: 0x2b2d30, roughness: 0.6 }),
   }
@@ -793,6 +794,117 @@ export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
 }
 
 /**
+ * Kitchen overheads: wall cabinets over every stretch of counter that backs on
+ * to a solid wall, a warm light strip under each with point lights that
+ * actually light the worktop, and a hood over the hob. Derived from the
+ * counter outlines and the walls with their openings, so nothing hangs over
+ * the serving hatch or the south window.
+ */
+function kitchenOverheads(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const CAB_BOTTOM = 1450
+  const CAB_TOP = 2200
+  const CAB_DEPTH = 350
+  const counters = fixtures.filter((f) => f.kind === 'counter' && f.poly && /kitchen/i.test(model.roomById.get(f.room)?.name ?? f.room))
+  const segDist = (p: { x: number; y: number }, a: { x: number; y: number }, b: { x: number; y: number }) => {
+    const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+    const t = L2 ? Math.max(0, Math.min(1, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / L2)) : 0
+    return { d: Math.hypot(p.x - (a.x + t * (b.x - a.x)), p.y - (a.y + t * (b.y - a.y))), t }
+  }
+  for (const f of counters) {
+    const poly = f.poly!
+    const ccx = poly.reduce((t, q) => t + q.x, 0) / poly.length
+    const ccy = poly.reduce((t, q) => t + q.y, 0) / poly.length
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i]
+      const b = poly[(i + 1) % poly.length]
+      const len = Math.hypot(b.x - a.x, b.y - a.y)
+      if (len < 400) continue
+      // a wall this edge lies along, within the wall's own half thickness
+      const wall = model.walls.find((w) => {
+        if (w.thickness < 60 || w.points.length < 2) return false
+        for (let k = 0; k < w.points.length - 1; k++) {
+          const da = segDist(a, w.points[k], w.points[k + 1])
+          const db = segDist(b, w.points[k], w.points[k + 1])
+          if (da.d <= w.thickness / 2 + 40 && db.d <= w.thickness / 2 + 40) return true
+        }
+        return false
+      })
+      if (!wall) continue
+      // the run along the edge, minus any opening in that wall that rises into the cabinet zone
+      const ux = (b.x - a.x) / len
+      const uy = (b.y - a.y) / len
+      const spans: Array<[number, number]> = [[0, len]]
+      for (const op of wall.openings) {
+        const head = op.head ?? model.data.levels.doorHead
+        if (head <= CAB_BOTTOM) continue
+        const s0 = (op.p1.x - a.x) * ux + (op.p1.y - a.y) * uy
+        const s1 = (op.p2.x - a.x) * ux + (op.p2.y - a.y) * uy
+        const lo = Math.min(s0, s1) - 60
+        const hi = Math.max(s0, s1) + 60
+        for (let k = spans.length - 1; k >= 0; k--) {
+          const [p, q] = spans[k]
+          if (hi <= p || lo >= q) continue
+          spans.splice(k, 1)
+          if (lo > p) spans.push([p, lo])
+          if (hi < q) spans.push([hi, q])
+        }
+      }
+      // inward: from the edge toward the counter's own centre
+      const mx = (a.x + b.x) / 2
+      const my = (a.y + b.y) / 2
+      let nx = -uy
+      let ny = ux
+      if ((ccx - mx) * nx + (ccy - my) * ny < 0) { nx = -nx; ny = -ny }
+      for (const [p, q] of spans) {
+        if (q - p < 350) continue
+        const L = q - p
+        const sx = a.x + ux * ((p + q) / 2) + nx * (CAB_DEPTH / 2)
+        const sy = a.y + uy * ((p + q) / 2) + ny * (CAB_DEPTH / 2)
+        const ang = Math.atan2(ux, uy)
+        const cab = new THREE.Group()
+        cab.add(box(CAB_DEPTH, CAB_TOP - CAB_BOTTOM, L, M.timber, 0, (CAB_BOTTOM + CAB_TOP) / 2, 0))
+        // door joints
+        const n = Math.max(1, Math.round(L / 450))
+        for (let k = 1; k < n; k++) {
+          cab.add(box(CAB_DEPTH + 2, CAB_TOP - CAB_BOTTOM - 60, 4, M.trunk, 0, (CAB_BOTTOM + CAB_TOP) / 2, -L / 2 + (k * L) / n))
+        }
+        // the light strip under the front edge, and the light it throws
+        const strip = new THREE.Mesh(new THREE.BoxGeometry(24 * S, 10 * S, (L - 60) * S), M.lamp)
+        strip.position.set((CAB_DEPTH / 2 - 30) * S, (CAB_BOTTOM - 6) * S, 0)
+        cab.add(strip)
+        const lights = Math.max(1, Math.round(L / 900))
+        for (let k = 0; k < lights; k++) {
+          const pl = new THREE.PointLight(0xffc978, 0.9, 1.7, 1.6)
+          pl.position.set((CAB_DEPTH / 2 + 60) * S, (CAB_BOTTOM - 40) * S, (-L / 2 + ((k + 0.5) * L) / lights) * S)
+          cab.add(pl)
+        }
+        cab.rotation.y = ang
+        cab.position.set(sx * S, 0, sy * S)
+        g.add(cab)
+      }
+    }
+  }
+  // the hood over the hob: a stainless canopy and its chimney to the ceiling
+  for (const hob of fixtures.filter((f) => f.kind === 'hob')) {
+    const [w, d] = hob.size
+    const canopy = box(w + 300, 60, d + 100, M.steel)
+    place(canopy, hob.at.x, hob.at.y, 1580)
+    g.add(canopy)
+    const body = box(w + 300, 180, d + 100, M.steel)
+    place(body, hob.at.x, hob.at.y, 1700)
+    g.add(body)
+    const chimney = box(300, model.data.levels.ceiling - 1790, 260, M.steel)
+    place(chimney, hob.at.x, hob.at.y, (1790 + model.data.levels.ceiling) / 2)
+    g.add(chimney)
+    const pl = new THREE.PointLight(0xffe0b0, 0.8, 1.6, 1.6)
+    pl.position.set(hob.at.x * S, 1.5, hob.at.y * S)
+    g.add(pl)
+  }
+  return g
+}
+
+/**
  * The marble Shiva on the mandir: the larger corner unit in the parents' pod,
  * the wedge that follows the pod glazing. Seated on a lotus plinth on top of
  * the unit, a trishul standing beside him, a brass diya in front. Drawn only
@@ -1089,6 +1201,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(podDoorGroup(M, 'shut'))
   const idol = mandirIdol(M)
   if (idol) root.add(idol)
+  root.add(kitchenOverheads(M))
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

@@ -37,6 +37,7 @@ import { lightRig, timeRig, TIMES_OF_DAY, type TimeOfDay } from './lighting'
 import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWalk } from './touchWalk'
 import { PRESETS, presetCamera } from './cameras'
 import { podDoorLeaves, type PodDoorMode } from './podDoors'
+import { mergeStatic } from './merge'
 import { isStrengthTrainer, strengthTrainer } from './gym'
 import { hedgeGroup } from './hedge'
 import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
@@ -2413,7 +2414,7 @@ function entryDrum(): { C: { x: number; y: number }; Rwall: number; wallT: numbe
  * front of it. Place with rotation.y = atan2(n.x, n.y) for a wall normal (n.x, n.y)
  * in plan.
  */
-function sconceLamp(M: Mats): THREE.Group {
+function sconceLamp(M: Mats, withLight = true): THREE.Group {
   const lamp = new THREE.Group()
   const shadeMat = new THREE.MeshStandardMaterial({
     color: 0xfff0d2, emissive: 0xffb860, emissiveIntensity: 0.8, roughness: 0.55,
@@ -2456,9 +2457,11 @@ function sconceLamp(M: Mats): THREE.Group {
   const bulb = new THREE.Mesh(new THREE.SphereGeometry(20 * S, 14, 10), M.lamp)
   bulb.position.set(0, -20 * S, 190 * S)
   lamp.add(bulb)
-  const light = new THREE.PointLight(0xffc27a, 1.0, 3.4, 1.7)
-  light.position.set(0, 20 * S, 200 * S)
-  lamp.add(light)
+  if (withLight) {
+    const light = new THREE.PointLight(0xffc27a, 1.0, 3.4, 1.7)
+    light.position.set(0, 20 * S, 200 * S)
+    lamp.add(light)
+  }
   return lamp
 }
 
@@ -2581,7 +2584,8 @@ function bathMirrors(M: Mats): THREE.Group {
       const at = inward(along, offWall(along, 2))          // on the wall's face
       const nrm = inward(at, 1)
       const nx = nrm.x - at.x, ny = nrm.y - at.y
-      const lamp = sconceLamp(M)
+      // both shades glow; one real light between them lights the vanity
+      const lamp = sconceLamp(M, end === 0)
       lamp.rotation.y = Math.atan2(nx, ny)
       lamp.position.set(at.x * S, 1550 * S, at.y * S)
       g.add(lamp)
@@ -3503,6 +3507,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     scene.add(cityscape({ bbox: model.envelopeBBox }))
 
     const M = makeMaterials()
+    const built: THREE.Object3D[] = []
     // Reflections for the polished pieces: a neutral room environment, given to the
     // fountain's marble and water only, so the rest of the house keeps its look.
     const pmrem = new THREE.PMREMGenerator(renderer)
@@ -3512,9 +3517,13 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       mat.needsUpdate = true
     }
     pmrem.dispose()
-    scene.add(buildScene(M))
+    const house = buildScene(M)
+    scene.add(house)
+    built.push(house)
     applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current, roofRef.current)
-    scene.add(buildFixtures(M))
+    const fixed = buildFixtures(M)
+    scene.add(fixed)
+    built.push(fixed)
 
     const furn = new THREE.Group()
     for (const f of furniture) {
@@ -3523,6 +3532,15 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       if (o) furn.add(o)
     }
     scene.add(furn)
+    built.push(furn)
+    // Bake every static mesh that shares a material into one draw call. The house
+    // is thousands of small pieces and on an iPad the draw calls, not the
+    // triangles, are what lag; nothing here moves after it is built.
+    {
+      let before = 0, after = 0
+      for (const b of built) { const r = mergeStatic(b); before += r.before; after += r.after }
+      console.info(`[walk] merged ${before} meshes into ${after} draw calls`)
+    }
 
     // ---- light
     const hemi = new THREE.HemisphereLight(rig.hemiSky, rig.hemiGround, rig.hemiIntensity)
@@ -3712,6 +3730,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
 
     const clock = new THREE.Clock()
     let raf = 0
+    let slowFrames = 0
+    let fastFrames = 0
+    const DPR_CAP = Math.min(window.devicePixelRatio, 1.5)
     const bb = model.envelopeBBox
     const animate = (): void => {
       raf = requestAnimationFrame(animate)
@@ -3734,6 +3755,13 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       }
       followCamera(dayRef.current?.sky ?? sky, camera)
       renderer.render(scene, camera)
+      // adaptive resolution: a run of slow frames steps the pixel ratio down, a
+      // long run of fast ones steps it back up toward the cap, so a slow tablet
+      // stays fluid instead of crisp and laggy
+      if (dt > 0.05) { slowFrames++; fastFrames = 0 } else if (dt < 0.022) { fastFrames++; slowFrames = 0 } else { slowFrames = 0; fastFrames = 0 }
+      const pr = renderer.getPixelRatio()
+      if (slowFrames > 40 && pr > 0.75) { renderer.setPixelRatio(Math.max(0.75, pr - 0.25)); resize(); slowFrames = 0 }
+      else if (fastFrames > 400 && pr < DPR_CAP) { renderer.setPixelRatio(Math.min(DPR_CAP, pr + 0.25)); resize(); fastFrames = 0 }
     }
 
     const resize = (): void => {

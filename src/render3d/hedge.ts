@@ -215,8 +215,8 @@ export function hedgeGroup(f: FurnitureItem, M: HedgeMats, bed?: THREE.Object3D 
     g.add(globe)
     // every globe glows; every third one carries a real light with a wider throw,
     // which lights the run the same and costs a third of the shading
-    if (li % 3 === 0) {
-      const light = new THREE.PointLight(0xffd27a, 1.5, 5.5, 1.6)
+    if (li % 4 === 0) {
+      const light = new THREE.PointLight(0xffd27a, 1.7, 7.0, 1.6)
       light.position.set(base.x, 1150 * S, base.z)
       g.add(light)
     }

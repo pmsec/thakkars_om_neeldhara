@@ -226,8 +226,10 @@ export function createTouchWalk(
       if (!enabled) return
       const mag = Math.hypot(stick.x, stick.y)
       if (mag < 0.05) return
-      // Pushed to the rim is a hurry; anything short of it walks.
-      const speed = opts.speed * (mag > 0.92 ? 2 : 1) * dt
+      // A gentle push creeps, a full push walks, and pushed to the rim is a hurry:
+      // the pace follows how far the knob is from the centre, so a room can be
+      // taken in a step at a time.
+      const speed = opts.speed * mag * (mag > 0.92 ? 2 : 1) * dt
       right.setFromMatrixColumn(camera.matrix, 0)
       right.y = 0
       right.normalize()

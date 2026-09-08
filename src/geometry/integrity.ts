@@ -645,17 +645,24 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       // parapet — or it lands on air. Where the vault runs on past the glazed stretch to
       // the building corner, the foot skims the outer face of the solid wall there, which
       // is the same line, so the parapet only has to lie under the vault, not fill it.
-      const parapet = (building.envelopeGlazing ?? []).find(
+      // Every open parapet line under the vault, on the foot line or just inboard of
+      // it (the deck slab stands 150 proud of the terraces, so their parapets sit 150
+      // inside the foot; the sill bridges that). Solid wall fills the rest.
+      const under = (building.envelopeGlazing ?? []).filter(
         (g) =>
+          g.pane === false &&
           Math.abs(g.p1.y - g.p2.y) < TOL &&
-          Math.abs(g.p1.y - foot) < TOL &&
+          g.p1.y - foot >= -TOL && g.p1.y - foot <= 150 + TOL &&
           Math.min(g.p1.x, g.p2.x) >= r.extent[0] - TOL &&
           Math.max(g.p1.x, g.p2.x) <= r.extent[2] + TOL,
       )
+      const parapet = under.find((g) => Math.abs(g.p1.y - foot) < TOL)
       if (!cage && parapet) {
-        const beyond = (Math.min(parapet.p1.x, parapet.p2.x) - r.extent[0]) + (r.extent[2] - Math.max(parapet.p1.x, parapet.p2.x))
+        const covered = under.reduce((t, g) => t + Math.abs(g.p2.x - g.p1.x), 0)
+        const beyond = r.extent[2] - r.extent[0] - covered
         landings.push(
           `${r.id} comes down at y ${foot}, on the parapet line ${parapet.id}` +
+            (under.length > 1 ? ` with ${under.filter((g) => g !== parapet).map((g) => g.id).join(', ')} under it` : '') +
             (beyond > TOL ? `, and skims the solid wall's outer face for the remaining ${beyond.toFixed(0)} mm` : ''),
         )
       } else if (!cage) {

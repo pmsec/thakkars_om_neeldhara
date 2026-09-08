@@ -481,18 +481,20 @@ STACKS = [
      'At the sink and dishwasher run.'),
 ]
 
-# The bellied glass. Sections are ABSOLUTE (model y, height): each canopy springs
-# from floor datum on its parapet line, bellies OUT past the building line on the
-# way up, peaks well above the ceiling and lands on the wall head. Both ends
-# of every vault are closed with a glazed gable cut to the same curve.
+# The bellied glass. ONE vault over the whole north front, terrace to terrace:
+# it used to be three (the deck and a shallower one over each terrace, with a
+# gap over each shaft between them) and the owner wants one belly, bedroom to
+# bedroom. The section is ABSOLUTE (model y, height): it springs from floor
+# datum on the deck's parapet line, bellies 1200 OUT past the building line on
+# the way up, peaks at 6098 (20 ft) and lands on the wall head along the pod
+# line. Over the terraces the same curve sails over the terrace wall head at
+# 4850 and comes down on the suite roof at that same line; its foot there runs
+# 150 proud of the terrace parapet, on the steel sill that carries it along the
+# deck. Both ends are closed with a glazed gable cut to the curve, standing on
+# the building's end walls.
 VAULTS = {
     # id: (springs at y, control, lands at y)
-    # Deck: bellies 1200 out past the parapet, peaks at 6098 (20 ft).
-    'ROOF-DECK': ((-150, 0), (-3530, 10075), (2620, CEIL)),
-    # Terraces: bellies 800 out, peaks at 5198 (17 ft) - the same family,
-    # shallower because the terrace is only 1350 deep.
-    'ROOF-P-TERRACE': ((0, 0), (-2110, 8165), (1350, CEIL)),
-    'ROOF-K-TERRACE': ((0, 0), (-2110, 8165), (1350, CEIL)),
+    'ROOF-FRONT': ((-150, 0), (-3530, 10075), (2620, CEIL)),
 }
 
 
@@ -510,19 +512,13 @@ def vault_extent(rid, x0, x1):
 
 
 ROOFS = [
-    ('ROOF-DECK', 'Retractable curved glass vault over the deck', 'barrel',
-     vault_extent('ROOF-DECK', 4530, 19950), None, True, 'Laminated acoustic glass',
-     'Roof AND wall: springs from the parapet line, bellies 1.2 m out over the street, '
-     'peaks at 6.1 m - 2.6 m above the ceiling - and lands on the pod line. The deck is in AND '
-     'out: cooled under glass, open when the roof retracts.'),
-    ('ROOF-P-TERRACE', "Curved glass canopy over the parents' terrace", 'barrel',
-     vault_extent('ROOF-P-TERRACE', -600, 2750), None, False,
-     'Laminated acoustic glass',
-     'Same family as the deck vault, landing on the terrace wall head. Real grass '
-     'and a real tree under it; rain never lands, light always does.'),
-    ('ROOF-K-TERRACE', "Curved glass canopy over Karan's terrace", 'barrel',
-     vault_extent('ROOF-K-TERRACE', 21730, 25080), None, False,
-     'Laminated acoustic glass', 'Mirror of ROOF-P-TERRACE about x = 12 240.'),
+    ('ROOF-FRONT', 'One retractable bellied glass vault over the whole north front', 'barrel',
+     vault_extent('ROOF-FRONT', -600, 25080), None, True, 'Laminated acoustic glass',
+     "Roof AND wall, terrace to terrace: springs from the deck's parapet line, bellies "
+     '1.2 m out over the street, peaks at 6.1 m - 2.6 m above the ceiling - and lands on '
+     'the pod line. It sails over both terrace walls and both shafts, so the deck, the '
+     "parents' terrace and Karan's terrace are one glass room: cooled under glass, open "
+     'when the roof retracts. Real grass and a real tree on each terrace under it.'),
     ('ROOF-FAMILY', 'Glass roof over the family-room bay', 'flat',
      (4650, 2620, 8315, 4900), CEIL, False, 'Laminated glass', None),
     ('ROOF-DEN', 'Glass roof over the den bay', 'flat',

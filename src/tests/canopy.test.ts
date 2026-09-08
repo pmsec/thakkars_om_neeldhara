@@ -1,10 +1,11 @@
 /**
- * The glass roofs. The deck and both private terraces are enclosed by BELLIED
- * curved glass: each vault springs from floor datum on its parapet line, bulges
- * out past the building line on the way up, peaks well above the ceiling and
- * lands on the wall head, with both ends closed by a glazed gable cut to the
- * same curve. No upright pane stands on those lines. Both pod bays carry flat
- * glass over their deck ends. This suite pins that down.
+ * The glass roofs. The deck and both private terraces are enclosed by ONE
+ * BELLIED curved glass vault, terrace to terrace: it springs from floor datum
+ * on the deck's parapet line, bulges out past the building line on the way up,
+ * peaks well above the ceiling and lands on the wall head along the pod line,
+ * with both ends closed by a glazed gable cut to the same curve. No upright
+ * pane stands on the parapet lines. Both pod bays carry flat glass over their
+ * deck ends. This suite pins that down.
  */
 
 import { describe, expect, it } from 'vitest'
@@ -20,37 +21,30 @@ const vaults = roofs.filter((r) => r.kind === 'barrel')
 const byId = (id: string) => roofs.find((r) => r.id === id)!
 
 describe('glass roofs', () => {
-  it('models five of them: deck, two terraces, two pod bays', () => {
-    expect(roofs.map((r) => r.id).sort()).toEqual([
-      'ROOF-DECK', 'ROOF-DEN', 'ROOF-FAMILY', 'ROOF-K-TERRACE', 'ROOF-P-TERRACE',
-    ])
-    expect(vaults.map((r) => r.id).sort()).toEqual(['ROOF-DECK', 'ROOF-K-TERRACE', 'ROOF-P-TERRACE'])
+  it('models three of them: one vault over the whole front, two pod bays', () => {
+    expect(roofs.map((r) => r.id).sort()).toEqual(['ROOF-DEN', 'ROOF-FAMILY', 'ROOF-FRONT'])
+    expect(vaults.map((r) => r.id)).toEqual(['ROOF-FRONT'])
     expect(byId('ROOF-FAMILY').kind).toBe('flat')
     expect(byId('ROOF-DEN').kind).toBe('flat')
   })
 
-  it('only the deck roof retracts', () => {
+  it('only the front vault retracts', () => {
     for (const r of roofs) {
-      expect(!!r.retractable).toBe(r.id === 'ROOF-DECK')
+      expect(!!r.retractable).toBe(r.id === 'ROOF-FRONT')
     }
   })
 
-  it('covers the deck room completely', () => {
-    const deck = model.roomById.get('R-DECK')!
-    const [x0, y0, x1, y1] = byId('ROOF-DECK').extent
-    expect(deck.bbox.minX).toBeGreaterThanOrEqual(x0 - 1)
-    expect(deck.bbox.maxX).toBeLessThanOrEqual(x1 + 1)
-    expect(deck.bbox.minY).toBeGreaterThanOrEqual(y0 - 1)
-    expect(deck.bbox.maxY).toBeLessThanOrEqual(y1 + 1)
+  it('runs the full width of the building, end wall to end wall', () => {
+    const xs = building.envelope.map((q) => q.x)
+    const [x0, , x1] = byId('ROOF-FRONT').extent
+    expect(x0).toBe(Math.min(...xs))
+    expect(x1).toBe(Math.max(...xs))
   })
 
-  it('covers each terrace, so the grass is under glass', () => {
-    for (const [roomId, roofId] of [
-      ['R-P-TERRACE', 'ROOF-P-TERRACE'],
-      ['R-K-TERRACE', 'ROOF-K-TERRACE'],
-    ] as const) {
+  it('covers the deck, both terraces and both shafts between them, so they are one glass room', () => {
+    for (const roomId of ['R-DECK', 'R-P-TERRACE', 'R-K-TERRACE', 'R-SHAFT-W', 'R-SHAFT-E']) {
       const room = model.roomById.get(roomId)!
-      const [x0, y0, x1, y1] = byId(roofId).extent
+      const [x0, y0, x1, y1] = byId('ROOF-FRONT').extent
       expect(room.bbox.minX).toBeGreaterThanOrEqual(x0 - 1)
       expect(room.bbox.maxX).toBeLessThanOrEqual(x1 + 1)
       expect(room.bbox.minY).toBeGreaterThanOrEqual(y0 - 1)
@@ -58,9 +52,10 @@ describe('glass roofs', () => {
     }
   })
 
-  it('mirrors the terrace roofs and the pod-bay roofs about x = 12 240', () => {
+  it('mirrors about x = 12 240: the vault on itself, the pod-bay roofs on each other', () => {
+    const v = byId('ROOF-FRONT').extent
+    expect(Math.abs(2 * MIRROR_X - v[0] - v[2])).toBeLessThan(1)
     for (const [a, b] of [
-      ['ROOF-P-TERRACE', 'ROOF-K-TERRACE'],
       ['ROOF-FAMILY', 'ROOF-DEN'],
     ] as const) {
       const ra = byId(a).extent
@@ -70,7 +65,6 @@ describe('glass roofs', () => {
       expect(Math.abs(ra[1] - rb[1])).toBeLessThan(1)
       expect(Math.abs(ra[3] - rb[3])).toBeLessThan(1)
     }
-    expect(byId('ROOF-P-TERRACE').section).toEqual(byId('ROOF-K-TERRACE').section)
   })
 
   it('keeps every tree under its roof with room to grow', () => {
@@ -89,20 +83,24 @@ describe('glass roofs', () => {
 })
 
 describe('the bellied glass', () => {
-  it('springs from floor datum on its own parapet line', () => {
+  it('springs from floor datum, with every parapet line under it and solid wall between', () => {
     for (const r of vaults) {
       const sec = r.section!
       expect(sec.p0.y).toBe(0)
-      // The glazed run lies under the vault; where the vault runs on to the building
-      // corner it skims the solid wall's outer face, on the same line.
-      const parapet = (building.envelopeGlazing ?? []).find(
-        (g) => Math.abs(g.p1.y - sec.p0.x) < 1 && Math.abs(g.p2.y - sec.p0.x) < 1 &&
-          Math.min(g.p1.x, g.p2.x) >= r.extent[0] - 1 && Math.max(g.p1.x, g.p2.x) <= r.extent[2] + 1,
-      )
-      expect(parapet, `${r.id} has a parapet line under it`).toBeTruthy()
-      expect(parapet!.pane).toBe(false)
-      const beyond = (Math.min(parapet!.p1.x, parapet!.p2.x) - r.extent[0]) + (r.extent[2] - Math.max(parapet!.p1.x, parapet!.p2.x))
-      expect(beyond).toBeLessThanOrEqual(2 * building.thickness.exterior + 200)
+      // Every glazed envelope run with no pane lies under the vault, on or just
+      // inboard of its foot: the deck parapet on the foot line itself, the terrace
+      // parapets 150 inboard of it (the deck slab stands 150 proud of the terraces).
+      const open = (building.envelopeGlazing ?? []).filter((g) => g.pane === false)
+      expect(open.length).toBeGreaterThan(0)
+      for (const g of open) {
+        expect(Math.abs(g.p1.y - g.p2.y)).toBeLessThan(1)
+        expect(g.p1.y - sec.p0.x).toBeGreaterThanOrEqual(-1)
+        expect(g.p1.y - sec.p0.x).toBeLessThanOrEqual(150 + 1)
+        expect(Math.min(g.p1.x, g.p2.x)).toBeGreaterThanOrEqual(r.extent[0] - 1)
+        expect(Math.max(g.p1.x, g.p2.x)).toBeLessThanOrEqual(r.extent[2] + 1)
+      }
+      // and one of them is ON the foot line, so the vault has its own parapet to stand on
+      expect(open.some((g) => Math.abs(g.p1.y - sec.p0.x) < 1)).toBe(true)
     }
   })
 
@@ -116,8 +114,8 @@ describe('the bellied glass', () => {
       // and the plan extent is the true footprint, belly included
       expect(r.extent[1]).toBeLessThanOrEqual(r.section!.p0.x - belly + 1)
     }
-    const deck = barrelProfile(byId('ROOF-DECK').section!, 400)
-    expect(Math.max(...deck.map((q) => q.y))).toBeGreaterThan(4900)
+    const front = barrelProfile(byId('ROOF-FRONT').section!, 400)
+    expect(Math.max(...front.map((q) => q.y))).toBeGreaterThan(6000)
   })
 
   it('lands on the wall head, so glass and wall meet edge to edge', () => {
@@ -125,8 +123,8 @@ describe('the bellied glass', () => {
       expect(r.section!.p2.y).toBe(CEILING)
       expect(r.section!.p2.x).toBe(r.extent[3])
     }
-    // the deck vault lands on the pod line, where the flat pod-bay roofs start
-    expect(byId('ROOF-DECK').section!.p2.x).toBe(byId('ROOF-FAMILY').extent[1])
+    // the vault lands on the pod line, where the flat pod-bay roofs start
+    expect(byId('ROOF-FRONT').section!.p2.x).toBe(byId('ROOF-FAMILY').extent[1])
   })
 
   it('closes both ends with a gable cut to the curve', () => {

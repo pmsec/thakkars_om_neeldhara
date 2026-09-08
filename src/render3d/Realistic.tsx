@@ -2771,11 +2771,35 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     }
 
     // stand at a room's centre, eye height, looking the chosen way
+    // Where to stand in a room: its centroid, unless a piece stands there (the deck's
+    // centroid is the fountain's bowl), in which case the nearest clear spot on a ring
+    // round it — inside the room, 400 clear of every piece of furniture and fixture.
+    const clearStand = (room: (typeof model.rooms)[number]): { x: number; y: number } => {
+      const blocked = (x: number, y: number): boolean =>
+        !pointInPolygon({ x, y }, room.polygon) ||
+        furniture.some((f) => f.room === room.id && f.kind !== 'rug' && f.kind !== 'grass' &&
+          x > f.x - 400 && x < f.x + f.w + 400 && y > f.y - 400 && y < f.y + f.d + 400) ||
+        fixtures.some((f) => f.room === room.id &&
+          x > f.at.x - f.size[0] / 2 - 400 && x < f.at.x + f.size[0] / 2 + 400 &&
+          y > f.at.y - f.size[1] / 2 - 400 && y < f.at.y + f.size[1] / 2 + 400)
+      const c = room.centroid
+      if (!blocked(c.x, c.y)) return c
+      for (const r of [800, 1400, 2000, 2800, 3600]) {
+        for (let k = 0; k < 16; k++) {
+          const a = (k / 16) * Math.PI * 2
+          const x = c.x + Math.cos(a) * r
+          const y = c.y + Math.sin(a) * r
+          if (!blocked(x, y)) return { x, y }
+        }
+      }
+      return c
+    }
     standRef.current = (roomId, dir) => {
       const room = model.roomById.get(roomId)
       if (!room) return
-      const px = room.centroid.x * S
-      const pz = room.centroid.y * S
+      const at = clearStand(room)
+      const px = at.x * S
+      const pz = at.y * S
       const d = dir === 'N' ? [0, -3] : dir === 'S' ? [0, 3] : dir === 'E' ? [3, 0] : [-3, 0]
       camera.position.set(px, 1.62, pz)
       orbit.target.set(px + d[0], 1.45, pz + d[1])

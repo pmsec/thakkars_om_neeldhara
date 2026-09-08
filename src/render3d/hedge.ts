@@ -204,7 +204,7 @@ export function hedgeGroup(f: FurnitureItem, M: HedgeMats, bed?: THREE.Object3D 
   // the globe lamps in the gaps: a slim post, a glowing globe, and the light it throws
   const postMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3a, roughness: 0.5, metalness: 0.6 })
   const globeMat = new THREE.MeshStandardMaterial({ color: 0xffe9b0, emissive: 0xffc866, emissiveIntensity: 1.8, roughness: 0.4 })
-  for (const u of lamps) {
+  lamps.forEach((u, li) => {
     const base = toWorld(u, 0, 0)
     const post = new THREE.Mesh(new THREE.CylinderGeometry(18 * S, 22 * S, 700 * S, 10), postMat)
     post.position.set(base.x, 300 * S + 350 * S, base.z)
@@ -213,9 +213,13 @@ export function hedgeGroup(f: FurnitureItem, M: HedgeMats, bed?: THREE.Object3D 
     const globe = new THREE.Mesh(new THREE.SphereGeometry(Math.min(150, half - 10) * S, 20, 14), globeMat)
     globe.position.set(base.x, 1150 * S, base.z)
     g.add(globe)
-    const light = new THREE.PointLight(0xffd27a, 1.1, 3.2, 1.6)
-    light.position.set(base.x, 1150 * S, base.z)
-    g.add(light)
-  }
+    // every globe glows; every third one carries a real light with a wider throw,
+    // which lights the run the same and costs a third of the shading
+    if (li % 3 === 0) {
+      const light = new THREE.PointLight(0xffd27a, 1.5, 5.5, 1.6)
+      light.position.set(base.x, 1150 * S, base.z)
+      g.add(light)
+    }
+  })
   return g
 }

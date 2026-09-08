@@ -54,9 +54,11 @@ export function lightRig(mood: LightMood | null, view: 'walk' | 'top'): LightRig
   if (!mood) {
     return view === 'walk'
       ? {
-          sunColor: 0xfff2dd, sunIntensity: 1.9, sunOffset: [6, 22, 14],
-          hemiSky: 0xeaf2f7, hemiGround: 0x9a9078, hemiIntensity: 1.0,
-          pointColor: 0xffe3b0, pointIntensity: 0.5, exposure: 1.05, background: 0xcfe0ea,
+          // a palace afternoon: gilded sun, warm bounce off the stone, candle-warm
+          // pools in the rooms
+          sunColor: 0xffe9c8, sunIntensity: 1.8, sunOffset: [6, 22, 14],
+          hemiSky: 0xe6eef5, hemiGround: 0xa08a68, hemiIntensity: 1.0,
+          pointColor: 0xffd9a0, pointIntensity: 0.7, exposure: 1.1, background: 0xcfe0ea,
         }
       : {
           sunColor: 0xfff2dd, sunIntensity: 1.7, sunOffset: [-8, 26, 12],

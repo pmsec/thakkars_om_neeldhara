@@ -8,6 +8,7 @@
  *   - a thumb stick, bottom-left, to walk — push forward to walk, sideways to strafe,
  *     and further to hurry;
  *   - a one-finger drag anywhere else on the view to look around;
+ *   - a two-finger pinch to widen or narrow the lens (the desktop's scroll wheel);
  *   - eye height is held, so you cannot float or sink.
  *
  * It drives the camera directly, in the same yaw/pitch (YXZ) convention as
@@ -40,6 +41,35 @@ const STICK_R = 54
 const KNOB_R = 24
 const LOOK_RATE = 0.0045
 const MAX_PITCH = Math.PI * 0.44
+/** The lens, as a vertical field of view: 40° is a long lens, 100° a very wide one. */
+export const LENS_MIN = 40
+export const LENS_MAX = 100
+
+/** Widen (factor > 1) or narrow the lens, within the sane range. */
+export function zoomLens(camera: THREE.PerspectiveCamera, factor: number): void {
+  camera.fov = THREE.MathUtils.clamp(camera.fov * factor, LENS_MIN, LENS_MAX)
+  camera.updateProjectionMatrix()
+}
+
+/**
+ * Stop the browser zooming the PAGE when two fingers land on the view. iPad Safari
+ * treats a pinch as a page zoom unless the gesture itself is refused, and then the
+ * whole app scales instead of the camera dollying. Returns the undo.
+ */
+export function preventPageZoom(el: HTMLElement): () => void {
+  const refuse = (e: Event): void => e.preventDefault()
+  const twoFingers = (e: TouchEvent): void => {
+    if (e.touches.length > 1) e.preventDefault()
+  }
+  el.addEventListener('gesturestart', refuse)
+  el.addEventListener('gesturechange', refuse)
+  el.addEventListener('touchmove', twoFingers, { passive: false })
+  return () => {
+    el.removeEventListener('gesturestart', refuse)
+    el.removeEventListener('gesturechange', refuse)
+    el.removeEventListener('touchmove', twoFingers)
+  }
+}
 
 export function createTouchWalk(
   camera: THREE.PerspectiveCamera,
@@ -103,31 +133,57 @@ export function createTouchWalk(
   base.addEventListener('pointerup', onStickUp)
   base.addEventListener('pointercancel', onStickUp)
 
-  // ---- the look-drag on the view itself
+  // ---- the look-drag on the view itself, and the two-finger pinch for the lens
   let lookPointer: number | null = null
+  let pinchPointer: number | null = null
   let last = { x: 0, y: 0 }
+  let pinchLast = { x: 0, y: 0 }
+  let pinchStartDist = 0
+  let pinchStartFov = 0
   let savedTouchAction = ''
+  const pinchDist = (): number => Math.hypot(pinchLast.x - last.x, pinchLast.y - last.y)
   const onLookDown = (e: PointerEvent): void => {
-    if (!enabled || lookPointer !== null) return
-    lookPointer = e.pointerId
-    last = { x: e.clientX, y: e.clientY }
+    if (!enabled) return
+    if (lookPointer === null) {
+      lookPointer = e.pointerId
+      last = { x: e.clientX, y: e.clientY }
+    } else if (pinchPointer === null && e.pointerId !== stickPointer) {
+      pinchPointer = e.pointerId
+      pinchLast = { x: e.clientX, y: e.clientY }
+      pinchStartDist = Math.max(1, pinchDist())
+      pinchStartFov = camera.fov
+    } else return
     canvas.setPointerCapture(e.pointerId)
     e.preventDefault()
     e.stopImmediatePropagation()
   }
   const onLookMove = (e: PointerEvent): void => {
-    if (e.pointerId !== lookPointer) return
-    euler.y -= (e.clientX - last.x) * LOOK_RATE
-    euler.x -= (e.clientY - last.y) * LOOK_RATE
-    euler.x = THREE.MathUtils.clamp(euler.x, -MAX_PITCH, MAX_PITCH)
-    last = { x: e.clientX, y: e.clientY }
-    camera.quaternion.setFromEuler(euler)
+    if (e.pointerId === pinchPointer) {
+      pinchLast = { x: e.clientX, y: e.clientY }
+    } else if (e.pointerId === lookPointer) {
+      if (pinchPointer === null) {
+        euler.y -= (e.clientX - last.x) * LOOK_RATE
+        euler.x -= (e.clientY - last.y) * LOOK_RATE
+        euler.x = THREE.MathUtils.clamp(euler.x, -MAX_PITCH, MAX_PITCH)
+        camera.quaternion.setFromEuler(euler)
+      }
+      last = { x: e.clientX, y: e.clientY }
+    } else return
+    if (pinchPointer !== null) {
+      // Fingers apart = zoom in = a longer lens (smaller field of view).
+      camera.fov = THREE.MathUtils.clamp(pinchStartFov * (pinchStartDist / Math.max(1, pinchDist())), LENS_MIN, LENS_MAX)
+      camera.updateProjectionMatrix()
+    }
     e.preventDefault()
     e.stopImmediatePropagation()
   }
   const onLookUp = (e: PointerEvent): void => {
-    if (e.pointerId !== lookPointer) return
-    lookPointer = null
+    if (e.pointerId === pinchPointer) pinchPointer = null
+    else if (e.pointerId === lookPointer) {
+      lookPointer = null
+      // the remaining finger, if any, carries on as the look-drag
+      if (pinchPointer !== null) { lookPointer = pinchPointer; last = pinchLast; pinchPointer = null }
+    } else return
     e.stopImmediatePropagation()
   }
   // Capture phase, so the orbit rig (which listens on the same element) never sees the
@@ -160,6 +216,7 @@ export function createTouchWalk(
       stick = { x: 0, y: 0 }
       setKnob()
       lookPointer = null
+      pinchPointer = null
       stickPointer = null
       canvas.style.touchAction = savedTouchAction
       base.style.display = 'none'

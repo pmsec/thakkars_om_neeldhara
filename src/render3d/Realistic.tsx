@@ -32,7 +32,8 @@ import { StylePanel } from './StylePanel'
 import { decimate, prismGeometry, S } from './prism'
 import { customObject, floorMaterial, getAssign, primeStyle, wallMaterial } from './styleOverrides'
 import { lightRig } from './lighting'
-import { createTouchWalk, isTouchDevice, type TouchWalk } from './touchWalk'
+import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWalk } from './touchWalk'
+import { PRESETS, presetCamera } from './cameras'
 
 const model = getModel()
 const solids = buildSolids(model)
@@ -772,6 +773,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const touch = isTouchDevice()
   const touchRef = useRef<TouchWalk | null>(null)
   const walkRef = useRef<((on: boolean) => void) | null>(null)
+  const wholeRef = useRef<(() => void) | null>(null)
   const captureRef = useRef<(() => string | null) | null>(null)
   const standRef = useRef<((roomId: string, dir: 'N' | 'S' | 'E' | 'W') => void) | null>(null)
   const [standRoom, setStandRoom] = useState('R-GREAT')
@@ -801,7 +803,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(rig.background)
-    scene.fog = new THREE.Fog(rig.background, 60, 160)
+    // Far enough out that the whole block, seen from 40 m up and back, is still crisp.
+    scene.fog = new THREE.Fog(rig.background, 120, 320)
 
     const M = makeMaterials()
     scene.add(buildScene(M))
@@ -866,7 +869,28 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const orbit = new OrbitControls(camera, renderer.domElement)
     orbit.target.set(CX, 1.1, CZ - STEP)
     orbit.maxPolarAngle = Math.PI * 0.495
+    // Pinch or scroll from arm's length right out to the whole block and beyond.
+    orbit.minDistance = 0.3
+    orbit.maxDistance = 160
     orbit.update()
+    const undoPageZoom = preventPageZoom(mount)
+
+    // Frame the whole house: the same derived overview the 3D tab opens on.
+    wholeRef.current = () => {
+      walkRef.current?.(false)
+      const shot = presetCamera(PRESETS[0])
+      camera.position.copy(shot.pos)
+      orbit.target.copy(shot.look)
+      orbit.update()
+    }
+
+    // Scroll while walking with the mouse changes the lens, as the pinch does on touch.
+    const onWheel = (e: WheelEvent): void => {
+      if (!lock.isLocked) return
+      zoomLens(camera, e.deltaY > 0 ? 1.06 : 1 / 1.06)
+      e.preventDefault()
+    }
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: false })
 
     // first-person frame for the AI panel: render synchronously, bounded JPEG
     captureRef.current = () => {
@@ -968,8 +992,11 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       captureRef.current = null
       standRef.current = null
       walkRef.current = null
+      wholeRef.current = null
       touchRef.current = null
       touchWalk.dispose()
+      undoPageZoom()
+      renderer.domElement.removeEventListener('wheel', onWheel)
       cancelAnimationFrame(raf)
       ro.disconnect()
       window.removeEventListener('keydown', kd)
@@ -1011,6 +1038,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           {(['N', 'E', 'S', 'W'] as const).map((d) => (
             <button key={d} onClick={() => standRef.current?.(standRoom, d)}>{d}</button>
           ))}
+          <span style={{ width: 6 }} />
+          <button onClick={() => wholeRef.current?.()} title="Pull right back to see the whole block">Whole house</button>
         </div>
       )}
       <button
@@ -1033,12 +1062,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         }}
       >
         {touchWalking
-          ? 'Thumb stick to walk, push to the rim to hurry · drag the view to look · Exit walk to release'
+          ? 'Thumb stick to walk, push to the rim to hurry · drag to look · pinch to zoom the lens · Exit walk to release'
           : walking
-          ? 'W A S D to walk · mouse to look · Shift to hurry · Esc to release'
+          ? 'W A S D to walk · mouse to look · scroll to zoom the lens · Shift to hurry · Esc to release'
           : touch
-          ? 'Drag to orbit · tap Walk to step inside'
-          : 'Drag to orbit · double-click to enter and walk the home'}
+          ? 'Drag to orbit · pinch to zoom · tap Walk to step inside'
+          : 'Drag to orbit · scroll to zoom · double-click to enter and walk the home'}
       </div>
       {hint && !compact && (
         <div

@@ -12,7 +12,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import { getModel } from '../geometry/model'
 import { barrelProfile, buildSolids, type Prism } from '../geometry/solid'
-import { createTouchWalk, isTouchDevice, type TouchWalk } from './touchWalk'
+import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWalk } from './touchWalk'
 import { building } from '../data/building'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
@@ -177,6 +177,9 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     orbit.target.copy(home.look)
     orbit.enableDamping = true
     orbit.maxPolarAngle = Math.PI * 0.495
+    orbit.minDistance = 0.5
+    orbit.maxDistance = 200
+    const undoPageZoom = preventPageZoom(el)
 
     const lock = new PointerLockControls(camera, renderer.domElement)
     scene.add(lock.object)
@@ -482,7 +485,14 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     }
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
-    lock.addEventListener('unlock', () => setWalk(false))
+    lock.addEventListener('unlock', () => { setWalk(false); orbit.enabled = true })
+    // Scroll while walking changes the lens rather than dollying the (disabled) orbit.
+    const onWheel = (e: WheelEvent): void => {
+      if (!lock.isLocked && !touchWalk.enabled) return
+      zoomLens(camera, e.deltaY > 0 ? 1.06 : 1 / 1.06)
+      e.preventDefault()
+    }
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: false })
 
     return () => {
       cancelAnimationFrame(raf)
@@ -490,6 +500,8 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
       touchWalk.dispose()
+      undoPageZoom()
+      renderer.domElement.removeEventListener('wheel', onWheel)
       renderer.dispose()
       el.removeChild(renderer.domElement)
     }
@@ -664,10 +676,9 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
                 setWalk(false)
               } else {
                 a.camera.position.y = 1.6
-                if (touch) {
-                  a.orbit.enabled = false
-                  a.touchWalk.enable()
-                } else a.lock.lock()
+                a.orbit.enabled = false
+                if (touch) a.touchWalk.enable()
+                else a.lock.lock()
                 setWalk(true)
               }
             }}

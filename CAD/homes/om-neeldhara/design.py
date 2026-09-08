@@ -916,10 +916,11 @@ _ONCE = [
     # planted strip showing north of them: 450 square on Y 495-945.
     ('recliner-w', 9115, 945, 10015, 2545,
      "2-seat recliner  ·  1600 x 900, back on the void, facing the fountain"),
-    ('sidetable',  9115, 495, 9565, 945, "side table  ·  450 square"),
+    # THE DECK SIDE TABLES ARE GONE (Karan's call): a table north of each
+    # recliner left 305 past the void and the deck read as three bays; without
+    # them it is one walk, 1010 clear north of each void.
     ('recliner-e', 14465, 945, 15365, 2545,
      "2-seat recliner  ·  1600 x 900, back on the void, facing the fountain"),
-    ('sidetable',  14915, 495, 15365, 945, "side table  ·  450 square"),
 
     # ------------------------------------------------- the great room: living
     # The great room was 407 sq ft of empty floor.  It gets the reference

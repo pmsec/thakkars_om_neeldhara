@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { getModel } from '../geometry/model'
 import { pointInPolygon } from '../geometry/vec'
 import { barrelProfile, buildSolids } from '../geometry/solid'
@@ -170,6 +171,45 @@ function plasterTexture(): THREE.CanvasTexture {
   }, 1.6)
 }
 
+/** Polished white marble: a warm white ground with grey veins wandering across it. */
+function marbleTexture(): THREE.CanvasTexture {
+  return canvasTexture(512, (g, s) => {
+    g.fillStyle = '#efece5'
+    g.fillRect(0, 0, s, s)
+    // a faint cloudy ground
+    for (let i = 0; i < 90; i++) {
+      const x = (i * 97) % s, y = (i * 173) % s, r = 40 + (i * 31) % 90
+      const grad = g.createRadialGradient(x, y, 2, x, y, r)
+      grad.addColorStop(0, i % 3 ? 'rgba(200,196,188,0.18)' : 'rgba(255,255,255,0.22)')
+      grad.addColorStop(1, 'rgba(230,226,218,0)')
+      g.fillStyle = grad
+      g.fillRect(x - r, y - r, r * 2, r * 2)
+    }
+    // the veins: a few long wandering strokes, each with a paler halo
+    let seed = 7
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 }
+    for (let v = 0; v < 9; v++) {
+      let x = rnd() * s, y = rnd() * s
+      let ang = rnd() * Math.PI * 2
+      const pts: Array<[number, number]> = [[x, y]]
+      for (let k = 0; k < 40; k++) {
+        ang += (rnd() - 0.5) * 0.9
+        x += Math.cos(ang) * 14; y += Math.sin(ang) * 14
+        pts.push([x, y])
+      }
+      for (const [w, col] of [[7, 'rgba(150,146,140,0.10)'], [2.2, 'rgba(110,108,104,0.55)'], [0.8, 'rgba(70,70,72,0.7)']] as const) {
+        g.strokeStyle = col
+        g.lineWidth = w
+        g.lineCap = 'round'
+        g.beginPath()
+        g.moveTo(pts[0][0], pts[0][1])
+        for (const [px, py] of pts) g.lineTo(px, py)
+        g.stroke()
+      }
+    }
+  }, 1.1)
+}
+
 function weaveTexture(): THREE.CanvasTexture {
   return canvasTexture(128, (g, s) => {
     g.fillStyle = '#e9e1cf'
@@ -313,6 +353,20 @@ export function makeMaterials() {
       color: 0x7fb5c4, transparent: true, opacity: 0.75, roughness: 0.08, metalness: 0.1,
     }),
     marble: new THREE.MeshStandardMaterial({ color: 0xe8e6e0, roughness: 0.25 }),
+    // the fountain: polished veined marble under a clear coat, and still water
+    // that mirrors the sky - both take the environment map once the renderer exists
+    fountainMarble: new THREE.MeshPhysicalMaterial({
+      map: marbleTexture(), color: 0xffffff, roughness: 0.16, metalness: 0.0,
+      clearcoat: 0.7, clearcoatRoughness: 0.12, envMapIntensity: 0.9,
+    }),
+    fountainWater: new THREE.MeshPhysicalMaterial({
+      color: 0x9fcfe0, transparent: true, opacity: 0.72, roughness: 0.03, metalness: 0.05,
+      clearcoat: 1.0, clearcoatRoughness: 0.02, envMapIntensity: 1.4, side: THREE.DoubleSide,
+    }),
+    fountainJet: new THREE.MeshPhysicalMaterial({
+      color: 0xd8f0f8, transparent: true, opacity: 0.45, roughness: 0.05, metalness: 0.0,
+    }),
+    poolLamp: new THREE.MeshStandardMaterial({ color: 0xfff1c0, emissive: 0xffc352, emissiveIntensity: 2.4, roughness: 0.3 }),
     // carved stone of the fountain: warmer and duller than the polished marble tops
     carved: new THREE.MeshStandardMaterial({ color: 0xd6cdbb, roughness: 0.7 }),
     acrylic: new THREE.MeshStandardMaterial({ color: 0xeef2f2, roughness: 0.18, metalness: 0.05 }),
@@ -1939,73 +1993,89 @@ function tieredFountain(M: Mats, F: { x: number; y: number; r: number }): THREE.
   const g = new THREE.Group()
   const k = F.r / 600
   const mm = (v: number) => v * k * S
+  const stone = M.fountainMarble
   const add = (m: THREE.Mesh, y: number) => {
     m.position.set(F.x * S, y * k * S, F.y * S)
     m.castShadow = true
     m.receiveShadow = true
     g.add(m)
   }
-  const lathe = (profile: Array<[number, number]>, mat: THREE.Material, segs = 40) => {
+  const lathe = (profile: Array<[number, number]>, mat: THREE.Material, segs = 64) => {
     const pts = profile.map(([r, y]) => new THREE.Vector2(r * k * S, y * k * S))
     const m = new THREE.Mesh(new THREE.LatheGeometry(pts, segs), mat)
-    m.material.side = THREE.DoubleSide
     return m
   }
-  // plinth and pedestal
-  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(560), mm(600), mm(80), 40), M.carved), 40)
-  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(470), mm(500), mm(100), 40), M.carved), 130)
-  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(180), mm(230), mm(420), 14), M.carved), 390)
-  add(new THREE.Mesh(new THREE.TorusGeometry(mm(215), mm(38), 10, 32), M.carved), 600)
-  // the three basins, each a bowl with water in it
-  const bowl = (rim: number, base: number, top: number, mat = M.carved) =>
-    lathe([[0, base], [rim * 0.55, base], [rim * 0.92, base + (top - base) * 0.55], [rim, top - 20], [rim - 30, top], [rim * 0.45, top - 60], [0, top - 70]], mat)
-  const water = (r: number, y: number) => add(new THREE.Mesh(new THREE.CylinderGeometry(mm(r), mm(r), mm(12), 36), M.water), y)
-  add(bowl(600, 620, 840), 0)
-  water(520, 815)
-  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(105), mm(135), mm(700), 14), M.carved), 840 + 350)
-  add(bowl(380, 1520, 1690), 0)
-  water(320, 1668)
-  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(65), mm(85), mm(380), 12), M.carved), 1690 + 190)
-  add(bowl(220, 2060, 2180), 0)
-  water(180, 2160)
-  add(new THREE.Mesh(new THREE.SphereGeometry(mm(62), 16, 12), M.carved), 2245)
-  add(new THREE.Mesh(new THREE.ConeGeometry(mm(40), mm(120), 12), M.carved), 2330)
-  // falling water: thin translucent columns from each upper rim into the basin below
+  // plinth and pedestal: turned marble, fine rings and a baluster stem
+  add(lathe([[0, 0], [600, 0], [600, 60], [575, 80], [560, 80], [560, 110], [505, 120], [500, 200], [470, 210], [470, 230], [0, 230]], stone), 0)
+  add(lathe([[0, 230], [235, 230], [230, 270], [190, 300], [175, 420], [200, 520], [230, 560], [235, 600], [215, 640], [0, 640]], stone), 0)
+  // the three basins, each a lathed bowl with a thick rolled lip and water in it;
+  // the water sits 25 below the lip, so the marble edge reads as a rim
+  const bowl = (rim: number, base: number, top: number) =>
+    lathe([[0, base], [rim * 0.5, base], [rim * 0.88, base + (top - base) * 0.5], [rim, top - 30], [rim + 12, top - 12], [rim, top], [rim - 40, top], [rim - 55, top - 40], [rim * 0.42, top - 60], [0, top - 70]], stone)
+  const basins: Array<{ rim: number; base: number; top: number; lamps: number }> = [
+    { rim: 600, base: 640, top: 860, lamps: 8 },
+    { rim: 380, base: 1540, top: 1700, lamps: 5 },
+    { rim: 220, base: 2080, top: 2190, lamps: 3 },
+  ]
+  for (const b of basins) {
+    add(bowl(b.rim, b.base, b.top), 0)
+    const waterR = b.rim - 48
+    const waterY = b.top - 25
+    add(new THREE.Mesh(new THREE.CylinderGeometry(mm(waterR), mm(waterR), mm(6), 64), M.fountainWater), waterY)
+    // the lights in the water: small warm lamps on the basin floor, each a glowing
+    // lens and a real light, so the water and the marble above it are lit from within
+    for (let i = 0; i < b.lamps; i++) {
+      const a = (i / b.lamps) * Math.PI * 2 + 0.3
+      const r = waterR * 0.62
+      const x = F.x + r * k * Math.cos(a), z = F.y + r * k * Math.sin(a)
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(mm(22), mm(26), mm(10), 14), M.poolLamp)
+      lens.position.set(x * S, (b.top - 62) * k * S, z * S)
+      g.add(lens)
+      const glow = new THREE.PointLight(0xffc860, 0.55, 1.6 * k, 1.8)
+      glow.position.set(x * S, (b.top - 50) * k * S, z * S)
+      g.add(glow)
+    }
+  }
+  // the stems between the basins, and the finial
+  add(lathe([[0, 860], [130, 860], [110, 900], [95, 1200], [110, 1500], [135, 1540], [0, 1540]], stone), 0)
+  add(lathe([[0, 1700], [80, 1700], [65, 1740], [58, 2000], [75, 2080], [0, 2080]], stone), 0)
+  add(lathe([[0, 2190], [60, 2190], [62, 2230], [45, 2260], [40, 2300], [25, 2380], [0, 2430]], stone), 0)
+  // one warm light up the stem from the lowest basin, so the underside of the
+  // middle bowl glows the way lit water throws light up on to stone
+  const up = new THREE.SpotLight(0xffd080, 1.2, 2.4 * k, Math.PI / 3, 0.7, 1.6)
+  up.position.set(F.x * S, 830 * k * S, F.y * S)
+  up.target.position.set(F.x * S, 2000 * k * S, F.y * S)
+  g.add(up, up.target)
+  // the water: a crown of fine jets from the finial, and thin sheets falling from
+  // each upper lip into the basin below
+  for (let i = 0; i < 7; i++) {
+    const a = (i / 7) * Math.PI * 2
+    const jet = new THREE.Mesh(new THREE.CylinderGeometry(mm(4), mm(6), mm(220), 6), M.fountainJet)
+    jet.position.set((F.x + 30 * k * Math.cos(a)) * S, 2440 * k * S, (F.y + 30 * k * Math.sin(a)) * S)
+    jet.rotation.z = Math.cos(a) * 0.35
+    jet.rotation.x = -Math.sin(a) * 0.35
+    g.add(jet)
+  }
   const fall = (r: number, n: number, top: number, bottom: number) => {
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2
-      const m = new THREE.Mesh(new THREE.CylinderGeometry(mm(7), mm(9), mm(top - bottom), 6), M.water)
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(mm(5), mm(8), mm(top - bottom), 6), M.fountainJet)
       m.position.set((F.x + r * k * Math.cos(a)) * S, ((top + bottom) / 2) * k * S, (F.y + r * k * Math.sin(a)) * S)
       g.add(m)
     }
   }
-  fall(200, 6, 2160, 1690)
-  fall(360, 8, 1668, 840)
-  // flowers and creepers over the two lower rims: a green wreath, blooms on it,
-  // and strands trailing down
-  // no ring of foliage around the rims: the blooms sit on the stone edge and the
-  // creepers trail from it, as on the reference
-  const wreath = (r: number, tube: number, y: number, blooms: number, strands: number, drop: number) => {
-    for (let i = 0; i < blooms; i++) {
-      const a = (i / blooms) * Math.PI * 2 + (i % 3) * 0.07
-      const rr = r + (i % 2 ? tube * 0.6 : -tube * 0.3)
-      const m = new THREE.Mesh(new THREE.SphereGeometry(mm(30), 8, 6), i % 3 === 0 ? M.petalWhite : M.petal)
-      m.position.set((F.x + rr * k * Math.cos(a)) * S, (y + tube * 0.4) * k * S, (F.y + rr * k * Math.sin(a)) * S)
-      g.add(m)
-    }
-    for (let i = 0; i < strands; i++) {
-      const a = (i / strands) * Math.PI * 2 + 0.2
-      const len = drop * (0.6 + ((i * 7) % 5) / 10)
-      const m = new THREE.Mesh(new THREE.CylinderGeometry(mm(12), mm(18), mm(len), 6), i % 2 ? M.leaf : M.leafDark)
-      m.position.set((F.x + (r + tube * 0.5) * k * Math.cos(a)) * S, (y - len / 2) * k * S, (F.y + (r + tube * 0.5) * k * Math.sin(a)) * S)
-      g.add(m)
-      const tip = new THREE.Mesh(new THREE.SphereGeometry(mm(26), 8, 6), i % 2 ? M.petal : M.petalWhite)
-      tip.position.set(m.position.x, (y - len) * k * S, m.position.z)
-      g.add(tip)
+  fall(212, 10, 2170, 1700)
+  fall(372, 14, 1680, 860)
+  // ripple rings where the falls land: faint pale discs on the water
+  for (const [r, y, n] of [[372, 1676, 14], [212, 2166, 10]] as const) {
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2
+      const ring = new THREE.Mesh(new THREE.RingGeometry(mm(28), mm(40), 20), M.fountainJet)
+      ring.rotation.x = -Math.PI / 2
+      ring.position.set((F.x + r * k * Math.cos(a)) * S, y * k * S, (F.y + r * k * Math.sin(a)) * S)
+      g.add(ring)
     }
   }
-  wreath(590, 80, 830, 30, 14, 620)
-  wreath(370, 55, 1680, 18, 8, 420)
   return g
 }
 
@@ -2811,6 +2881,15 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     scene.add(cityscape({ bbox: model.envelopeBBox }))
 
     const M = makeMaterials()
+    // Reflections for the polished pieces: a neutral room environment, given to the
+    // fountain's marble and water only, so the rest of the house keeps its look.
+    const pmrem = new THREE.PMREMGenerator(renderer)
+    const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+    for (const mat of [M.fountainMarble, M.fountainWater]) {
+      mat.envMap = envTex
+      mat.needsUpdate = true
+    }
+    pmrem.dispose()
     scene.add(buildScene(M))
     applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current)
     scene.add(buildFixtures(M))

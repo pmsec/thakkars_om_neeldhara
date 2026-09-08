@@ -369,7 +369,37 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     const h = f.kind === 'wardrobe' || f.kind === 'shelves'
       ? f.height
       : Math.min(f.height, 900)
-    const body = polyPiece(f.poly, 0, h, M.timber, f.room)
+    const lift = f.lift ?? 0
+    if (/\bdesk\b/i.test(f.label) && f.kind === 'console') {
+      // a desk is a top on gables, not a solid block: the top and a gable at
+      // each end
+      const top = polyPiece(f.poly, h - 40, h, M.timber, f.room)
+      if (!top) return null
+      const alongX = w >= d
+      for (const sgn of [-1, 1]) {
+        const gable = box(alongX ? 30 : w - 40, h - 40, alongX ? d - 40 : 30, M.timber)
+        place(gable, cx + (alongX ? sgn * (w / 2 - 15) : 0), cy + (alongX ? 0 : sgn * (d / 2 - 15)), (h - 40) / 2)
+        g.add(gable)
+      }
+      g.add(top)
+      return g
+    }
+    if (lift > 0 && f.kind === 'shelves') {
+      // wall cabinets: a carcass hung at `lift`, door joints read as shadow lines
+      const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
+      if (body) g.add(body)
+      const alongX = w >= d
+      const n = Math.max(1, Math.round(Math.max(w, d) / 450))
+      for (let i = 1; i < n; i++) {
+        const line = box(alongX ? 4 : d + 2, h - 60, alongX ? w + 2 : 4, M.trunk)
+        if (alongX) line.scale.set(1, 1, (d + 2) / (w + 2))
+        else line.scale.set((w + 2) / (d + 2), 1, 1)
+        place(line, cx + (alongX ? -w / 2 + (i * w) / n : 0), cy + (alongX ? 0 : -d / 2 + (i * d) / n), lift + h / 2)
+        g.add(line)
+      }
+      return g
+    }
+    const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
     return body
   }
 
@@ -521,6 +551,57 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'armchair': {
+      if (/desk chair|swivel|task chair/i.test(f.label)) {
+        // a revolving work chair: five-star base on castors, gas column, a
+        // padded seat, a curved backrest on its spine, armrests either side.
+        // It faces the desk - the nearest piece labelled desk.
+        const desks = furniture.filter((o) => /\bdesk\b/i.test(o.label) && o.kind === 'console')
+        let ang = f.face === 'N' ? Math.PI : f.face === 'S' ? 0 : f.face === 'E' ? -Math.PI / 2 : f.face === 'W' ? Math.PI / 2 : NaN
+        if (Number.isNaN(ang)) {
+          let best = Infinity
+          let target = { x: cx, y: cy - 1 }
+          for (const o of desks) {
+            const ox = o.x + o.w / 2
+            const oy = o.y + o.d / 2
+            const dd = Math.hypot(ox - cx, oy - cy)
+            if (dd < best) { best = dd; target = { x: ox, y: oy } }
+          }
+          ang = Math.atan2(target.x - cx, target.y - cy)
+        }
+        const seatH = 450
+        // the chair turns to face its desk, so everything is sized to stay inside
+        // the drawn circle at any angle: seat corners at 0.66 of the diameter
+        const dia = Math.min(w, d)
+        const seatW = dia * 0.66
+        const reach = dia * 0.42
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2
+          const arm = box(reach, 28, 40, M.metal, Math.sin(a) * (reach / 2), 40, Math.cos(a) * (reach / 2))
+          arm.rotation.y = a - Math.PI / 2
+          g.add(arm)
+          const castor = new THREE.Mesh(new THREE.SphereGeometry(22 * S, 8, 6), M.gasket)
+          castor.position.set(Math.sin(a) * reach * S, 22 * S, Math.cos(a) * reach * S)
+          g.add(castor)
+        }
+        const column = new THREE.Mesh(new THREE.CylinderGeometry(24 * S, 30 * S, (seatH - 80) * S, 12), M.metal)
+        column.position.y = ((seatH - 80) / 2 + 40) * S
+        g.add(column)
+        const chair = new THREE.Group()
+        chair.add(box(seatW, 80, seatW, M.fabricDark, 0, seatH - 40, 0))
+        // local +z faces the desk; the backrest sits on the far side
+        chair.add(box(40, 260, 30, M.metal, 0, seatH + 100, -seatW / 2 + 20))
+        const back = box(seatW - 40, 520, 45, M.fabricDark, 0, seatH + 330, -seatW / 2 + 10)
+        back.rotation.x = -0.12
+        chair.add(back)
+        for (const sx of [-1, 1]) {
+          chair.add(box(30, 230, 30, M.metal, sx * (seatW / 2 - 25), seatH + 100, 40))
+          chair.add(box(60, 25, 240, M.gasket, sx * (seatW / 2 - 25), seatH + 225, 20))
+        }
+        chair.rotation.y = ang
+        g.add(chair)
+        place(g, cx, cy)
+        return g
+      }
       g.add(f.poly ? basePrism(f.poly, 0, 400, M.fabric)
         : box(w, 400, d, M.fabric, 0, 200, 0))
       // back on the side opposite the face (drawn), arms on the flanks

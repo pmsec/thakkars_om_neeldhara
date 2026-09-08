@@ -796,7 +796,8 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
           ? MAT.wood : MAT.furniture
         const top = f.kind === 'wardrobe' || f.kind === 'shelves'
           ? f.height : Math.min(f.height, 900)
-        abs.add(polyPrisms(f.poly, f.room, 0, top, mat, clip))
+        const lift = f.lift ?? 0
+        abs.add(polyPrisms(f.poly, f.room, lift, lift + top, mat, clip))
       }
     }
     return abs

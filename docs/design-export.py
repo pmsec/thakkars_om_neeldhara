@@ -923,7 +923,7 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
 def room_for(cx, cy):
     if cy < 1275 and (cx < 2900 or cx > mx(2900)):
         return 'R-P-TERRACE' if cx < M else 'R-K-TERRACE'
-    if cy < 2545:
+    if cy < 2545 and 4530 <= cx <= 19950:
         return 'R-DECK'
     if cy < 5935 and cx < 4467:
         return 'R-P-SUITE'
@@ -959,17 +959,24 @@ def emit_furniture():
     seen = {}
 
     def add(kind, x, y, wd, dp, room, label, height, face=None, seats=None,
-            poly=None):
+            poly=None, lift=0):
         base = f'FN-{kind.upper()}'
         seen[base] = seen.get(base, 0) + 1
         items.append((f'{base}-{seen[base]}', kind, x, y, wd, dp, room, label,
-                      height, face, seats, poly))
+                      height, face, seats, poly, lift))
         EXPORTED.append((f'{base}-{seen[base]}', (x, y, x + wd, y + dp), poly))
 
     FACE = {'n': 'N', 's': 'S', 'e': 'E', 'w': 'W'}
     for kind, a, b, c, d, lab in D.FURNITURE:
         base = kind.split('-')[0]
         suff = kind.split('-')[1] if '-' in kind else None
+        # Wall cabinets hung over a desk are drawn as 'under' with "over" in
+        # the label: they exist in 3D as shelves lifted off the floor.
+        if base == 'under' and 'over' in (lab or '').lower():
+            add('shelves', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
+                'Wall cabinets, 350 deep', 700,
+                poly=[(a, b), (c, b), (c, d), (a, d)], lift=1400)
+            continue
         if base in ('wc', 'shower', 'sink', 'hob', 'under', 'appliance',
                     'magic'):
             continue                      # plumbed / fitted: fixtures.ts
@@ -1189,18 +1196,21 @@ def emit_furniture():
     A('  room: string')
     A('  label: string')
     A('  height: number')
+    A('  /** Height above the floor the piece starts at, mm: wall cabinets hang. */')
+    A('  lift?: number')
     A('  seats?: [number, number]')
     A('  /** The drawn 2D outline when it is not the plain rect — the 3D extrudes THIS. */')
     A('  poly?: { x: number; y: number }[]')
     A('}')
     A('')
     A('export const furniture: FurnitureItem[] = [')
-    for fid, kind, x, y, wd, dp, room, label, h, face, seats, poly in items:
+    for fid, kind, x, y, wd, dp, room, label, h, face, seats, poly, lift in items:
         f = f", face: '{face}'" if face else ''
         s = f', seats: [{seats[0]}, {seats[1]}]' if seats else ''
+        lf = f', lift: {lift}' if lift else ''
         A(f'  {{ id: {fid!r}, kind: {kind!r}, x: {fnum(x)}, y: {fnum(y)}, '
           f'w: {fnum(wd)}, d: {fnum(dp)}, room: {room!r}, label: {label!r}, '
-          f'height: {h}{f}{s}{poly_field(poly)} }},')
+          f'height: {h}{f}{s}{lf}{poly_field(poly)} }},')
     A(']')
     A('')
     return '\n'.join(o)

@@ -1122,12 +1122,16 @@ def terrace_pieces():
         def X(v):
             return sx + flip * v if flip > 0 else sx - v
 
-        # the grass, wall to wall
+        # a PLANTED STRIP along the parapet, 200 deep, the terrace's share of
+        # the hedge that runs the deck's edge - so the terraces screen the city
+        # the same way; then the grass, wall to wall, from the strip's back
         a, c = sorted((X(-350), X(2750)))
-        out.append(('rect', a, 0, c, 1200, 'green'))
+        out.append(('rect', a, 0, c, 200, 'green'))
+        out.append(('line', a, 200, c, 200, 'solid'))
+        out.append(('rect', a, 200, c, 1200, 'green'))
         for i in range(1, 5):
             gx = a + (c - a) * i / 5.0
-            out.append(('line', gx, 60, gx, 1140, 'green'))
+            out.append(('line', gx, 260, gx, 1140, 'green'))
 
         cx, cy = X(1200), 600                          # the tree, centre line
         out.append(('circle', cx, cy, 350, 'solid'))

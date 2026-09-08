@@ -837,8 +837,10 @@
 <rect x="2804.8" y="1772.9" width="256.3" height="121.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="2814.3" y="1782.3" width="237.4" height="102.5" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <line x1="2804.8" y1="1845.7" x2="3061.2" y2="1845.7" stroke="#9a9184" stroke-width="0.8"/>
-<rect x="2980.2" y="1702.0" width="80.9" height="61.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<line x1="3020.7" y1="1702.0" x2="3020.7" y2="1763.4" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="2893.2" y="1702.0" width="167.9" height="61.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<line x1="2977.2" y1="1702.0" x2="2977.2" y2="1763.4" stroke="#9a9184" stroke-width="0.8"/>
+<rect x="2422.4" y="1813.3" width="80.9" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<line x1="2462.9" y1="1813.3" x2="2462.9" y2="1894.3" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="2751.6" y="1550.3" width="121.4" height="121.4" fill="#dfeef2" stroke="#8ab0bd" stroke-width="1.1"/>
 <line x1="2751.6" y1="1550.3" x2="2873.0" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
 <line x1="2873.0" y1="1550.3" x2="2751.6" y2="1671.7" stroke="#9a9184" stroke-width="0.8"/>
@@ -1022,8 +1024,8 @@
 <text x="3400.4" y="1459.2" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">KARAN'S BATH</text>
 <text x="3400.4" y="1493.0" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">6.5 m²  ·  69 sq ft</text>
 <text x="3400.4" y="1519.9" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">arched wall  ·  1930 clear</text>
-<text x="2720.5" y="1703.4" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">GUEST / SERVICE WC</text>
-<text x="2720.5" y="1737.1" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">2.7 m²  ·  29 sq ft</text>
+<text x="2686.8" y="1654.8" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">GUEST / SERVICE WC</text>
+<text x="2686.8" y="1688.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">2.7 m²  ·  29 sq ft</text>
 <text x="1405.3" y="1256.9" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">FAMILY ROOM</text>
 <text x="1405.3" y="1290.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">21.3 m²  ·  230 sq ft</text>
 <text x="1405.3" y="1317.6" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">one pod  ·  glass roof over the 3665 x 2280 bay</text>

@@ -376,9 +376,9 @@ NEW_WALLS = [
     # room was a 4.4 m2 triangle with a 1025 west leg, and the 1900 bunk sat on
     # the only floor in front of the WC door: a 700 body could not reach the
     # WC or the store from the entry door, whatever the door types were.  With
-    # it down the two are one 6.7 m2 room, the bunk lies at the east end under
-    # the duct and the store's shelving becomes a cupboard in the duct's
-    # corner — and a 700 body reaches 90% of the floor and every door.
+    # it down the two are one 7.1 m2 room, the bunk lies at the east end under
+    # the duct and the store's shelving becomes a cupboard at the west end of
+    # the south band — and a 700 body reaches 90% of the floor and every door.
 
     # --- the absorbed lobby: new entrance wall on the building line, sitting
     #     in the 150 between the service bay and the building line.  One door,
@@ -1132,11 +1132,17 @@ _ONCE = [
     # head against the east wall, under the secondary duct.  That is the end
     # the old store was, and the end nothing has to be reached through: the
     # entry door, the WC door and the whole triangle under the apse are all
-    # west of its foot at 16925, with 1550 of clear floor north of it.  The
-    # cupboard takes the store's old shelving and stands in the duct's corner,
-    # on the wall the bunk's head is against.
+    # west of its foot at 16925, with 1550 of clear floor north of it.
+    #
+    # The 1245 x 525 pocket under the duct, at the bunk's head, has no floor
+    # in front of it — the apse dies on the bunk's north edge — so it cannot
+    # be reached standing.  It is bedside shelving, reached from the berths,
+    # and the store's cupboard proper stands at the west end of the south
+    # band instead, in the corner against the gallery's leg, where a person
+    # stands in front of it on the room's main floor.
     ('bunk',     16925, 10075, 18825, 10975, 'bunk'),
-    ('shelves',  18225, 9550, 18825, 10005, 'cupboard'),
+    ('shelves',  17580, 9550, 18825, 10005, 'shelves at the bunk head'),
+    ('shelves',  14090, 10375, 14690, 10975, 'cupboard'),
     # ------------------------------------------------- guest / service WC
     # One WC, one small basin, one very small shower — and nothing else, which
     # is what an apse this size will take.  The shower is flush into the corner

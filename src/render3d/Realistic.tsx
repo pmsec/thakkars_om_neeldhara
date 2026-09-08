@@ -1588,6 +1588,16 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
         rib.castShadow = true
         root.add(rib)
       }
+      // the landing edge: a slim metal channel where the glass meets the home's
+      // ceiling edge, the full length of the vault, and a matching sill at the foot
+      const land = roof.section.p2
+      const foot = roof.section.p0
+      for (const [q, size] of [[land, 70], [foot, 50]] as const) {
+        const rail = box((x1 - x0) * S / S, size, size, M.metal)
+        rail.position.set(((x0 + x1) / 2) * S, (q.y - size / 2 + 10) * S, q.x * S)
+        rail.castShadow = true
+        root.add(rail)
+      }
       for (const end of roof.gableEnds) {
         root.add(new THREE.Mesh(gableGeometry(roof, end), M.roofGlass))
         const j = gableJamb(roof, end)

@@ -941,10 +941,12 @@ def room_for(cx, cy):
         return 'R-K-DEN'
     if 9115 <= cx <= 15365 and cy < 8400:
         return 'R-GREAT'
-    if cy >= 8400 and 5555 < cx < 11210:
-        return 'R-KITCHEN'
+    # the entry gallery before the kitchen: the U's west leg is at 10515 and
+    # the kitchen's bump reaches 11210, so the strip between is the gallery's
     if 10515 <= cx <= 13965 and cy >= 8400:
         return 'R-ENTRY'
+    if cy >= 8400 and 5555 < cx < 11210:
+        return 'R-KITCHEN'
     if 13965 < cx < 16800 and cy >= 8400:
         return 'R-HELP'
     if cx >= 16800 and cy >= 9550:

@@ -385,6 +385,25 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       g.add(top)
       return g
     }
+    if (f.kind === 'console' && /^console$|side table|dresser|work console/i.test(f.label)) {
+      // an open piece: the drawn top on four legs with a low shelf, not a block
+      const top = polyPiece(f.poly, h - 40, h, M.timber, f.room)
+      if (!top) return null
+      g.add(top)
+      const cxp = f.x + w / 2
+      const cyp = f.y + d / 2
+      const shelfPoly = f.poly.map((q) => ({ x: cxp + (q.x - cxp) * 0.86, y: cyp + (q.y - cyp) * 0.8 }))
+      const shelf = polyPiece(shelfPoly, 150, 180, M.timber, f.room)
+      if (shelf) g.add(shelf)
+      const inX = Math.min(120, w * 0.18)
+      const inZ = Math.min(120, d * 0.18)
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        const leg = box(40, h - 40, 40, M.trunk)
+        place(leg, cxp + sx * (w / 2 - inX), cyp + sz * (d / 2 - inZ), (h - 40) / 2)
+        g.add(leg)
+      }
+      return g
+    }
     if (lift > 0 && f.kind === 'shelves') {
       // wall cabinets: a carcass hung at `lift`, door joints read as shadow lines
       const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
@@ -1024,6 +1043,106 @@ function wallBedDown(M: Mats): THREE.Group | null {
   return g
 }
 
+/** An abstract canvas: warm strokes on linen, painted once. */
+function paintingCanvas(): HTMLCanvasElement {
+  const c = document.createElement('canvas')
+  c.width = 512
+  c.height = 384
+  const ctx = c.getContext('2d')!
+  ctx.fillStyle = '#e9e1d2'
+  ctx.fillRect(0, 0, 512, 384)
+  let s = 23
+  const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280 }
+  const tones = ['#b5542e', '#d9a34c', '#2f4a5a', '#7a8a6a', '#c2b59b', '#5c3b2e', '#e0c56b']
+  for (let i = 0; i < 70; i++) {
+    ctx.strokeStyle = tones[i % tones.length]
+    ctx.globalAlpha = 0.55 + rnd() * 0.4
+    ctx.lineWidth = 10 + rnd() * 34
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    const x = rnd() * 512
+    const y = 60 + rnd() * 264
+    ctx.moveTo(x, y)
+    ctx.bezierCurveTo(x + (rnd() - 0.5) * 220, y + (rnd() - 0.5) * 120, x + (rnd() - 0.5) * 220, y + (rnd() - 0.5) * 120, x + (rnd() - 0.5) * 300, y + (rnd() - 0.5) * 160)
+    ctx.stroke()
+  }
+  ctx.globalAlpha = 1
+  return c
+}
+
+/**
+ * The entry gallery's last-look wall: over the console against the west leg, a
+ * framed canvas with a brass picture light above it that throws warm light
+ * down the painting. Drawn only where a console stands in the entry.
+ */
+function entryPainting(M: Mats): THREE.Group | null {
+  const con = furniture.find((f) => f.kind === 'console' && /^console$/i.test(f.label) && /entry/i.test(model.roomById.get(f.room)?.name ?? ''))
+  if (!con) return null
+  // which side of the console is against a wall: the bbox side nearest a wall line
+  const sides = [
+    { x: con.x, y: con.y + con.d / 2, nx: 1, ny: 0, along: 'y' as const },
+    { x: con.x + con.w, y: con.y + con.d / 2, nx: -1, ny: 0, along: 'y' as const },
+    { x: con.x + con.w / 2, y: con.y, nx: 0, ny: 1, along: 'x' as const },
+    { x: con.x + con.w / 2, y: con.y + con.d, nx: 0, ny: -1, along: 'x' as const },
+  ]
+  const distToWalls = (p: { x: number; y: number }) => {
+    let best = Infinity
+    for (const w of model.walls) {
+      if (w.thickness < 60) continue
+      for (let k = 0; k < w.points.length - 1; k++) {
+        const a = w.points[k]
+        const b = w.points[k + 1]
+        const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+        const t = L2 ? Math.max(0, Math.min(1, ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / L2)) : 0
+        const dd = Math.hypot(p.x - (a.x + t * (b.x - a.x)), p.y - (a.y + t * (b.y - a.y))) - w.thickness / 2
+        if (dd < best) best = dd
+      }
+    }
+    return best
+  }
+  const back = sides.reduce((a, b) => (distToWalls(a) <= distToWalls(b) ? a : b))
+  const g = new THREE.Group()
+  const rot = back.along === 'y' ? Math.PI / 2 : 0
+  const PW = Math.min(1000, (back.along === 'y' ? con.d : con.w) * 0.7)
+  const PH = PW * 0.7
+  const mid = 1250 + PH / 2
+  const put = (m: THREE.Object3D, off: number, h: number) => {
+    m.position.set((back.x + back.nx * off) * S, h * S, (back.y + back.ny * off) * S)
+    m.rotation.y = rot
+    g.add(m)
+  }
+  const frame = new THREE.Mesh(new THREE.BoxGeometry((PW + 70) * S, (PH + 70) * S, 38 * S), M.trunk)
+  frame.castShadow = true
+  put(frame, 24, mid)
+  const tex = new THREE.CanvasTexture(paintingCanvas())
+  tex.colorSpace = THREE.SRGBColorSpace
+  const canvas = new THREE.Mesh(new THREE.PlaneGeometry(PW * S, PH * S), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 }))
+  put(canvas, 46, mid)
+  if (back.nx < 0 || back.ny < 0) canvas.rotation.y += Math.PI
+  if (back.along === 'y' && back.nx > 0) canvas.rotation.y = Math.PI / 2
+  if (back.along === 'y' && back.nx < 0) canvas.rotation.y = -Math.PI / 2
+  if (back.along === 'x' && back.ny < 0) canvas.rotation.y = Math.PI
+  if (back.along === 'x' && back.ny > 0) canvas.rotation.y = 0
+  // the picture light: a brass tube on two short arms, above the frame
+  const lampH = mid + PH / 2 + 130
+  const tube = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 22 * S, (PW * 0.5) * S, 12), M.brass)
+  tube.rotation.z = Math.PI / 2
+  put(tube, 150, lampH)
+  for (const sgn of [-1, 1]) {
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(7 * S, 7 * S, 150 * S, 8), M.brass)
+    arm.rotation.x = Math.PI / 2
+    const ax = back.along === 'y' ? back.x + back.nx * 75 : back.x + sgn * PW * 0.2
+    const ay = back.along === 'y' ? back.y + sgn * PW * 0.2 : back.y + back.ny * 75
+    arm.position.set(ax * S, lampH * S, ay * S)
+    arm.rotation.y = rot
+    g.add(arm)
+  }
+  const light = new THREE.PointLight(0xffd7a3, 0.9, 2.2, 1.7)
+  light.position.set((back.x + back.nx * 170) * S, (lampH - 40) * S, (back.y + back.ny * 170) * S)
+  g.add(light)
+  return g
+}
+
 /**
  * Kitchen overheads: wall cabinets over every stretch of counter that backs on
  * to a solid wall, a warm light strip under each with point lights that
@@ -1448,6 +1567,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   const idol = mandirIdol(M)
   if (idol) root.add(idol)
   root.add(kitchenOverheads(M))
+  const painting = entryPainting(M)
+  if (painting) root.add(painting)
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

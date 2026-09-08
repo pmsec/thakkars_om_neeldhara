@@ -378,17 +378,6 @@ export const building: BuildingData = {
       label: "Parents' dressing partition",
     },
     {
-      id: 'W-K-DRESS',
-      points: [{ x: 21540, y: 6300 }, { x: 21748, y: 5935 }, { x: 25080, y: 5935 }],
-      thickness: 120,
-      kind: 'partition',
-      glass: 'tinted',
-      openings: [
-        { id: 'SL-K-DRESS', type: 'slider', at: [420, 1752], head: 2100, label: 'Tinted-glass leaf — pockets into the cupboard backs' },
-      ],
-      label: "Karan's dressing partition",
-    },
-    {
       id: 'W-P-BATH-ARCH',
       points: [
         { x: 4467, y: 6715 }, { x: 4405, y: 6555.19 }, { x: 4405, y: 6555.19 }, { x: 4392.575, y: 6539.213 }, { x: 4379.929, y: 6523.398 }, { x: 4367.066, y: 6507.748 },
@@ -744,8 +733,7 @@ export const building: BuildingData = {
     { id: 'R-P-SUITE', name: 'Master suite — parents', anchor: { x: 1500, y: 3500 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'Bed zone north of the sliding partition; opens full-width to the terrace.' },
     { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — and the sliding cupboards whose backs pocket the partition leaf.' },
     { id: 'R-P-BATH', name: "Parents' bath", anchor: { x: 3400, y: 8000 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 69, notes: 'Entered through the arched sweep; curved vanity, WC, shower.' },
-    { id: 'R-K-SUITE', name: 'Master suite — Karan', anchor: { x: 22980, y: 3500 }, category: 'habitable', zone: 'karan', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'The king bed, headboard window-jamb to window-jamb.' },
-    { id: 'R-K-DRESSING', name: "Karan's dressing", anchor: { x: 23280, y: 8000 }, category: 'circulation', zone: 'karan', carpet: true, finish: 'Oak plank', notes: 'Two hanging wardrobes and the dresser, behind the mirrored partition.' },
+    { id: 'R-K-SUITE', name: 'Master suite — Karan', anchor: { x: 22980, y: 3500 }, category: 'habitable', zone: 'karan', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'The king bed, headboard window-jamb to window-jamb; the dressing zone south of the screen, with two hanging wardrobes and the dresser.' },
     { id: 'R-K-BATH', name: "Karan's bath", anchor: { x: 21080, y: 8000 }, category: 'wet', zone: 'karan', carpet: true, finish: 'Stone', publishedSqFt: 69, notes: 'Mirror of the parents’ bath.' },
     { id: 'R-P-FAMILY', name: 'Family room', anchor: { x: 6550, y: 5000 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 230, notes: 'The west pod: six-seat dining behind the curved glass screen, serving hatch straight from the kitchen.' },
     { id: 'R-K-DEN', name: 'Music + work den', anchor: { x: 18000, y: 5000 }, category: 'habitable', zone: 'karan', carpet: true, finish: 'Oak plank', publishedSqFt: 230, notes: 'The east pod: Karan’s work console on the screen, e-drums in the corner, two recliners facing the deck.' },

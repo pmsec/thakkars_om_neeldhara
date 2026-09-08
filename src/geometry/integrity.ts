@@ -476,18 +476,23 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   if (feature.mirrorAbout !== undefined) {
     // The wings mirror in fabric. The pods are excluded: the den carries the east
     // service duct as a notch and its portal sits lower on the curve, both deliberate.
-    const pairs: Array<[string, string]> = [
-      ['R-P-SUITE', 'R-K-SUITE'],
-      ['R-P-BATH', 'R-K-BATH'],
-      ['R-P-DRESSING', 'R-K-DRESSING'],
-      ['R-SHAFT-W', 'R-SHAFT-E'],
-      ['R-VOID-W', 'R-VOID-E'],
-      ['R-P-TERRACE', 'R-K-TERRACE'],
+    // So are the suites: the parents' wing has a glass partition at 5935 that
+    // makes a dressing room; Karan's has a screen the bed leans on, not a wall,
+    // and his suite is one room to the bath.
+    // Each pair carries its own tolerance (mm² / mm). The baths are the one loose
+    // pair: the parents' partition lands on their bath sweep and its diagonal end
+    // leaves a 40 mm notch in that bath's outline that Karan's, with no partition,
+    // does not have — 0.03 m², nothing a builder would ever set out differently.
+    const pairs: Array<[string, string, number, number]> = [
+      ['R-P-BATH', 'R-K-BATH', 50000, 10],
+      ['R-SHAFT-W', 'R-SHAFT-E', 5000, 1],
+      ['R-VOID-W', 'R-VOID-E', 5000, 1],
+      ['R-P-TERRACE', 'R-K-TERRACE', 5000, 1],
     ]
     const rows: string[] = []
     let worstArea = 0
     let worstCentroid = 0
-    for (const [a, b] of pairs) {
+    for (const [a, b, tolA, tolC] of pairs) {
       const ra = model.roomById.get(a)!
       const rb = model.roomById.get(b)!
       const dA = Math.abs(ra.area - rb.area)
@@ -495,7 +500,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       const dC = Math.hypot(2 * 12240 - ra.centroid.x - rb.centroid.x, ra.centroid.y - rb.centroid.y)
       worstArea = Math.max(worstArea, dA)
       worstCentroid = Math.max(worstCentroid, dC)
-      if (dA > 5000 || dC > 1) {
+      if (dA > tolA || dC > tolC) {
         rows.push(
           `${a} vs ${b}: areas ${sqFt(ra.area).toFixed(2)} / ${sqFt(rb.area).toFixed(2)} sq ft, ` +
             `mirrored centroid off by ${dC.toFixed(2)} mm`,
@@ -506,10 +511,10 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       id: 'mirror',
       title: 'The two wings mirror about x = 12 240',
       requirement:
-        'Mirror-paired rooms match in area to 0.005 m² and in mirrored centroid to 1 mm.',
+        'Mirror-paired rooms match in area to 0.005 m² and in mirrored centroid to 1 mm (the baths to 0.05 m² / 10 mm, see the note in the code).',
       pass: rows.length === 0,
       actual: `worst area difference ${(worstArea / 1e6).toFixed(6)} m², worst centroid offset ${worstCentroid.toFixed(3)} mm, across ${pairs.length} pairs`,
-      tolerance: '0.005 m² / 1 mm',
+      tolerance: '0.005 m² / 1 mm (baths 0.05 m² / 10 mm)',
       detail: rows.length ? rows : undefined,
       severity: 'fail',
     })

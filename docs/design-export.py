@@ -235,10 +235,10 @@ WALLS += [
       [op('SL-P-DRESS', 'slider', 2000, 3332, head=2100,
           label='Tinted-glass leaf — pockets into the cupboard backs')],
       label="Parents' dressing partition", glass='tinted'),
-    w('W-K-DRESS', [(mx(2940), 6300), (mx(2732), 5935), (mx(-600), 5935)], 120, 'partition',
-      [op('SL-K-DRESS', 'slider', 420, 1752, head=2100,
-          label='Tinted-glass leaf — pockets into the cupboard backs')],
-      label="Karan's dressing partition", glass='tinted'),
+    # Karan's side has NO partition on this line: his suite runs from the terrace
+    # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on
+    # it), and the sheet draws nothing at 5935. The mirrored copy that used to be
+    # here was an invention.
 ]
 
 # --- master bath arched sweeps, from the CAD geometry (polyline centreline)
@@ -425,9 +425,8 @@ ROOMS = [
     ('R-P-BATH', "Parents' bath", (3400, 8000), 'wet', 'parents', True,
      'Stone', 'Entered through the arched sweep; curved vanity, WC, shower.'),
     ('R-K-SUITE', 'Master suite — Karan', (mx(1500), 3500), 'habitable', 'karan', True,
-     'Oak plank', 'The king bed, headboard window-jamb to window-jamb.'),
-    ('R-K-DRESSING', "Karan's dressing", (mx(1200), 8000), 'circulation', 'karan', True,
-     'Oak plank', 'Two hanging wardrobes and the dresser, behind the mirrored partition.'),
+     'Oak plank', 'The king bed, headboard window-jamb to window-jamb; the dressing '
+     'zone south of the screen, with two hanging wardrobes and the dresser.'),
     ('R-K-BATH', "Karan's bath", (mx(3400), 8000), 'wet', 'karan', True,
      'Stone', 'Mirror of the parents’ bath.'),
 
@@ -934,7 +933,7 @@ def room_for(cx, cy):
     if cy < 5935 and cx > mx(4467):
         return 'R-K-SUITE'
     if cy >= 5935 and cx > mx(2400):
-        return 'R-K-DRESSING'
+        return 'R-K-SUITE'
     if cx < 9115 and cy < 8400:
         return 'R-P-FAMILY'
     if cx > 15365 and cy < 8400 and cx < 20013:
@@ -1185,7 +1184,7 @@ def emit_furniture():
     add_outline(R.arch_console(), 'console', 'R-K-SUITE',
                 'Arch console', 800, mirror=True)
     # Karan's dressing screen — wood below, tinted glass above
-    add_outline(R.suite_screen(), 'screen', 'R-K-DRESSING',
+    add_outline(R.suite_screen(), 'screen', 'R-K-SUITE',
                 'Dressing screen — wood dado, tinted glass over', 2100,
                 styles=('wood',))
     # the great room's planter, answering the kitchen bump across the room

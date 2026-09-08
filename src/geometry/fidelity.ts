@@ -227,34 +227,16 @@ export const KNOWN_2D_CLASHES: Array<{
   note: string
 }> = [
   {
-    item: 'side table',
-    wallId: 'W-K-DRESS',
-    maxArea: 30000,
-    note: "Karan's suite south side table: 550 deep in the 397.5 gap between the bed's foot and the dressing wall — drawn 202.5 past the wall face.",
-  },
-  {
     item: 'FX-SH-5',
     wallId: 'W-HELP-N',
     maxArea: 60000,
     note: 'Guest WC shower: drawn from y 8425, which is 100 into the 125 great-room wall band (face at 8525).',
   },
   {
-    item: 'Arch console',
-    wallId: 'W-K-DRESS',
-    maxArea: 40000,
-    note: "Exporter idealisation, not a design clash: Karan's dressing partition dies into the curved sweep, modelled here as a straight jog — the arch console beds on the sweep's outer face and crosses that jog on paper only.",
-  },
-  {
     item: 'FX-P-CAB',
     wallId: 'W-P-DRESS',
     maxArea: 20000,
-    note: 'Same jog idealisation, west wing: the bath wall cabinet beds on the sweep; the straight stand-in for the die-into-the-sweep crosses it on paper only.',
-  },
-  {
-    item: 'FX-K-CAB',
-    wallId: 'W-K-DRESS',
-    maxArea: 20000,
-    note: 'Same jog idealisation, east wing (mirror of FX-P-CAB).',
+    note: "Jog idealisation, west wing only: the parents' dressing partition dies into the bath sweep, modelled as a straight jog — the bath wall cabinet beds on the sweep and crosses that jog on paper only. Karan's side has no partition, so no counterpart.",
   },
 ]
 

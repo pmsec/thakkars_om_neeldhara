@@ -147,14 +147,14 @@ describe('the bellied glass', () => {
 })
 
 describe('the bronze glass walls', () => {
-  it('both dressing partitions and both pod screens are tinted glass', () => {
+  it("the parents' dressing partition and both pod screens are tinted glass", () => {
     const tinted = building.walls.filter((w) => w.glass === 'tinted').map((w) => w.id).sort()
-    expect(tinted).toEqual(['W-CURVE-KARAN', 'W-CURVE-PARENTS', 'W-K-DRESS', 'W-P-DRESS'])
+    expect(tinted).toEqual(['W-CURVE-KARAN', 'W-CURVE-PARENTS', 'W-P-DRESS'])
   })
 
-  it('a dressing partition is one translucent plane, floor to ceiling, leaf included', () => {
+  it("the parents' dressing partition is one translucent plane, floor to ceiling, leaf included", () => {
     const solids = buildSolids(model)
-    for (const id of ['W-P-DRESS', 'W-K-DRESS']) {
+    for (const id of ['W-P-DRESS']) {
       const ps = solids.prisms.filter((p) => p.wallId === id)
       expect(ps.length).toBeGreaterThan(0)
       for (const p of ps) {

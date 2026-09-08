@@ -794,6 +794,104 @@ export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
 }
 
 /**
+ * Every hinged door in the house, as a leaf on its hinge: shut in the frame, or
+ * swung open into the room it serves. Wood on a wall, tinted glass on the
+ * gallery's glazed thresholds. The swing side follows the drawing where it is
+ * given, and is checked against the rooms so no leaf opens into a wall.
+ */
+function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  const ceiling = model.data.levels.ceiling
+  for (const w of model.walls) {
+    for (const op of w.openings) {
+      if (op.type !== 'door') continue
+      const hingeAt = op.hinge === 1 ? op.p2 : op.p1
+      const other = op.hinge === 1 ? op.p1 : op.p2
+      const len = Math.hypot(other.x - hingeAt.x, other.y - hingeAt.y)
+      if (len < 300) continue
+      const d = { x: (other.x - hingeAt.x) / len, y: (other.y - hingeAt.y) / len }
+      const side = op.side ?? 1
+      let n = { x: -d.y * side, y: d.x * side }
+      // the open leaf must land inside a room, not in a wall or outside
+      const probe = { x: hingeAt.x + n.x * len * 0.6 + d.x * 40, y: hingeAt.y + n.y * len * 0.6 + d.y * 40 }
+      if (!model.rooms.some((r) => pointInPolygon(probe, r.polygon))) n = { x: -n.x, y: -n.y }
+      const dir = mode === 'open' ? n : d
+      const H = Math.min((op.head ?? model.data.levels.doorHead) - 20, ceiling - 40)
+      const leafLen = len - 12
+      const glazed = w.kind === 'threshold' || w.kind === 'glazing'
+      const leaf = new THREE.Group()
+      const body = box(leafLen, H, 40, glazed ? M.tintGlass : M.wallWood, leafLen / 2 + 6, H / 2, 0)
+      leaf.add(body)
+      if (!glazed) {
+        // two recessed panels, read as thin dark lines
+        for (const dy of [140, H / 2 - 20, H / 2 + 20, H - 140]) {
+          leaf.add(box(leafLen - 180, 6, 44, M.trunk, leafLen / 2 + 6, dy, 0))
+        }
+        leaf.add(box(6, H - 280, 44, M.trunk, 96, H / 2, 0))
+        leaf.add(box(6, H - 280, 44, M.trunk, leafLen - 84, H / 2, 0))
+      } else {
+        leaf.add(box(leafLen, 60, 46, M.metal, leafLen / 2 + 6, 30, 0))
+        leaf.add(box(leafLen, 40, 46, M.metal, leafLen / 2 + 6, H - 20, 0))
+      }
+      // the lever handle near the free edge, both faces
+      for (const sz of [-1, 1]) {
+        const lever = box(120, 18, 18, M.metal, leafLen - 90, 1000, sz * 32)
+        leaf.add(lever)
+      }
+      leaf.rotation.y = -Math.atan2(dir.y, dir.x)
+      leaf.position.set(hingeAt.x * S, 0, hingeAt.y * S)
+      g.add(leaf)
+    }
+  }
+  return g
+}
+
+/**
+ * The wall bed folded down: the queen comes out of its cabinet and lies over
+ * the sofa, platform, mattress and pillows at the cabinet end. Drawn where a
+ * cabinet labelled wall bed exists, toward the sofa in front of it.
+ */
+function wallBedDown(M: Mats): THREE.Group | null {
+  const cab = furniture.find((f) => /wall bed cabinet/i.test(f.label))
+  if (!cab) return null
+  const sofa = furniture.find((f) => /in front of the wall bed/i.test(f.label))
+  const cx = cab.x + cab.w / 2
+  const cy = cab.y + cab.d / 2
+  const sx = sofa ? sofa.x + sofa.w / 2 : cx + 1
+  const sy = sofa ? sofa.y + sofa.d / 2 : cy
+  const alongX = Math.abs(sx - cx) >= Math.abs(sy - cy)
+  const sgn = alongX ? Math.sign(sx - cx) || 1 : Math.sign(sy - cy) || 1
+  const L = 2000
+  const W = alongX ? cab.d : cab.w
+  const faceX = alongX ? (sgn > 0 ? cab.x + cab.w : cab.x) : cx
+  const faceY = alongX ? cy : (sgn > 0 ? cab.y + cab.d : cab.y)
+  const bx = alongX ? faceX + sgn * (L / 2) : cx
+  const by = alongX ? cy : faceY + sgn * (L / 2)
+  const g = new THREE.Group()
+  const PLAT = 570
+  const platform = box(alongX ? L : W - 40, 70, alongX ? W - 40 : L, M.timber)
+  place(platform, bx, by, PLAT + 35)
+  g.add(platform)
+  const mattress = box(alongX ? L - 60 : W - 100, 170, alongX ? W - 100 : L - 60, M.duvet)
+  place(mattress, bx, by, PLAT + 70 + 85)
+  g.add(mattress)
+  // pillows at the cabinet end
+  for (const k of [-1, 1]) {
+    const pw = Math.min(520, W / 2 - 60)
+    const px = alongX ? faceX + sgn * 260 : cx + k * pw * 0.62
+    const py = alongX ? cy + k * pw * 0.62 : faceY + sgn * 260
+    const pillow = box(alongX ? 380 : pw, 130, alongX ? pw : 380, M.pillow)
+    place(pillow, px, py, PLAT + 240 + 65)
+    g.add(pillow)
+  }
+  // the cabinet's open face reads dark
+  const mouth = box(alongX ? 20 : W - 60, 1900, alongX ? W - 60 : 20, M.gasket)
+  place(mouth, alongX ? faceX + sgn * 10 : cx, alongX ? cy : faceY + sgn * 10, 950 + 150)
+  g.add(mouth)
+  return g
+}
+
+/**
  * Kitchen overheads: wall cabinets over every stretch of counter that backs on
  * to a solid wall, a warm light strip under each with point lights that
  * actually light the worktop, and a hood over the hob. Derived from the
@@ -1063,7 +1161,7 @@ function tieredFountain(M: Mats, F: { x: number; y: number; r: number }): THREE.
  * Derived from the drum's own geometry — the arc wall's circumcentre and radius,
  * the portal's chord for its extent — so they cannot drift from the plan.
  */
-function curvedDoors(M: Mats): THREE.Group | null {
+function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | null {
   const walls = model.data.walls
   const chord = walls.find((w) => w.openings?.some((o) => o.id === 'D-GAL-N'))
   const arc = walls.find((w) => w.id === 'W-GAL-ARC-1')
@@ -1119,7 +1217,9 @@ function curvedDoors(M: Mats): THREE.Group | null {
   }
   const ang = (mm: number) => mm / R
   const mid = (a0 + a1) / 2
-  for (const [s0, s1] of [[a0, mid], [mid, a1]] as const) {
+  // open: each leaf slides its own width along the arc, past its jamb
+  const slide = mode === 'open' ? (a1 - a0) / 2 : 0
+  for (const [s0, s1] of [[a0 - slide, mid - slide], [mid + slide, a1 + slide]] as const) {
     // frame
     piece(s0, s0 + ang(STILE), 0, H, M.wallWood)
     piece(s1 - ang(STILE), s1, 0, H, M.wallWood)
@@ -1139,7 +1239,7 @@ function curvedDoors(M: Mats): THREE.Group | null {
   }
   // pull handles either side of the meeting stiles
   for (const sgn of [-1, 1]) {
-    const a = mid + sgn * ang(STILE / 2)
+    const a = mid + sgn * (ang(STILE / 2) + slide)
     const h = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.3, 8), M.metal)
     h.position.set((C.x + (R - LEAF_T / 2 - 30) * Math.cos(a)) * S, 1.05, (C.y + (R - LEAF_T / 2 - 30) * Math.sin(a)) * S)
     g.add(h)
@@ -1195,10 +1295,21 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     root.add(mesh)
   }
 
-  const doors = curvedDoors(M)
-  if (doors) root.add(doors)
-  root.add(podDoorGroup(M, 'open'))
-  root.add(podDoorGroup(M, 'shut'))
+  // every door in both states; the Doors switch picks which set is visible
+  for (const mode of ['open', 'shut'] as const) {
+    const set = new THREE.Group()
+    set.name = `doors-${mode}`
+    const curved = curvedDoors(M, mode)
+    if (curved) set.add(curved)
+    set.add(podDoorGroup(M, mode))
+    set.add(hingedDoors(M, mode))
+    root.add(set)
+  }
+  const bedDown = wallBedDown(M)
+  if (bedDown) {
+    bedDown.name = 'wallbed-down'
+    root.add(bedDown)
+  }
   const idol = mandirIdol(M)
   if (idol) root.add(idol)
   root.add(kitchenOverheads(M))
@@ -1413,19 +1524,24 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const standRef = useRef<((roomId: string, dir: 'N' | 'S' | 'E' | 'W') => void) | null>(null)
   const [standRoom, setStandRoom] = useState('R-GREAT')
 
-  const { state: uiState } = useStore()
+  const { state: uiState, update: uiUpdate } = useStore()
   const sceneRef = useRef<THREE.Scene | null>(null)
-  const podDoorsShut = uiState.show3d.podDoorsShut
-  const shutRef = useRef(podDoorsShut)
-  shutRef.current = podDoorsShut
-  useEffect(() => {
-    const sc = sceneRef.current
-    if (!sc) return
+  const doorsShut = uiState.show3d.doorsShut
+  const wallBed = uiState.show3d.wallBedDown
+  const shutRef = useRef(doorsShut)
+  shutRef.current = doorsShut
+  const bedRef = useRef(wallBed)
+  bedRef.current = wallBed
+  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean): void => {
     sc.traverse((o) => {
-      if (o.name === 'pod-doors-open') o.visible = !podDoorsShut
-      if (o.name === 'pod-doors-shut') o.visible = podDoorsShut
+      if (o.name === 'doors-open') o.visible = !shut
+      if (o.name === 'doors-shut') o.visible = shut
+      if (o.name === 'wallbed-down') o.visible = down
     })
-  }, [podDoorsShut])
+  }
+  useEffect(() => {
+    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed)
+  }, [doorsShut, wallBed])
 
   const [styleTick, setStyleTick] = useState(0)
   useEffect(() => {
@@ -1463,10 +1579,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
 
     const M = makeMaterials()
     scene.add(buildScene(M))
-    scene.traverse((o) => {
-      if (o.name === 'pod-doors-open') o.visible = !shutRef.current
-      if (o.name === 'pod-doors-shut') o.visible = shutRef.current
-    })
+    applyToggles(scene, shutRef.current, bedRef.current)
     scene.add(buildFixtures(M))
 
     const furn = new THREE.Group()
@@ -1700,6 +1813,19 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           ))}
           <span style={{ width: 6 }} />
           <button onClick={() => wholeRef.current?.()} title="Pull right back to see the whole block">Whole house</button>
+          <span style={{ width: 6 }} />
+          <button
+            onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, doorsShut: !st.show3d.doorsShut } }))}
+            title="Every door: hinged leaves, the pod sliders, the entry pair"
+          >
+            Doors: {doorsShut ? 'shut' : 'open'}
+          </button>
+          <button
+            onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, wallBedDown: !st.show3d.wallBedDown } }))}
+            title="The grandmother's wall bed"
+          >
+            Wall bed: {wallBed ? 'down' : 'up'}
+          </button>
         </div>
       )}
       <button

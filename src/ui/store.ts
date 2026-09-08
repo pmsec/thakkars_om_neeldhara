@@ -113,8 +113,10 @@ export interface PortalState {
     furniture: boolean
     podParents: boolean
     podKaran: boolean
-    /** The pod-to-suite sliding doors drawn shut (true) or stacked open on the deck. */
-    podDoorsShut: boolean
+    /** Every door drawn shut (true) or open: hinged leaves swung, the pod sliders stacked on the deck, the entry pair slid apart. */
+    doorsShut: boolean
+    /** The wall bed folded down over its sofa. */
+    wallBedDown: boolean
   }
   sun: Sun
   /**
@@ -161,7 +163,7 @@ export const initialState: PortalState = {
   snap: true,
   cutaway: 3050,
   section: { axis: null, at: 12240 },
-  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, podDoorsShut: false },
+  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false },
   sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
   panels: { left: true, right: true },

@@ -556,8 +556,8 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     a.groups.podParents.visible = state.show3d.podParents
     a.groups.podKaran.visible = state.show3d.podKaran
     a.groups.cages.visible = state.show3d.cages
-    a.groups.podDoorsOpen.visible = !state.show3d.podDoorsShut
-    a.groups.podDoorsShut.visible = state.show3d.podDoorsShut
+    a.groups.podDoorsOpen.visible = !state.show3d.doorsShut
+    a.groups.podDoorsShut.visible = state.show3d.doorsShut
   }, [state.show3d])
 
   useEffect(() => {

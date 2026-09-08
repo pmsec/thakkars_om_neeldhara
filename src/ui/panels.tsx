@@ -299,7 +299,7 @@ export function View3DPanel(): React.ReactElement {
             ['furniture', 'Furniture', true],
             ['podParents', "Parents' pod", building.screens.length > 0],
             ['podKaran', "Karan's pod", building.screens.length > 1],
-            ['podDoorsShut', 'Pod doors shut', podDoorLeaves(building, 'shut').length > 0],
+            ['doorsShut', 'Doors shut', podDoorLeaves(building, 'shut').length > 0],
           ] as const
         )
           .filter(([, , present]) => present)

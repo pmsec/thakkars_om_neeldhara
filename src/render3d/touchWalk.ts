@@ -300,16 +300,16 @@ export function createTouchWalk(
       if (!enabled) return
       const mag = Math.hypot(stick.x, stick.y)
       if (mag < 0.05) return
-      // A gentle push creeps, a full push walks, and pushed to the rim is a hurry:
-      // the pace follows how far the knob is from the centre, so a room can be
-      // taken in a step at a time.
-      const speed = opts.speed * mag * (mag > 0.92 ? 2 : 1) * dt
+      // One pace, slow: the stick sets the direction only. No creep, no hurry -
+      // pushing further never goes faster, so a room is always taken at a stroll.
+      const speed = opts.speed * dt
       right.setFromMatrixColumn(camera.matrix, 0)
       right.y = 0
       right.normalize()
       fwd.crossVectors(camera.up, right).normalize()
-      camera.position.addScaledVector(fwd, -stick.y * speed)
-      camera.position.addScaledVector(right, stick.x * speed)
+      // the stick's direction only, at unit length: a half push and a full push walk the same
+      camera.position.addScaledVector(fwd, (-stick.y / mag) * speed)
+      camera.position.addScaledVector(right, (stick.x / mag) * speed)
       camera.position.y = eye
     },
     dispose() {

@@ -3657,7 +3657,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     }
 
     const lock = new PointerLockControls(camera, renderer.domElement)
-    const touchWalk = createTouchWalk(camera, renderer.domElement, mount, { eye: 1.62, speed: 0.55 })
+    const touchWalk = createTouchWalk(camera, renderer.domElement, mount, { eye: 1.62, speed: 0.35 })
     touchRef.current = touchWalk
     walkRef.current = (on) => {
       if (touch) {
@@ -3834,7 +3834,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         }}
       >
         {touchWalking
-          ? 'Thumb stick to walk, push to the rim to hurry · drag to look · pinch to zoom the lens · EYE and TILT rails on the right set your height and view angle · Exit walk to release'
+          ? 'Thumb stick to walk, one slow pace · drag to look · pinch to zoom the lens · EYE and TILT rails on the right set your height and view angle · Exit walk to release'
           : walking
           ? 'W A S D to walk · mouse to look · scroll to zoom the lens · Shift to hurry · Esc to release'
           : touch

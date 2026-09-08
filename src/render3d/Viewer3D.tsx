@@ -188,7 +188,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     scene.add(lock.object)
     // On a touch screen there is no mouse to lock and no WASD: a thumb stick and a
     // drag-to-look stand in for them.
-    const touchWalk = createTouchWalk(camera, renderer.domElement, el, { eye: 1.6, speed: 0.55 })
+    const touchWalk = createTouchWalk(camera, renderer.domElement, el, { eye: 1.6, speed: 0.35 })
 
     const hemi = new THREE.HemisphereLight(0xdce8f0, 0x9c9484, 0.68)
     scene.add(hemi)

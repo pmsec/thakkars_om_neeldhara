@@ -1107,9 +1107,9 @@ _ONCE = [
     # glazing.  Their shape follows the curve, so they are built in
     # retrofit.corner_units() where the Bezier lives.
     # ------------------------------- the utility end of the kitchen
+    # The stacked washer and dryer, and nothing loose beside them: the laundry
+    # basket and the dustbin that stood here came out after the walkthrough.
     ('appliance', 5755, 10375, 6355, 11025, 'washer + dryer, stacked'),
-    ('basket',   5755, 9470, 6255, 9970, 'laundry basket'),
-    ('bin',      6305, 9470, 6855, 10020, 'dustbin'),
     # --------------------------------------------------------- help\'s room
     # The bunk turns and lies ALONG the south wall.  Standing it on end against
     # the west wall left a 96 gap between its head and the apse — the apse

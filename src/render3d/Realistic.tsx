@@ -3200,7 +3200,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         }}
       >
         {touchWalking
-          ? 'Thumb stick to walk, push to the rim to hurry · drag to look · pinch to zoom the lens · Exit walk to release'
+          ? 'Thumb stick to walk, push to the rim to hurry · drag to look · pinch to zoom the lens · EYE and TILT rails on the right set your height and view angle · Exit walk to release'
           : walking
           ? 'W A S D to walk · mouse to look · scroll to zoom the lens · Shift to hurry · Esc to release'
           : touch

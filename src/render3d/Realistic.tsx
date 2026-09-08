@@ -740,14 +740,147 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'drumkit': {
-      for (const [dx, dz, r, h] of [[-w * 0.25, 0, 240, 420], [0, -d * 0.2, 180, 500],
-        [w * 0.25, 0, 200, 460], [0, d * 0.22, 300, 380]] as const) {
-        const c = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, h * S, 14), M.appliance)
-        c.position.set(dx * S, (h / 2) * S, dz * S)
+      // An electronic kit built on the sheet's own pad circles: mesh-head pads on a
+      // chrome rack, the kick pad upright on its pedal, hi-hat and cymbal pads on
+      // stands and arms, the module on the rack, and the throne behind. Every part
+      // sits on its drawn circle, so the kit nests into its corner exactly as drawn.
+      const parts = f.parts ?? []
+      if (!parts.length) {
+        const m = box(w, 500, d, M.appliance, 0, 250, 0)
+        place(m, cx, cy)
+        return m
+      }
+      const pad = (px: number, py: number, r: number, h: number, thick = 60) => {
+        const shell = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, thick * S, 24), M.gasket)
+        shell.position.set(px * S, (h - thick / 2) * S, py * S)
+        shell.castShadow = true
+        g.add(shell)
+        const rim = new THREE.Mesh(new THREE.TorusGeometry((r - 8) * S, 9 * S, 8, 28), M.steel)
+        rim.rotation.x = Math.PI / 2
+        rim.position.set(px * S, h * S, py * S)
+        g.add(rim)
+        const head = new THREE.Mesh(new THREE.CylinderGeometry((r - 16) * S, (r - 16) * S, 6 * S, 24), M.appliance)
+        head.position.set(px * S, (h + 2) * S, py * S)
+        g.add(head)
+      }
+      const post = (px: number, py: number, h0: number, h1: number, r = 11) => {
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, (h1 - h0) * S, 10), M.steel)
+        m.position.set(px * S, ((h0 + h1) / 2) * S, py * S)
+        m.castShadow = true
+        g.add(m)
+      }
+      const tube = (ax: number, ay: number, ah: number, bx: number, by: number, bh: number, r = 11) => {
+        const a = new THREE.Vector3(ax * S, ah * S, ay * S)
+        const b = new THREE.Vector3(bx * S, bh * S, by * S)
+        const len = a.distanceTo(b)
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, len, 8), M.steel)
+        m.position.copy(a).add(b).multiplyScalar(0.5)
+        m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize())
+        g.add(m)
+      }
+      const cymbal = (px: number, py: number, r: number, h: number, tilt: number) => {
+        const c = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, 8 * S, 28), M.gasket)
+        c.rotation.z = tilt
+        c.position.set(px * S, h * S, py * S)
         c.castShadow = true
         g.add(c)
+        const bell = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.22 * S, r * 0.28 * S, 22 * S, 16), M.metal)
+        bell.rotation.z = tilt
+        bell.position.set(px * S, (h + 12) * S, py * S)
+        g.add(bell)
       }
-      place(g, cx, cy)
+      const throne = parts.find((p) => p.role === 'throne')
+      const toms = parts.filter((p) => p.role === 'tom')
+      for (const p of parts) {
+        switch (p.role) {
+          case 'kick': {
+            // the kick pad stands upright, its face to the drummer (toward the throne)
+            const dir = throne ? Math.atan2(throne.x - p.x, throne.y - p.y) : 0
+            const face = new THREE.Mesh(new THREE.CylinderGeometry(p.r * 0.8 * S, p.r * 0.8 * S, 90 * S, 24), M.gasket)
+            face.rotation.set(Math.PI / 2, 0, 0)
+            face.rotation.y = dir
+            face.position.set(p.x * S, (p.r * 0.8 + 40) * S, p.y * S)
+            g.add(face)
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(p.r * 0.8 * S, 10 * S, 8, 28), M.steel)
+            ring.rotation.set(0, dir, 0)
+            ring.position.copy(face.position)
+            g.add(ring)
+            g.add(box(p.r * 1.4, 40, p.r * 1.2, M.steel, p.x, 20, p.y))             // base plate
+            g.add(box(120, 30, 300, M.metal, p.x + Math.sin(dir) * p.r * 0.9, 25, p.y + Math.cos(dir) * p.r * 0.9)) // pedal, on the drummer's side
+            break
+          }
+          case 'snare':
+            pad(p.x, p.y, p.r, 720, 90)
+            post(p.x, p.y, 0, 660, 14)
+            for (let k = 0; k < 3; k++) {
+              const a = (k / 3) * Math.PI * 2
+              tube(p.x, p.y, 380, p.x + Math.sin(a) * 240, p.y + Math.cos(a) * 240, 0, 8)
+            }
+            break
+          case 'tom':
+            pad(p.x, p.y, p.r, 800, 70)
+            break
+          case 'floortom':
+            pad(p.x, p.y, p.r, 640, 90)
+            for (let k = 0; k < 3; k++) {
+              const a = (k / 3) * Math.PI * 2 + 0.5
+              post(p.x + Math.sin(a) * (p.r - 30), p.y + Math.cos(a) * (p.r - 30), 0, 620, 8)
+            }
+            break
+          case 'hihat':
+            post(p.x, p.y, 0, 940, 12)
+            for (let k = 0; k < 3; k++) {
+              const a = (k / 3) * Math.PI * 2
+              tube(p.x, p.y, 420, p.x + Math.sin(a) * 260, p.y + Math.cos(a) * 260, 0, 8)
+            }
+            cymbal(p.x, p.y, p.r, 900, 0)
+            cymbal(p.x, p.y, p.r, 940, 0.06)
+            g.add(box(110, 25, 280, M.metal, p.x, 20, p.y + 200))
+            break
+          case 'ride':
+          case 'crash': {
+            const h = p.role === 'ride' ? 1120 : 1260
+            cymbal(p.x, p.y, p.r, h, p.role === 'ride' ? -0.18 : 0.22)
+            // boom arm back to the nearest rack tom, or a stand of its own
+            const near = toms.length ? toms.reduce((a, b) => (Math.hypot(a.x - p.x, a.y - p.y) < Math.hypot(b.x - p.x, b.y - p.y) ? a : b)) : null
+            if (near) tube(near.x, near.y, 860, p.x, p.y, h - 20, 9)
+            else post(p.x, p.y, 0, h - 20, 11)
+            break
+          }
+          case 'throne':
+            post(p.x, p.y, 0, 520, 20)
+            for (let k = 0; k < 3; k++) {
+              const a = (k / 3) * Math.PI * 2
+              tube(p.x, p.y, 300, p.x + Math.sin(a) * 260, p.y + Math.cos(a) * 260, 0, 9)
+            }
+            {
+              const seat = new THREE.Mesh(new THREE.CylinderGeometry(p.r * 0.68 * S, p.r * 0.62 * S, 80 * S, 24), M.fabricDark)
+              seat.position.set(p.x * S, 560 * S, p.y * S)
+              seat.castShadow = true
+              g.add(seat)
+            }
+            break
+          default:
+            pad(p.x, p.y, p.r, 760, 70)
+        }
+      }
+      // the rack: a chrome bar across the toms on two posts, the module on its left leg
+      if (toms.length >= 2) {
+        const xs = toms.map((t) => t.x)
+        const ys = toms.map((t) => t.y)
+        const x0 = Math.min(...xs) - 120
+        const x1 = Math.max(...xs) + 120
+        const yb = ys.reduce((a, b) => a + b, 0) / ys.length + 230
+        tube(x0, yb, 900, x1, yb, 900, 14)
+        post(x0, yb, 0, 900, 14)
+        post(x1, yb, 0, 900, 14)
+        for (const t of toms) tube(t.x, yb, 900, t.x, t.y, 790, 9)
+        const dir = throne ? Math.sign(throne.x - (x0 + x1) / 2) || 1 : 1
+        const mx = dir < 0 ? x1 : x0
+        const module = box(200, 130, 60, M.gasket, mx, 1000, yb - 40)
+        module.rotation.x = -0.5
+        g.add(module)
+      }
       return g
     }
     default: {

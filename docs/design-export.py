@@ -1111,8 +1111,24 @@ def emit_furniture():
               'armchair', 'R-GREAT', 'Rocking chair', 780)
     add_prims(R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)),
               'armchair', 'R-GREAT', 'Armchair', 780)
-    add_prims(R.drum_kit(), 'drumkit', 'R-K-DEN', 'Electronic drum kit', 900,
-              styles=('solid', 'soft'))
+    # The drum kit ships every drawn circle - pads, cymbals, throne - as parts,
+    # each with a role read off its style and size, so the 3D builds the real
+    # kit on the sheet's own layout. The footprint takes the cymbals in too.
+    kit = R.drum_kit()
+    ROLE = {('soft', 250): 'throne', ('solid', 175): 'snare', ('solid', 280): 'kick',
+            ('solid', 150): 'tom', ('solid', 215): 'floortom',
+            ('light', 175): 'hihat', ('light', 250): 'ride', ('light', 210): 'crash'}
+    kb = bbox_of(kit, ('solid', 'soft', 'light'))
+    if kb:
+        a, b, c, d = kb
+        parts = [(px, py, r, ROLE.get((st, int(round(r))), 'pad'))
+                 for (_, px, py, r, st) in kit]
+        seen['FN-DRUMKIT'] = seen.get('FN-DRUMKIT', 0) + 1
+        fid = f"FN-DRUMKIT-{seen['FN-DRUMKIT']}"
+        items.append((fid, 'drumkit', a, b, c - a, d - b, 'R-K-DEN',
+                      'Electronic drum kit, Roland TD-27', 1300, None, None, None, 0,
+                      parts))
+        EXPORTED.append((fid, (a, b, c, d), None))
     # corner units piece by piece, each with its TRUE drawn polygon — the
     # mandir wedge and the pantry run follow the pod glazing, and a bounding
     # box here is exactly the shape that pokes through the curved screen
@@ -1201,16 +1217,25 @@ def emit_furniture():
     A('  seats?: [number, number]')
     A('  /** The drawn 2D outline when it is not the plain rect — the 3D extrudes THIS. */')
     A('  poly?: { x: number; y: number }[]')
+    A('  /** A composite piece drawn as circles - a drum kit - with each circle named. */')
+    A('  parts?: { x: number; y: number; r: number; role: string }[]')
     A('}')
     A('')
     A('export const furniture: FurnitureItem[] = [')
-    for fid, kind, x, y, wd, dp, room, label, h, face, seats, poly, lift in items:
+    for it in items:
+        fid, kind, x, y, wd, dp, room, label, h, face, seats, poly, lift = it[:13]
+        parts = it[13] if len(it) > 13 else None
         f = f", face: '{face}'" if face else ''
         s = f', seats: [{seats[0]}, {seats[1]}]' if seats else ''
         lf = f', lift: {lift}' if lift else ''
+        pf = ''
+        if parts:
+            pf = ', parts: [' + ', '.join(
+                f'{{ x: {fnum(px)}, y: {fnum(py)}, r: {fnum(r)}, role: {role!r} }}'
+                for px, py, r, role in parts) + ']'
         A(f'  {{ id: {fid!r}, kind: {kind!r}, x: {fnum(x)}, y: {fnum(y)}, '
           f'w: {fnum(wd)}, d: {fnum(dp)}, room: {room!r}, label: {label!r}, '
-          f'height: {h}{f}{s}{lf}{poly_field(poly)} }},')
+          f'height: {h}{f}{s}{lf}{pf}{poly_field(poly)} }},')
     A(']')
     A('')
     return '\n'.join(o)

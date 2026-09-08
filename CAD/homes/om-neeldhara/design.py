@@ -1137,9 +1137,11 @@ _ONCE = [
     # take a piece 800 deep and still leave a lane wider than the arch at the
     # far end of it.
     #
-    # TWO CHAIRS east, centred on the leg's own 1800.  The west leg is bare
-    # wood now (see below); the mirror for the last look before you leave
-    # hangs on it, and needs nothing under it.
+    # Console west, TWO CHAIRS east, all centred on the legs' own 1800 so they
+    # read as a set rather than as things that happened to fit.  A painting
+    # hangs on the leg above the console with a picture light over it — the
+    # one thing an entry hall is actually for is the last look before you
+    # leave, and this is what you look at.
     #
     # A 2-SEAT SOFA WAS DRAWN THERE FIRST and taken out.  A hall is somewhere
     # you sit for a minute to put a shoe on, not somewhere two people settle
@@ -1147,12 +1149,12 @@ _ONCE = [
     # reading as a pair of pieces rather than one long lump.
     #
     # WHAT THE LANE BETWEEN THEM HAS TO CARRY is the walk from the front door
-    # to the great room, against the arched portal's own 1050 at the far end
-    # of it.  Nothing on this route narrows below the door it leads to.
-    #
-    # THE CONSOLE THAT STOOD AGAINST THE WEST LEG IS GONE — the client saw it
-    # in the walkthrough as a block in the way and had it taken out.  The west
-    # leg is bare wood, and the lane is the full 2470 between the legs.
+    # to the great room: 2020 clear with the console 450 deep, against the
+    # arched portal's own 1050 at the far end of it.  Nothing on this route
+    # narrows below the door it leads to.
+    ('console-w', 10630, 9525, 11080, 10925,
+     'console  ·  1400 x 450, against the U\'s west leg, corners eased 110  ·  '
+     'painting over, picture light'),
     ('sofa-e',    13100, 9425, 13850, 10125,
      'chair  ·  700 x 750, against the U\'s east leg, facing west'),
     ('sofa-e',    13100, 10325, 13850, 11025,

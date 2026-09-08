@@ -644,11 +644,31 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return m
     }
     case 'planter': {
-      // the planted strip: a low bed with a clipped hedge standing in it, tall
-      // enough to hide the city from inside (see hedge.ts)
       const bed = f.poly ? polyPiece(f.poly, 0, 300, M.pot, f.room) : box(w, 300, d, M.pot)
       if (bed && !f.poly) place(bed, cx, cy, 150)
-      return hedgeGroup(f, { bed: M.pot, leaf: M.leaf, leafDark: M.leafDark }, bed)
+      if (/parapet/i.test(f.label)) {
+        // the planted strip inside a parapet: the clipped hedge, tall enough to
+        // hide the city from inside (see hedge.ts)
+        return hedgeGroup(f, { bed: M.pot, leaf: M.leaf, leafDark: M.leafDark }, bed)
+      }
+      // an indoor planter: a stone bed with a row of low shrubs in it
+      const stoneBed = f.poly ? polyPiece(f.poly, 0, 300, M.carved, f.room) : box(w, 300, d, M.carved)
+      if (stoneBed && !f.poly) place(stoneBed, cx, cy, 150)
+      if (stoneBed) g.add(stoneBed)
+      const long = Math.max(w, d)
+      const n = Math.max(2, Math.round(long / 420))
+      const r = Math.min(230, Math.min(w, d) / 2 - 30)
+      for (let i = 0; i < n; i++) {
+        const t = (i + 0.5) / n
+        const sx = w >= d ? f.x + t * w : cx
+        const sy = w >= d ? cy : f.y + t * d
+        const sh = new THREE.Mesh(new THREE.SphereGeometry(r * S, 9, 7), i % 2 ? M.leaf : M.leafDark)
+        sh.scale.set(1, 0.8, 1)
+        sh.position.set(sx * S, (300 + r * 0.55) * S, sy * S)
+        sh.castShadow = true
+        g.add(sh)
+      }
+      return g
     }
     case 'sofa': {
       if (/^chair$/i.test(f.label)) {

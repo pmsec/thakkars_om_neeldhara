@@ -463,9 +463,12 @@ STACKS = [
 CEIL = 3050
 VAULTS = {
     # id: (springs at y, control, lands at y)
-    'ROOF-DECK': ((-150, 0), (-2550, 8000), (2620, CEIL)),
-    'ROOF-P-TERRACE': ((0, 0), (-1500, 6600), (1350, CEIL)),
-    'ROOF-K-TERRACE': ((0, 0), (-1500, 6600), (1350, CEIL)),
+    # Deck: bellies 1200 out past the parapet, peaks at 6098 (20 ft).
+    'ROOF-DECK': ((-150, 0), (-3530, 10410), (2620, CEIL)),
+    # Terraces: bellies 800 out, peaks at 5198 (17 ft) - the same family,
+    # shallower because the terrace is only 1350 deep.
+    'ROOF-P-TERRACE': ((0, 0), (-2110, 8540), (1350, CEIL)),
+    'ROOF-K-TERRACE': ((0, 0), (-2110, 8540), (1350, CEIL)),
 }
 
 
@@ -485,8 +488,8 @@ def vault_extent(rid, x0, x1):
 ROOFS = [
     ('ROOF-DECK', 'Retractable curved glass vault over the deck', 'barrel',
      vault_extent('ROOF-DECK', 4530, 19950), None, True, 'Laminated acoustic glass',
-     'Roof AND wall: springs from the parapet line, bellies out over the street, '
-     'peaks 1.9 m above the ceiling and lands on the pod line. The deck is in AND '
+     'Roof AND wall: springs from the parapet line, bellies 1.2 m out over the street, '
+     'peaks at 6.1 m - 3 m above the ceiling - and lands on the pod line. The deck is in AND '
      'out: cooled under glass, open when the roof retracts.'),
     ('ROOF-P-TERRACE', "Curved glass canopy over the parents' terrace", 'barrel',
      vault_extent('ROOF-P-TERRACE', -600, 2750), None, False,

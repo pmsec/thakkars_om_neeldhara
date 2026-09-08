@@ -235,6 +235,11 @@ export function makeMaterials() {
       color: 0x7fb5c4, transparent: true, opacity: 0.75, roughness: 0.08, metalness: 0.1,
     }),
     marble: new THREE.MeshStandardMaterial({ color: 0xe8e6e0, roughness: 0.25 }),
+    // carved stone of the fountain: warmer and duller than the polished marble tops
+    carved: new THREE.MeshStandardMaterial({ color: 0xd6cdbb, roughness: 0.7 }),
+    acrylic: new THREE.MeshStandardMaterial({ color: 0xeef2f2, roughness: 0.18, metalness: 0.05 }),
+    petal: new THREE.MeshStandardMaterial({ color: 0xd4679a, roughness: 0.8 }),
+    petalWhite: new THREE.MeshStandardMaterial({ color: 0xf6eff2, roughness: 0.8 }),
     appliance: new THREE.MeshStandardMaterial({ color: 0xd8d5cc, roughness: 0.4, metalness: 0.25 }),
   }
 }
@@ -303,6 +308,45 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     m.castShadow = true
     m.receiveShadow = true
     return m
+  }
+
+  // The spa is a hot tub, not a table: a wood-skirted shell with a lip, water,
+  // four seats under it and a headrest each. Everything stays inside the drawn
+  // 1750 square, so the footprint gate still holds.
+  if (/\bspa\b|jacuzzi|hot tub/i.test(f.label)) {
+    const rr = (hw: number, hd: number, r: number) => {
+      const pts: { x: number; y: number }[] = []
+      const corners: Array<[number, number, number]> = [[hw - r, hd - r, 0], [-hw + r, hd - r, Math.PI / 2], [-hw + r, -hd + r, Math.PI], [hw - r, -hd + r, -Math.PI / 2]]
+      for (const [ox, oy, a0] of corners)
+        for (let i = 0; i <= 6; i++) {
+          const a = a0 + (Math.PI / 2) * (i / 6)
+          pts.push({ x: ox + r * Math.cos(a), y: oy + r * Math.sin(a) })
+        }
+      return pts
+    }
+    const hw = w / 2
+    const hd = d / 2
+    const H = Math.min(f.height, 900)
+    const LIP = 130
+    const outer = rr(hw, hd, 180)
+    const inner = rr(hw - LIP, hd - LIP, 120)
+    const mesh = (geo: THREE.BufferGeometry, mat: THREE.Material) => {
+      const m = new THREE.Mesh(geo, mat)
+      m.castShadow = true
+      m.receiveShadow = true
+      return m
+    }
+    g.add(mesh(prismGeometry(outer, 0, H - 90, [inner]), M.wallWood))      // the cabinet skirt
+    g.add(mesh(prismGeometry(outer, H - 90, H, [inner]), M.acrylic))         // the lip
+    g.add(mesh(prismGeometry(inner, 0, 260, []), M.acrylic))                 // the shell floor
+    const seatIn = 300
+    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+      g.add(box(560, 300, 560, M.acrylic, sx * (hw - LIP - seatIn), 260 + 150, sz * (hd - LIP - seatIn)))
+      g.add(box(150, 90, 340, M.fabricDark, sx * (hw - LIP / 2), H + 45, sz * (hd - 380)))
+    }
+    g.add(mesh(prismGeometry(inner, H - 130, H - 118, []), M.water))         // the water, just below the lip
+    place(g, cx, cy)
+    return g
   }
 
   // A piece with its drawn 2D outline extrudes THAT — the shape on the sheet,
@@ -602,6 +646,85 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
 }
 
 /**
+ * A three-tier carved stone fountain, London style: stepped plinth, a wide lower
+ * basin on a fluted pedestal, a middle and a top basin above it, a finial, water
+ * falling from tier to tier, and trailing flowers spilling over the two lower rims.
+ * Scaled from the drawn footprint radius `r` (600 on the sheet).
+ */
+function tieredFountain(M: Mats, F: { x: number; y: number; r: number }): THREE.Group {
+  const g = new THREE.Group()
+  const k = F.r / 600
+  const mm = (v: number) => v * k * S
+  const add = (m: THREE.Mesh, y: number) => {
+    m.position.set(F.x * S, y * k * S, F.y * S)
+    m.castShadow = true
+    m.receiveShadow = true
+    g.add(m)
+  }
+  const lathe = (profile: Array<[number, number]>, mat: THREE.Material, segs = 40) => {
+    const pts = profile.map(([r, y]) => new THREE.Vector2(r * k * S, y * k * S))
+    const m = new THREE.Mesh(new THREE.LatheGeometry(pts, segs), mat)
+    m.material.side = THREE.DoubleSide
+    return m
+  }
+  // plinth and pedestal
+  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(560), mm(600), mm(80), 40), M.carved), 40)
+  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(470), mm(500), mm(100), 40), M.carved), 130)
+  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(180), mm(230), mm(420), 14), M.carved), 390)
+  add(new THREE.Mesh(new THREE.TorusGeometry(mm(215), mm(38), 10, 32), M.carved), 600)
+  // the three basins, each a bowl with water in it
+  const bowl = (rim: number, base: number, top: number, mat = M.carved) =>
+    lathe([[0, base], [rim * 0.55, base], [rim * 0.92, base + (top - base) * 0.55], [rim, top - 20], [rim - 30, top], [rim * 0.45, top - 60], [0, top - 70]], mat)
+  const water = (r: number, y: number) => add(new THREE.Mesh(new THREE.CylinderGeometry(mm(r), mm(r), mm(12), 36), M.water), y)
+  add(bowl(600, 620, 840), 0)
+  water(520, 815)
+  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(105), mm(135), mm(700), 14), M.carved), 840 + 350)
+  add(bowl(380, 1520, 1690), 0)
+  water(320, 1668)
+  add(new THREE.Mesh(new THREE.CylinderGeometry(mm(65), mm(85), mm(380), 12), M.carved), 1690 + 190)
+  add(bowl(220, 2060, 2180), 0)
+  water(180, 2160)
+  add(new THREE.Mesh(new THREE.SphereGeometry(mm(62), 16, 12), M.carved), 2245)
+  add(new THREE.Mesh(new THREE.ConeGeometry(mm(40), mm(120), 12), M.carved), 2330)
+  // falling water: thin translucent columns from each upper rim into the basin below
+  const fall = (r: number, n: number, top: number, bottom: number) => {
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(mm(7), mm(9), mm(top - bottom), 6), M.water)
+      m.position.set((F.x + r * k * Math.cos(a)) * S, ((top + bottom) / 2) * k * S, (F.y + r * k * Math.sin(a)) * S)
+      g.add(m)
+    }
+  }
+  fall(200, 6, 2160, 1690)
+  fall(360, 8, 1668, 840)
+  // flowers and creepers over the two lower rims: a green wreath, blooms on it,
+  // and strands trailing down
+  const wreath = (r: number, tube: number, y: number, blooms: number, strands: number, drop: number) => {
+    add(new THREE.Mesh(new THREE.TorusGeometry(mm(r), mm(tube), 8, 40), M.leafDark), y)
+    for (let i = 0; i < blooms; i++) {
+      const a = (i / blooms) * Math.PI * 2 + (i % 3) * 0.07
+      const rr = r + (i % 2 ? tube * 0.6 : -tube * 0.3)
+      const m = new THREE.Mesh(new THREE.SphereGeometry(mm(30), 8, 6), i % 3 === 0 ? M.petalWhite : M.petal)
+      m.position.set((F.x + rr * k * Math.cos(a)) * S, (y + tube * 0.4) * k * S, (F.y + rr * k * Math.sin(a)) * S)
+      g.add(m)
+    }
+    for (let i = 0; i < strands; i++) {
+      const a = (i / strands) * Math.PI * 2 + 0.2
+      const len = drop * (0.6 + ((i * 7) % 5) / 10)
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(mm(12), mm(18), mm(len), 6), i % 2 ? M.leaf : M.leafDark)
+      m.position.set((F.x + (r + tube * 0.5) * k * Math.cos(a)) * S, (y - len / 2) * k * S, (F.y + (r + tube * 0.5) * k * Math.sin(a)) * S)
+      g.add(m)
+      const tip = new THREE.Mesh(new THREE.SphereGeometry(mm(26), 8, 6), i % 2 ? M.petal : M.petalWhite)
+      tip.position.set(m.position.x, (y - len) * k * S, m.position.z)
+      g.add(tip)
+    }
+  }
+  wreath(590, 80, 830, 30, 14, 620)
+  wreath(370, 55, 1680, 18, 8, 420)
+  return g
+}
+
+/**
  * The curved doors on the entry drum's arched portal to the great room. The 2D
  * draws them shut on the arc ("they slide on the arc"), so they are drawn shut
  * here too: a pair of leaves, wood framed, each with two chamfered glass lights.
@@ -788,15 +911,12 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   // footprint on the 2D sheet behind it. On a home without that deck it would
   // hang in mid-air outside the flat, so it is drawn only where its room is.
   const deck = model.roomById.get('R-DECK')
-  const F = { x: 12240, y: 1160, r: 600 }
+  const drawn = furniture.find((f) => f.label.toLowerCase().includes('fountain'))
+  const F = drawn
+    ? { x: drawn.x + drawn.w / 2, y: drawn.y + drawn.d / 2, r: Math.min(drawn.w, drawn.d) / 2 }
+    : { x: 12240, y: 1160, r: 600 }
   if (deck && pointInPolygon({ x: F.x, y: F.y }, deck.polygon)) {
-    const ring = new THREE.Mesh(new THREE.CylinderGeometry(F.r * S, (F.r + 60) * S, 0.42, 36, 1, false), M.marble)
-    ring.position.set(F.x * S, 0.21, F.y * S)
-    ring.castShadow = true
-    root.add(ring)
-    const water = new THREE.Mesh(new THREE.CylinderGeometry((F.r - 90) * S, (F.r - 90) * S, 0.05, 32), M.water)
-    water.position.set(F.x * S, 0.4, F.y * S)
-    root.add(water)
+    root.add(tieredFountain(M, F))
   }
 
   return root

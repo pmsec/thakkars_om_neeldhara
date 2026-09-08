@@ -458,6 +458,36 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'bed': {
+      if (/bunk/i.test(f.label)) {
+        // two berths on four posts, a guard rail along the open side of the
+        // upper one, and a ladder at the foot
+        const alongX = w >= d
+        const post = 60
+        const lvl = [0, 1450]
+        for (const y0 of lvl) {
+          g.add(box(w - 2 * post, 180, d - 2 * post, M.timber, 0, y0 + 90, 0))
+          g.add(box(w - 2 * post - 40, 160, d - 2 * post - 40, M.duvet, 0, y0 + 260, 0))
+          const pw = Math.min(480, (alongX ? d : w) - 200)
+          g.add(box(alongX ? 300 : pw, 110, alongX ? pw : 300, M.pillow,
+            alongX ? -(w / 2 - post - 220) : 0, y0 + 395, alongX ? 0 : -(d / 2 - post - 220)))
+        }
+        for (const sx of [-1, 1]) for (const sz of [-1, 1])
+          g.add(box(post, 2000, post, M.timber, sx * (w / 2 - post / 2), 1000, sz * (d / 2 - post / 2)))
+        // guard rail on the side the sleeper faces
+        const railH = 1450 + 180 + 300
+        if (f.face === 'S') g.add(box(w - 2 * post, 40, 30, M.timber, 0, railH, d / 2 - post - 15))
+        else if (f.face === 'N') g.add(box(w - 2 * post, 40, 30, M.timber, 0, railH, -(d / 2 - post - 15)))
+        else if (f.face === 'E') g.add(box(30, 40, d - 2 * post, M.timber, w / 2 - post - 15, railH, 0))
+        else g.add(box(30, 40, d - 2 * post, M.timber, -(w / 2 - post - 15), railH, 0))
+        // ladder at the foot end
+        const lx = alongX ? w / 2 - post - 40 : 0
+        const lz = alongX ? 0 : d / 2 - post - 40
+        for (let r = 0; r < 6; r++) {
+          g.add(box(alongX ? 30 : 360, 30, alongX ? 360 : 30, M.timber, lx, 300 + r * 260, lz))
+        }
+        place(g, cx, cy)
+        return g
+      }
       if (f.poly) {
         // the drawn silhouette — rounded foot corners survive to 3D
         g.add(basePrism(f.poly, 0, 260, M.timber))

@@ -163,7 +163,8 @@ WALLS += [
       notes='Extended past the drum face so it dies INTO the arc.'),
     w('W-KIT-NW', [(8662.5, 7862.5), (8662.5, 8462.5)], 125, 'interior'),
     w('W-HELP-N', [(13700, 8462.5), (20013, 8462.5)], 125, 'interior',
-      [op('D-HELP', 'door', 1320, 2120, label="Help's room door")]),
+      [op('D-WC-GREAT', 'door', 1320, 2120,
+          label='Guest WC — from the great room, west of the pod glazing')]),
     w('W-STORE-W', [(17505, 8462.5), (17505, 10255)], 150, 'interior'),
     w('W-STORE-HELP', [(16800, 10082.73), (16800, 11125)], 110, 'partition',
       [op('D-STORE', 'door', 0, 700, label='Store door')]),
@@ -281,12 +282,31 @@ WALLS += [
 wcq = R.wc_wall()
 wc_line = sweep_centreline(wcq)
 wc_len = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(wc_line, wc_line[1:]))
+
+
+def _along(line, pt):
+    """Distance along a polyline to its point nearest `pt`."""
+    best, s, acc = None, 0.0, 0.0
+    for a, b in zip(line, line[1:]):
+        seg = math.hypot(b[0] - a[0], b[1] - a[1])
+        if seg:
+            t = max(0.0, min(1.0, ((pt[0] - a[0]) * (b[0] - a[0]) + (pt[1] - a[1]) * (b[1] - a[1])) / seg ** 2))
+            q = (a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]))
+            d = math.hypot(q[0] - pt[0], q[1] - pt[1])
+            if best is None or d < best:
+                best, s = d, acc + t * seg
+        acc += seg
+    return s
+
+
+# The apse carries ONE door, help's room's, exactly where the sheet takes it out
+# of the wall (D.WC_DOOR, a parameter range on the ellipse). The great room's
+# way into the WC is the 800 opening in the straight wall at y 8462.5.
+_wc_door = (_along(wc_line, R.wc_pt(D.WC_DOOR[0])), _along(wc_line, R.wc_pt(D.WC_DOOR[1])))
 WALLS += [
     w('W-WC-SWEEP', wc_line, 230, 'interior',
-      [op('D-WC-GREAT', 'door', wc_len * 0.10, wc_len * 0.10 + 800, head=2100,
-          label='Guest WC — from the great room side'),
-       op('D-WC-HELP', 'door', wc_len * 0.55, wc_len * 0.55 + 776, head=2100,
-          label="Guest WC — from help's side")],
+      [op('D-WC-HELP', 'door', min(_wc_door), max(_wc_door), head=2100,
+          label="Guest WC — from help's room, on the apse")],
       label='Guest WC — quarter-ellipse sweep'),
 ]
 
@@ -991,6 +1011,8 @@ def emit_furniture():
         room = room_for(cx, cy)
         label = (lab.split('·')[0].strip() or base) if lab else base
         h = HEIGHTS.get(mapped, 600)
+        if base == 'bunk':
+            label, h = 'Bunk bed', 2000
         if base == 'gym':
             label, h = 'All-in-one strength trainer', 2150
         if base == 'spa':

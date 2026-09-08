@@ -178,7 +178,7 @@ export const building: BuildingData = {
       thickness: 125,
       kind: 'interior',
       openings: [
-        { id: 'D-HELP', type: 'door', at: [1320, 2120], head: 2100, hinge: 0, side: 1, label: "Help's room door" },
+        { id: 'D-WC-GREAT', type: 'door', at: [1320, 2120], head: 2100, hinge: 0, side: 1, label: 'Guest WC — from the great room, west of the pod glazing' },
       ],
     },
     {
@@ -494,8 +494,7 @@ export const building: BuildingData = {
       thickness: 230,
       kind: 'interior',
       openings: [
-        { id: 'D-WC-GREAT', type: 'door', at: [359.123, 1159.123], head: 2100, hinge: 0, side: 1, label: 'Guest WC — from the great room side' },
-        { id: 'D-WC-HELP', type: 'door', at: [1975.179, 2751.179], head: 2100, hinge: 0, side: 1, label: "Guest WC — from help's side" },
+        { id: 'D-WC-HELP', type: 'door', at: [1321.54, 2051.062], head: 2100, hinge: 0, side: 1, label: "Guest WC — from help's room, on the apse" },
       ],
       label: 'Guest WC — quarter-ellipse sweep',
     },

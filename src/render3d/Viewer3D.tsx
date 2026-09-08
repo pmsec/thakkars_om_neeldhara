@@ -849,6 +849,15 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
       }
       break
     case 'bed': {
+      if (/bunk/i.test(f.label)) {
+        for (const y0 of [0, 1450]) {
+          box(w - 120, 180, d - 120, MAT.wood, 0, y0 + 90, 0)
+          box(w - 160, 160, d - 160, MAT.linen, 0, y0 + 260, 0)
+        }
+        for (const sx of [-1, 1]) for (const sz of [-1, 1])
+          box(60, 2000, 60, MAT.wood, sx * (w / 2 - 30), 1000, sz * (d / 2 - 30))
+        break
+      }
       if (f.poly) {
         basePrism(f.poly, 0, 380, MAT.soft)
         basePrism(f.poly, 380, 470, MAT.linen)

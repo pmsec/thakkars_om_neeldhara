@@ -210,6 +210,31 @@ function marbleTexture(): THREE.CanvasTexture {
   }, 1.1)
 }
 
+/** Walnut: a deep brown with a fine, slightly wandering grain and a soft figure. */
+function walnutTexture(): THREE.CanvasTexture {
+  return canvasTexture(256, (g, s) => {
+    g.fillStyle = '#4e3322'
+    g.fillRect(0, 0, s, s)
+    for (let i = 0; i < 12; i++) {
+      const x = (i * 71) % s, y = (i * 113) % s
+      const grad = g.createRadialGradient(x, y, 4, x, y, 90)
+      grad.addColorStop(0, 'rgba(120,80,50,0.18)')
+      grad.addColorStop(1, 'rgba(60,38,22,0)')
+      g.fillStyle = grad
+      g.fillRect(0, 0, s, s)
+    }
+    for (let k = 0; k < 46; k++) {
+      const y = (k * 11) % s
+      g.strokeStyle = `rgba(28, 16, 8, ${0.14 + (k % 5) / 24})`
+      g.lineWidth = 1 + (k % 3) * 0.4
+      g.beginPath()
+      g.moveTo(0, y)
+      g.bezierCurveTo(s * 0.3, y + 4, s * 0.7, y - 4, s, y + 1)
+      g.stroke()
+    }
+  }, 0.9)
+}
+
 function weaveTexture(): THREE.CanvasTexture {
   return canvasTexture(128, (g, s) => {
     g.fillStyle = '#e9e1cf'
@@ -250,10 +275,10 @@ function rugTexture(): THREE.CanvasTexture {
   // a palace carpet: a burgundy field, a gold-and-ivory guard border, a
   // central medallion with lobed petals and quarter medallions in the corners
   return canvasTexture(1024, (g, s) => {
-    g.fillStyle = '#6d1c2e'
+    g.fillStyle = '#5a4030'
     g.fillRect(0, 0, s, s)
     for (let k = 0; k < 9000; k++) {
-      g.fillStyle = `rgba(${150 + (k % 40)}, ${40 + (k % 20)}, ${60 + (k % 24)}, 0.22)`
+      g.fillStyle = `rgba(${120 + (k % 40)}, ${90 + (k % 20)}, ${64 + (k % 24)}, 0.22)`
       g.fillRect((k * 31) % s, (k * 87) % s, 2, 2)
     }
     const band = (inset: number, w: number, col: string) => {
@@ -261,9 +286,9 @@ function rugTexture(): THREE.CanvasTexture {
       g.lineWidth = w
       g.strokeRect(inset, inset, s - inset * 2, s - inset * 2)
     }
-    band(18, 10, '#d9b76a')
-    band(40, 26, '#efe3c4')
-    band(70, 6, '#d9b76a')
+    band(18, 10, '#b58d4a')
+    band(40, 26, '#e9dcc2')
+    band(70, 6, '#b58d4a')
     // vine motif along the ivory band
     g.strokeStyle = '#8a5a2a'
     g.lineWidth = 3
@@ -277,22 +302,22 @@ function rugTexture(): THREE.CanvasTexture {
     const medallion = (cx: number, cy: number, r: number) => {
       for (let i = 0; i < 16; i++) {
         const a = (i / 16) * Math.PI * 2
-        g.fillStyle = i % 2 ? '#d9b76a' : '#efe3c4'
+        g.fillStyle = i % 2 ? '#b58d4a' : '#e9dcc2'
         g.beginPath()
         g.ellipse(cx + Math.cos(a) * r * 0.62, cy + Math.sin(a) * r * 0.62, r * 0.36, r * 0.14, a, 0, Math.PI * 2)
         g.fill()
       }
-      g.fillStyle = '#2a4d3e'
+      g.fillStyle = '#4a5a3e'
       g.beginPath(); g.arc(cx, cy, r * 0.42, 0, Math.PI * 2); g.fill()
-      g.fillStyle = '#d9b76a'
+      g.fillStyle = '#b58d4a'
       g.beginPath(); g.arc(cx, cy, r * 0.28, 0, Math.PI * 2); g.fill()
-      g.fillStyle = '#6d1c2e'
+      g.fillStyle = '#5a4030'
       g.beginPath(); g.arc(cx, cy, r * 0.12, 0, Math.PI * 2); g.fill()
     }
     medallion(s / 2, s / 2, s * 0.24)
     for (const [cx, cy] of [[76, 76], [s - 76, 76], [76, s - 76], [s - 76, s - 76]] as const) medallion(cx, cy, s * 0.11)
     // a scatter of small gold sprigs across the field
-    g.fillStyle = 'rgba(217,183,106,0.75)'
+    g.fillStyle = 'rgba(181,141,74,0.7)'
     for (let i = 0; i < 40; i++) {
       const x = 130 + ((i * 197) % (s - 260)), y = 130 + ((i * 311) % (s - 260))
       if (Math.hypot(x - s / 2, y - s / 2) < s * 0.27) continue
@@ -325,6 +350,7 @@ export function makeMaterials() {
   const grass = grassTexture()
   const plaster = plasterTexture()
   const wood = woodTexture()
+  const walnut = walnutTexture()
   const rug = rugTexture()
 
   return {
@@ -354,13 +380,11 @@ export function makeMaterials() {
     // the upholstery: crushed velvets with a silk sheen, the way a palace
     // seat catches the light - burgundy for the seats, a deeper wine for the
     // backs and arms, bottle green for the cushions on the beds
-    fabric: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x7a1f33, roughness: 0.62, sheen: 1.0, sheenColor: new THREE.Color(0xd08a6a), sheenRoughness: 0.55 }),
-    fabricDark: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x5a1626, roughness: 0.62, sheen: 1.0, sheenColor: new THREE.Color(0xc07860), sheenRoughness: 0.55 }),
-    velvetGreen: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x1f4a3a, roughness: 0.6, sheen: 1.0, sheenColor: new THREE.Color(0x8fc9a8), sheenRoughness: 0.5 }),
-    quilt: new THREE.MeshPhysicalMaterial({ map: quiltTexture(), color: 0xe9d9b8, roughness: 0.55, sheen: 0.8, sheenColor: new THREE.Color(0xf3e2b8), sheenRoughness: 0.4 }),
-    throw: new THREE.MeshPhysicalMaterial({ color: 0xb9903e, roughness: 0.45, sheen: 1.0, sheenColor: new THREE.Color(0xffe6a8), sheenRoughness: 0.35 }),
-    gilt: new THREE.MeshStandardMaterial({ color: 0xd4af5a, roughness: 0.32, metalness: 0.85 }),
-    crystal: new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.72, roughness: 0.04, metalness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.03, envMapIntensity: 1.6 }),
+    fabric: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x8a7462, roughness: 0.66, sheen: 0.8, sheenColor: new THREE.Color(0xd9c3a8), sheenRoughness: 0.6 }),
+    fabricDark: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x6a5546, roughness: 0.66, sheen: 0.8, sheenColor: new THREE.Color(0xc9ae90), sheenRoughness: 0.6 }),
+    velvetGreen: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x4a5a3e, roughness: 0.62, sheen: 0.9, sheenColor: new THREE.Color(0xb8c49a), sheenRoughness: 0.5 }),
+    quilt: new THREE.MeshPhysicalMaterial({ map: quiltTexture(), color: 0xe4d6bd, roughness: 0.55, sheen: 0.8, sheenColor: new THREE.Color(0xf3e2b8), sheenRoughness: 0.4 }),
+    throw: new THREE.MeshPhysicalMaterial({ color: 0xa8843f, roughness: 0.5, sheen: 0.9, sheenColor: new THREE.Color(0xf0d9a0), sheenRoughness: 0.4 }),
     bin: new THREE.MeshStandardMaterial({ color: 0x3b3b3b, roughness: 0.5, metalness: 0.5 }),
     soil: new THREE.MeshStandardMaterial({ color: 0x3b2b1c, roughness: 1.0 }),
     mirror: new THREE.MeshStandardMaterial({ color: 0xc9d6dd, roughness: 0.05, metalness: 0.9 }),
@@ -368,8 +392,9 @@ export function makeMaterials() {
     hob: new THREE.MeshStandardMaterial({ color: 0x151719, roughness: 0.15, metalness: 0.2 }),
     // bedding and seat cushions in ivory silk; bolsters in green velvet
     duvet: new THREE.MeshPhysicalMaterial({ color: 0xf6efe0, roughness: 0.5, sheen: 0.9, sheenColor: new THREE.Color(0xfff2cc), sheenRoughness: 0.4 }),
-    pillow: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x1f4a3a, roughness: 0.6, sheen: 1.0, sheenColor: new THREE.Color(0x8fc9a8), sheenRoughness: 0.5 }),
-    timber: new THREE.MeshStandardMaterial({ map: wood, roughness: 0.5 }),
+    pillow: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x4a5a3e, roughness: 0.62, sheen: 0.9, sheenColor: new THREE.Color(0xb8c49a), sheenRoughness: 0.5 }),
+    timber: new THREE.MeshStandardMaterial({ map: walnut, roughness: 0.42 }),
+    walnut: new THREE.MeshStandardMaterial({ map: walnut, roughness: 0.42 }),
     leaf: new THREE.MeshStandardMaterial({ color: 0x6e9450, roughness: 0.9 }),
     leafDark: new THREE.MeshStandardMaterial({ color: 0x577b3e, roughness: 0.9 }),
     trunk: new THREE.MeshStandardMaterial({ color: 0x6d5334, roughness: 0.9 }),
@@ -402,7 +427,7 @@ export function makeMaterials() {
     appliance: new THREE.MeshStandardMaterial({ color: 0xd8d5cc, roughness: 0.4, metalness: 0.25 }),
     steel: new THREE.MeshStandardMaterial({ color: 0xc6c9cc, roughness: 0.32, metalness: 0.7 }),
     idol: new THREE.MeshStandardMaterial({ color: 0xf3efe6, roughness: 0.35, metalness: 0.02 }),
-    lamp: new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffc46a, emissiveIntensity: 1.6, roughness: 0.6 }),
+    lamp: new THREE.MeshStandardMaterial({ color: 0xf0d09a, emissive: 0xffb45a, emissiveIntensity: 1.1, roughness: 0.6 }),
     brass: new THREE.MeshStandardMaterial({ color: 0xc9a24a, roughness: 0.3, metalness: 0.8 }),
     gasket: new THREE.MeshStandardMaterial({ color: 0x2b2d30, roughness: 0.6 }),
     graphite: new THREE.MeshStandardMaterial({ color: 0x24262a, roughness: 0.35, metalness: 0.4 }),
@@ -1054,8 +1079,28 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
           leg.castShadow = true
           g.add(leg)
         }
-        // a small crystal chandelier over the table, its light on the settings
-        g.add(chandelier(M, cx, cy, 380, model.data.levels.ceiling, 1900))
+        // over the table: a long walnut slat pendant on two cords, a linen diffuser
+        // between the slats and a dim amber light in it
+        {
+          const ceiling = model.data.levels.ceiling
+          const L = Math.min(w, d) >= w ? Math.max(w, d) * 0.6 : w * 0.6
+          const alongX = w >= d
+          for (const e of [-1, 1]) {
+            const cord = new THREE.Mesh(new THREE.CylinderGeometry(2.5 * S, 2.5 * S, (ceiling - 1950) * S, 6), M.gasket)
+            cord.position.set((cx + (alongX ? e * L * 0.35 : 0)) * S, ((ceiling + 1950) / 2) * S, (cy + (alongX ? 0 : e * L * 0.35)) * S)
+            g.add(cord)
+          }
+          const n = Math.max(6, Math.round(L / 90))
+          for (let i = 0; i < n; i++) {
+            const t = (i + 0.5) / n - 0.5
+            g.add(box(alongX ? 18 : 220, 110, alongX ? 220 : 18, M.walnut, cx + (alongX ? t * L : 0), 1895, cy + (alongX ? 0 : t * L)))
+          }
+          g.add(box(alongX ? L : 24, 60, alongX ? 24 : L, M.walnut, cx, 1955, cy))       // the spine
+          g.add(box(alongX ? L - 30 : 170, 70, alongX ? 170 : L - 30, M.lamp, cx, 1890, cy))  // the linen diffuser, lit
+          const bulb = new THREE.PointLight(0xffc27a, 0.9, 4.0, 1.6)
+          bulb.position.set(cx * S, 1840 * S, cy * S)
+          g.add(bulb)
+        }
         return g
       }
       g.add(box(w, 60, d, M.timber, 0, 750, 0))
@@ -1931,95 +1976,6 @@ function coffeeBar(M: Mats, f: FurnitureItem): THREE.Group | null {
   return g
 }
 
-/**
- * A crystal chandelier: a brass chain and stem from the ceiling, two tiers of
- * brass rings hung with cut-crystal drops, candle lamps round the outer ring,
- * a crystal bowl under the hub, and one warm light in the middle. `R` is the
- * outer ring's radius in mm; the drops are instanced so a big one is cheap.
- */
-function chandelier(M: Mats, x: number, y: number, R: number, ceiling: number, bottom: number): THREE.Group {
-  const g = new THREE.Group()
-  const hub = bottom + R * 0.75                     // the hub height; tiers hang below it
-  const at = (m: THREE.Object3D, h: number, dx = 0, dz = 0) => {
-    m.position.set((x + dx) * S, h * S, (y + dz) * S)
-    g.add(m)
-  }
-  const chain = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, (ceiling - hub - 60) * S, 8), M.brass)
-  at(chain, (ceiling + hub + 60) / 2)
-  at(new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 90 * S, 30 * S, 20), M.brass), ceiling - 15)   // the rose
-  at(new THREE.Mesh(new THREE.SphereGeometry(55 * S, 16, 12), M.brass), hub + 40)                    // the hub
-  const drop = new THREE.OctahedronGeometry(1, 0)
-  const tiers: Array<{ r: number; h: number; n: number; len: number }> = [
-    { r: R, h: hub, n: Math.round(R / 26), len: 150 },
-    { r: R * 0.62, h: hub - 160, n: Math.round(R / 42), len: 120 },
-    { r: R * 0.3, h: hub - 300, n: Math.round(R / 70), len: 100 },
-  ]
-  const total = tiers.reduce((t, q) => t + q.n * 2, 0) + 1
-  const drops = new THREE.InstancedMesh(drop, M.crystal, total)
-  const mat4 = new THREE.Matrix4()
-  let k = 0
-  const putDrop = (px: number, ph: number, pz: number, sx: number, sy: number) => {
-    mat4.compose(new THREE.Vector3(px * S, ph * S, pz * S), new THREE.Quaternion(), new THREE.Vector3(sx * S, sy * S, sx * S))
-    drops.setMatrixAt(k++, mat4)
-  }
-  for (const t of tiers) {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(t.r * S, 9 * S, 8, 40), M.brass)
-    ring.rotation.x = Math.PI / 2
-    at(ring, t.h)
-    // spokes to the hub
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2
-      const spoke = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 4 * S, t.r * S, 6), M.brass)
-      spoke.rotation.z = Math.PI / 2
-      spoke.rotation.y = -a
-      at(spoke, t.h, Math.cos(a) * t.r / 2, Math.sin(a) * t.r / 2)
-    }
-    for (let i = 0; i < t.n; i++) {
-      const a = (i / t.n) * Math.PI * 2
-      const px = x + Math.cos(a) * t.r, pz = y + Math.sin(a) * t.r
-      putDrop(px, t.h - t.len * 0.45, pz, 12, t.len * 0.45)          // the long pendant drop
-      putDrop(px, t.h - t.len - 20, pz, 22, 22)                       // the bead at its tip
-    }
-  }
-  putDrop(x, hub - 430, y, 60, 90)                                    // the finial drop under it all
-  drops.instanceMatrix.needsUpdate = true
-  g.add(drops)
-  // candle lamps on the outer ring: a brass cup, an ivory candle, a glowing flame
-  const nC = Math.max(6, Math.round(R / 80))
-  for (let i = 0; i < nC; i++) {
-    const a = (i / nC) * Math.PI * 2 + Math.PI / nC
-    const dx = Math.cos(a) * R * 0.92, dz = Math.sin(a) * R * 0.92
-    at(new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 14 * S, 30 * S, 10), M.brass), hub + 20, dx, dz)
-    at(new THREE.Mesh(new THREE.CylinderGeometry(11 * S, 11 * S, 110 * S, 10), M.porcelain), hub + 90, dx, dz)
-    at(new THREE.Mesh(new THREE.SphereGeometry(16 * S, 10, 8), M.lamp), hub + 160, dx, dz)
-  }
-  const bowl = new THREE.Mesh(new THREE.SphereGeometry(R * 0.3 * S, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), M.crystal)
-  at(bowl, hub - 20)
-  const light = new THREE.PointLight(0xffd9a0, 2.2, R * S * 9, 1.6)
-  at(light, hub + 80)
-  return g
-}
-
-/** Where the chandeliers hang: the great room, the entry drum, both suites and the den. */
-function chandeliers(M: Mats): THREE.Group {
-  const g = new THREE.Group()
-  const ceiling = model.data.levels.ceiling
-  const plan: Array<[string, number, number]> = [
-    ['R-GREAT', 700, 2300], ['R-ENTRY', 520, 2250], ['R-P-SUITE', 460, 2300], ['R-K-SUITE', 460, 2300], ['R-K-DEN', 420, 2350],
-  ]
-  for (const [rid, R, bottom] of plan) {
-    const room = model.roomById.get(rid)
-    if (!room) continue
-    // the entry drum's chandelier hangs at the drum's own centre, not the gallery's
-    const drum = rid === 'R-ENTRY' ? entryDrum() : null
-    const cx = drum ? drum.C.x : room.centroid.x
-    const cy = drum ? drum.C.y - drum.Rwall * 0.35 : room.centroid.y
-    const at = pointInPolygon({ x: cx, y: cy }, room.polygon) ? { x: cx, y: cy } : room.centroid
-    g.add(chandelier(M, at.x, at.y, R, ceiling, bottom))
-  }
-  return g
-}
-export const CHANDELIER_ROOMS = new Set(['R-GREAT', 'R-ENTRY', 'R-P-SUITE', 'R-K-SUITE', 'R-K-DEN'])
 
 function mandirIdol(M: Mats): THREE.Group | null {
   const units = furniture.filter((f) => /corner unit/i.test(f.label) && f.room === 'R-P-FAMILY')
@@ -2456,9 +2412,10 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     const glassRects = solids.roofs
       .filter((r) => r.kind === 'flat')
       .map((r) => [[[r.extent[0], r.extent[1]], [r.extent[2], r.extent[1]], [r.extent[2], r.extent[3]], [r.extent[0], r.extent[3]], [r.extent[0], r.extent[1]]]] as [number, number][][])
-    const downMat = new THREE.MeshStandardMaterial({ color: 0xfff3dc, emissive: 0xffe3b0, emissiveIntensity: 1.4, roughness: 0.4 })
-    const trimMat = M.trunk
-    const coveMat = new THREE.MeshStandardMaterial({ color: 0xffe6b8, emissive: 0xffc878, emissiveIntensity: 1.3, roughness: 0.5 })
+    // dim amber: the downlights and the cove glow low and warm, not bright
+    const downMat = new THREE.MeshStandardMaterial({ color: 0xf2dcb0, emissive: 0xffb860, emissiveIntensity: 0.9, roughness: 0.4 })
+    const trimMat = M.walnut
+    const coveMat = new THREE.MeshStandardMaterial({ color: 0xe8c890, emissive: 0xffae4e, emissiveIntensity: 0.8, roughness: 0.5 })
     for (const room of model.rooms) {
       const cat = room.def.category
       if (cat === 'outdoor' || cat === 'void') continue
@@ -2502,7 +2459,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
         if ((room.centroid.x - mx) * nx + (room.centroid.y - my) * ny < 0) { nx = -nx; ny = -ny }
         // a timber skirting, a gilded cornice, and a cove of warm light along the
         // cornice's underside, the palace way of lighting a ceiling
-        for (const [h0, h1, t, mat] of [[0, 100, 16, trimMat], [ceiling - 60, ceiling, 24, M.gilt]] as const) {
+        for (const [h0, h1, t, mat] of [[0, 100, 16, trimMat], [ceiling - 60, ceiling, 24, M.walnut]] as const) {
           const trim = new THREE.Mesh(new THREE.BoxGeometry(t * S, (h1 - h0) * S, (len - 8) * S), mat)
           trim.position.set((mx + nx * t / 2) * S, ((h0 + h1) / 2) * S, (my + ny * t / 2) * S)
           trim.rotation.y = ang
@@ -2561,7 +2518,6 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   if (painting) root.add(painting)
   const sconces = entrySconces(M)
   if (sconces) root.add(sconces)
-  root.add(chandeliers(M))
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {
@@ -3068,7 +3024,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // fountain's marble and water only, so the rest of the house keeps its look.
     const pmrem = new THREE.PMREMGenerator(renderer)
     const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    for (const mat of [M.fountainMarble, M.fountainWater, M.crystal]) {
+    for (const mat of [M.fountainMarble, M.fountainWater]) {
       mat.envMap = envTex
       mat.needsUpdate = true
     }
@@ -3103,7 +3059,6 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // warm evening pools in the habitable rooms
     for (const r of model.rooms) {
       if (r.def.category !== 'habitable' && r.def.id !== 'R-ENTRY') continue
-      if (CHANDELIER_ROOMS.has(r.id)) continue                 // its chandelier lights it
       const p = new THREE.PointLight(rig.pointColor, rig.pointIntensity, Math.max(r.width, r.depth) * S * 1.4, 1.8)
       p.position.set(r.centroid.x * S, (r.ceiling - 350) * S, r.centroid.y * S)
       scene.add(p)

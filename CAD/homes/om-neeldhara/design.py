@@ -527,8 +527,11 @@ GLAZING = [
     # asked for on his side only.  One line brings it back:
     #   (M(2400), 9620, M(400), 9620, 'window'),
     (7800, 11050, 9800, 11050, 'window'),
-    (14300, 11050, 15900, 11050, 'window'),
-    (16350, 11050, 16800, 11050, 'window'),
+    # The two openings the source showed on the south wall at 14300-15900 and
+    # 16350-16800 - help's room and the guest WC - are NOT windows: that wall
+    # faces the building's own common passage, not the open air, and the
+    # client has it closed.  Help's room borrows light through its door and
+    # the WC ventilates into the duct, which is what the duct is for.
 ]
 
 # There is no such thing as an opening cut in existing masonry here: the flats

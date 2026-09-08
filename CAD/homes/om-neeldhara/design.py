@@ -679,9 +679,9 @@ _ONCE = [
     # side of it.  Open the slider and it is a single room; shut it and the
     # bench still faces the view.
     #
-    # The bench is IN THE ROOM: 2000 x 800, 50 off the terrace wall, centred on
-    # the terrace's 3100 so it sits square between the two singles.
-    ('sofa',     22280, 1400, 24280, 2200, 'bench sofa  ·  2000 x 800, back to the bed'),
+    # THE BENCH IS GONE (Karan's call): the floor between the bed and the
+    # terrace slider stays clear, so the room opens straight on to the
+    # terrace and its tree. The two singles on the terrace still face in.
     # The two singles, 800 each, facing each other across the table.  100 clear
     # at each end of the terrace and 200 top and bottom of its 1200 depth.
     # THE CENTRE TABLE IS GONE AND A TREE STANDS WHERE IT STOOD.  The middle

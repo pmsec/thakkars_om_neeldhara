@@ -247,6 +247,8 @@ export function makeMaterials() {
     petalWhite: new THREE.MeshStandardMaterial({ color: 0xf6eff2, roughness: 0.8 }),
     appliance: new THREE.MeshStandardMaterial({ color: 0xd8d5cc, roughness: 0.4, metalness: 0.25 }),
     steel: new THREE.MeshStandardMaterial({ color: 0xc6c9cc, roughness: 0.32, metalness: 0.7 }),
+    idol: new THREE.MeshStandardMaterial({ color: 0xf3efe6, roughness: 0.35, metalness: 0.02 }),
+    brass: new THREE.MeshStandardMaterial({ color: 0xc9a24a, roughness: 0.3, metalness: 0.8 }),
     gasket: new THREE.MeshStandardMaterial({ color: 0x2b2d30, roughness: 0.6 }),
   }
 }
@@ -710,6 +712,79 @@ export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
 }
 
 /**
+ * The marble Shiva on the mandir: the larger corner unit in the parents' pod,
+ * the wedge that follows the pod glazing. Seated on a lotus plinth on top of
+ * the unit, a trishul standing beside him, a brass diya in front. Drawn only
+ * where that unit exists, so no other home grows a shrine.
+ */
+function mandirIdol(M: Mats): THREE.Group | null {
+  const units = furniture.filter((f) => /corner unit/i.test(f.label) && f.room === 'R-P-FAMILY')
+  if (!units.length) return null
+  const unit = units.reduce((a, b) => (a.w * a.d >= b.w * b.d ? a : b))
+  const cx = unit.poly ? unit.poly.reduce((t, q) => t + q.x, 0) / unit.poly.length : unit.x + unit.w / 2
+  const cy = unit.poly ? unit.poly.reduce((t, q) => t + q.y, 0) / unit.poly.length : unit.y + unit.d / 2
+  const top = Math.min(unit.height, 900)
+  const g = new THREE.Group()
+  const at = (m: THREE.Mesh, dx: number, h: number, dz: number) => {
+    m.position.set((cx + dx) * S, (top + h) * S, (cy + dz) * S)
+    m.castShadow = true
+    m.receiveShadow = true
+    g.add(m)
+  }
+  const sph = (r: number, mat: THREE.Material, sx = 1, sy = 1, sz = 1) => {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r * S, 16, 12), mat)
+    m.scale.set(sx, sy, sz)
+    return m
+  }
+  const cyl = (r0: number, r1: number, h: number, mat: THREE.Material, seg = 16) =>
+    new THREE.Mesh(new THREE.CylinderGeometry(r0 * S, r1 * S, h * S, seg), mat)
+  // lotus plinth: a stepped disc with a ring of petals
+  at(cyl(190, 210, 30, M.idol, 24), 0, 15, 0)
+  at(cyl(150, 175, 40, M.idol, 24), 0, 50, 0)
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2
+    const p = sph(34, M.idol, 1, 0.5, 1.6)
+    p.rotation.y = -a
+    at(p, Math.cos(a) * 170, 62, Math.sin(a) * 170)
+  }
+  // seated figure: crossed legs, torso, shoulders, arms, head with the jata
+  at(sph(150, M.idol, 1, 0.42, 0.85), 0, 100, 0)
+  at(sph(95, M.idol, 0.95, 1.25, 0.72), 0, 235, -10)
+  at(sph(60, M.idol, 1.9, 0.55, 0.8), 0, 335, -10)
+  for (const sx of [-1, 1]) {
+    const arm = cyl(22, 24, 190, M.idol, 10)
+    arm.rotation.z = sx * 0.55
+    arm.rotation.x = -0.45
+    at(arm, sx * 105, 250, 35)
+    at(sph(26, M.idol), sx * 60, 170, 105)          // hands resting on the knees
+  }
+  at(sph(58, M.idol, 0.9, 1, 0.9), 0, 425, -5)
+  at(cyl(28, 46, 80, M.idol, 12), 0, 500, -5)       // the jata, piled up
+  at(sph(22, M.idol), 0, 548, -5)
+  // crescent by the jata, as a thin ring segment
+  const moon = new THREE.Mesh(new THREE.TorusGeometry(22 * S, 5 * S, 8, 16, Math.PI), M.idol)
+  moon.rotation.z = Math.PI * 0.15
+  at(moon, 40, 520, -5)
+  // the trishul, standing to the figure's right; the damru at its foot
+  at(cyl(6, 6, 640, M.brass, 8), 205, 320, -40)
+  at(cyl(5, 5, 130, M.brass, 8), 205, 650, -40)
+  for (const sx of [-1, 1]) {
+    const prong = cyl(4, 4, 120, M.brass, 8)
+    at(prong, 205 + sx * 42, 650, -40)
+    const bar = cyl(4, 4, 84, M.brass, 8)
+    bar.rotation.z = Math.PI / 2
+    at(bar, 205, 600, -40)
+  }
+  at(cyl(28, 20, 22, M.brass, 12), 250, 11, 70)
+  at(cyl(20, 28, 22, M.brass, 12), 250, 33, 70)
+  // a brass diya in front, with its flame
+  at(cyl(30, 22, 14, M.brass, 14), -170, 7, 150)
+  const flame = sph(9, M.brass, 1, 1.8, 1)
+  at(flame, -170, 32, 150)
+  return g
+}
+
+/**
  * A three-tier carved stone fountain, London style: stepped plinth, a wide lower
  * basin on a fluted pedestal, a middle and a top basin above it, a finial, water
  * falling from tier to tier, and trailing flowers spilling over the two lower rims.
@@ -931,6 +1006,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   if (doors) root.add(doors)
   root.add(podDoorGroup(M, 'open'))
   root.add(podDoorGroup(M, 'shut'))
+  const idol = mandirIdol(M)
+  if (idol) root.add(idol)
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

@@ -165,9 +165,10 @@ WALLS += [
     w('W-HELP-N', [(13700, 8462.5), (20013, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120,
           label='Guest WC — from the great room, west of the pod glazing')]),
-    w('W-STORE-W', [(17505, 8462.5), (17505, 10255)], 150, 'interior'),
-    w('W-STORE-HELP', [(16800, 10082.73), (16800, 11125)], 110, 'partition',
-      [op('D-STORE', 'door', 0, 700, label='Store door')]),
+    w('W-STORE-W', [(17505, 8462.5), (17505, D.WC_DIE + D.T_WC / 2)], 150, 'interior',
+      notes="The secondary duct's west cheek. The partition that used to run south "
+            "from the apse at 16800 and split the store off help's room is gone: "
+            "the two are one room."),
 ]
 
 # --- the entry gallery's two straight legs (230 thick, on the columns)
@@ -308,7 +309,7 @@ def _along(line, pt):
 # way into the WC is the 800 opening in the straight wall at y 8462.5.
 _wc_door = (_along(wc_line, R.wc_pt(D.WC_DOOR[0])), _along(wc_line, R.wc_pt(D.WC_DOOR[1])))
 WALLS += [
-    w('W-WC-SWEEP', wc_line, 230, 'interior',
+    w('W-WC-SWEEP', wc_line, D.T_WC, 'interior',
       [op('D-WC-HELP', 'door', min(_wc_door), max(_wc_door), head=2100,
           label="Guest WC — from help's room, on the apse")],
       label='Guest WC — quarter-ellipse sweep'),
@@ -452,18 +453,17 @@ ROOMS = [
     ('R-DUCT-E', 'Main service duct (east)', (19400, 6900), 'void', 'core', False,
      'Riser', 'The den’s corner units back on to it.'),
     ('R-DUCT-SE', 'Secondary duct / riser bay', (18200, 9000), 'void', 'core', False,
-     'Riser', 'Between the store and Karan’s bath.'),
+     'Riser', 'Between help’s room’s store end and Karan’s bath.'),
     ('R-KITCHEN', 'Kitchen', (7800, 10000), 'wet', 'service', True,
      'Stone', 'One working room, kitchen and utility together; hatch to the family room.'),
     ('R-ENTRY', 'Entry gallery', (12240, 10000), 'circulation', 'shared', True,
      'Stone', 'The drum: a U of 230 walls on the two columns, curved doors sliding on '
      'the arc, console and two chairs, sconces at the arc centres.'),
     ('R-HELP', "Help's room", (14700, 9200), 'habitable', 'service', True,
-     'Vinyl', 'Live-in. Bunk, shelves, its own door off the gallery.'),
+     'Vinyl', 'Live-in, with the store as its east end: one room. Bunk under the '
+     'duct, cupboard in the duct’s corner, its own door off the gallery.'),
     ('R-GUEST-BATH', 'Guest / service WC', (16500, 9000), 'wet', 'shared', True,
      'Stone', 'Behind the quarter-ellipse sweep: curved console, WC, 900 shower.'),
-    ('R-STORE', 'Store', (18200, 10600), 'storage', 'service', True,
-     'Vinyl', 'Heavy shelving, off the gallery’s east service door.'),
 ]
 
 # Stack positions are DERIVED: each sits at the centroid of the plumbed
@@ -636,7 +636,7 @@ def emit_building():
     A('  cages: [],')
     A('')
     A('  rooms: [')
-    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': 350, 'R-K-SUITE': 350, 'R-P-BATH': 69, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': 230, 'R-GREAT': 407, 'R-KITCHEN': 126, 'R-ENTRY': 101, 'R-HELP': 47, 'R-GUEST-BATH': 33, 'R-STORE': 26}
+    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': 350, 'R-K-SUITE': 350, 'R-P-BATH': 69, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': 230, 'R-GREAT': 407, 'R-KITCHEN': 126, 'R-ENTRY': 101, 'R-HELP': 77, 'R-GUEST-BATH': 29}
     # One floor runs out through the sliding glass: the deck is finished as the
     # great room is, and whatever the great room's floor is dressed as, the
     # deck follows.
@@ -964,10 +964,12 @@ def room_for(cx, cy):
         return 'R-ENTRY'
     if cy >= 8400 and 5555 < cx < 11210:
         return 'R-KITCHEN'
+    # help's room runs from the gallery's east leg round the apse and on under
+    # the secondary duct to the east wall — the old store is its east end
     if 13965 < cx < 16800 and cy >= 8400:
         return 'R-HELP'
     if cx >= 16800 and cy >= 9550:
-        return 'R-STORE'
+        return 'R-HELP'
     if cx >= 15000 and cy >= 8400:
         return 'R-GUEST-BATH'
     return 'R-GREAT'

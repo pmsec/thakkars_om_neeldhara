@@ -297,7 +297,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
   // brief makes. A flat that has no such zone has nothing to check here.
   if (has('R-ENTRY') && has('R-HELP')) {
     const svc = serviceRoomIds(model)
-    const required = ['R-HELP', 'R-STORE', 'R-KITCHEN']
+    const required = ['R-HELP', 'R-STORE', 'R-KITCHEN'].filter(has)
     const res = reachableFrom(model, 'R-ENTRY', { within: new Set([...svc, 'R-ENTRY']) })
     const missing = required.filter((id) => !res.reached.has(id))
     const breaches = serviceBreaches(model)

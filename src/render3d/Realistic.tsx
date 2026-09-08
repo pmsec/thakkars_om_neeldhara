@@ -23,6 +23,7 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { getModel } from '../geometry/model'
 import { pointInPolygon } from '../geometry/vec'
 import { barrelProfile, buildSolids } from '../geometry/solid'
+import polygonClipping from 'polygon-clipping'
 import { gableGeometry, gableJamb, vaultGeometry } from './canopy'
 import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
 import { furniture, type FurnitureItem } from '../data/furniture'
@@ -42,6 +43,8 @@ import { useStore } from '../ui/store'
 
 const model = getModel()
 const solids = buildSolids(model)
+const pcx = ((polygonClipping as unknown as { default?: typeof polygonClipping }).default ??
+  polygonClipping) as typeof polygonClipping
 
 /** The first-person default: same fidelity rules, eye-level phrasing. */
 const FP_PROMPT =
@@ -918,6 +921,20 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
           leg.castShadow = true
           g.add(leg)
         }
+        // the pendant over the table: a cord from the ceiling, a brass shade, a warm light
+        {
+          const ceiling = model.data.levels.ceiling
+          const cord = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 3 * S, (ceiling - 1900) * S, 6), M.gasket)
+          cord.position.set(cx * S, ((ceiling + 1900) / 2) * S, cy * S)
+          g.add(cord)
+          const shade = new THREE.Mesh(new THREE.CylinderGeometry(120 * S, 260 * S, 240 * S, 24, 1, true), M.brass)
+          ;(shade.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide
+          shade.position.set(cx * S, 1780 * S, cy * S)
+          g.add(shade)
+          const bulb = new THREE.PointLight(0xffd8a8, 1.2, 4.5, 1.6)
+          bulb.position.set(cx * S, 1700 * S, cy * S)
+          g.add(bulb)
+        }
         return g
       }
       g.add(box(w, 60, d, M.timber, 0, 750, 0))
@@ -1624,6 +1641,12 @@ function kitchenOverheads(M: Mats): THREE.Group {
         cab.rotation.y = ang
         cab.position.set(sx * S, 0, sy * S)
         g.add(cab)
+        // the splashback: stone from the worktop up to the cabinets, on the wall face
+        const sb = new THREE.Group()
+        sb.add(box(18, CAB_BOTTOM - 940, L, M.stoneTop, -CAB_DEPTH / 2 + 9, (940 + CAB_BOTTOM) / 2, 0))
+        sb.rotation.y = ang
+        sb.position.set(sx * S, 0, sy * S)
+        g.add(sb)
       }
     }
   }
@@ -1920,6 +1943,66 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   const env = model.envelope
   root.add(new THREE.Mesh(prismGeometry(env, -240, -90), M.stone))
 
+  // ---- ceilings over every indoor room, cut round the flat glass roofs; recessed
+  // downlights on them on a loose grid; a skirting and a cornice round each room
+  {
+    const ceiling = model.data.levels.ceiling
+    const glassRects = solids.roofs
+      .filter((r) => r.kind === 'flat')
+      .map((r) => [[[r.extent[0], r.extent[1]], [r.extent[2], r.extent[1]], [r.extent[2], r.extent[3]], [r.extent[0], r.extent[3]], [r.extent[0], r.extent[1]]]] as [number, number][][])
+    const downMat = new THREE.MeshStandardMaterial({ color: 0xfff3dc, emissive: 0xffe3b0, emissiveIntensity: 1.4, roughness: 0.4 })
+    const trimMat = M.trunk
+    for (const room of model.rooms) {
+      const cat = room.def.category
+      if (cat === 'outdoor' || cat === 'void') continue
+      const ring = room.polygon.map((q) => [q.x, q.y] as [number, number])
+      if (ring.length && (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1])) ring.push(ring[0])
+      let pieces: [number, number][][][] = [[ring]]
+      for (const rect of glassRects) {
+        try { pieces = pcx.difference(pieces as never, [rect] as never) as [number, number][][][] } catch { /* keep */ }
+      }
+      for (const piece of pieces) {
+        const outer = piece[0].map(([x, y]) => ({ x, y }))
+        const holes = piece.slice(1).map((h) => h.map(([x, y]) => ({ x, y })))
+        const slab = new THREE.Mesh(prismGeometry(decimate(outer), ceiling, ceiling + 80, holes.map((h) => decimate(h))), M.plaster)
+        slab.receiveShadow = true
+        root.add(slab)
+      }
+      // downlights, only under a plaster ceiling and well inside the room
+      const pitch = 1800
+      for (let x = room.bbox.minX + pitch / 2; x < room.bbox.maxX; x += pitch) {
+        for (let y = room.bbox.minY + pitch / 2; y < room.bbox.maxY; y += pitch) {
+          if (!pointInPolygon({ x, y }, room.polygon)) continue
+          if (glassRects.some((r) => x >= r[0][0][0] && x <= r[0][2][0] && y >= r[0][0][1] && y <= r[0][2][1])) continue
+          const dl = new THREE.Mesh(new THREE.CylinderGeometry(45 * S, 45 * S, 6 * S, 14), downMat)
+          dl.position.set(x * S, (ceiling - 3) * S, y * S)
+          root.add(dl)
+        }
+      }
+      // skirting and cornice along the walls
+      const poly = room.polygon
+      for (let i = 0; i < poly.length; i++) {
+        const a = poly[i]
+        const b = poly[(i + 1) % poly.length]
+        const len = Math.hypot(b.x - a.x, b.y - a.y)
+        if (len < 120) continue
+        const ang = Math.atan2(b.x - a.x, b.y - a.y)
+        // inward normal: toward the centroid
+        const mx = (a.x + b.x) / 2
+        const my = (a.y + b.y) / 2
+        let nx = -(b.y - a.y) / len
+        let ny = (b.x - a.x) / len
+        if ((room.centroid.x - mx) * nx + (room.centroid.y - my) * ny < 0) { nx = -nx; ny = -ny }
+        for (const [h0, h1, t] of [[0, 100, 16], [ceiling - 60, ceiling, 24]] as const) {
+          const trim = new THREE.Mesh(new THREE.BoxGeometry(t * S, (h1 - h0) * S, (len - 8) * S), trimMat)
+          trim.position.set((mx + nx * t / 2) * S, ((h0 + h1) / 2) * S, (my + ny * t / 2) * S)
+          trim.rotation.y = ang
+          root.add(trim)
+        }
+      }
+    }
+  }
+
   // ---- walls and glass from the shared prisms
   for (const p of solids.prisms) {
     if (p.kind === 'lintel' && p.top - p.base < 60) continue
@@ -2042,8 +2125,40 @@ export function buildFixtures(M: Mats): THREE.Group {
       const top = polyPiece(f.poly, h, h + 40, M.marble, f.room)
       if (body) g.add(body)
       if (top) g.add(top)
+      // door and drawer fronts on every edge that does not back on to a wall
+      const poly = f.poly
+      const pcx0 = poly.reduce((t, q) => t + q.x, 0) / poly.length
+      const pcy0 = poly.reduce((t, q) => t + q.y, 0) / poly.length
+      for (let i = 0; i < poly.length; i++) {
+        const a = poly[i]
+        const b = poly[(i + 1) % poly.length]
+        const len = Math.hypot(b.x - a.x, b.y - a.y)
+        if (len < 300) continue
+        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+        const nearWall = model.walls.some((w) => w.thickness >= 60 && w.points.length >= 2 && w.points.slice(1).some((q, k) => {
+          const p0 = w.points[k]
+          const L2 = (q.x - p0.x) ** 2 + (q.y - p0.y) ** 2
+          const t = L2 ? Math.max(0, Math.min(1, ((mid.x - p0.x) * (q.x - p0.x) + (mid.y - p0.y) * (q.y - p0.y)) / L2)) : 0
+          return Math.hypot(mid.x - (p0.x + t * (q.x - p0.x)), mid.y - (p0.y + t * (q.y - p0.y))) < w.thickness / 2 + 120
+        }))
+        if (nearWall) continue
+        let nx = -(b.y - a.y) / len
+        let ny = (b.x - a.x) / len
+        if ((pcx0 - mid.x) * nx + (pcy0 - mid.y) * ny > 0) { nx = -nx; ny = -ny }   // outward
+        const ang = Math.atan2(b.x - a.x, b.y - a.y)
+        const face = new THREE.Group()
+        const n = Math.max(1, Math.round(len / 500))
+        for (let k = 1; k < n; k++) face.add(box(4, h - 140, 6, M.trunk, 0, 70 + (h - 140) / 2, -len / 2 + (k * len) / n))
+        face.add(box(4, 6, len - 40, M.trunk, 0, h - 220, 0))               // the drawer line
+        for (let k = 0; k < n; k++) face.add(box(14, 12, 180, M.metal, 8, h - 120, -len / 2 + ((k + 0.5) * len) / n))
+        face.add(box(4, 90, len, M.gasket, -2, 45, 0))                       // the plinth recess
+        face.rotation.y = ang
+        face.position.set((mid.x + nx * 4) * S, 0, (mid.y + ny * 4) * S)
+        g.add(face)
+      }
       if (f.bowl) {
-        // the basin, set exactly where the sheet draws its circle
+        // the basin, set exactly where the sheet draws its circle, its tap behind
+        // it, and a framed mirror on the wall over it
         const bowl = new THREE.Mesh(
           new THREE.CylinderGeometry(f.bowl.r * S, f.bowl.r * 0.8 * S, 140 * S, 20),
           M.marble,
@@ -2051,6 +2166,28 @@ export function buildFixtures(M: Mats): THREE.Group {
         bowl.position.set(f.bowl.x * S, (h + 40 + 70) * S, f.bowl.y * S)
         bowl.castShadow = true
         g.add(bowl)
+        // toward the wall: away from the room's centre
+        const room = model.roomById.get(f.room)
+        const dx = f.bowl.x - (room?.centroid.x ?? f.bowl.x)
+        const dy = f.bowl.y - (room?.centroid.y ?? f.bowl.y)
+        const L = Math.hypot(dx, dy) || 1
+        const ux = dx / L
+        const uy = dy / L
+        const tap = new THREE.Mesh(new THREE.CylinderGeometry(14 * S, 16 * S, 200 * S, 10), M.steel)
+        tap.position.set((f.bowl.x + ux * (f.bowl.r + 60)) * S, (h + 40 + 100) * S, (f.bowl.y + uy * (f.bowl.r + 60)) * S)
+        g.add(tap)
+        const spout = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, 150 * S, 8), M.steel)
+        spout.rotation.z = Math.PI / 2
+        spout.rotation.y = -Math.atan2(uy, ux)
+        spout.position.set((f.bowl.x + ux * (f.bowl.r - 10)) * S, (h + 40 + 200) * S, (f.bowl.y + uy * (f.bowl.r - 10)) * S)
+        g.add(spout)
+        const mirW = Math.min(700, f.bowl.r * 3.4)
+        const mir = new THREE.Group()
+        mir.add(box(mirW + 60, 760, 20, M.trunk, 0, 0, 0))
+        mir.add(box(mirW, 700, 24, M.mirror, 0, 0, 0))
+        mir.rotation.y = -Math.atan2(uy, ux) + Math.PI / 2
+        mir.position.set((f.bowl.x + ux * (f.bowl.r + 200)) * S, 1550 * S, (f.bowl.y + uy * (f.bowl.r + 200)) * S)
+        g.add(mir)
       }
       continue
     }
@@ -2060,6 +2197,34 @@ export function buildFixtures(M: Mats): THREE.Group {
       const tray = box(w, 50, d, M.marble)
       place(tray, f.at.x, f.at.y, 25)
       g.add(tray)
+      // the rain head on its arm from the wall side, the control plate under it,
+      // a shelf niche beside it: the wall side is away from the room's centre
+      {
+        const room = model.roomById.get(f.room)
+        const dx = f.at.x - (room?.centroid.x ?? f.at.x)
+        const dy = f.at.y - (room?.centroid.y ?? f.at.y)
+        const alongX = Math.abs(dx) >= Math.abs(dy)
+        const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+        const wx = f.at.x + (alongX ? sgn * (w / 2 - 20) : 0)
+        const wy = f.at.y + (alongX ? 0 : sgn * (d / 2 - 20))
+        const arm = box(alongX ? 300 : 16, 16, alongX ? 16 : 300, M.steel)
+        place(arm, wx - (alongX ? sgn * 150 : 0), wy - (alongX ? 0 : sgn * 150), 2180)
+        g.add(arm)
+        const head = new THREE.Mesh(new THREE.CylinderGeometry(120 * S, 120 * S, 12 * S, 20), M.steel)
+        head.position.set((wx - (alongX ? sgn * 300 : 0)) * S, 2160 * S, (wy - (alongX ? 0 : sgn * 300)) * S)
+        g.add(head)
+        const plate = box(alongX ? 10 : 160, 160, alongX ? 160 : 10, M.steel)
+        place(plate, wx, wy, 1150)
+        g.add(plate)
+        const knob = new THREE.Mesh(new THREE.CylinderGeometry(28 * S, 28 * S, 40 * S, 12), M.steel)
+        knob.rotation.set(alongX ? 0 : Math.PI / 2, 0, alongX ? Math.PI / 2 : 0)
+        knob.position.set((wx - (alongX ? sgn * 20 : 0)) * S, 1150 * S, (wy - (alongX ? 0 : sgn * 20)) * S)
+        g.add(knob)
+        const niche = box(alongX ? 12 : 320, 240, alongX ? 320 : 12, M.stoneTop)
+        place(niche, wx, wy + (alongX ? (d / 2 - 260) : 0) - (alongX ? 0 : 0), 1500)
+        if (!alongX) niche.position.x = (wx + (w / 2 - 260)) * S
+        g.add(niche)
+      }
       const curb = 60
       const gh = 2000
       for (const [px, py, sw, sd] of [
@@ -2152,13 +2317,75 @@ export function buildFixtures(M: Mats): THREE.Group {
       }
       continue
     }
+    if (f.kind === 'hob') {
+      // an induction hob: black glass flush on the worktop, four rings
+      const glass = box(w, 10, d, M.hob)
+      place(glass, f.at.x, f.at.y, 945)
+      g.add(glass)
+      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(75 * S, 3 * S, 6, 24), M.metal)
+        ring.rotation.x = Math.PI / 2
+        ring.position.set((f.at.x + sx * w * 0.24) * S, 951 * S, (f.at.y + sz * d * 0.24) * S)
+        g.add(ring)
+      }
+      continue
+    }
+    if (f.kind === 'sink') {
+      // an undermount sink: a dark basin let into the worktop, a tall tap behind
+      const basin = box(w - 40, 180, d - 40, M.gasket)
+      place(basin, f.at.x, f.at.y, 850)
+      g.add(basin)
+      const room = model.roomById.get(f.room)
+      const dy = f.at.y - (room?.centroid.y ?? f.at.y)
+      const back = Math.sign(dy) || 1
+      const tap = new THREE.Mesh(new THREE.CylinderGeometry(14 * S, 16 * S, 320 * S, 10), M.steel)
+      tap.position.set(f.at.x * S, (940 + 160) * S, (f.at.y + back * (d / 2 - 30)) * S)
+      g.add(tap)
+      const spout = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, 220 * S, 8), M.steel)
+      spout.rotation.x = Math.PI / 2
+      spout.position.set(f.at.x * S, (940 + 300) * S, (f.at.y + back * (d / 2 - 140)) * S)
+      g.add(spout)
+      continue
+    }
+    if (f.kind === 'wc') {
+      // a wall-hung pan with its cistern plate on the wall behind
+      const room = model.roomById.get(f.room)
+      const dx = f.at.x - (room?.centroid.x ?? f.at.x)
+      const dy = f.at.y - (room?.centroid.y ?? f.at.y)
+      const alongX = Math.abs(dx) >= Math.abs(dy)
+      const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+      const pan = new THREE.Mesh(new THREE.CylinderGeometry(Math.min(w, d) * 0.46 * S, Math.min(w, d) * 0.36 * S, 240 * S, 20), M.marble)
+      pan.scale.set(alongX ? 1.35 : 1, 1, alongX ? 1 : 1.35)
+      pan.position.set((f.at.x - (alongX ? sgn * 40 : 0)) * S, 320 * S, (f.at.y - (alongX ? 0 : sgn * 40)) * S)
+      pan.castShadow = true
+      g.add(pan)
+      const seat = new THREE.Mesh(new THREE.CylinderGeometry(Math.min(w, d) * 0.47 * S, Math.min(w, d) * 0.47 * S, 24 * S, 20), M.appliance)
+      seat.scale.copy(pan.scale)
+      seat.position.set(pan.position.x, 452 * S, pan.position.z)
+      g.add(seat)
+      const box2 = box(alongX ? 90 : Math.max(w, d) * 0.9, 380, alongX ? Math.max(w, d) * 0.9 : 90, M.marble)
+      place(box2, f.at.x + (alongX ? sgn * (w / 2 - 45) : 0), f.at.y + (alongX ? 0 : sgn * (d / 2 - 45)), 330)
+      g.add(box2)
+      const plate = box(alongX ? 6 : 220, 150, alongX ? 220 : 6, M.steel)
+      place(plate, f.at.x + (alongX ? sgn * (w / 2 - 2) : 0), f.at.y + (alongX ? 0 : sgn * (d / 2 - 2)), 1000)
+      g.add(plate)
+      continue
+    }
     const mat = f.kind === 'counter' || f.kind === 'basin' ? M.timber
-      : f.kind === 'wc' ? M.marble : M.appliance
-    const m = box(w, h, d, mat, 0, (f.kind === 'counter' || f.kind === 'basin' ? h / 2 : h / 2), 0)
+      : f.kind === 'washer' ? M.timber : M.appliance
+    const m = box(w, h, d, mat, 0, h / 2, 0)
     place(m, f.at.x, f.at.y)
     m.position.y = (h / 2) * S
-    if (f.kind === 'hob') m.position.y = 0.92
     g.add(m)
+    if (f.kind === 'washer') {
+      // the integrated dishwasher: a panelled front, one bar handle
+      const room = model.roomById.get(f.room)
+      const dy = f.at.y - (room?.centroid.y ?? f.at.y)
+      const front = -(Math.sign(dy) || 1)
+      const handle = box(w - 120, 14, 14, M.metal)
+      place(handle, f.at.x, f.at.y + front * (d / 2 + 12), 780)
+      g.add(handle)
+    }
     if (f.kind === 'counter' || f.kind === 'basin') {
       const top = box(w, 40, d, M.marble, 0, 0, 0)
       place(top, f.at.x, f.at.y, 910)

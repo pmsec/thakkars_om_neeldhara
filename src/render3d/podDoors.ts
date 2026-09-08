@@ -3,9 +3,10 @@
  *
  * Each pod-to-suite line carries a pair of wooden leaves on two parallel tracks.
  * Shut, they meet in the opening with a small overlap. Open, both slide north
- * along the wall, out past the deck glazing line, and stack on the deck against
- * the wall face - behind the strength trainer on the parents' side, behind the
- * spa on Karan's - so the opening between pod and suite is completely clear.
+ * along the wall on their own tracks, past the deck glazing line, into the
+ * pocket the wall makes for them - inside the wall's own line, behind the
+ * strength trainer on the parents' side and the spa on Karan's - so the opening
+ * between pod and suite is completely clear.
  *
  * Derived from the building: any wall with a slider opening whose label names a
  * pod-to-suite partition. Positions are plan rectangles in mm so the technical 3D
@@ -67,11 +68,12 @@ export function podDoorLeaves(building: BuildingData, mode: PodDoorMode): DoorLe
       out.push({ wallId: w.id, x0: xa - LEAF_T / 2, x1: xa + LEAF_T / 2, y0: from, y1: from + L, base: 0, top, handleAt: 1 })
       out.push({ wallId: w.id, x0: xb - LEAF_T / 2, x1: xb + LEAF_T / 2, y0: to - L, y1: to, base: 0, top, handleAt: -1 })
     } else {
-      // stacked on the deck, against the wall face, both leaves north of the glazing line
-      const face = wx + deckSide * ((w.thickness || 125) / 2)
+      // parked in the wall's own line: both leaves slide north on their tracks, past
+      // the deck glazing line, into the pocket the wall makes for them - so from
+      // the deck they are inside the wall, behind the spa and the strength trainer
+      void deckSide
       const yEnd = Number.isFinite(deckLine) ? Math.min(deckLine, from) : from
-      for (let i = 0; i < 2; i++) {
-        const xc = face + deckSide * (LEAF_T / 2 + 10 + i * (LEAF_T + 15))
+      for (const xc of [wx - TRACK_GAP, wx + TRACK_GAP]) {
         out.push({
           wallId: w.id,
           x0: xc - LEAF_T / 2, x1: xc + LEAF_T / 2,

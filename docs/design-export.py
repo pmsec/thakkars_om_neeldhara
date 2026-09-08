@@ -199,15 +199,20 @@ for vid, (a, b, c, d) in (('W', D.VOID_KEEP[0]), ('E', D.VOID_KEEP[1])):
         w(f'W-VOID-{vid}-S', [(a, d), (c, d)], 150, 'interior'),
     ]
 
+# The ceiling. The sheet carries no clear-height figure (the DWG is a bare
+# shell), so the height is the owner's: 11 ft 6 in. Every wall, every
+# full-height opening, the flat pod-bay roofs and the vault landings run to it.
+CEIL = 3505
+
 # --- suite <-> terrace sliders (glazing, fully openable). These are glazing
 # LINES, not walls: the glass runs floor to ceiling and the ceiling simply
 # stops at them, so the sliders' head is the ceiling and no spandrel is drawn.
 WALLS += [
     w('G-P-TERRACE', [(-350, 1275), (2750, 1275)], 0, 'glazing',
-      [op('SL-P-TERR', 'slider', 0, 3100, head=3050,
+      [op('SL-P-TERR', 'slider', 0, 3100, head=CEIL,
           label='Terrace sliders — full width, floor to ceiling')], pane=True),
     w('G-K-TERRACE', [(21730, 1275), (24830, 1275)], 0, 'glazing',
-      [op('SL-K-TERR', 'slider', 0, 3100, head=3050,
+      [op('SL-K-TERR', 'slider', 0, 3100, head=CEIL,
           label='Terrace sliders — full width, floor to ceiling')], pane=True),
     w('W-P-TERR-STUB', [(-600, 1275), (-350, 1275)], 150, 'interior'),
     w('W-K-TERR-STUB', [(24830, 1275), (25080, 1275)], 150, 'interior'),
@@ -216,13 +221,13 @@ WALLS += [
 # --- deck <-> rooms glazing lines: floor to ceiling, the ceiling stops at them
 WALLS += [
     w('G-FAMILY-DECK', [(4650, 2545), (7500, 2545)], 0, 'glazing',
-      [op('SL-FAM-DECK', 'slider', 0, 2850, head=3050,
+      [op('SL-FAM-DECK', 'slider', 0, 2850, head=CEIL,
           label='Family room sliders to the deck')], pane=True),
     w('G-GREAT-DECK', [(9115, 2545), (15365, 2545)], 0, 'glazing',
-      [op('SL-GREAT-DECK', 'slider', 0, 6250, head=3050,
+      [op('SL-GREAT-DECK', 'slider', 0, 6250, head=CEIL,
           label='Great room sliders to the deck — 6250 clear')], pane=True),
     w('G-DEN-DECK', [(16980, 2545), (19830, 2545)], 0, 'glazing',
-      [op('SL-DEN-DECK', 'slider', 0, 2850, head=3050,
+      [op('SL-DEN-DECK', 'slider', 0, 2850, head=CEIL,
           label='Den sliders to the deck')], pane=True),
     w('W-DECK-W-STUB', [(4467, 2545), (4650, 2545)], 150, 'interior'),
     w('W-DECK-E-STUB', [(19830, 2545), (20013, 2545)], 150, 'interior'),
@@ -395,7 +400,7 @@ CHORDS = [
 ]
 for gid, a0, a1, typ, lab in CHORDS:
     L = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
-    head = 3050 if typ == 'arch' else 2100   # the arch runs to the ceiling; its doors are full height
+    head = CEIL if typ == 'arch' else 2100   # the arch runs to the ceiling; its doors are full height
     WALLS.append(w(f'T-{gid}', [a0, a1], 0, 'threshold',
                    [op(f'D-{gid}', typ, 0, L, head=head, label=lab)]))
 
@@ -478,17 +483,16 @@ STACKS = [
 
 # The bellied glass. Sections are ABSOLUTE (model y, height): each canopy springs
 # from floor datum on its parapet line, bellies OUT past the building line on the
-# way up, peaks well above the 3050 ceiling and lands on the wall head. Both ends
+# way up, peaks well above the ceiling and lands on the wall head. Both ends
 # of every vault are closed with a glazed gable cut to the same curve.
-CEIL = 3050
 VAULTS = {
     # id: (springs at y, control, lands at y)
     # Deck: bellies 1200 out past the parapet, peaks at 6098 (20 ft).
-    'ROOF-DECK': ((-150, 0), (-3530, 10410), (2620, CEIL)),
+    'ROOF-DECK': ((-150, 0), (-3530, 10075), (2620, CEIL)),
     # Terraces: bellies 800 out, peaks at 5198 (17 ft) - the same family,
     # shallower because the terrace is only 1350 deep.
-    'ROOF-P-TERRACE': ((0, 0), (-2110, 8540), (1350, CEIL)),
-    'ROOF-K-TERRACE': ((0, 0), (-2110, 8540), (1350, CEIL)),
+    'ROOF-P-TERRACE': ((0, 0), (-2110, 8165), (1350, CEIL)),
+    'ROOF-K-TERRACE': ((0, 0), (-2110, 8165), (1350, CEIL)),
 }
 
 
@@ -509,7 +513,7 @@ ROOFS = [
     ('ROOF-DECK', 'Retractable curved glass vault over the deck', 'barrel',
      vault_extent('ROOF-DECK', 4530, 19950), None, True, 'Laminated acoustic glass',
      'Roof AND wall: springs from the parapet line, bellies 1.2 m out over the street, '
-     'peaks at 6.1 m - 3 m above the ceiling - and lands on the pod line. The deck is in AND '
+     'peaks at 6.1 m - 2.6 m above the ceiling - and lands on the pod line. The deck is in AND '
      'out: cooled under glass, open when the roof retracts.'),
     ('ROOF-P-TERRACE', "Curved glass canopy over the parents' terrace", 'barrel',
      vault_extent('ROOF-P-TERRACE', -600, 2750), None, False,
@@ -520,9 +524,9 @@ ROOFS = [
      vault_extent('ROOF-K-TERRACE', 21730, 25080), None, False,
      'Laminated acoustic glass', 'Mirror of ROOF-P-TERRACE about x = 12 240.'),
     ('ROOF-FAMILY', 'Glass roof over the family-room bay', 'flat',
-     (4650, 2620, 8315, 4900), 3050, False, 'Laminated glass', None),
+     (4650, 2620, 8315, 4900), CEIL, False, 'Laminated glass', None),
     ('ROOF-DEN', 'Glass roof over the den bay', 'flat',
-     (16165, 2620, 19830, 4900), 3050, False, 'Laminated glass', None),
+     (16165, 2620, 19830, 4900), CEIL, False, 'Laminated glass', None),
 ]
 
 
@@ -565,7 +569,7 @@ def emit_building():
     A(f'  envelope: {pts(ENVELOPE)},')
     A('')
     A(f'  thickness: {{ exterior: {T_EXT}, interior: 150, partition: 110 }},')
-    A('  levels: { ceiling: 3050, doorHead: 2100, windowSill: 900, windowHead: 2400 },')
+    A(f'  levels: {{ ceiling: {CEIL}, doorHead: 2100, windowSill: 900, windowHead: 2400 }},')
     A('')
     A('  exteriorOpenings: [')
     for oid, typ, p1, p2, lab in EXT_OPENINGS:

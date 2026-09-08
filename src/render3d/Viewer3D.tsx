@@ -229,7 +229,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     ground.receiveShadow = true
     scene.add(ground)
 
-    const clipHeight = new THREE.Plane(new THREE.Vector3(0, -1, 0), 3.05)
+    const clipHeight = new THREE.Plane(new THREE.Vector3(0, -1, 0), solids.ceiling * S)
     const clipSection = new THREE.Plane(new THREE.Vector3(1, 0, 0), 1000)
 
     const groups: Record<string, THREE.Group> = {

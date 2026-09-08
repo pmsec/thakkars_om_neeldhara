@@ -249,9 +249,9 @@ export function View3DPanel(): React.ReactElement {
         <input
           type="range"
           min={900}
-          max={3050}
+          max={building.levels.ceiling}
           step={10}
-          value={state.cutaway}
+          value={Math.min(state.cutaway, building.levels.ceiling)}
           onChange={(e) => set({ cutaway: Number(e.target.value) })}
         />
         <p className="tiny muted" style={{ margin: '2px 0 8px' }}>

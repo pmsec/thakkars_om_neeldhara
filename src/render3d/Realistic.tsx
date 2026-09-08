@@ -2052,7 +2052,12 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(new THREE.Mesh(prismGeometry(env, -240, -90), M.stone))
 
   // ---- ceilings over every indoor room, cut round the flat glass roofs; recessed
-  // downlights on them on a loose grid; a skirting and a cornice round each room
+  // downlights on them on a loose grid; a skirting and a cornice round each room.
+  // The ceilings, their lights and the cornice live in one named group, so the
+  // Ceiling switch can lift them off for a top-down look at the plan.
+  const ceilingGroup = new THREE.Group()
+  ceilingGroup.name = 'ceiling'
+  root.add(ceilingGroup)
   {
     const ceiling = model.data.levels.ceiling
     const glassRects = solids.roofs
@@ -2074,7 +2079,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
         const holes = piece.slice(1).map((h) => h.map(([x, y]) => ({ x, y })))
         const slab = new THREE.Mesh(prismGeometry(decimate(outer), ceiling, ceiling + 80, holes.map((h) => decimate(h))), M.plaster)
         slab.receiveShadow = true
-        root.add(slab)
+        ceilingGroup.add(slab)
       }
       // downlights, only under a plaster ceiling and well inside the room
       const pitch = 1800
@@ -2084,7 +2089,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
           if (glassRects.some((r) => x >= r[0][0][0] && x <= r[0][2][0] && y >= r[0][0][1] && y <= r[0][2][1])) continue
           const dl = new THREE.Mesh(new THREE.CylinderGeometry(45 * S, 45 * S, 6 * S, 14), downMat)
           dl.position.set(x * S, (ceiling - 3) * S, y * S)
-          root.add(dl)
+          ceilingGroup.add(dl)
         }
       }
       // skirting and cornice along the walls
@@ -2105,7 +2110,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
           const trim = new THREE.Mesh(new THREE.BoxGeometry(t * S, (h1 - h0) * S, (len - 8) * S), trimMat)
           trim.position.set((mx + nx * t / 2) * S, ((h0 + h1) / 2) * S, (my + ny * t / 2) * S)
           trim.rotation.y = ang
-          root.add(trim)
+          ;(h0 === 0 ? root : ceilingGroup).add(trim)
         }
       }
     }
@@ -2585,20 +2590,24 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const sceneRef = useRef<THREE.Scene | null>(null)
   const doorsShut = uiState.show3d.doorsShut
   const wallBed = uiState.show3d.wallBedDown
+  const ceilingOn = uiState.show3d.ceiling
   const shutRef = useRef(doorsShut)
   shutRef.current = doorsShut
   const bedRef = useRef(wallBed)
   bedRef.current = wallBed
-  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean): void => {
+  const ceilingRef = useRef(ceilingOn)
+  ceilingRef.current = ceilingOn
+  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean): void => {
     sc.traverse((o) => {
       if (o.name === 'doors-open') o.visible = !shut
       if (o.name === 'doors-shut') o.visible = shut
       if (o.name === 'wallbed-down') o.visible = down
+      if (o.name === 'ceiling') o.visible = ceiling
     })
   }
   useEffect(() => {
-    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed)
-  }, [doorsShut, wallBed])
+    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn)
+  }, [doorsShut, wallBed, ceilingOn])
 
   const [styleTick, setStyleTick] = useState(0)
   useEffect(() => {
@@ -2636,7 +2645,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
 
     const M = makeMaterials()
     scene.add(buildScene(M))
-    applyToggles(scene, shutRef.current, bedRef.current)
+    applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current)
     scene.add(buildFixtures(M))
 
     const furn = new THREE.Group()
@@ -2882,6 +2891,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
             title="The grandmother's wall bed"
           >
             Wall bed: {wallBed ? 'down' : 'up'}
+          </button>
+          <button
+            onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, ceiling: !st.show3d.ceiling } }))}
+            title="The plaster ceilings with their lights and cornices; off for a top-down look at the plan"
+          >
+            Ceiling: {ceilingOn ? 'on' : 'off'}
           </button>
         </div>
       )}

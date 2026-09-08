@@ -117,6 +117,8 @@ export interface PortalState {
     doorsShut: boolean
     /** The wall bed folded down over its sofa. */
     wallBedDown: boolean
+    /** The walkthrough's plaster ceilings, with their downlights and cornices. Off for a top-down look. */
+    ceiling: boolean
   }
   sun: Sun
   /**
@@ -161,9 +163,9 @@ export const initialState: PortalState = {
   underlay: { opacity: 0.45, transform: null },
   calibration: { imagePoints: [], modelPoints: [] },
   snap: true,
-  cutaway: 3050,
+  cutaway: 3505,
   section: { axis: null, at: 12240 },
-  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false },
+  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false, ceiling: true },
   sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
   panels: { left: true, right: true },

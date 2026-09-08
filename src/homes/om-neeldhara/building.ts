@@ -30,7 +30,7 @@ export const building: BuildingData = {
   envelope: [{ x: -600, y: 0 }, { x: 4530, y: 0 }, { x: 4530, y: -150 }, { x: 19950, y: -150 }, { x: 19950, y: 0 }, { x: 25080, y: 0 }, { x: 25080, y: 9695 }, { x: 18925, y: 9695 }, { x: 18925, y: 11125 }, { x: 5555, y: 11125 }, { x: 5555, y: 9695 }, { x: -600, y: 9695 }],
 
   thickness: { exterior: 150, interior: 150, partition: 110 },
-  levels: { ceiling: 3050, doorHead: 2100, windowSill: 900, windowHead: 2400 },
+  levels: { ceiling: 3505, doorHead: 2100, windowSill: 900, windowHead: 2400 },
 
   exteriorOpenings: [
     { id: 'W-01', type: 'window', abs: [{ x: -600, y: 1350 }, { x: -600, y: 1950 }], head: 2400, nonCirculating: true, sill: 900 },
@@ -299,7 +299,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-P-TERR', type: 'slider', at: [0, 3100], head: 3050, label: 'Terrace sliders — full width, floor to ceiling' },
+        { id: 'SL-P-TERR', type: 'slider', at: [0, 3100], head: 3505, label: 'Terrace sliders — full width, floor to ceiling' },
       ],
     },
     {
@@ -309,7 +309,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-K-TERR', type: 'slider', at: [0, 3100], head: 3050, label: 'Terrace sliders — full width, floor to ceiling' },
+        { id: 'SL-K-TERR', type: 'slider', at: [0, 3100], head: 3505, label: 'Terrace sliders — full width, floor to ceiling' },
       ],
     },
     {
@@ -331,7 +331,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-FAM-DECK', type: 'slider', at: [0, 2850], head: 3050, label: 'Family room sliders to the deck' },
+        { id: 'SL-FAM-DECK', type: 'slider', at: [0, 2850], head: 3505, label: 'Family room sliders to the deck' },
       ],
     },
     {
@@ -341,7 +341,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-GREAT-DECK', type: 'slider', at: [0, 6250], head: 3050, label: 'Great room sliders to the deck — 6250 clear' },
+        { id: 'SL-GREAT-DECK', type: 'slider', at: [0, 6250], head: 3505, label: 'Great room sliders to the deck — 6250 clear' },
       ],
     },
     {
@@ -351,7 +351,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-DEN-DECK', type: 'slider', at: [0, 2850], head: 3050, label: 'Den sliders to the deck' },
+        { id: 'SL-DEN-DECK', type: 'slider', at: [0, 2850], head: 3505, label: 'Den sliders to the deck' },
       ],
     },
     {
@@ -705,7 +705,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-N', type: 'arch', at: [0, 1053.215], head: 3050, label: 'Arched portal to the great room — curved doors slide on the arc' },
+        { id: 'D-GAL-N', type: 'arch', at: [0, 1053.215], head: 3505, label: 'Arched portal to the great room — curved doors slide on the arc' },
       ],
     },
     {
@@ -757,11 +757,11 @@ export const building: BuildingData = {
   ],
 
   glassRoofs: [
-    { id: 'ROOF-DECK', name: 'Retractable curved glass vault over the deck', kind: 'barrel', extent: [4530, -1350, 19950, 2620], section: { p0: { x: -150, y: 0 }, p1: { x: -3530, y: 10410 }, p2: { x: 2620, y: 3050 } }, gableEnds: ['x0', 'x1'], retractable: true, glazing: 'Laminated acoustic glass', notes: 'Roof AND wall: springs from the parapet line, bellies 1.2 m out over the street, peaks at 6.1 m - 3 m above the ceiling - and lands on the pod line. The deck is in AND out: cooled under glass, open when the roof retracts.' },
-    { id: 'ROOF-P-TERRACE', name: "Curved glass canopy over the parents' terrace", kind: 'barrel', extent: [-600, -800, 2750, 1350], section: { p0: { x: 0, y: 0 }, p1: { x: -2110, y: 8540 }, p2: { x: 1350, y: 3050 } }, gableEnds: ['x0', 'x1'], retractable: false, glazing: 'Laminated acoustic glass', notes: 'Same family as the deck vault, landing on the terrace wall head. Real grass and a real tree under it; rain never lands, light always does.' },
-    { id: 'ROOF-K-TERRACE', name: "Curved glass canopy over Karan's terrace", kind: 'barrel', extent: [21730, -800, 25080, 1350], section: { p0: { x: 0, y: 0 }, p1: { x: -2110, y: 8540 }, p2: { x: 1350, y: 3050 } }, gableEnds: ['x0', 'x1'], retractable: false, glazing: 'Laminated acoustic glass', notes: 'Mirror of ROOF-P-TERRACE about x = 12 240.' },
-    { id: 'ROOF-FAMILY', name: 'Glass roof over the family-room bay', kind: 'flat', extent: [4650, 2620, 8315, 4900], height: 3050, retractable: false, glazing: 'Laminated glass' },
-    { id: 'ROOF-DEN', name: 'Glass roof over the den bay', kind: 'flat', extent: [16165, 2620, 19830, 4900], height: 3050, retractable: false, glazing: 'Laminated glass' },
+    { id: 'ROOF-DECK', name: 'Retractable curved glass vault over the deck', kind: 'barrel', extent: [4530, -1350, 19950, 2620], section: { p0: { x: -150, y: 0 }, p1: { x: -3530, y: 10075 }, p2: { x: 2620, y: 3505 } }, gableEnds: ['x0', 'x1'], retractable: true, glazing: 'Laminated acoustic glass', notes: 'Roof AND wall: springs from the parapet line, bellies 1.2 m out over the street, peaks at 6.1 m - 2.6 m above the ceiling - and lands on the pod line. The deck is in AND out: cooled under glass, open when the roof retracts.' },
+    { id: 'ROOF-P-TERRACE', name: "Curved glass canopy over the parents' terrace", kind: 'barrel', extent: [-600, -800, 2750, 1350], section: { p0: { x: 0, y: 0 }, p1: { x: -2110, y: 8165 }, p2: { x: 1350, y: 3505 } }, gableEnds: ['x0', 'x1'], retractable: false, glazing: 'Laminated acoustic glass', notes: 'Same family as the deck vault, landing on the terrace wall head. Real grass and a real tree under it; rain never lands, light always does.' },
+    { id: 'ROOF-K-TERRACE', name: "Curved glass canopy over Karan's terrace", kind: 'barrel', extent: [21730, -800, 25080, 1350], section: { p0: { x: 0, y: 0 }, p1: { x: -2110, y: 8165 }, p2: { x: 1350, y: 3505 } }, gableEnds: ['x0', 'x1'], retractable: false, glazing: 'Laminated acoustic glass', notes: 'Mirror of ROOF-P-TERRACE about x = 12 240.' },
+    { id: 'ROOF-FAMILY', name: 'Glass roof over the family-room bay', kind: 'flat', extent: [4650, 2620, 8315, 4900], height: 3505, retractable: false, glazing: 'Laminated glass' },
+    { id: 'ROOF-DEN', name: 'Glass roof over the den bay', kind: 'flat', extent: [16165, 2620, 19830, 4900], height: 3505, retractable: false, glazing: 'Laminated glass' },
   ],
 
   portals: [],

@@ -539,6 +539,44 @@ function doorFronts(g: THREE.Group, f: FurnitureItem, M: Mats, base: number, top
     g.add(q)
     return
   }
+  // a curved front (many short edges on the drawn outline) gets its pulls on
+  // the curve itself, each tangent to the face; straight lines and handles on
+  // a chord would float in front of the arc
+  if (f.poly && f.poly.length > 12) {
+    const pcx = f.poly.reduce((t, q) => t + q.x, 0) / f.poly.length
+    const pcy = f.poly.reduce((t, q) => t + q.y, 0) / f.poly.length
+    // arc length along the outline, and pulls every ~550 on the edges facing the room
+    const pts = f.poly
+    let acc = 0
+    let next = 275
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i], b = pts[(i + 1) % pts.length]
+      const len = Math.hypot(b.x - a.x, b.y - a.y)
+      if (len < 1) continue
+      while (next <= acc + len) {
+        const t = (next - acc) / len
+        const px = a.x + (b.x - a.x) * t, py = a.y + (b.y - a.y) * t
+        let nx = -(b.y - a.y) / len, ny = (b.x - a.x) / len
+        if ((pcx - px) * nx + (pcy - py) * ny > 0) { nx = -nx; ny = -ny }        // outward
+        // only on the room side: the outward normal must point toward the room's centre
+        // and the pull must stay within the drawn footprint: its ends along the
+        // tangent and its stand-off from the face both inside the outline's box
+        const tx = ny, ty = -nx
+        const ends = [[px + nx * 10 + tx * 60, py + ny * 10 + ty * 60], [px + nx * 10 - tx * 60, py + ny * 10 - ty * 60]]
+        const inside = ends.every(([ex, ey]) => ex >= f.x + 4 && ex <= f.x + w - 4 && ey >= f.y + 4 && ey <= f.y + d - 4)
+        if (((dx * nx + dy * ny) > 0 || !room) && inside) {
+          const pull = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, 120 * S, 8), M.brass)
+          pull.rotation.z = Math.PI / 2
+          pull.rotation.y = -Math.atan2(ty, tx)              // along the face, not out of it
+          pull.position.set(((absolute ? px : px - cx) + nx * 10) * S, (base + Math.min(H * 0.55, 1000)) * S, ((absolute ? py : py - cy) + ny * 10) * S)
+          g.add(pull)
+        }
+        next += 550
+      }
+      acc += len
+    }
+    return
+  }
   const n = Math.max(1, Math.round(faceLen / 500))
   for (let k = 1; k < n; k++) {
     const t = -faceLen / 2 + (k * faceLen) / n
@@ -552,6 +590,45 @@ function doorFronts(g: THREE.Group, f: FurnitureItem, M: Mats, base: number, top
     handle.position.set((ox + (alongX ? sgn * (w / 2 + 14) : t)) * S, (base + Math.min(H * 0.55, 1000)) * S, (oy + (alongX ? t : sgn * (d / 2 + 14))) * S)
     g.add(handle)
   }
+}
+
+/**
+ * A tree, held inside a w x d footprint: a trunk, three branches out of it with
+ * a tuft of foliage on each, and a crown. Shared by the drawn trees, the big
+ * plants in the suites and (at a smaller scale) the parapet strips.
+ */
+function treeGroup(M: Mats, w: number, d: number, height: number): THREE.Group {
+  const g = new THREE.Group()
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 95 * S, height * 0.45 * S, 10), M.trunk)
+  trunk.position.y = height * 0.225 * S
+  trunk.castShadow = true
+  g.add(trunk)
+  const R0 = Math.min(w, d) / 2 - 10
+  const branchTop = height * 0.62
+  for (let k = 0; k < 3; k++) {
+    const a = (k / 3) * Math.PI * 2 + 0.6
+    const bx = Math.cos(a) * R0 * 0.45
+    const bz = Math.sin(a) * R0 * 0.45
+    const from = new THREE.Vector3(0, height * 0.42 * S, 0)
+    const to = new THREE.Vector3(bx * S, branchTop * S, bz * S)
+    const len = from.distanceTo(to)
+    const br = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 40 * S, len, 7), M.trunk)
+    br.position.copy(from).add(to).multiplyScalar(0.5)
+    br.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize())
+    br.castShadow = true
+    g.add(br)
+    const tuft = new THREE.Mesh(new THREE.SphereGeometry(R0 * 0.5 * S, 9, 7), k % 2 ? M.leaf : M.leafDark)
+    tuft.position.set(bx * S, (branchTop + R0 * 0.2) * S, bz * S)
+    tuft.scale.set(1, 0.8, 1)
+    tuft.castShadow = true
+    g.add(tuft)
+  }
+  const crown = new THREE.Mesh(new THREE.SphereGeometry(R0 * 0.62 * S, 10, 8), M.leaf)
+  crown.position.y = (branchTop + R0 * 0.5) * S
+  crown.scale.set(1, 0.85, 1)
+  crown.castShadow = true
+  g.add(crown)
+  return g
 }
 
 export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
@@ -1334,6 +1411,28 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'plant': {
+      if (Math.min(w, d) >= 900) {
+        // the large plant: the great-room tree in a walnut planter box of the
+        // same build, sized to this footprint - box, soil, moss, and the tree
+        // lifted on to the soil line
+        const BOX = Math.min(w, d) * 0.75
+        const H = 450
+        g.add(box(BOX, H, BOX, M.timber, 0, H / 2, 0))
+        g.add(box(BOX * 0.9, 52, BOX * 0.9, M.soil, 0, H - 24, 0))
+        for (let i = 0; i < 7; i++) {
+          const a = (i / 7) * Math.PI * 2 + 0.4
+          const rr = BOX * (0.18 + 0.14 * ((i * 37) % 5) / 5)
+          const peb = new THREE.Mesh(new THREE.SphereGeometry((28 + (i % 3) * 10) * S, 7, 5), i % 2 ? M.leaf : M.carved)
+          peb.scale.set(1, 0.5, 1)
+          peb.position.set(Math.cos(a) * rr * S, (H + 6) * S, Math.sin(a) * rr * S)
+          g.add(peb)
+        }
+        const t = treeGroup(M, w, d, Math.max(f.height, 2100))
+        t.position.y = (H - 50) * S
+        g.add(t)
+        place(g, cx, cy)
+        return g
+      }
       const pot = new THREE.Mesh(
         new THREE.CylinderGeometry(Math.min(w, d) * 0.32 * S, Math.min(w, d) * 0.26 * S, 340 * S, 12),
         M.pot,
@@ -1365,37 +1464,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'tree': {
-      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 95 * S, f.height * 0.45 * S, 10), M.trunk)
-      trunk.position.y = f.height * 0.225 * S
-      trunk.castShadow = true
-      g.add(trunk)
-      // three branches out of the trunk, a tuft of foliage on each and a crown,
-      // all held inside the drawn footprint
-      const R0 = Math.min(w, d) / 2 - 10
-      const branchTop = f.height * 0.62
-      for (let k = 0; k < 3; k++) {
-        const a = (k / 3) * Math.PI * 2 + 0.6
-        const bx = Math.cos(a) * R0 * 0.45
-        const bz = Math.sin(a) * R0 * 0.45
-        const from = new THREE.Vector3(0, f.height * 0.42 * S, 0)
-        const to = new THREE.Vector3(bx * S, branchTop * S, bz * S)
-        const len = from.distanceTo(to)
-        const br = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 40 * S, len, 7), M.trunk)
-        br.position.copy(from).add(to).multiplyScalar(0.5)
-        br.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize())
-        br.castShadow = true
-        g.add(br)
-        const tuft = new THREE.Mesh(new THREE.SphereGeometry(R0 * 0.5 * S, 9, 7), k % 2 ? M.leaf : M.leafDark)
-        tuft.position.set(bx * S, (branchTop + R0 * 0.2) * S, bz * S)
-        tuft.scale.set(1, 0.8, 1)
-        tuft.castShadow = true
-        g.add(tuft)
-      }
-      const crown = new THREE.Mesh(new THREE.SphereGeometry(R0 * 0.62 * S, 10, 8), M.leaf)
-      crown.position.y = (branchTop + R0 * 0.5) * S
-      crown.scale.set(1, 0.85, 1)
-      crown.castShadow = true
-      g.add(crown)
+      const t = treeGroup(M, w, d, f.height)
+      g.add(t)
       place(g, cx, cy, f.lift ?? 0)                 // a tree in a box stands on its soil
       return g
     }
@@ -1742,7 +1812,7 @@ function hatchSash(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   return g
 }
 
-function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   const ceiling = model.data.levels.ceiling
   for (const w of model.walls) {
@@ -2321,6 +2391,136 @@ function petalPendant(_M: Mats): THREE.Group | null {
     bud.scale.set(0.8, 1.25, 0.8)
     bud.position.set(dx * S, (ceiling - len - 110) * S, dy * S)
     g.add(bud)
+  }
+  return g
+}
+
+/** An abstract in earth tones: broad ochre, umber and ivory strokes with a few dark lines. */
+function abstractCanvas(seedIn: number): HTMLCanvasElement | null {
+  if (typeof document === 'undefined') return null
+  const c = document.createElement('canvas')
+  c.width = 512
+  c.height = 768
+  const g = c.getContext('2d')
+  if (!g) return c                                   // no canvas in the test runner
+  g.fillStyle = '#e9dfcb'
+  g.fillRect(0, 0, 512, 768)
+  let seed = seedIn
+  const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 }
+  const cols = ['rgba(184,132,62,0.85)', 'rgba(120,84,46,0.8)', 'rgba(214,190,150,0.9)', 'rgba(90,72,54,0.85)', 'rgba(160,140,100,0.7)']
+  for (let i = 0; i < 14; i++) {
+    g.fillStyle = cols[i % cols.length]
+    g.beginPath()
+    const x = rnd() * 512, y = rnd() * 768
+    g.ellipse(x, y, 60 + rnd() * 180, 30 + rnd() * 90, rnd() * Math.PI, 0, Math.PI * 2)
+    g.fill()
+  }
+  g.strokeStyle = 'rgba(40,30,20,0.7)'
+  g.lineWidth = 3
+  for (let i = 0; i < 5; i++) {
+    g.beginPath()
+    g.moveTo(rnd() * 512, rnd() * 768)
+    g.bezierCurveTo(rnd() * 512, rnd() * 768, rnd() * 512, rnd() * 768, rnd() * 512, rnd() * 768)
+    g.stroke()
+  }
+  return c
+}
+
+/**
+ * Wall art on the bath sweep in Karan's suite: a triptych of tall canvases
+ * that follow the curve of the wall above the arch console, each in a slim
+ * walnut frame, abstracts in earth tones. The curve is the console's own back
+ * edge (the run of its outline against the sweep), so the panels sit on the
+ * wall the console beds on.
+ */
+export function sweepArt(M: Mats): THREE.Group | null {
+  const con = furniture.find((f) => /arch console/i.test(f.label) && f.room === 'R-K-SUITE' && f.poly)
+  const bath = model.roomById.get('R-K-BATH')
+  if (!con?.poly || !bath) return null
+  const walls = model.walls.filter((w) => w.thickness >= 60 && w.points.length >= 2)
+  // the nearest wall centreline point to q, with that segment's outward normal
+  // (away from the bath) and the wall's thickness
+  const nearest = (q: { x: number; y: number }) => {
+    let best = { d: Infinity, px: 0, py: 0, nx: 0, ny: 0, th: 0 }
+    for (const w of walls) for (let k = 1; k < w.points.length; k++) {
+      const a = w.points[k - 1], b = w.points[k]
+      const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+      if (!L2) continue
+      const t = Math.max(0, Math.min(1, ((q.x - a.x) * (b.x - a.x) + (q.y - a.y) * (b.y - a.y)) / L2))
+      const px = a.x + t * (b.x - a.x), py = a.y + t * (b.y - a.y)
+      const d = Math.hypot(q.x - px, q.y - py)
+      if (d < best.d) {
+        const L = Math.sqrt(L2)
+        let nx = -(b.y - a.y) / L, ny = (b.x - a.x) / L
+        if ((bath.centroid.x - px) * nx + (bath.centroid.y - py) * ny > 0) { nx = -nx; ny = -ny }
+        best = { d, px, py, nx, ny, th: w.thickness }
+      }
+    }
+    return best
+  }
+  const poly = con.poly
+  const n = poly.length
+  const flags = poly.map((q) => { const w = nearest(q); return w.d < w.th / 2 + 90 })
+  let best: number[] = []
+  for (let start = 0; start < n; start++) {
+    if (!flags[start] || flags[(start - 1 + n) % n]) continue
+    const run: number[] = []
+    for (let k = 0; k < n && flags[(start + k) % n]; k++) run.push((start + k) % n)
+    if (run.length > best.length) best = run
+  }
+  if (best.length < 4) return null
+  // the arc of the console's back edge, each point moved on to the wall's face
+  const arc = best.map((i) => poly[i])
+  const acc = [0]
+  for (let i = 1; i < arc.length; i++) acc.push(acc[i - 1] + Math.hypot(arc[i].x - arc[i - 1].x, arc[i].y - arc[i - 1].y))
+  const total = acc[acc.length - 1]
+  const at = (d: number) => {
+    let i = 1
+    while (i < acc.length - 1 && acc[i] < d) i++
+    const a = arc[i - 1], b = arc[i]
+    const t = (d - acc[i - 1]) / ((acc[i] - acc[i - 1]) || 1)
+    return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }
+  }
+  const onFace = (q: { x: number; y: number }, off: number) => {
+    const w = nearest(q)
+    return { x: w.px + w.nx * (w.th / 2 + off), y: w.py + w.ny * (w.th / 2 + off) }
+  }
+  const g = new THREE.Group()
+  const H0 = 1350, H1 = 2350
+  const GAP = 70, MARGIN = 120
+  const panelL = (total - 2 * MARGIN - 2 * GAP) / 3
+  const ribbon = (d0: number, d1: number, base: number, top: number, off: number, mat: THREE.Material) => {
+    const steps = Math.max(2, Math.ceil((d1 - d0) / 40))
+    const pos: number[] = []
+    const uv: number[] = []
+    const idx: number[] = []
+    for (let i = 0; i <= steps; i++) {
+      const p = onFace(at(d0 + ((d1 - d0) * i) / steps), off)
+      pos.push(p.x * S, base * S, p.y * S, p.x * S, top * S, p.y * S)
+      uv.push(i / steps, 0, i / steps, 1)
+      if (i) idx.push(2 * i - 2, 2 * i, 2 * i - 1, 2 * i, 2 * i + 1, 2 * i - 1)
+    }
+    const geo = new THREE.BufferGeometry()
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+    geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2))
+    geo.setIndex(idx)
+    geo.computeVertexNormals()
+    const m = new THREE.Mesh(geo, mat)
+    m.material.side = THREE.DoubleSide
+    return m
+  }
+  for (let k = 0; k < 3; k++) {
+    const d0 = MARGIN + k * (panelL + GAP), d1 = d0 + panelL
+    const cv = abstractCanvas(41 + k * 17)
+    const tex = cv ? new THREE.CanvasTexture(cv) : null
+    if (tex) tex.colorSpace = THREE.SRGBColorSpace
+    const art = new THREE.MeshStandardMaterial({ map: tex, color: 0xd9c9a8, roughness: 0.9 })
+    g.add(ribbon(d0 + 30, d1 - 30, H0 + 30, H1 - 30, 40, art))
+    g.add(ribbon(d0, d1, H0, H0 + 30, 44, M.walnut))              // frame: bottom, top, sides
+    g.add(ribbon(d0, d1, H1 - 30, H1, 44, M.walnut))
+    g.add(ribbon(d0, d0 + 30, H0, H1, 44, M.walnut))
+    g.add(ribbon(d1 - 30, d1, H0, H1, 44, M.walnut))
+    g.add(ribbon(d0 + 30, d1 - 30, H0 + 30, H1 - 30, 24, M.plaster))   // the backing, so the frame reads deep
   }
   return g
 }
@@ -2982,6 +3182,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(bathMirrors(M))
   const petals = petalPendant(M)
   if (petals) root.add(petals)
+  const art = sweepArt(M)
+  if (art) root.add(art)
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

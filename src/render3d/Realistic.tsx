@@ -2203,6 +2203,128 @@ function coffeeBar(M: Mats, f: FurnitureItem): THREE.Group | null {
 }
 
 
+/** Handmade paper: warm ivory with a fan of dark veins from the stem, lit from within. */
+function petalTexture(): THREE.CanvasTexture {
+  return canvasTexture(512, (g, s) => {
+    g.fillStyle = '#efe0c4'
+    g.fillRect(0, 0, s, s)
+    const grad = g.createLinearGradient(0, s, 0, 0)
+    grad.addColorStop(0, 'rgba(150,110,60,0.35)')
+    grad.addColorStop(0.5, 'rgba(230,205,160,0.0)')
+    grad.addColorStop(1, 'rgba(255,245,225,0.35)')
+    g.fillStyle = grad
+    g.fillRect(0, 0, s, s)
+    // the veins fan out from the base (bottom centre) toward the tip
+    for (let i = 0; i < 26; i++) {
+      const t = (i + 0.5) / 26 - 0.5
+      g.strokeStyle = `rgba(80,55,25,${0.35 + (i % 3) * 0.12})`
+      g.lineWidth = 1.2 + (i % 2) * 0.8
+      g.beginPath()
+      g.moveTo(s / 2, s)
+      g.bezierCurveTo(s / 2 + t * s * 0.5, s * 0.65, s / 2 + t * s * 1.05, s * 0.35, s / 2 + t * s * 0.95, 0)
+      g.stroke()
+    }
+    // a soft mottle so the paper is not flat
+    for (let k = 0; k < 400; k++) {
+      g.fillStyle = `rgba(120,90,50,${0.03 + (k % 4) * 0.01})`
+      g.fillRect((k * 131) % s, (k * 71) % s, 6 + (k % 7), 3)
+    }
+  }, 1)
+}
+
+/**
+ * The petal light over the great room: three blooms of large, veined paper
+ * petals lit from within, hung on a dark vine-like arm from the ceiling with
+ * a pair of buds trailing on cords - after the paper-sculpture pendants the
+ * reference shows. Each bloom carries its own warm light.
+ */
+function petalPendant(_M: Mats): THREE.Group | null {
+  const room = model.roomById.get('R-GREAT')
+  if (!room) return null
+  const g = new THREE.Group()
+  const ceiling = model.data.levels.ceiling
+  const tex = petalTexture()
+  const paper = new THREE.MeshStandardMaterial({
+    map: tex, color: 0xfff2dc, emissive: 0xffc27a, emissiveMap: tex, emissiveIntensity: 0.75,
+    roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity: 0.94,
+  })
+  const vine = new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.85 })
+  // a petal: a pointed leaf outline, cupped along its length so it curls up at the tip
+  const petalGeo = (L: number, W: number): THREE.BufferGeometry => {
+    const shape = new THREE.Shape()
+    shape.moveTo(0, 0)
+    shape.bezierCurveTo(W * 0.55, L * 0.15, W * 0.62, L * 0.62, 0, L)
+    shape.bezierCurveTo(-W * 0.62, L * 0.62, -W * 0.55, L * 0.15, 0, 0)
+    const geo = new THREE.ShapeGeometry(shape, 18)
+    const pos = geo.attributes.position
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i)
+      // cupped across, and lifting toward the tip
+      pos.setZ(i, (x * x) / (W * 0.55) + (y * y) / (L * 1.4))
+    }
+    geo.computeVertexNormals()
+    // uv: u across, v along, so the veins fan from the base
+    const uv = geo.attributes.uv
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, 0.5 + pos.getX(i) / W, pos.getY(i) / L)
+    geo.scale(S, S, S)
+    return geo
+  }
+  const bloom = (cx: number, cy: number, h: number, n: number, L: number, W: number, droop: number, spin: number) => {
+    const hub = new THREE.Group()
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + spin
+      const petal = new THREE.Mesh(petalGeo(L * (0.85 + (i % 2) * 0.3), W), paper)
+      // stand the petal on its base at the hub, leaning out and drooping
+      // lay the petal out from the hub and let it droop, its cup opening upward
+      petal.rotation.set(-Math.PI / 2 - droop, a, 0, 'YXZ')
+      petal.castShadow = false
+      hub.add(petal)
+    }
+    const core = new THREE.Mesh(new THREE.SphereGeometry(45 * S, 12, 10), vine)
+    hub.add(core)
+    const light = new THREE.PointLight(0xffc27a, 1.6, 6.5, 1.7)
+    light.position.y = -60 * S
+    hub.add(light)
+    hub.position.set(cx * S, h * S, cy * S)
+    g.add(hub)
+  }
+  // the arm: one dark vine from the ceiling swinging across the seating, with a
+  // drop to each bloom, all in plan mm
+  const c = { x: room.centroid.x + 500, y: room.centroid.y - 800 }
+  const arm = new THREE.CatmullRomCurve3([
+    new THREE.Vector3((c.x - 1900) * S, ceiling * S, (c.y + 300) * S),
+    new THREE.Vector3((c.x - 1200) * S, (ceiling - 450) * S, (c.y - 100) * S),
+    new THREE.Vector3((c.x - 200) * S, (ceiling - 650) * S, (c.y + 250) * S),
+    new THREE.Vector3((c.x + 900) * S, (ceiling - 500) * S, (c.y - 150) * S),
+    new THREE.Vector3((c.x + 1900) * S, (ceiling - 300) * S, (c.y + 200) * S),
+  ])
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(arm, 48, 16 * S, 8, false), vine))
+  const anchor = new THREE.Mesh(new THREE.CylinderGeometry(60 * S, 60 * S, 20 * S, 16), vine)
+  anchor.position.set((c.x - 1900) * S, (ceiling - 10) * S, (c.y + 300) * S)
+  g.add(anchor)
+  const drop = (x: number, y: number, top: number, bottom: number) => {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, (top - bottom) * S, 6), vine)
+    m.position.set(x * S, ((top + bottom) / 2) * S, y * S)
+    g.add(m)
+  }
+  // three blooms: a large one mid-arm, two smaller either side, at different heights
+  drop(c.x - 1200, c.y - 100, ceiling - 450, ceiling - 900)
+  bloom(c.x - 1200, c.y - 100, ceiling - 900, 5, 700, 380, 0.95, 0.3)
+  drop(c.x - 200, c.y + 250, ceiling - 650, ceiling - 1150)
+  bloom(c.x - 200, c.y + 250, ceiling - 1150, 6, 950, 500, 1.05, 0)
+  drop(c.x + 900, c.y - 150, ceiling - 500, ceiling - 1000)
+  bloom(c.x + 900, c.y - 150, ceiling - 1000, 5, 650, 350, 0.9, 0.6)
+  // two buds trailing on cords, lit
+  for (const [dx, dy, len] of [[c.x + 350, c.y + 60, 1500], [c.x - 700, c.y + 80, 1300]] as const) {
+    drop(dx, dy, ceiling - 560, ceiling - len)
+    const bud = new THREE.Mesh(new THREE.SphereGeometry(95 * S, 12, 10), paper)
+    bud.scale.set(0.8, 1.25, 0.8)
+    bud.position.set(dx * S, (ceiling - len - 110) * S, dy * S)
+    g.add(bud)
+  }
+  return g
+}
+
 function mandirIdol(M: Mats): THREE.Group | null {
   const units = furniture.filter((f) => /corner unit/i.test(f.label) && f.room === 'R-P-FAMILY')
   if (!units.length) return null
@@ -2868,6 +2990,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   const sconces = entrySconces(M)
   if (sconces) root.add(sconces)
   root.add(bathMirrors(M))
+  const petals = petalPendant(M)
+  if (petals) root.add(petals)
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

@@ -34,6 +34,9 @@ import { customObject, floorMaterial, getAssign, primeStyle, wallMaterial } from
 import { lightRig } from './lighting'
 import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWalk } from './touchWalk'
 import { PRESETS, presetCamera } from './cameras'
+import { podDoorLeaves, type PodDoorMode } from './podDoors'
+import { isStrengthTrainer, strengthTrainer } from './gym'
+import { useStore } from '../ui/store'
 
 const model = getModel()
 const solids = buildSolids(model)
@@ -308,6 +311,11 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     m.castShadow = true
     m.receiveShadow = true
     return m
+  }
+
+  // The strength trainer is a cable machine, not a joinery slab.
+  if (isStrengthTrainer(f)) {
+    return strengthTrainer(f, { metal: M.metal, weights: M.trunk, pad: M.fabricDark })
   }
 
   // The spa is a hot tub, not a table: a wood-skirted shell with a lip, water,
@@ -646,6 +654,41 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
 }
 
 /**
+ * The pod-to-suite sliding doors in one state: wooden leaves with a recessed
+ * panel line and a pull at the leading stile. Both states are built into the
+ * scene and the Show setting picks which one is visible.
+ */
+export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
+  const g = new THREE.Group()
+  g.name = `pod-doors-${mode}`
+  for (const leaf of podDoorLeaves(model.data, mode)) {
+    const w = leaf.x1 - leaf.x0
+    const d = leaf.y1 - leaf.y0
+    const h = leaf.top - leaf.base
+    const cx = (leaf.x0 + leaf.x1) / 2
+    const cy = (leaf.y0 + leaf.y1) / 2
+    const body = box(w, h, d, M.wallWood)
+    place(body, cx, cy, leaf.base + h / 2)
+    g.add(body)
+    // two recessed panels either side of a mid rail, read as thin dark lines
+    for (const dy of [-d / 2 + 120, -120, 120, d / 2 - 120]) {
+      const line = box(w + 4, h - 300, 6, M.trunk)
+      place(line, cx, cy + dy, leaf.base + h / 2)
+      g.add(line)
+    }
+    const rail = box(w + 4, 8, d - 240, M.trunk)
+    place(rail, cx, cy, leaf.base + h / 2)
+    g.add(rail)
+    // the pull, a vertical bar at the leading stile
+    const pull = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.32, 8), M.metal)
+    const towardCentre = cx < (model.envelopeBBox.minX + model.envelopeBBox.maxX) / 2 ? 1 : -1
+    pull.position.set((cx + towardCentre * (w / 2 + 25)) * S, 1.05, (cy + leaf.handleAt * (d / 2 - 90)) * S)
+    g.add(pull)
+  }
+  return g
+}
+
+/**
  * A three-tier carved stone fountain, London style: stepped plinth, a wide lower
  * basin on a fluted pedestal, a middle and a top basin above it, a finial, water
  * falling from tier to tier, and trailing flowers spilling over the two lower rims.
@@ -865,6 +908,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
 
   const doors = curvedDoors(M)
   if (doors) root.add(doors)
+  root.add(podDoorGroup(M, 'open'))
+  root.add(podDoorGroup(M, 'shut'))
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {
@@ -1037,6 +1082,20 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const standRef = useRef<((roomId: string, dir: 'N' | 'S' | 'E' | 'W') => void) | null>(null)
   const [standRoom, setStandRoom] = useState('R-GREAT')
 
+  const { state: uiState } = useStore()
+  const sceneRef = useRef<THREE.Scene | null>(null)
+  const podDoorsShut = uiState.show3d.podDoorsShut
+  const shutRef = useRef(podDoorsShut)
+  shutRef.current = podDoorsShut
+  useEffect(() => {
+    const sc = sceneRef.current
+    if (!sc) return
+    sc.traverse((o) => {
+      if (o.name === 'pod-doors-open') o.visible = !podDoorsShut
+      if (o.name === 'pod-doors-shut') o.visible = podDoorsShut
+    })
+  }, [podDoorsShut])
+
   const [styleTick, setStyleTick] = useState(0)
   useEffect(() => {
     const onStyle = (): void => {
@@ -1061,12 +1120,17 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     mount.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
+    sceneRef.current = scene
     scene.background = new THREE.Color(rig.background)
     // Far enough out that the whole block, seen from 40 m up and back, is still crisp.
     scene.fog = new THREE.Fog(rig.background, 120, 320)
 
     const M = makeMaterials()
     scene.add(buildScene(M))
+    scene.traverse((o) => {
+      if (o.name === 'pod-doors-open') o.visible = !shutRef.current
+      if (o.name === 'pod-doors-shut') o.visible = shutRef.current
+    })
     scene.add(buildFixtures(M))
 
     const furn = new THREE.Group()

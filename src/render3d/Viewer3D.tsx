@@ -13,6 +13,8 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { getModel } from '../geometry/model'
 import { barrelProfile, buildSolids, type Prism } from '../geometry/solid'
 import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWalk } from './touchWalk'
+import { podDoorLeaves } from './podDoors'
+import { isStrengthTrainer, strengthTrainer } from './gym'
 import { building } from '../data/building'
 import { furniture, type FurnitureItem } from '../data/furniture'
 import { fixtures } from '../data/fixtures'
@@ -233,6 +235,8 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       fabric: new THREE.Group(),
       glassRoof: new THREE.Group(),
       furniture: new THREE.Group(),
+      podDoorsOpen: new THREE.Group(),
+      podDoorsShut: new THREE.Group(),
       podParents: new THREE.Group(),
       podKaran: new THREE.Group(),
       cages: new THREE.Group(),
@@ -368,6 +372,20 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       if (f.height <= 0) continue
       const obj = furnitureObject(f, clip)
       if (obj) groups.furniture.add(obj)
+    }
+
+    // ---- the pod-to-suite sliding doors, both states built, one shown
+    for (const [mode, grp] of [['open', groups.podDoorsOpen], ['shut', groups.podDoorsShut]] as const) {
+      for (const leaf of podDoorLeaves(building, mode)) {
+        const m = new THREE.Mesh(
+          new THREE.BoxGeometry((leaf.x1 - leaf.x0) * S, (leaf.top - leaf.base) * S, (leaf.y1 - leaf.y0) * S),
+          withClip(MAT.wood, clip),
+        )
+        m.position.set(((leaf.x0 + leaf.x1) / 2) * S, ((leaf.base + leaf.top) / 2) * S, ((leaf.y0 + leaf.y1) / 2) * S)
+        m.castShadow = true
+        m.receiveShadow = true
+        grp.add(m)
+      }
     }
     fixtures.forEach((f, i) => {
       // A fixture with its drawn outline extrudes it, wall-clipped — the
@@ -537,6 +555,8 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
     a.groups.podParents.visible = state.show3d.podParents
     a.groups.podKaran.visible = state.show3d.podKaran
     a.groups.cages.visible = state.show3d.cages
+    a.groups.podDoorsOpen.visible = !state.show3d.podDoorsShut
+    a.groups.podDoorsShut.visible = state.show3d.podDoorsShut
   }, [state.show3d])
 
   useEffect(() => {
@@ -735,6 +755,10 @@ function polyPrisms(
 }
 
 export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Object3D | null {
+  // The strength trainer is a cable machine, not a joinery slab.
+  if (isStrengthTrainer(f)) {
+    return strengthTrainer(f, { metal: withClip(MAT.cage, clip), weights: withClip(MAT.trunk, clip), pad: withClip(MAT.soft, clip) })
+  }
   // A piece with its drawn 2D outline extrudes THAT — never a box around it.
   if (f.poly && POLY_FOOTPRINT_KINDS.has(f.kind)) {
     const abs = new THREE.Group()

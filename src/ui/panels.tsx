@@ -10,6 +10,7 @@ import { activeHome } from '../homes/registry'
 import { fixtures } from '../data/fixtures'
 import { formatArea, formatFeetInches, formatLength, formatMm, sqFt, sqM } from '../geometry/units'
 import { LAYER_LABELS, useStore, type LayerId } from './store'
+import { podDoorLeaves } from '../render3d/podDoors'
 import { sheetSvg as sheetSvgRaw } from '../data/sheet'
 import { exportMarkupPdf, exportPdf, PAPER, type PaperName } from '../export/pdf'
 import {
@@ -298,6 +299,7 @@ export function View3DPanel(): React.ReactElement {
             ['furniture', 'Furniture', true],
             ['podParents', "Parents' pod", building.screens.length > 0],
             ['podKaran', "Karan's pod", building.screens.length > 1],
+            ['podDoorsShut', 'Pod doors shut', podDoorLeaves(building, 'shut').length > 0],
           ] as const
         )
           .filter(([, , present]) => present)

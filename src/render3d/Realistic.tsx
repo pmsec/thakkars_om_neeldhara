@@ -134,7 +134,12 @@ function grassTexture(): THREE.CanvasTexture {
   return canvasTexture(512, (g, s) => {
     g.fillStyle = '#5e7d43'
     g.fillRect(0, 0, s, s)
-    for (let k = 0; k < 5200; k++) {
+    // mown stripes, then blades over them
+    for (let y = 0; y < s; y += 128) {
+      g.fillStyle = 'rgba(255,255,255,0.05)'
+      g.fillRect(0, y, s, 64)
+    }
+    for (let k = 0; k < 14000; k++) {
       const x = (k * 97) % s
       const y = (k * 61 + ((k * k) % 17)) % s
       const h = 3 + ((k * 7) % 6)
@@ -162,18 +167,76 @@ function plasterTexture(): THREE.CanvasTexture {
   }, 1.6)
 }
 
-function rugTexture(): THREE.CanvasTexture {
-  return canvasTexture(256, (g, s) => {
-    g.fillStyle = '#c9b598'
+function weaveTexture(): THREE.CanvasTexture {
+  return canvasTexture(128, (g, s) => {
+    g.fillStyle = '#e9e1cf'
     g.fillRect(0, 0, s, s)
-    for (let k = 0; k < 2000; k++) {
-      g.fillStyle = `rgba(${140 + (k % 40)}, ${118 + (k % 30)}, ${88 + (k % 24)}, 0.35)`
-      g.fillRect((k * 31) % s, (k * 87) % s, 3, 3)
+    for (let y = 0; y < s; y += 4) {
+      for (let x = 0; x < s; x += 4) {
+        const k = ((x + y) / 4) % 2
+        g.fillStyle = k ? 'rgba(120,100,70,0.16)' : 'rgba(255,255,255,0.10)'
+        g.fillRect(x, y, 3, 3)
+      }
     }
-    g.strokeStyle = 'rgba(120, 95, 60, 0.55)'
-    g.lineWidth = 6
-    g.strokeRect(10, 10, s - 20, s - 20)
-  }, 1.0)
+  }, 0.12)
+}
+
+function quiltTexture(): THREE.CanvasTexture {
+  return canvasTexture(256, (g, s) => {
+    g.fillStyle = '#d9cbb3'
+    g.fillRect(0, 0, s, s)
+    // tufted diamonds: soft shading toward each button
+    for (let y = 0; y < s; y += 64) {
+      for (let x = 0; x < s; x += 64) {
+        const grad = g.createRadialGradient(x + 32, y + 32, 4, x + 32, y + 32, 40)
+        grad.addColorStop(0, 'rgba(90,70,45,0.45)')
+        grad.addColorStop(0.35, 'rgba(255,255,255,0.10)')
+        grad.addColorStop(1, 'rgba(90,70,45,0.18)')
+        g.fillStyle = grad
+        g.fillRect(x, y, 64, 64)
+        g.fillStyle = '#8a7250'
+        g.beginPath()
+        g.arc(x + 32, y + 32, 3.5, 0, Math.PI * 2)
+        g.fill()
+      }
+    }
+  }, 0.5)
+}
+
+function rugTexture(): THREE.CanvasTexture {
+  // the leaf pattern the sheet draws: a scatter of leaves in two greens on a
+  // sand ground, with a woven grain under it
+  return canvasTexture(512, (g, s) => {
+    g.fillStyle = '#cbb89a'
+    g.fillRect(0, 0, s, s)
+    for (let k = 0; k < 6000; k++) {
+      g.fillStyle = `rgba(${140 + (k % 40)}, ${118 + (k % 30)}, ${88 + (k % 24)}, 0.28)`
+      g.fillRect((k * 31) % s, (k * 87) % s, 2, 2)
+    }
+    const leaf = (x: number, y: number, len: number, ang: number, fill: string) => {
+      g.save()
+      g.translate(x, y)
+      g.rotate(ang)
+      g.fillStyle = fill
+      g.beginPath()
+      g.moveTo(0, 0)
+      g.bezierCurveTo(len * 0.35, -len * 0.32, len * 0.75, -len * 0.3, len, 0)
+      g.bezierCurveTo(len * 0.75, len * 0.3, len * 0.35, len * 0.32, 0, 0)
+      g.fill()
+      g.strokeStyle = 'rgba(255,245,220,0.5)'
+      g.lineWidth = 1.2
+      g.beginPath()
+      g.moveTo(len * 0.1, 0)
+      g.lineTo(len * 0.9, 0)
+      g.stroke()
+      g.restore()
+    }
+    for (let k = 0; k < 90; k++) {
+      const x = (k * 137.5) % s
+      const y = (k * 89.3 + ((k * k) % 41)) % s
+      leaf(x, y, 46 + (k % 5) * 9, (k * 0.71) % (Math.PI * 2), k % 3 ? 'rgba(96,128,72,0.82)' : 'rgba(58,92,54,0.85)')
+    }
+  }, 1.2)
 }
 
 function woodTexture(): THREE.CanvasTexture {
@@ -225,8 +288,14 @@ export function makeMaterials() {
       color: 0xcfe4ea, transparent: true, opacity: 0.16, roughness: 0.05,
       side: THREE.DoubleSide, depthWrite: false,
     }),
-    fabric: new THREE.MeshStandardMaterial({ color: 0xf0e8d6, roughness: 0.95 }),
-    fabricDark: new THREE.MeshStandardMaterial({ color: 0xd8cbb2, roughness: 0.95 }),
+    fabric: new THREE.MeshStandardMaterial({ map: weaveTexture(), color: 0xf4ecda, roughness: 0.95 }),
+    fabricDark: new THREE.MeshStandardMaterial({ map: weaveTexture(), color: 0xd2c4aa, roughness: 0.95 }),
+    quilt: new THREE.MeshStandardMaterial({ map: quiltTexture(), roughness: 0.9 }),
+    throw: new THREE.MeshStandardMaterial({ color: 0x8a6a4c, roughness: 0.95 }),
+    bin: new THREE.MeshStandardMaterial({ color: 0x3b3b3b, roughness: 0.5, metalness: 0.5 }),
+    mirror: new THREE.MeshStandardMaterial({ color: 0xc9d6dd, roughness: 0.05, metalness: 0.9 }),
+    stoneTop: new THREE.MeshStandardMaterial({ color: 0xd9d4cb, roughness: 0.3 }),
+    hob: new THREE.MeshStandardMaterial({ color: 0x151719, roughness: 0.15, metalness: 0.2 }),
     duvet: new THREE.MeshStandardMaterial({ color: 0xf7f3ea, roughness: 0.98 }),
     pillow: new THREE.MeshStandardMaterial({ color: 0xefe6d2, roughness: 0.96 }),
     timber: new THREE.MeshStandardMaterial({ map: wood, roughness: 0.5 }),
@@ -295,6 +364,45 @@ function polyPiece(
     g.add(m)
   }
   return g
+}
+
+/**
+ * Door fronts on a joinery box: shadow lines between doors and a bar handle on
+ * each, on the face toward the room. A headboard gets the quilt instead.
+ */
+function doorFronts(g: THREE.Group, f: FurnitureItem, M: Mats, base: number, top: number, absolute = false): void {
+  const w = f.w
+  const d = f.d
+  const cx = f.x + w / 2
+  const cy = f.y + d / 2
+  const room = model.roomById.get(f.room)
+  const dx = (room?.centroid.x ?? cx) - cx
+  const dy = (room?.centroid.y ?? cy) - cy
+  const alongX = Math.abs(dx) >= Math.abs(dy)   // the face is on an x-side
+  const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+  const faceLen = alongX ? d : w
+  const ox = absolute ? cx : 0
+  const oy = absolute ? cy : 0
+  const H = top - base
+  if (/headboard/i.test(f.label)) {
+    const q = box(alongX ? 30 : faceLen - 20, H - 40, alongX ? faceLen - 20 : 30, M.quilt)
+    q.position.set((ox + (alongX ? sgn * (w / 2 + 8) : 0)) * S, (base + H / 2) * S, (oy + (alongX ? 0 : sgn * (d / 2 + 8))) * S)
+    g.add(q)
+    return
+  }
+  const n = Math.max(1, Math.round(faceLen / 500))
+  for (let k = 1; k < n; k++) {
+    const t = -faceLen / 2 + (k * faceLen) / n
+    const line = box(alongX ? 6 : 4, H - 40, alongX ? 4 : 6, M.trunk)
+    line.position.set((ox + (alongX ? sgn * (w / 2 + 2) : t)) * S, (base + H / 2) * S, (oy + (alongX ? t : sgn * (d / 2 + 2))) * S)
+    g.add(line)
+  }
+  for (let k = 0; k < n; k++) {
+    const t = -faceLen / 2 + ((k + 0.5) * faceLen) / n + (k % 2 ? -1 : 1) * Math.min(120, faceLen / n / 2 - 40)
+    const handle = box(alongX ? 12 : 14, Math.min(220, H * 0.3), alongX ? 14 : 12, M.metal)
+    handle.position.set((ox + (alongX ? sgn * (w / 2 + 14) : t)) * S, (base + Math.min(H * 0.55, 1000)) * S, (oy + (alongX ? t : sgn * (d / 2 + 14))) * S)
+    g.add(handle)
+  }
 }
 
 export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
@@ -385,7 +493,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       g.add(top)
       return g
     }
-    if (f.kind === 'console' && /^console$|side table|dresser|work console/i.test(f.label)) {
+    if (f.kind === 'console' && /^console$|side table|dresser|work console/i.test(f.label) && !(/^console$/i.test(f.label) && /GREAT/i.test(f.room))) {
       // an open piece: the drawn top on four legs with a low shelf, not a block
       const top = polyPiece(f.poly, h - 40, h, M.timber, f.room)
       if (!top) return null
@@ -402,6 +510,28 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         place(leg, cxp + sx * (w / 2 - inX), cyp + sz * (d / 2 - inZ), (h - 40) / 2)
         g.add(leg)
       }
+      if (/side table/i.test(f.label) && /SUITE/i.test(f.room)) {
+        // a bedside lamp: turned base, a linen drum shade, a warm light in it
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(50 * S, 70 * S, 260 * S, 12), M.brass)
+        base.position.set(cxp * S, (h + 130) * S, cyp * S)
+        g.add(base)
+        const shade = new THREE.Mesh(new THREE.CylinderGeometry(120 * S, 140 * S, 200 * S, 16, 1, true), M.fabric)
+        ;(shade.material as THREE.MeshStandardMaterial).side = THREE.DoubleSide
+        shade.position.set(cxp * S, (h + 360) * S, cyp * S)
+        g.add(shade)
+        const bulb = new THREE.PointLight(0xffd9a8, 0.55, 2.4, 1.7)
+        bulb.position.set(cxp * S, (h + 330) * S, cyp * S)
+        g.add(bulb)
+      }
+      if (/dresser/i.test(f.label)) {
+        // the dresser's mirror standing on it
+        const mir = box(w * 0.6, 520, 20, M.mirror)
+        place(mir, cxp, cyp + (d / 2 - 40), h + 300)
+        g.add(mir)
+        const frame = box(w * 0.6 + 40, 560, 12, M.trunk)
+        place(frame, cxp, cyp + (d / 2 - 30), h + 300)
+        g.add(frame)
+      }
       return g
     }
     if (lift > 0 && f.kind === 'shelves') {
@@ -417,6 +547,71 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         place(line, cx + (alongX ? -w / 2 + (i * w) / n : 0), cy + (alongX ? 0 : -d / 2 + (i * d) / n), lift + h / 2)
         g.add(line)
       }
+      return g
+    }
+    if (f.kind === 'wardrobe' || f.kind === 'shelves') {
+      const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
+      if (body) g.add(body)
+      if (/hatch/i.test(f.label)) {
+        // the serving hatch's open shelves: two boards and a few things on them
+        const alongX = w >= d
+        for (const sh of [500, 950]) {
+          g.add(Object.assign(box(alongX ? w - 40 : d - 60, 30, alongX ? d - 60 : w - 40, M.timber), {}))
+          const last = g.children[g.children.length - 1]
+          last.position.set(cx * S, (lift + sh) * S, cy * S)
+        }
+        for (const [k, hgt] of [[0.25, 120], [0.5, 180], [0.75, 90]] as const) {
+          const jar = new THREE.Mesh(new THREE.CylinderGeometry(45 * S, 45 * S, hgt * S, 10), k > 0.6 ? M.carved : M.brass)
+          jar.position.set((cx + (alongX ? (k - 0.5) * w : 0)) * S, (lift + 515 + hgt / 2) * S, (cy + (alongX ? 0 : (k - 0.5) * d)) * S)
+          g.add(jar)
+        }
+      } else {
+        doorFronts(g, f, M, lift, lift + h, true)
+      }
+      return g
+    }
+    if (f.kind === 'console' && /arch console/i.test(f.label)) {
+      // the curved cabinet under the bath sweep: joinery body, marble top, doors
+      const body = polyPiece(f.poly, 0, h - 40, M.timber, f.room)
+      const top = polyPiece(f.poly, h - 40, h, M.marble, f.room)
+      if (body) g.add(body)
+      if (top) g.add(top)
+      doorFronts(g, f, M, 100, h - 60, true)
+      return g
+    }
+    if (f.kind === 'console' && /corner unit/i.test(f.label)) {
+      const body = polyPiece(f.poly, 0, h, M.timber, f.room)
+      if (body) g.add(body)
+      const mandir = /P-FAMILY|family/i.test(f.room) && w * d > 800000
+      if (mandir) {
+        // the mandir: a carved front read as a lattice of fine lines, and a lamp
+        // niche glowing under the shelf
+        const lat = new THREE.Group()
+        const span = Math.min(w, d) * 0.55
+        for (let k = 0; k < 6; k++) lat.add(box(4, h - 160, 4, M.trunk, 0, h / 2, -span / 2 + (k * span) / 5))
+        for (let k = 0; k < 5; k++) lat.add(box(4, 4, span, M.brass, 0, 120 + k * ((h - 240) / 4), 0))
+        lat.position.set((cx - w * 0.18) * S, 0, cy * S)
+        g.add(lat)
+        const niche = new THREE.PointLight(0xffc98a, 0.5, 1.6, 1.6)
+        niche.position.set((cx) * S, (h - 120) * S, (cy) * S)
+        g.add(niche)
+      } else {
+        doorFronts(g, f, M, 100, h - 60, true)
+      }
+      return g
+    }
+    if (f.kind === 'console' && /^console$/i.test(f.label) && /GREAT/i.test(f.room)) {
+      // the great room's credenza: a joinery body with doors and a stone top
+      const body = polyPiece(f.poly, 120, h - 30, M.timber, f.room)
+      const top = polyPiece(f.poly, h - 30, h, M.stoneTop, f.room)
+      if (body) g.add(body)
+      if (top) g.add(top)
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        const leg = box(40, 120, 40, M.trunk)
+        place(leg, cx + sx * (w / 2 - 60), cy + sz * (d / 2 - 60), 60)
+        g.add(leg)
+      }
+      doorFronts(g, f, M, 120, h - 30, true)
       return g
     }
     const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
@@ -453,6 +648,27 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return hedgeGroup(f, { bed: M.pot, leaf: M.leaf, leafDark: M.leafDark }, bed)
     }
     case 'sofa': {
+      if (/^chair$/i.test(f.label)) {
+        // a hall chair: a timber frame, a padded seat and a slatted back
+        const seat = Math.min(w, d) - 40
+        g.add(box(seat, 40, seat, M.timber, 0, 420, 0))
+        g.add(box(seat - 30, 50, seat - 30, M.fabricDark, 0, 465, 0))
+        for (const [lx, lz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(16 * S, 22 * S, 420 * S, 8), M.trunk)
+          leg.position.set(lx * (seat / 2 - 30) * S, 210 * S, lz * (seat / 2 - 30) * S)
+          g.add(leg)
+        }
+        const bx = f.face === 'E' ? -1 : f.face === 'W' ? 1 : 0
+        const bz = f.face === 'S' ? -1 : f.face === 'N' ? 1 : bx ? 0 : 1
+        for (let k = 0; k < 4; k++) {
+          const t = (k - 1.5) / 3.5
+          g.add(box(bx ? 24 : 24, 460, bx ? 24 : 24, M.trunk,
+            bx ? bx * (w / 2 - 32) : t * seat, 420 + 230, bz ? bz * (d / 2 - 32) : t * seat))
+        }
+        g.add(box(bx ? 30 : seat, 50, bx ? seat : 30, M.timber, bx * (w / 2 - 32), 420 + 460 - 25, bz * (d / 2 - 32)))
+        place(g, cx, cy)
+        return g
+      }
       const seatH = 420
       const backH = f.height
       g.add(f.poly ? basePrism(f.poly, 0, seatH, M.fabric)
@@ -490,15 +706,28 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'lounger': {
-      g.add(f.poly ? basePrism(f.poly, 0, 380, M.fabric)
-        : box(w, 380, d, M.fabric, 0, 190, 0))
+      // an upholstered recliner: a plinth, a seat cushion, arms along the sides
+      // and the padded back on the far side, all within the drawn seat
+      const ewA = f.face === 'E' || f.face === 'W'
+      g.add(f.poly ? basePrism(f.poly, 0, 300, M.fabric)
+        : box(w, 300, d, M.fabric, 0, 150, 0))
+      g.add(box(ewA ? w * 0.7 : w - 240, 110, ewA ? d - 240 : d * 0.7, M.fabricDark,
+        f.face === 'E' ? w * 0.12 : f.face === 'W' ? -w * 0.12 : 0, 355,
+        f.face === 'S' ? d * 0.12 : f.face === 'N' ? -d * 0.12 : 0))
+      if (ewA) {
+        g.add(box(w * 0.9, 560, 110, M.fabric, 0, 280, -d / 2 + 55))
+        g.add(box(w * 0.9, 560, 110, M.fabric, 0, 280, d / 2 - 55))
+      } else {
+        g.add(box(110, 560, d * 0.9, M.fabric, -w / 2 + 55, 280, 0))
+        g.add(box(110, 560, d * 0.9, M.fabric, w / 2 - 55, 280, 0))
+      }
       // inclined back toward the face direction — the back's long side runs
       // ACROSS the face axis (by face, not by aspect: a deep W-facing chair
       // still reclines along x)
       const ewL = f.face === 'E' || f.face === 'W'
       const backLen = (ewL ? w : d) * 0.45
       const bk = new THREE.Mesh(
-        new THREE.BoxGeometry((ewL ? backLen : w * 0.9) * S, 90 * S, (ewL ? d * 0.9 : backLen) * S),
+        new THREE.BoxGeometry((ewL ? backLen : w * 0.7) * S, 150 * S, (ewL ? d * 0.7 : backLen) * S),
         M.fabricDark,
       )
       bk.castShadow = true
@@ -549,6 +778,15 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       } else {
         g.add(box(w, 260, d, M.timber, 0, 130, 0))                    // frame
         g.add(box(w - 60, 210, d - 60, M.duvet, 0, 260 + 105, 0))    // mattress+duvet
+      }
+      // a folded throw across the foot: the end away from the pillows
+      {
+        const ewT = f.face === 'E' || f.face === 'W'
+        const tw = (ewT ? 380 : w - 200)
+        const td = (ewT ? d - 200 : 380)
+        const tx = f.face === 'E' ? w / 2 - 330 : f.face === 'W' ? -(w / 2 - 330) : 0
+        const tz = f.face === 'S' ? d / 2 - 330 : f.face === 'N' ? -(d / 2 - 330) : 0
+        if (f.face) g.add(box(tw, 70, td, M.throw, tx, 470 + 35, tz))
       }
       // pillows at the head (face = the way the sleeper looks, derived from
       // the DRAWN pillows/headboard; no face means no drawn head — no
@@ -622,8 +860,30 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         place(g, cx, cy)
         return g
       }
-      g.add(f.poly ? basePrism(f.poly, 0, 400, M.fabric)
-        : box(w, 400, d, M.fabric, 0, 200, 0))
+      const rocking = /rocking/i.test(f.label)
+      const seatBase = rocking ? 140 : 0
+      if (rocking) {
+        // runners: two flattened rings under the chair, along the face axis
+        const ewR = f.face === 'E' || f.face === 'W'
+        for (const sgn of [-1, 1]) {
+          // a rocker: a slim rail along the face axis, tipped so its ends lift
+          const len = (ewR ? w : d) * 0.78
+          const runner = box(ewR ? len : 30, 40, ewR ? 30 : len, M.trunk,
+            ewR ? 0 : sgn * (w / 2 - 80), 40, ewR ? sgn * (d / 2 - 80) : 0)
+          runner.rotation.set(ewR ? 0 : 0.14, 0, ewR ? -0.14 : 0)
+          g.add(runner)
+        }
+      } else {
+        for (const [lx, lz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(18 * S, 24 * S, 160 * S, 8), M.trunk)
+          leg.position.set(lx * (w / 2 - 70) * S, 80 * S, lz * (d / 2 - 70) * S)
+          g.add(leg)
+        }
+      }
+      g.add(f.poly ? basePrism(f.poly, 160, 400, M.fabric)
+        : box(w, 240, d, M.fabric, 0, 280, 0))
+      g.add(box(w - 300, 80, d - 300, M.fabricDark, 0, 440, 0))
+      void seatBase
       // back on the side opposite the face (drawn), arms on the flanks
       const bk =
         f.face === 'N' ? box(w, 720, 170, M.fabricDark, 0, 360, d / 2 - 85)
@@ -646,11 +906,16 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // chair the sheet draws. The 3D never invents seating again: a seat
       // count was a hint, and hints drift; drawn rectangles cannot.
       if (f.poly) {
-        const top = polyPiece(f.poly, 690, 750, M.timber, f.room)
+        // the top with a turned edge: the full outline, and a thinner lip under it
+        const top = polyPiece(f.poly, 712, 750, M.timber, f.room)
         if (top) g.add(top)
+        const lipPoly = f.poly.map((q) => ({ x: cx + (q.x - cx) * 0.94, y: cy + (q.y - cy) * 0.94 }))
+        const lip = polyPiece(lipPoly, 690, 712, M.trunk, f.room)
+        if (lip) g.add(lip)
         for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
-          const leg = box(70, 690, 70, M.timber)
-          place(leg, cx + sx * w * 0.26, cy + sz * d * 0.3, 345)
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(34 * S, 42 * S, 690 * S, 10), M.trunk)
+          leg.position.set((cx + sx * w * 0.26) * S, 345 * S, (cy + sz * d * 0.3) * S)
+          leg.castShadow = true
           g.add(leg)
         }
         return g
@@ -666,16 +931,30 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // One drawn chair: seat and legs inside its rectangle, back on the side
       // away from `face` (the way the sitter looks — at the table).
       const seat = Math.min(w, d) - 30
-      g.add(box(seat, 60, seat, M.fabricDark, 0, 440, 0))
-      for (const [lx, lz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const)
-        g.add(box(45, 440, 45, M.timber, lx * (seat / 2 - 35), 220, lz * (seat / 2 - 35)))
+      g.add(box(seat, 40, seat, M.timber, 0, 430, 0))
+      g.add(box(seat - 40, 50, seat - 40, M.fabricDark, 0, 475, 0))
+      for (const [lx, lz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(16 * S, 22 * S, 430 * S, 8), M.trunk)
+        leg.position.set(lx * (seat / 2 - 35) * S, 215 * S, lz * (seat / 2 - 35) * S)
+        leg.castShadow = true
+        g.add(leg)
+      }
       const bh = Math.min(f.height, 900)
-      const back =
-        f.face === 'E' ? box(60, bh - 440, seat, M.fabricDark, -w / 2 + 30, (bh + 440) / 2, 0)
-        : f.face === 'W' ? box(60, bh - 440, seat, M.fabricDark, w / 2 - 30, (bh + 440) / 2, 0)
-        : f.face === 'S' ? box(seat, bh - 440, 60, M.fabricDark, 0, (bh + 440) / 2, -d / 2 + 30)
-        : box(seat, bh - 440, 60, M.fabricDark, 0, (bh + 440) / 2, d / 2 - 30)
-      g.add(back)
+      // a shaped back: two uprights and a curved splat between, leaning a little
+      const backGroup = new THREE.Group()
+      for (const sx of [-1, 1]) backGroup.add(box(30, bh - 430, 30, M.trunk, sx * (seat / 2 - 15), (bh - 430) / 2, 0))
+      const splat = box(seat - 60, (bh - 430) * 0.55, 22, M.timber, 0, (bh - 430) * 0.62, 0)
+      backGroup.add(splat)
+      backGroup.add(box(seat, 34, 34, M.trunk, 0, bh - 430 - 17, 0))
+      backGroup.position.y = 430 * S
+      const dir = f.face === 'E' ? -1 : f.face === 'W' ? 1 : 0
+      const dirZ = f.face === 'S' ? -1 : f.face === 'N' ? 1 : f.face ? 0 : 1
+      backGroup.position.x = dir * (w / 2 - 45) * S
+      backGroup.position.z = dirZ * (d / 2 - 45) * S
+      backGroup.rotation.y = dir ? Math.PI / 2 : 0
+      backGroup.rotation.x = dir ? 0 : dirZ * 0.05
+      backGroup.rotation.z = dir ? -dir * 0.05 : 0
+      g.add(backGroup)
       place(g, cx, cy)
       return g
     }
@@ -683,23 +962,103 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     case 'console':
     case 'bench': {
       const h = Math.min(f.height, 900)
+      if (f.kind === 'table' && Math.abs(w - d) < 120 && w < 800) {
+        // a round teak side table on three splayed legs
+        const r = Math.min(w, d) / 2 - 8
+        const top = new THREE.Mesh(new THREE.CylinderGeometry(r * S, (r - 12) * S, 36 * S, 28), M.timber)
+        top.position.y = (h - 18) * S
+        top.castShadow = true
+        g.add(top)
+        for (let k = 0; k < 3; k++) {
+          const a = (k / 3) * Math.PI * 2 + 0.4
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(16 * S, 20 * S, (h - 36) * S, 8), M.trunk)
+          leg.position.set(Math.cos(a) * r * 0.62 * S, ((h - 36) / 2) * S, Math.sin(a) * r * 0.62 * S)
+          leg.rotation.z = -Math.cos(a) * 0.08
+          leg.rotation.x = Math.sin(a) * 0.08
+          leg.castShadow = true
+          g.add(leg)
+        }
+        place(g, cx, cy)
+        return g
+      }
+      if (f.kind === 'bench' && /jhoola|swing/i.test(f.label)) {
+        // the jhoola: two A-frames, a top beam, the seat hung on four chains
+        const H = Math.min(f.height, 1900)
+        const alongX = w >= d
+        const L = alongX ? w : d
+        const D = alongX ? d : w
+        // each A-frame: two legs from the feet at the footprint's edge up to meet
+        // under the beam, so the frame never leans past the drawn outline
+        const spread = D / 2 - 40
+        const tilt = Math.atan(spread / H)
+        const legLen = Math.hypot(spread, H)
+        for (const e of [-1, 1]) {
+          for (const k of [-1, 1]) {
+            const leg = box(40, legLen, 40, M.timber)
+            leg.position.set((alongX ? e * (L / 2 - 30) : (k * spread) / 2) * S, (H / 2) * S, (alongX ? (k * spread) / 2 : e * (L / 2 - 30)) * S)
+            leg.rotation.set(alongX ? -k * tilt : 0, 0, alongX ? 0 : k * tilt)
+            g.add(leg)
+          }
+        }
+        g.add(box(alongX ? L : 60, 60, alongX ? 60 : L, M.timber, 0, H - 30, 0))
+        const seatL = L - 300
+        g.add(box(alongX ? seatL : D - 200, 60, alongX ? D - 200 : seatL, M.timber, 0, 450, 0))
+        g.add(box(alongX ? seatL : 60, 360, alongX ? 60 : seatL, M.timber, alongX ? 0 : -(D / 2 - 130), 660, alongX ? -(D / 2 - 130) : 0))
+        g.add(box(alongX ? seatL - 40 : D - 240, 60, alongX ? D - 240 : seatL - 40, M.fabricDark, 0, 500, 0))
+        for (const e of [-1, 1]) for (const k of [-1, 1]) {
+          const chain = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, (H - 60 - 480) * S, 6), M.metal)
+          chain.position.set((alongX ? e * (seatL / 2 - 40) : k * (D / 2 - 120)) * S, ((H - 60 + 480) / 2) * S, (alongX ? k * (D / 2 - 120) : e * (seatL / 2 - 40)) * S)
+          g.add(chain)
+        }
+        place(g, cx, cy)
+        return g
+      }
       g.add(box(w, 50, d, M.timber, 0, h - 25, 0))
       for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const)
         g.add(box(60, h - 50, 60, M.timber, sx * (w / 2 - 60), (h - 50) / 2, sz * (d / 2 - 60)))
       place(g, cx, cy)
       return g
     }
-    case 'stool':
-      g.add(box(w, f.height, d, M.timber, 0, f.height / 2, 0))
+    case 'stool': {
+      if (/bin|basket/i.test(f.label)) {
+        const r = Math.min(w, d) / 2 - 10
+        const bin = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * 0.88 * S, f.height * S, 18), M.bin)
+        bin.position.y = (f.height / 2) * S
+        bin.castShadow = true
+        g.add(bin)
+        const lid = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, 14 * S, 18), M.metal)
+        lid.position.y = (f.height + 7) * S
+        g.add(lid)
+      } else if (/footrest/i.test(f.label)) {
+        // the recliner's footrest, deployed: a padded flap on a slim frame
+        g.add(box(w - 60, 90, d - 60, M.fabricDark, 0, f.height - 45, 0))
+        g.add(box(w - 200, 40, d - 200, M.metal, 0, f.height - 120, 0))
+      } else {
+        g.add(box(w, f.height, d, M.timber, 0, f.height / 2, 0))
+      }
       place(g, cx, cy)
       return g
+    }
     case 'wardrobe':
     case 'shelves': {
-      const m = box(w, f.height, d, M.timber, 0, f.height / 2, 0)
-      place(m, cx, cy)
-      return m
+      g.add(box(w, f.height, d, M.timber, 0, f.height / 2, 0))
+      doorFronts(g, f, M, 0, f.height)
+      place(g, cx, cy)
+      return g
     }
     case 'screen': {
+      if (/mirror/i.test(f.label)) {
+        // a framed mirror: dark frame, a glossy pane, on the wall side of its slot
+        const upright = d > w
+        const L = Math.max(w, d)
+        const H = Math.min(f.height, 1800)
+        const frame = box(upright ? 30 : L, H, upright ? L : 30, M.trunk, 0, 350 + H / 2, 0)
+        g.add(frame)
+        const pane = box(upright ? 34 : L - 90, H - 90, upright ? L - 90 : 34, M.mirror, 0, 350 + H / 2, 0)
+        g.add(pane)
+        place(g, cx, cy)
+        return g
+      }
       // a drawn screen is thin and SEE-THROUGH — rendering it as an opaque
       // slab once put a phantom wall in Karan's suite. Only a screen the sheet
       // labels with a dado gets one; the rest are tinted glass floor to head.
@@ -717,8 +1076,11 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       const thin = Math.min(80, Math.min(w, d))
       const panelW = Math.max(w, d)
       const upright = d > w
-      g.add(box(upright ? thin : panelW, 520, upright ? panelW : thin, M.appliance, 0, 1020, 0))
-      g.add(box(120, 760, 120, M.metal, 0, 380, 0))
+      g.add(box(upright ? thin : panelW, 460, upright ? panelW : thin, M.gasket, 0, 1080, 0))
+      g.add(box(upright ? thin + 6 : panelW - 40, 420, upright ? panelW - 40 : thin + 6, M.appliance, 0, 1080, 0))
+      // the arm: a post from the desk and a boom to the panel's back
+      g.add(box(60, 340, 60, M.metal, upright ? thin / 2 + 20 : 0, 800 + 170, upright ? 0 : thin / 2 + 20))
+      g.add(box(upright ? 90 : 30, 30, upright ? 30 : 90, M.metal, upright ? thin / 2 : 0, 1060, upright ? 0 : thin / 2))
       place(g, cx, cy)
       return g
     }
@@ -730,12 +1092,25 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       pot.position.y = 170 * S
       pot.castShadow = true
       g.add(pot)
-      for (let i = 0; i < 4; i++) {
-        const s = new THREE.Mesh(new THREE.SphereGeometry(Math.min(w, d) * (0.24 + (i % 2) * 0.09) * S, 8, 6),
-          i % 2 ? M.leaf : M.leafDark)
-        s.position.set(((i % 2) - 0.5) * 0.2 * w * S, (450 + i * 160) * S, (((i >> 1) % 2) - 0.5) * 0.2 * d * S)
-        s.castShadow = true
-        g.add(s)
+      // a fiddle-leaf: a slim stem and big paddle leaves fanned round it, every
+      // leaf inside the drawn footprint
+      const reach = Math.min(w, d) / 2 - 20
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(14 * S, 22 * S, (f.height - 340) * S, 8), M.trunk)
+      stem.position.y = (340 + (f.height - 340) / 2) * S
+      g.add(stem)
+      const leafGeo = new THREE.PlaneGeometry(1, 1)
+      for (let i = 0; i < 11; i++) {
+        const a = i * 2.4
+        const h = 620 + i * ((f.height - 700) / 11)
+        const len = Math.min(reach, 420) * (0.75 + (i % 3) * 0.12)
+        const leafMat = (i % 2 ? M.leaf : M.leafDark).clone()
+        leafMat.side = THREE.DoubleSide
+        const leaf = new THREE.Mesh(leafGeo, leafMat)
+        leaf.scale.set(len * 0.62 * S, len * S, 1)
+        leaf.position.set(Math.cos(a) * (len * 0.5) * S, (h + len * 0.25) * S, Math.sin(a) * (len * 0.5) * S)
+        leaf.rotation.set(-0.35, -a + Math.PI / 2, 0.15, 'YXZ')
+        leaf.castShadow = true
+        g.add(leaf)
       }
       place(g, cx, cy)
       return g
@@ -745,16 +1120,33 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       trunk.position.y = f.height * 0.225 * S
       trunk.castShadow = true
       g.add(trunk)
-      const r0 = Math.max(w, d) * 0.62
-      for (const [dx, dy, dz, k] of [
-        [0, 0, 0, 1], [-0.5, -0.18, 0.2, 0.62], [0.5, -0.22, -0.2, 0.6],
-        [0.15, 0.28, 0.3, 0.55], [-0.2, 0.3, -0.35, 0.5],
-      ] as const) {
-        const s = new THREE.Mesh(new THREE.SphereGeometry(r0 * k * S, 9, 7), k > 0.9 ? M.leaf : M.leafDark)
-        s.position.set(dx * r0 * S, (f.height * 0.62 + dy * r0) * S, dz * r0 * S)
-        s.castShadow = true
-        g.add(s)
+      // three branches out of the trunk, a tuft of foliage on each and a crown,
+      // all held inside the drawn footprint
+      const R0 = Math.min(w, d) / 2 - 10
+      const branchTop = f.height * 0.62
+      for (let k = 0; k < 3; k++) {
+        const a = (k / 3) * Math.PI * 2 + 0.6
+        const bx = Math.cos(a) * R0 * 0.45
+        const bz = Math.sin(a) * R0 * 0.45
+        const from = new THREE.Vector3(0, f.height * 0.42 * S, 0)
+        const to = new THREE.Vector3(bx * S, branchTop * S, bz * S)
+        const len = from.distanceTo(to)
+        const br = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 40 * S, len, 7), M.trunk)
+        br.position.copy(from).add(to).multiplyScalar(0.5)
+        br.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize())
+        br.castShadow = true
+        g.add(br)
+        const tuft = new THREE.Mesh(new THREE.SphereGeometry(R0 * 0.5 * S, 9, 7), k % 2 ? M.leaf : M.leafDark)
+        tuft.position.set(bx * S, (branchTop + R0 * 0.2) * S, bz * S)
+        tuft.scale.set(1, 0.8, 1)
+        tuft.castShadow = true
+        g.add(tuft)
       }
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(R0 * 0.62 * S, 10, 8), M.leaf)
+      crown.position.y = (branchTop + R0 * 0.5) * S
+      crown.scale.set(1, 0.85, 1)
+      crown.castShadow = true
+      g.add(crown)
       place(g, cx, cy)
       return g
     }

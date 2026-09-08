@@ -301,7 +301,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-P-TERR', type: 'slider', at: [0, 3100], head: 2400, label: 'Terrace sliders — full width' },
+        { id: 'SL-P-TERR', type: 'slider', at: [0, 3100], head: 3050, label: 'Terrace sliders — full width, floor to ceiling' },
       ],
     },
     {
@@ -311,7 +311,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-K-TERR', type: 'slider', at: [0, 3100], head: 2400, label: 'Terrace sliders — full width' },
+        { id: 'SL-K-TERR', type: 'slider', at: [0, 3100], head: 3050, label: 'Terrace sliders — full width, floor to ceiling' },
       ],
     },
     {
@@ -333,7 +333,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-FAM-DECK', type: 'slider', at: [0, 2850], head: 2545, label: 'Family room sliders to the deck' },
+        { id: 'SL-FAM-DECK', type: 'slider', at: [0, 2850], head: 3050, label: 'Family room sliders to the deck' },
       ],
     },
     {
@@ -343,7 +343,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-GREAT-DECK', type: 'slider', at: [0, 6250], head: 2545, label: 'Great room sliders to the deck — 6250 clear' },
+        { id: 'SL-GREAT-DECK', type: 'slider', at: [0, 6250], head: 3050, label: 'Great room sliders to the deck — 6250 clear' },
       ],
     },
     {
@@ -353,7 +353,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-DEN-DECK', type: 'slider', at: [0, 2850], head: 2545, label: 'Den sliders to the deck' },
+        { id: 'SL-DEN-DECK', type: 'slider', at: [0, 2850], head: 3050, label: 'Den sliders to the deck' },
       ],
     },
     {

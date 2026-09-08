@@ -198,28 +198,30 @@ for vid, (a, b, c, d) in (('W', D.VOID_KEEP[0]), ('E', D.VOID_KEEP[1])):
         w(f'W-VOID-{vid}-S', [(a, d), (c, d)], 150, 'interior'),
     ]
 
-# --- suite <-> terrace sliders (glazing, fully openable)
+# --- suite <-> terrace sliders (glazing, fully openable). These are glazing
+# LINES, not walls: the glass runs floor to ceiling and the ceiling simply
+# stops at them, so the sliders' head is the ceiling and no spandrel is drawn.
 WALLS += [
     w('G-P-TERRACE', [(-350, 1275), (2750, 1275)], 0, 'glazing',
-      [op('SL-P-TERR', 'slider', 0, 3100, head=2400,
-          label='Terrace sliders — full width')], pane=True),
+      [op('SL-P-TERR', 'slider', 0, 3100, head=3050,
+          label='Terrace sliders — full width, floor to ceiling')], pane=True),
     w('G-K-TERRACE', [(21730, 1275), (24830, 1275)], 0, 'glazing',
-      [op('SL-K-TERR', 'slider', 0, 3100, head=2400,
-          label='Terrace sliders — full width')], pane=True),
+      [op('SL-K-TERR', 'slider', 0, 3100, head=3050,
+          label='Terrace sliders — full width, floor to ceiling')], pane=True),
     w('W-P-TERR-STUB', [(-600, 1275), (-350, 1275)], 150, 'interior'),
     w('W-K-TERR-STUB', [(24830, 1275), (25080, 1275)], 150, 'interior'),
 ]
 
-# --- deck <-> rooms glazing lines
+# --- deck <-> rooms glazing lines: floor to ceiling, the ceiling stops at them
 WALLS += [
     w('G-FAMILY-DECK', [(4650, 2545), (7500, 2545)], 0, 'glazing',
-      [op('SL-FAM-DECK', 'slider', 0, 2850, head=2545,
+      [op('SL-FAM-DECK', 'slider', 0, 2850, head=3050,
           label='Family room sliders to the deck')], pane=True),
     w('G-GREAT-DECK', [(9115, 2545), (15365, 2545)], 0, 'glazing',
-      [op('SL-GREAT-DECK', 'slider', 0, 6250, head=2545,
+      [op('SL-GREAT-DECK', 'slider', 0, 6250, head=3050,
           label='Great room sliders to the deck — 6250 clear')], pane=True),
     w('G-DEN-DECK', [(16980, 2545), (19830, 2545)], 0, 'glazing',
-      [op('SL-DEN-DECK', 'slider', 0, 2850, head=2545,
+      [op('SL-DEN-DECK', 'slider', 0, 2850, head=3050,
           label='Den sliders to the deck')], pane=True),
     w('W-DECK-W-STUB', [(4467, 2545), (4650, 2545)], 150, 'interior'),
     w('W-DECK-E-STUB', [(19830, 2545), (20013, 2545)], 150, 'interior'),

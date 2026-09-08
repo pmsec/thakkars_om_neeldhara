@@ -2182,6 +2182,67 @@ function entryDrum(): { C: { x: number; y: number }; Rwall: number; wallT: numbe
  * from each jamb along the arc, which keeps them clear of the leaves when the
  * doors slide open (each leaf runs 527 mm past its jamb).
  */
+/**
+ * One classic wall lamp, built in its own frame: the backplate in the XY plane at
+ * the origin, +z out from the wall into the room, the bell hanging above and in
+ * front of it. Place with rotation.y = atan2(n.x, n.y) for a wall normal (n.x, n.y)
+ * in plan.
+ */
+function sconceLamp(M: Mats): THREE.Group {
+  const lamp = new THREE.Group()
+  const shadeMat = new THREE.MeshStandardMaterial({
+    color: 0xfff0d2, emissive: 0xffb860, emissiveIntensity: 0.8, roughness: 0.55,
+    transparent: true, opacity: 0.88, side: THREE.DoubleSide,
+  })
+  // a tall oval: the disc's axis turned to +z, then stretched along what is now up
+  const plate = new THREE.Mesh(new THREE.CylinderGeometry(55 * S, 55 * S, 10 * S, 32), M.brass)
+  plate.rotation.x = Math.PI / 2
+  plate.scale.set(1, 1, 1.6)
+  plate.position.z = 5 * S
+  lamp.add(plate)
+  const boss = new THREE.Mesh(new THREE.SphereGeometry(22 * S, 16, 12), M.brass)
+  boss.position.z = 12 * S
+  lamp.add(boss)
+  // the arm: a swept tube from the boss, out and up to the shade
+  const path = new THREE.QuadraticBezierCurve3(
+    new THREE.Vector3(0, 0, 12 * S),
+    new THREE.Vector3(0, -30 * S, 150 * S),
+    new THREE.Vector3(0, 110 * S, 190 * S),
+  )
+  const arm = new THREE.Mesh(new THREE.TubeGeometry(path, 24, 7 * S, 10, false), M.brass)
+  arm.castShadow = true
+  lamp.add(arm)
+  // the cup the shade hangs from, and a ring where glass meets brass
+  const cup = new THREE.Mesh(new THREE.CylinderGeometry(18 * S, 34 * S, 42 * S, 20), M.brass)
+  cup.position.set(0, 128 * S, 190 * S)
+  lamp.add(cup)
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(36 * S, 5 * S, 8, 28), M.brass)
+  ring.rotation.x = Math.PI / 2
+  ring.position.set(0, 108 * S, 190 * S)
+  lamp.add(ring)
+  // the bell: a lathe of frosted glass, its mouth downward, flaring out as it drops
+  const profile = [
+    [30, 0], [36, -20], [48, -60], [62, -110], [76, -160], [88, -205], [94, -235], [90, -250],
+  ].map(([r, y]) => new THREE.Vector2(r * S, y * S))
+  const bell = new THREE.Mesh(new THREE.LatheGeometry(profile, 36), shadeMat)
+  bell.position.set(0, 108 * S, 190 * S)
+  lamp.add(bell)
+  // the lamp inside, and the light it throws
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(20 * S, 14, 10), M.lamp)
+  bulb.position.set(0, -20 * S, 190 * S)
+  lamp.add(bulb)
+  const light = new THREE.PointLight(0xffc27a, 1.0, 3.4, 1.7)
+  light.position.set(0, 20 * S, 200 * S)
+  lamp.add(light)
+  return lamp
+}
+
+/**
+ * A pair of classic wall lamps on the drum, one either side of the curved
+ * doors, on the entry side. Set 900 mm out from each jamb along the arc, which
+ * keeps them clear of the leaves when the doors slide open (each leaf runs
+ * 527 mm past its jamb).
+ */
 function entrySconces(M: Mats): THREE.Group | null {
   const drum = entryDrum()
   if (!drum) return null
@@ -2189,60 +2250,117 @@ function entrySconces(M: Mats): THREE.Group | null {
   const Ri = Rwall - wallT / 2                     // the drum's inner face
   const OFF = 900 / Ri                             // 900 mm along the arc, past the jamb
   const MOUNT = 1750                               // backplate centre above the floor
-  const shadeMat = new THREE.MeshStandardMaterial({
-    color: 0xfff0d2, emissive: 0xffc26a, emissiveIntensity: 0.9, roughness: 0.55,
-    transparent: true, opacity: 0.88, side: THREE.DoubleSide,
-  })
   const g = new THREE.Group()
   for (const a of [a0 - OFF, a1 + OFF]) {
-    const lamp = new THREE.Group()
-    // local frame: the backplate in the XY plane, +z out from the wall into the room
-    // a tall oval: the disc's axis turned to +z, then stretched along what is now up
-    const plate = new THREE.Mesh(new THREE.CylinderGeometry(55 * S, 55 * S, 10 * S, 32), M.brass)
-    plate.rotation.x = Math.PI / 2
-    plate.scale.set(1, 1, 1.6)
-    plate.position.z = 5 * S
-    lamp.add(plate)
-    const boss = new THREE.Mesh(new THREE.SphereGeometry(22 * S, 16, 12), M.brass)
-    boss.position.z = 12 * S
-    lamp.add(boss)
-    // the arm: a swept tube from the boss, out and up to the shade
-    const path = new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(0, 0, 12 * S),
-      new THREE.Vector3(0, -30 * S, 150 * S),
-      new THREE.Vector3(0, 110 * S, 190 * S),
-    )
-    const arm = new THREE.Mesh(new THREE.TubeGeometry(path, 24, 7 * S, 10, false), M.brass)
-    arm.castShadow = true
-    lamp.add(arm)
-    // the cup the shade hangs from, and a ring where glass meets brass
-    const cup = new THREE.Mesh(new THREE.CylinderGeometry(18 * S, 34 * S, 42 * S, 20), M.brass)
-    cup.position.set(0, 128 * S, 190 * S)
-    lamp.add(cup)
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(36 * S, 5 * S, 8, 28), M.brass)
-    ring.rotation.x = Math.PI / 2
-    ring.position.set(0, 108 * S, 190 * S)
-    lamp.add(ring)
-    // the bell: a lathe of frosted glass, its mouth downward, flaring out as it drops
-    const profile = [
-      [30, 0], [36, -20], [48, -60], [62, -110], [76, -160], [88, -205], [94, -235], [90, -250],
-    ].map(([r, y]) => new THREE.Vector2(r * S, y * S))
-    const bell = new THREE.Mesh(new THREE.LatheGeometry(profile, 36), shadeMat)
-    bell.position.set(0, 108 * S, 190 * S)
-    lamp.add(bell)
-    // the lamp inside, and the light it throws
-    const bulb = new THREE.Mesh(new THREE.SphereGeometry(20 * S, 14, 10), M.lamp)
-    bulb.position.set(0, -20 * S, 190 * S)
-    lamp.add(bulb)
-    const light = new THREE.PointLight(0xffd39a, 1.3, 3.8, 1.7)
-    light.position.set(0, 20 * S, 200 * S)
-    lamp.add(light)
-
+    const lamp = sconceLamp(M)
     // onto the wall: +z must point from the wall face toward the drum's centre
-    const yaw = Math.atan2(-Math.cos(a), -Math.sin(a))
-    lamp.rotation.y = yaw
+    lamp.rotation.y = Math.atan2(-Math.cos(a), -Math.sin(a))
     lamp.position.set((C.x + Ri * Math.cos(a)) * S, MOUNT * S, (C.y + Ri * Math.sin(a)) * S)
     g.add(lamp)
+  }
+  return g
+}
+
+/**
+ * Over each suite's curved vanity: a mirror that follows the sweep wall the
+ * vanity backs on to, in a walnut frame, and a classic lamp on the wall at
+ * either end of it. The mirror's curve is the vanity's own back edge - the run
+ * of its drawn outline that lies against a wall - so it cannot drift from the
+ * sweep. 1050 to 1750 above the floor; the lamps at 1550.
+ */
+function bathMirrors(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const walls = model.walls.filter((w) => w.thickness >= 60 && w.points.length >= 2)
+  // distance from a point to the nearest wall centreline, and that wall's thickness
+  const wallAt = (q: { x: number; y: number }): { d: number; th: number } => {
+    let best = { d: Infinity, th: 0 }
+    for (const w of walls) {
+      for (let k = 1; k < w.points.length; k++) {
+        const a = w.points[k - 1], b = w.points[k]
+        const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+        const t = L2 ? Math.max(0, Math.min(1, ((q.x - a.x) * (b.x - a.x) + (q.y - a.y) * (b.y - a.y)) / L2)) : 0
+        const d = Math.hypot(q.x - (a.x + t * (b.x - a.x)), q.y - (a.y + t * (b.y - a.y)))
+        if (d < best.d) best = { d, th: w.thickness }
+      }
+    }
+    return best
+  }
+  const nearWall = (q: { x: number; y: number }): boolean => {
+    const w = wallAt(q)
+    return w.d < w.th / 2 + 90
+  }
+  // how far a point on the vanity's back edge must move, toward the room, to sit
+  // `clear` mm off the wall's face: the drawn edge may lie within the wall band
+  const offWall = (q: { x: number; y: number }, clear: number): number => {
+    const w = wallAt(q)
+    return Math.max(clear, w.th / 2 + clear - w.d)
+  }
+  for (const f of fixtures) {
+    if (f.kind !== 'basin' || !f.poly || !/vanity/i.test(f.label ?? '')) continue
+    const poly = f.poly
+    const n = poly.length
+    const cx = poly.reduce((t, q) => t + q.x, 0) / n
+    const cy = poly.reduce((t, q) => t + q.y, 0) / n
+    // the longest run of consecutive outline vertices that lie against a wall
+    const flags = poly.map(nearWall)
+    let best: number[] = []
+    for (let start = 0; start < n; start++) {
+      if (!flags[start] || flags[(start - 1 + n) % n]) continue
+      const run: number[] = []
+      for (let k = 0; k < n && flags[(start + k) % n]; k++) run.push((start + k) % n)
+      if (run.length > best.length) best = run
+    }
+    if (best.length < 4) continue
+    const arc = best.map((i) => poly[i])
+    // the mirror ribbon, 20 mm off the wall toward the room, and its walnut frame
+    const H0 = 1050, H1 = 1750
+    const inward = (q: { x: number; y: number }, d: number) => {
+      const vx = cx - q.x, vy = cy - q.y
+      const L = Math.hypot(vx, vy) || 1
+      return { x: q.x + (vx / L) * d, y: q.y + (vy / L) * d }
+    }
+    // one offset for the whole ribbon - the largest any point of the back edge
+    // needs to clear the wall face - so the mirror is a smooth parallel curve
+    // that never sinks into the sweep however the drawn edge sits against it
+    const need = Math.max(...arc.map((q) => offWall(q, 0)))
+    const ribbonOff = (base: number, top: number, clear: number, mat: THREE.Material) => {
+      const pos: number[] = []
+      const idx: number[] = []
+      arc.forEach((q, i) => {
+        const p = inward(q, need + clear)
+        pos.push(p.x * S, base * S, p.y * S, p.x * S, top * S, p.y * S)
+        if (i) idx.push(2 * i - 2, 2 * i, 2 * i - 1, 2 * i, 2 * i + 1, 2 * i - 1)
+      })
+      const geo = new THREE.BufferGeometry()
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+      geo.setIndex(idx)
+      geo.computeVertexNormals()
+      return new THREE.Mesh(geo, mat)
+    }
+    const mirrorMat = M.mirror.clone()
+    mirrorMat.side = THREE.DoubleSide
+    g.add(ribbonOff(H0, H1, 30, mirrorMat))
+    g.add(ribbonOff(H0 - 30, H0, 38, M.walnut))
+    g.add(ribbonOff(H1, H1 + 30, 38, M.walnut))
+    // stiles at the ends, and a lamp on the wall 140 beyond each end
+    for (const end of [0, arc.length - 1]) {
+      const q = arc[end]
+      const p = inward(q, need + 34)
+      const stile = new THREE.Mesh(new THREE.BoxGeometry(30 * S, (H1 - H0 + 60) * S, 30 * S), M.walnut)
+      stile.position.set(p.x * S, ((H0 + H1) / 2) * S, p.y * S)
+      g.add(stile)
+      const nb = arc[end === 0 ? 1 : end - 1]
+      const tx = q.x - nb.x, ty = q.y - nb.y
+      const tl = Math.hypot(tx, ty) || 1
+      const along = { x: q.x + (tx / tl) * 140, y: q.y + (ty / tl) * 140 }
+      const at = inward(along, offWall(along, 2))          // on the wall's face
+      const nrm = inward(at, 1)
+      const nx = nrm.x - at.x, ny = nrm.y - at.y
+      const lamp = sconceLamp(M)
+      lamp.rotation.y = Math.atan2(nx, ny)
+      lamp.position.set(at.x * S, 1550 * S, at.y * S)
+      g.add(lamp)
+    }
   }
   return g
 }
@@ -2518,6 +2636,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   if (painting) root.add(painting)
   const sconces = entrySconces(M)
   if (sconces) root.add(sconces)
+  root.add(bathMirrors(M))
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {
@@ -3024,7 +3143,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // fountain's marble and water only, so the rest of the house keeps its look.
     const pmrem = new THREE.PMREMGenerator(renderer)
     const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    for (const mat of [M.fountainMarble, M.fountainWater]) {
+    for (const mat of [M.fountainMarble, M.fountainWater, M.mirror]) {
       mat.envMap = envTex
       mat.needsUpdate = true
     }

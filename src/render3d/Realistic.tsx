@@ -1323,7 +1323,8 @@ function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | nul
   const wallT = arc.thickness || 230
   const R = Rwall - wallT / 2 - 40
   const LEAF_T = 45
-  const H = Math.min(2500, (chord.openings?.find((o) => o.id === 'D-GAL-N')?.head ?? 2530) - 30)
+  // the leaves run the full height of the drum: wall head to floor, less a clearance
+  const H = model.data.levels.ceiling - 20
   const STILE = 90
   const RAIL_BOT = 300
   const RAIL_TOP = 150

@@ -395,7 +395,7 @@ CHORDS = [
 ]
 for gid, a0, a1, typ, lab in CHORDS:
     L = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
-    head = 2530 if typ == 'arch' else 2100
+    head = 3050 if typ == 'arch' else 2100   # the arch runs to the ceiling; its doors are full height
     WALLS.append(w(f'T-{gid}', [a0, a1], 0, 'threshold',
                    [op(f'D-{gid}', typ, 0, L, head=head, label=lab)]))
 

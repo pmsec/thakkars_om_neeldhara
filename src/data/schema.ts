@@ -82,6 +82,8 @@ export interface RoomDef {
   carpet: boolean
   ceiling?: number
   finish?: string
+  /** The floor runs through from this room: dress that one and this one follows. */
+  finishFollows?: string
   /** Where the room's label sits on the 2D sheet, if not the polygon centroid. */
   labelAt?: Pt
   publishedSqFt?: number

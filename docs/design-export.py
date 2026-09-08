@@ -385,7 +385,7 @@ ROOMS = [
     ('R-K-TERRACE', "Karan's terrace", (23280, 600), 'outdoor', 'outdoor', False,
      'Real grass', 'Mirror of the parents’ terrace: grass, tree, jhoola under high glass.'),
     ('R-DECK', 'All-weather deck', (12240, 1800), 'outdoor', 'shared', False,
-     'Timber boards', 'Glazed, cooled, retractable roof. The fountain on the home’s centre; '
+     'Oak plank', 'Glazed, cooled, retractable roof. The fountain on the home’s centre; '
      'spa in the east grass bed, gym in the west one.'),
     ('R-SHAFT-W', 'Sealed shaft (west)', (3700, 600), 'void', 'core', False,
      'Sealed', 'Builder shaft, sealed. 1480 × 1200.'),
@@ -606,11 +606,16 @@ def emit_building():
     A('')
     A('  rooms: [')
     PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': 350, 'R-K-SUITE': 350, 'R-P-BATH': 69, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': 230, 'R-GREAT': 407, 'R-KITCHEN': 126, 'R-ENTRY': 101, 'R-HELP': 47, 'R-GUEST-BATH': 33, 'R-STORE': 26}
+    # One floor runs out through the sliding glass: the deck is finished as the
+    # great room is, and whatever the great room's floor is dressed as, the
+    # deck follows.
+    FOLLOWS = {'R-DECK': 'R-GREAT'}
     for rid, name, anchor, cat, zone, carpet, finish, notes in ROOMS:
         pub = f', publishedSqFt: {PUB[rid]}' if rid in PUB else ''
+        fol = f', finishFollows: {FOLLOWS[rid]!r}' if rid in FOLLOWS else ''
         A(f'    {{ id: {rid!r}, name: {name!r}, anchor: {pt(*anchor)}, '
           f'category: {cat!r}, zone: {zone!r}, carpet: {str(carpet).lower()}, '
-          f'finish: {finish!r}{pub}, notes: {notes!r} }},')
+          f'finish: {finish!r}{fol}{pub}, notes: {notes!r} }},')
     A('  ],')
     A('')
     A('  stacks: [')
@@ -950,6 +955,25 @@ def emit_furniture():
             add('planter', a, b, c - a, d - b,
                 room_for((a + c) / 2, (b + d) / 2),
                 'Planted strip inside the parapet', 340)
+            continue
+        if base == 'murphy':
+            # A SOFA WALL BED is two things while it is closed, which is nearly
+            # always: the 400 cabinet on the wall, and the two-seat sofa in
+            # front of it that the bed folds down over. Each is its own piece,
+            # so the 3D shows a cabinet and a sofa, not a low 400 mm "bed".
+            CAB = 400
+            east = suff == 'e'
+            cab = (a, b, a + CAB, d) if east else (c - CAB, b, c, d)
+            sb = (a + CAB, b, c, d) if east else (a, b, c - CAB, d)
+            room = room_for((a + c) / 2, (b + d) / 2)
+            add('wardrobe', cab[0], cab[1], cab[2] - cab[0], cab[3] - cab[1],
+                room, 'Wall bed cabinet — queen 1500 x 2000 folds down over the sofa',
+                2200, poly=[(cab[0], cab[1]), (cab[2], cab[1]),
+                            (cab[2], cab[3]), (cab[0], cab[3])])
+            sprims = SY.symbol('sofa-w' if east else 'sofa-e', *sb)
+            add('sofa', sb[0], sb[1], sb[2] - sb[0], sb[3] - sb[1], room,
+                '2-seat sofa in front of the wall bed', 780,
+                face='E' if east else 'W', poly=outline_of(sprims))
             continue
         mapped = KIND_MAP.get(base)
         if not mapped:

@@ -207,6 +207,11 @@ export function makeMaterials() {
       color: 0xe4f0f4, transparent: true, opacity: 0.13, roughness: 0.06,
       metalness: 0, side: THREE.DoubleSide, depthWrite: false,
     }),
+    // the chamfered edge of a bevelled light: catches the light, reads brighter
+    bevel: new THREE.MeshPhysicalMaterial({
+      color: 0xf4fbff, transparent: true, opacity: 0.55, roughness: 0.04,
+      metalness: 0.05, side: THREE.DoubleSide, depthWrite: false,
+    }),
     tintGlass: new THREE.MeshPhysicalMaterial({
       color: 0xa4763c, transparent: true, opacity: 0.38, roughness: 0.1,
       side: THREE.DoubleSide, depthWrite: false,
@@ -366,15 +371,25 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         : f.face === 'E' ? box(bt, backH, d, M.fabricDark, -w / 2 + bt / 2, backH / 2, 0)
         : box(bt, backH, d, M.fabricDark, w / 2 - bt / 2, backH / 2, 0)
       g.add(back)
-      // arms + cushions
+      // arms + cushions, at the ends of the back whichever way it faces
+      const armH = seatH + 160
       if (f.face === 'N' || f.face === 'S') {
-        g.add(box(bt, seatH + 160, d, M.fabricDark, -w / 2 + bt / 2, (seatH + 160) / 2, 0))
-        g.add(box(bt, seatH + 160, d, M.fabricDark, w / 2 - bt / 2, (seatH + 160) / 2, 0))
+        g.add(box(bt, armH, d, M.fabricDark, -w / 2 + bt / 2, armH / 2, 0))
+        g.add(box(bt, armH, d, M.fabricDark, w / 2 - bt / 2, armH / 2, 0))
         const n = Math.max(2, Math.round(w / 800))
         for (let i = 0; i < n; i++) {
           g.add(box(w / n - 60, 110, d - 240, M.duvet,
             -w / 2 + (i + 0.5) * (w / n), seatH + 55,
             f.face === 'S' ? 40 : -40))
+        }
+      } else if (f.face === 'E' || f.face === 'W') {
+        g.add(box(w, armH, bt, M.fabricDark, 0, armH / 2, -d / 2 + bt / 2))
+        g.add(box(w, armH, bt, M.fabricDark, 0, armH / 2, d / 2 - bt / 2))
+        const n = Math.max(2, Math.round(d / 800))
+        for (let i = 0; i < n; i++) {
+          g.add(box(w - 240, 110, d / n - 60, M.duvet,
+            f.face === 'E' ? 40 : -40, seatH + 55,
+            -d / 2 + (i + 0.5) * (d / n)))
         }
       }
       place(g, cx, cy)
@@ -586,6 +601,97 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
   }
 }
 
+/**
+ * The curved doors on the entry drum's arched portal to the great room. The 2D
+ * draws them shut on the arc ("they slide on the arc"), so they are drawn shut
+ * here too: a pair of leaves, wood framed, each with two chamfered glass lights.
+ * Derived from the drum's own geometry — the arc wall's circumcentre and radius,
+ * the portal's chord for its extent — so they cannot drift from the plan.
+ */
+function curvedDoors(M: Mats): THREE.Group | null {
+  const walls = model.data.walls
+  const chord = walls.find((w) => w.openings?.some((o) => o.id === 'D-GAL-N'))
+  const arc = walls.find((w) => w.id === 'W-GAL-ARC-1')
+  if (!chord?.points || chord.points.length < 2 || !arc?.points || arc.points.length < 3) return null
+  const [p1, p2, p3] = [arc.points[0], arc.points[Math.floor(arc.points.length / 2)], arc.points[arc.points.length - 1]]
+  // circumcentre of three points on the drum
+  const dd = 2 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y))
+  if (Math.abs(dd) < 1e-6) return null
+  const s1 = p1.x * p1.x + p1.y * p1.y
+  const s2 = p2.x * p2.x + p2.y * p2.y
+  const s3 = p3.x * p3.x + p3.y * p3.y
+  const C = {
+    x: (s1 * (p2.y - p3.y) + s2 * (p3.y - p1.y) + s3 * (p1.y - p2.y)) / dd,
+    y: (s1 * (p3.x - p2.x) + s2 * (p1.x - p3.x) + s3 * (p2.x - p1.x)) / dd,
+  }
+  const Rwall = Math.hypot(p1.x - C.x, p1.y - C.y)
+  const [q0, q1] = chord.points
+  let a0 = Math.atan2(q0.y - C.y, q0.x - C.x)
+  let a1 = Math.atan2(q1.y - C.y, q1.x - C.x)
+  if (a1 - a0 > Math.PI) a1 -= 2 * Math.PI
+  if (a0 - a1 > Math.PI) a0 -= 2 * Math.PI
+  if (a1 < a0) [a0, a1] = [a1, a0]
+
+  // The leaves slide just inside the drum's inner face.
+  const wallT = arc.thickness || 230
+  const R = Rwall - wallT / 2 - 40
+  const LEAF_T = 45
+  const H = Math.min(2500, (chord.openings?.find((o) => o.id === 'D-GAL-N')?.head ?? 2530) - 30)
+  const STILE = 90
+  const RAIL_BOT = 300
+  const RAIL_TOP = 150
+  const RAIL_MID = 90
+  const MID_AT = 1000
+  const BEVEL = 40
+
+  const g = new THREE.Group()
+  const band = (r: number, from: number, to: number, t: number) => {
+    const n = Math.max(3, Math.ceil(((to - from) * r) / 60))
+    const outer = []
+    const inner = []
+    for (let i = 0; i <= n; i++) {
+      const a = from + ((to - from) * i) / n
+      outer.push({ x: C.x + (r + t / 2) * Math.cos(a), y: C.y + (r + t / 2) * Math.sin(a) })
+      inner.push({ x: C.x + (r - t / 2) * Math.cos(a), y: C.y + (r - t / 2) * Math.sin(a) })
+    }
+    return [...outer, ...inner.reverse()]
+  }
+  const piece = (from: number, to: number, base: number, top: number, mat: THREE.Material, t = LEAF_T, r = R) => {
+    const m = new THREE.Mesh(prismGeometry(band(r, from, to, t), base, top), mat)
+    m.castShadow = mat === M.wallWood
+    m.receiveShadow = true
+    g.add(m)
+  }
+  const ang = (mm: number) => mm / R
+  const mid = (a0 + a1) / 2
+  for (const [s0, s1] of [[a0, mid], [mid, a1]] as const) {
+    // frame
+    piece(s0, s0 + ang(STILE), 0, H, M.wallWood)
+    piece(s1 - ang(STILE), s1, 0, H, M.wallWood)
+    piece(s0, s1, 0, RAIL_BOT, M.wallWood)
+    piece(s0, s1, H - RAIL_TOP, H, M.wallWood)
+    piece(s0, s1, MID_AT, MID_AT + RAIL_MID, M.wallWood)
+    // two lights per leaf, each with a chamfered edge read as a brighter border
+    const l0 = s0 + ang(STILE)
+    const l1 = s1 - ang(STILE)
+    for (const [b, t] of [[RAIL_BOT, MID_AT], [MID_AT + RAIL_MID, H - RAIL_TOP]] as const) {
+      piece(l0, l1, b, t, M.glass, 8)
+      piece(l0, l1, b, b + BEVEL, M.bevel, 14)
+      piece(l0, l1, t - BEVEL, t, M.bevel, 14)
+      piece(l0, l0 + ang(BEVEL), b, t, M.bevel, 14)
+      piece(l1 - ang(BEVEL), l1, b, t, M.bevel, 14)
+    }
+  }
+  // pull handles either side of the meeting stiles
+  for (const sgn of [-1, 1]) {
+    const a = mid + sgn * ang(STILE / 2)
+    const h = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.3, 8), M.metal)
+    h.position.set((C.x + (R - LEAF_T / 2 - 30) * Math.cos(a)) * S, 1.05, (C.y + (R - LEAF_T / 2 - 30) * Math.sin(a)) * S)
+    g.add(h)
+  }
+  return g
+}
+
 export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group {
   const root = new THREE.Group()
 
@@ -593,8 +699,10 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   for (const slab of solids.slabs) {
     const room = model.roomById.get(slab.roomId)
     const fin = (room?.def.finish ?? '').toLowerCase()
+    const follows = room?.def.finishFollows
     const mat =
       floorMaterial(slab.roomId)          // an assigned AI material wins
+      ?? (follows ? floorMaterial(follows) : null)   // one floor through the glass
       ?? (fin.includes('grass') ? M.grass
       : fin.includes('oak') || fin.includes('timber') ? M.oak
       : fin.includes('stone') ? M.stone
@@ -614,27 +722,26 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   // ---- walls and glass from the shared prisms
   for (const p of solids.prisms) {
     if (p.kind === 'lintel' && p.top - p.base < 60) continue
+    // The entry drum and the gallery legs are wood, both faces. (They used to be a
+    // second mesh scaled by 0.1 % about the scene origin, which shifted the copy a
+    // dozen millimetres east and left the drum's east half showing plaster.)
+    const galleryWood = !!p.wallId &&
+      (p.wallId.startsWith('W-GAL-ARC') || p.wallId === 'W-GAL-W' || p.wallId === 'W-GAL-E')
     const mat =
       p.glass === 'tinted' ? M.tintGlass
       : p.kind === 'glazing' ? M.glass
       : p.kind === 'wall-curved-glass' ? M.glass
       : p.kind === 'screen' ? M.wallWood
+      : galleryWood ? M.wallWood
       : wallMaterial() ?? M.plaster
     const mesh = new THREE.Mesh(prismGeometry(p.polygon, p.base, p.top), mat)
-    mesh.castShadow = mat === M.plaster
+    mesh.castShadow = mat === M.plaster || mat === M.wallWood
     mesh.receiveShadow = true
     root.add(mesh)
   }
 
-  // the entry drum + gallery legs read as wood: repaint by wall id
-  for (const p of solids.prisms) {
-    if (p.wallId && (p.wallId.startsWith('W-GAL-ARC') || p.wallId === 'W-GAL-W' || p.wallId === 'W-GAL-E')) {
-      const mesh = new THREE.Mesh(prismGeometry(p.polygon, p.base, p.top), M.wallWood)
-      mesh.castShadow = true
-      mesh.scale.setScalar(1.001)
-      root.add(mesh)
-    }
-  }
+  const doors = curvedDoors(M)
+  if (doors) root.add(doors)
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

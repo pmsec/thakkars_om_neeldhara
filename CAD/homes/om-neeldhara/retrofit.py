@@ -180,7 +180,7 @@ def poly_rooms():
         ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note, (21300, 4400)),
         ("PARENTS' BATH", '', bath, bath_note, (3140, 7750)),
         ("KARAN'S BATH", '', mirror_poly(bath), bath_note, (D.M(3140), 7750)),
-        ('GUEST / SERVICE WC', '', wc, '', (16050, 9200)),
+        ('GUEST / SERVICE WC', '', wc, '', (16200, 9150)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         # not the mirror of the family room's anchor: that point is on the
         # drummer's throne, and the open north half is the sofa's now.  What is
@@ -193,7 +193,7 @@ def poly_rooms():
          'kitchen and utility as one room  ·  the dry balcony is its utility end',
          (8700, 9500)),
         ("HELP'S ROOM", '', helps, 'with the store  ·  one room',
-         (14780, 9150)),
+         (15650, 10380)),
         ('ENTRY GALLERY', '', gallery,
          'a U on the two columns  ·  3220 wide x 3260 deep  ·  '
          'semicircular apse, 230 throughout',

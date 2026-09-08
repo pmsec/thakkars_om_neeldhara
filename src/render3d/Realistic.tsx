@@ -300,39 +300,63 @@ function quiltTexture(): THREE.CanvasTexture {
 }
 
 function rugTexture(): THREE.CanvasTexture {
-  // a natural rug: rows of braided jute in oat and straw, with a plain darker
-  // border band and a fringe line at each end
+  // a natural jute rug: the coarse basket weave in its own oat and straw, and a
+  // mild floral over it - small five-petal rosettes and leaf sprigs a shade
+  // lighter and a shade darker than the fibre, so the pattern reads only as a
+  // whisper. No border: the rug's edge is the live edge the sheet draws.
   return canvasTexture(1024, (g, s) => {
-    g.fillStyle = '#cbb691'
+    g.fillStyle = '#c9b48f'
     g.fillRect(0, 0, s, s)
-    const row = 14
-    for (let y = 0; y < s; y += row) {
-      for (let x = 0; x < s; x += row * 2) {
-        const k = ((x / (row * 2)) + (y / row)) % 3
-        g.fillStyle = k === 0 ? '#d8c39c' : k === 1 ? '#bda579' : '#c9b48a'
-        g.beginPath()
-        g.ellipse(x + row, y + row / 2, row, row * 0.42, 0.35, 0, Math.PI * 2)
-        g.fill()
-        g.fillStyle = 'rgba(80,60,30,0.14)'
-        g.beginPath()
-        g.ellipse(x + row + 4, y + row / 2 + 3, row * 0.8, row * 0.3, 0.35, 0, Math.PI * 2)
-        g.fill()
+    const cell = 10
+    for (let y = 0; y < s; y += cell) {
+      for (let x = 0; x < s; x += cell) {
+        const over = ((x / cell + y / cell) % 2) === 0
+        const tone = 168 + ((x * 7 + y * 13) % 26)
+        g.fillStyle = over ? `rgb(${tone + 28}, ${tone + 6}, ${tone - 34})` : `rgb(${tone + 4}, ${tone - 12}, ${tone - 50})`
+        g.fillRect(x + 1, y + 1, cell - 2, cell - 2)
+        g.fillStyle = 'rgba(70,50,25,0.2)'
+        if (over) g.fillRect(x + 1, y + cell / 2 - 1, cell - 2, 1)
+        else g.fillRect(x + cell / 2 - 1, y + 1, 1, cell - 2)
       }
     }
-    g.strokeStyle = '#a8905f'
-    g.lineWidth = 34
-    g.strokeRect(34, 34, s - 68, s - 68)
-    g.strokeStyle = '#e4d3ae'
-    g.lineWidth = 4
-    g.strokeRect(58, 58, s - 116, s - 116)
-    // the fringe at the two ends
-    g.strokeStyle = 'rgba(230,214,180,0.9)'
-    g.lineWidth = 2
-    for (let x = 12; x < s; x += 9) {
-      g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 2, 16); g.stroke()
-      g.beginPath(); g.moveTo(x, s); g.lineTo(x + 2, s - 16); g.stroke()
+    let seed = 23
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 }
+    const rosette = (cx: number, cy: number, r: number, light: boolean) => {
+      g.fillStyle = light ? 'rgba(244,232,205,0.42)' : 'rgba(120,92,55,0.30)'
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2
+        g.beginPath()
+        g.ellipse(cx + Math.cos(a) * r * 0.55, cy + Math.sin(a) * r * 0.55, r * 0.5, r * 0.28, a, 0, Math.PI * 2)
+        g.fill()
+      }
+      g.fillStyle = light ? 'rgba(120,92,55,0.35)' : 'rgba(244,232,205,0.4)'
+      g.beginPath(); g.arc(cx, cy, r * 0.22, 0, Math.PI * 2); g.fill()
     }
-  }, 3.0)
+    const sprig = (cx: number, cy: number, len: number, ang: number) => {
+      g.strokeStyle = 'rgba(110,88,52,0.32)'
+      g.lineWidth = 2
+      g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(ang) * len, cy + Math.sin(ang) * len); g.stroke()
+      g.fillStyle = 'rgba(110,88,52,0.26)'
+      for (let k = 1; k <= 3; k++) {
+        const t = k / 3.6
+        const px = cx + Math.cos(ang) * len * t, py = cy + Math.sin(ang) * len * t
+        for (const side of [-1, 1]) {
+          g.beginPath()
+          g.ellipse(px + Math.cos(ang + side * 1.1) * len * 0.12, py + Math.sin(ang + side * 1.1) * len * 0.12, len * 0.13, len * 0.05, ang + side * 1.1, 0, Math.PI * 2)
+          g.fill()
+        }
+      }
+    }
+    // a loose, even scatter on a jittered grid so no two flowers crowd
+    const step = 146
+    for (let gy = step / 2; gy < s; gy += step) {
+      for (let gx = step / 2; gx < s; gx += step) {
+        const x = gx + (rnd() - 0.5) * 70, y = gy + (rnd() - 0.5) * 70
+        if (rnd() < 0.55) rosette(x, y, 22 + rnd() * 14, rnd() < 0.6)
+        else sprig(x, y, 44 + rnd() * 30, rnd() * Math.PI * 2)
+      }
+    }
+  }, 2.4)
 }
 
 function woodTexture(): THREE.CanvasTexture {

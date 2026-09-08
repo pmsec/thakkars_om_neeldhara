@@ -63,6 +63,23 @@ export function App(): React.ReactElement {
   return (
     <StoreContext.Provider value={store}>
       <div className="app">
+        {state.view === 'real' && (
+          <button
+            className="no-print"
+            onClick={() => set({ walkBars: !state.walkBars })}
+            title={state.walkBars ? 'Hide the bars' : 'Show the bars'}
+            aria-label={state.walkBars ? 'Hide the bars' : 'Show the bars'}
+            style={{
+              position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 40,
+              width: 44, height: 18, padding: 0, border: '1px solid #d5cdbb', borderTop: 'none',
+              borderRadius: '0 0 10px 10px', background: 'rgba(250,248,244,0.92)', color: '#1e1c18',
+              fontSize: 11, lineHeight: '16px', cursor: 'pointer',
+            }}
+          >
+            {state.walkBars ? '\u25B4' : '\u25BE'}
+          </button>
+        )}
+        {!(state.view === 'real' && !state.walkBars) && (
         <header className="topbar">
           <HomeSwitcher />
 
@@ -133,6 +150,7 @@ export function App(): React.ReactElement {
             ))}
           </nav>
         </header>
+        )}
 
         <div className="body">
           {hasPanels && state.panels.left && (

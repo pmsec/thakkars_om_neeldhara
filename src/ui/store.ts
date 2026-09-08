@@ -105,6 +105,8 @@ export interface PortalState {
   underlay: { opacity: number; transform: UnderlayTransform | null }
   calibration: CalibrationState
   snap: boolean
+  /** The walkthrough's bars - the app header and the walk toolbar - shown. Hidden by default while walking; a small arrow at the top reveals them. */
+  walkBars: boolean
   cutaway: number
   section: { axis: 'x' | 'y' | 'z' | null; at: number }
   show3d: {
@@ -167,6 +169,7 @@ export const initialState: PortalState = {
   underlay: { opacity: 0.45, transform: null },
   calibration: { imagePoints: [], modelPoints: [] },
   snap: true,
+  walkBars: false,
   cutaway: 3505,
   section: { axis: null, at: 12240 },
   show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false, ceiling: true, roofOpen: false, timeOfDay: 'afternoon' },

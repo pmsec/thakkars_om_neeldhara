@@ -3851,6 +3851,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const ceilingOn = uiState.show3d.ceiling
   const roofOpen = uiState.show3d.roofOpen
   const timeOfDay = uiState.show3d.timeOfDay
+  const bars = uiState.walkBars                        // the bars are hidden while walking unless revealed
   const timeRef = useRef(timeOfDay)
   timeRef.current = timeOfDay
   /** The pieces the time-of-day switch retunes, kept from the mount. */
@@ -4236,14 +4237,14 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0 }} />
-      {!compact && <StylePanel />}
-      {!compact && (
+      {!compact && bars && <StylePanel />}
+      {!compact && bars && (
         <AiRenderPanel
           capture={() => captureRef.current?.() ?? null}
           defaultPrompt={FP_PROMPT}
         />
       )}
-      {!compact && (
+      {!compact && bars && (
         <div
           style={{
             position: 'absolute', top: 10, left: 12, display: 'flex', gap: 6,

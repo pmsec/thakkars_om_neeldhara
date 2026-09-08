@@ -268,14 +268,13 @@ mb_line = ([(2400, 6715)] + mb_line + [(4467, 6715)]
            if mb_line[0][0] < mb_line[-1][0]
            else [(4467, 6715)] + mb_line + [(2400, 6715)])
 mb_len = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(mb_line, mb_line[1:]))
+# The sweeps are FULL curves: the sheet takes nothing out of them. Each bath is
+# entered through the door in its straight west (parents') / east (Karan's)
+# wall, and the curved vanity is struck off the inside of the sweep.
 WALLS += [
-    w('W-P-BATH-ARCH', mb_line, 230, 'interior',
-      [op('D-P-BATH-ARCH', 'cased', mb_len * 0.30, mb_len * 0.62, head=2100,
-          label='The arched way in')],
+    w('W-P-BATH-ARCH', mb_line, 230, 'interior', [],
       label="Parents' bath — arched sweep"),
-    w('W-K-BATH-ARCH', [(mx(x), y) for x, y in mb_line], 230, 'interior',
-      [op('D-K-BATH-ARCH', 'cased', mb_len * 0.38, mb_len * 0.70, head=2100,
-          label='The arched way in')],
+    w('W-K-BATH-ARCH', [(mx(x), y) for x, y in mb_line], 230, 'interior', [],
       label="Karan's bath — arched sweep"),
 ]
 

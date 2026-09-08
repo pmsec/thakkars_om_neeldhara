@@ -420,9 +420,6 @@ export const building: BuildingData = {
       ],
       thickness: 230,
       kind: 'interior',
-      openings: [
-        { id: 'D-P-BATH-ARCH', type: 'cased', at: [840.334, 1736.689], head: 2100, label: 'The arched way in' },
-      ],
       label: "Parents' bath — arched sweep",
     },
     {
@@ -455,9 +452,6 @@ export const building: BuildingData = {
       ],
       thickness: 230,
       kind: 'interior',
-      openings: [
-        { id: 'D-K-BATH-ARCH', type: 'cased', at: [1064.423, 1960.778], head: 2100, label: 'The arched way in' },
-      ],
       label: "Karan's bath — arched sweep",
     },
     {

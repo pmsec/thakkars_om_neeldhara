@@ -597,10 +597,11 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return m
     }
     case 'screen': {
-      // a drawn screen is thin and SEE-THROUGH above its dado — rendering it
-      // as an opaque slab once put a phantom wall in Karan's suite
-      const dado = Math.min(900, f.height * 0.42)
-      g.add(box(w, dado, d, M.timber, 0, dado / 2, 0))
+      // a drawn screen is thin and SEE-THROUGH — rendering it as an opaque
+      // slab once put a phantom wall in Karan's suite. Only a screen the sheet
+      // labels with a dado gets one; the rest are tinted glass floor to head.
+      const dado = /dado/i.test(f.label) ? Math.min(900, f.height * 0.42) : 0
+      if (dado > 0) g.add(box(w, dado, d, M.timber, 0, dado / 2, 0))
       const glass = new THREE.Mesh(
         new THREE.BoxGeometry(w * S, (f.height - dado) * S, d * S), M.tintGlass)
       glass.position.set(0, ((f.height + dado) / 2) * S, 0)

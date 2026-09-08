@@ -753,6 +753,69 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         bulb.position.set(cxp * S, (h + 330) * S, cyp * S)
         g.add(bulb)
       }
+      if (/work console/i.test(f.label)) {
+        // the desk, dressed: beside the monitor a small planter, and along the
+        // top a pen holder with pens, a notebook and a mug - all on the desk's
+        // long axis, clear of the screen's rectangle
+        const mon = furniture.find((q) => q.kind === 'tv' && q.room === f.room)
+        const alongX = w >= d
+        const mc = mon ? (alongX ? mon.x + mon.w / 2 : mon.y + mon.d / 2) : (alongX ? cxp : cyp)
+        const mHalf = mon ? (alongX ? mon.w : mon.d) / 2 : 0
+        const span = alongX ? w : d
+        const lo = alongX ? f.x : f.y
+        // which side of the monitor has more desk: put the things there
+        const sideSgn = (mc - lo) > span / 2 ? -1 : 1
+        const at = (offAlong: number, offAcross: number) => ({
+          x: alongX ? mc + sideSgn * offAlong : cxp + offAcross,
+          y: alongX ? cyp + offAcross : mc + sideSgn * offAlong,
+        })
+        const put = (m: THREE.Object3D, o: { x: number; y: number }, hh: number) => { m.position.set(o.x * S, hh * S, o.y * S); g.add(m) }
+        // the planter: a small ceramic pot with a leafy plant
+        const p1 = at(mHalf + 220, 60)
+        put(new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 55 * S, 130 * S, 16), M.porcelain), p1, h + 65)
+        put(new THREE.Mesh(new THREE.CylinderGeometry(60 * S, 60 * S, 14 * S, 16), M.soil), p1, h + 126)
+        for (let i = 0; i < 6; i++) {
+          const a = (i / 6) * Math.PI * 2
+          const leaf = new THREE.Mesh(new THREE.SphereGeometry(48 * S, 8, 6), i % 2 ? M.leaf : M.leafDark)
+          leaf.scale.set(1, 0.7, 1.3)
+          leaf.rotation.y = a
+          put(leaf, { x: p1.x + Math.cos(a) * 45, y: p1.y + Math.sin(a) * 45 }, h + 175)
+        }
+        put(new THREE.Mesh(new THREE.SphereGeometry(52 * S, 8, 6), M.leaf), p1, h + 215)
+        // the pen holder: a walnut cup with pens leaning in it
+        const p2 = at(mHalf + 480, -120)
+        put(new THREE.Mesh(new THREE.CylinderGeometry(42 * S, 38 * S, 100 * S, 14), M.walnut), p2, h + 50)
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2
+          const pen = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 4 * S, 150 * S, 6), i % 2 ? M.gasket : M.brass)
+          pen.rotation.z = Math.cos(a) * 0.18
+          pen.rotation.x = Math.sin(a) * 0.18
+          put(pen, { x: p2.x + Math.cos(a) * 14, y: p2.y + Math.sin(a) * 14 }, h + 105)
+        }
+        // a notebook with a leather cover and a pen across it
+        const p3 = at(mHalf + 520, 110)
+        const nb = box(alongX ? 210 : 150, 18, alongX ? 150 : 210, M.trunk)
+        nb.rotation.y = 0.12
+        put(nb, p3, h + 9)
+        const pg = box(alongX ? 200 : 140, 6, alongX ? 140 : 200, M.porcelain)
+        pg.rotation.y = 0.12
+        put(pg, p3, h + 21)
+        const pen = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 4 * S, 140 * S, 6), M.brass)
+        pen.rotation.z = Math.PI / 2
+        pen.rotation.y = alongX ? 0.4 : Math.PI / 2 + 0.4
+        put(pen, p3, h + 28)
+        // a mug
+        const p4 = at(mHalf + 780, -40)
+        const mug = new THREE.Mesh(new THREE.CylinderGeometry(40 * S, 36 * S, 92 * S, 16, 1, true), M.porcelain)
+        ;(mug.material as THREE.Material).side = THREE.DoubleSide
+        put(mug, p4, h + 46)
+        const mugBase = new THREE.Mesh(new THREE.CircleGeometry(36 * S, 16), M.porcelain)
+        mugBase.rotation.x = -Math.PI / 2
+        put(mugBase, p4, h + 2)
+        const handle = new THREE.Mesh(new THREE.TorusGeometry(22 * S, 5 * S, 6, 12, Math.PI), M.porcelain)
+        handle.rotation.z = -Math.PI / 2
+        put(handle, { x: p4.x + (alongX ? 0 : 42), y: p4.y + (alongX ? 42 : 0) }, h + 46)
+      }
       if (/dresser/i.test(f.label)) {
         // the dresser's mirror standing on it
         const mir = box(w * 0.6, 520, 20, M.mirror)
@@ -1368,15 +1431,22 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'tv': {
-      // slim dark panel on its stand (the den monitor), inside its rectangle
+      // slim dark panel on its stand (the den monitor), inside its rectangle. It
+      // faces the desk chair in its room - the arm and the boom go on the far
+      // side - so the screen is toward whoever sits at the desk
       const thin = Math.min(80, Math.min(w, d))
       const panelW = Math.max(w, d)
       const upright = d > w
+      const chair = furniture.find((q) => q.room === f.room && /chair/i.test(q.label) && q.id !== f.id)
+      const toward = chair ? (upright ? chair.x + chair.w / 2 - cx : chair.y + chair.d / 2 - cy) : 1
+      const sgn = Math.sign(toward) || 1                 // +: the screen faces +x (upright) / +y
+      const back = -sgn
       g.add(box(upright ? thin : panelW, 460, upright ? panelW : thin, M.gasket, 0, 1080, 0))
-      g.add(box(upright ? thin + 6 : panelW - 40, 420, upright ? panelW - 40 : thin + 6, M.appliance, 0, 1080, 0))
-      // the arm: a post from the desk and a boom to the panel's back
-      g.add(box(60, 340, 60, M.metal, upright ? thin / 2 + 20 : 0, 800 + 170, upright ? 0 : thin / 2 + 20))
-      g.add(box(upright ? 90 : 30, 30, upright ? 30 : 90, M.metal, upright ? thin / 2 : 0, 1060, upright ? 0 : thin / 2))
+      const face = box(upright ? 8 : panelW - 40, 420, upright ? panelW - 40 : 8, M.appliance)
+      face.position.set((upright ? sgn * (thin / 2 - 2) : 0) * S, 1080 * S, (upright ? 0 : sgn * (thin / 2 - 2)) * S)
+      g.add(face)
+      g.add(box(60, 340, 60, M.metal, upright ? back * (thin / 2 + 20) : 0, 800 + 170, upright ? 0 : back * (thin / 2 + 20)))
+      g.add(box(upright ? 90 : 30, 30, upright ? 30 : 90, M.metal, upright ? back * thin / 2 : 0, 1060, upright ? 0 : back * thin / 2))
       place(g, cx, cy)
       return g
     }

@@ -1110,8 +1110,25 @@ def emit_furniture():
             add(kind, a, b, c - a, d - b, room, label, h, face=face,
                 poly=outline)
 
-    add_prims(R.great_room_sofa(), 'sofa', 'R-GREAT',
-              '2-seat recliner sofa with the planter on its end', 780)
+    # The sofa and its planter are drawn by one generator, sofa first and the
+    # planter box (the second solid outline) after it. One bounding box over
+    # both would give the 3D a sofa 2800 long with the tree standing in its
+    # end, so the box is split off here and ships as the planter it is.
+    sofa_prims = R.great_room_sofa()
+    solid_polys = [i for i, p_ in enumerate(sofa_prims)
+                   if p_[0] == 'poly' and p_[-1] == 'solid']
+    if len(solid_polys) >= 2:
+        cut = solid_polys[1]
+        add_prims(sofa_prims[:cut], 'sofa', 'R-GREAT',
+                  '2-seat recliner sofa, the planter box off its end', 780)
+        bx = [q[0] for q in sofa_prims[cut][1]]
+        by = [q[1] for q in sofa_prims[cut][1]]
+        add('planter', min(bx), min(by), max(bx) - min(bx), max(by) - min(by),
+            'R-GREAT', "The planter box on the sofa's end, the tree in it",
+            450, poly=sofa_prims[cut][1])
+    else:
+        add_prims(sofa_prims, 'sofa', 'R-GREAT',
+                  '2-seat recliner sofa with the planter on its end', 780)
     add_prims(R.rocking_chair(13080, 3500, face=(10123 - 13080, 3932 - 3500)),
               'armchair', 'R-GREAT', 'Rocking chair', 780)
     add_prims(R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)),
@@ -1153,8 +1170,9 @@ def emit_furniture():
         'The terrace tree — real, in real grass', 2500)
     add('tree', mx(1200) - 350, 600 - 350, 700, 700, 'R-K-TERRACE',
         'The terrace tree — real, in real grass', 2500)
+    # the great-room tree stands in its planter box: lifted to the soil line
     add('tree', 10123 - 450, 5087 - 450, 900, 900, 'R-GREAT',
-        'The tree growing off the sofa’s end', 2400)
+        'The tree in the planter box off the sofa’s end', 2400, lift=400)
     # the terraces as DRAWN by terrace_pieces(): the grass field, and the
     # jhoola where its frame actually stands (posts at x -200 and 610)
     add('planter', -350, 0, 3100, 200, 'R-P-TERRACE', 'Planted strip inside the parapet', 340)

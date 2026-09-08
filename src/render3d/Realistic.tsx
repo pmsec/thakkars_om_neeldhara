@@ -296,6 +296,7 @@ export function makeMaterials() {
     quilt: new THREE.MeshStandardMaterial({ map: quiltTexture(), roughness: 0.9 }),
     throw: new THREE.MeshStandardMaterial({ color: 0x8a6a4c, roughness: 0.95 }),
     bin: new THREE.MeshStandardMaterial({ color: 0x3b3b3b, roughness: 0.5, metalness: 0.5 }),
+    soil: new THREE.MeshStandardMaterial({ color: 0x3b2b1c, roughness: 1.0 }),
     mirror: new THREE.MeshStandardMaterial({ color: 0xc9d6dd, roughness: 0.05, metalness: 0.9 }),
     stoneTop: new THREE.MeshStandardMaterial({ color: 0xd9d4cb, roughness: 0.3 }),
     hob: new THREE.MeshStandardMaterial({ color: 0x151719, roughness: 0.15, metalness: 0.2 }),
@@ -650,6 +651,30 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         // the planted strip inside a parapet: the clipped hedge, tall enough to
         // hide the city from inside (see hedge.ts)
         return hedgeGroup(f, { bed: M.pot, leaf: M.leaf, leafDark: M.leafDark }, bed)
+      }
+      if (/sofa/i.test(f.label)) {
+        // the great room's planter box: joinery to match the sofa, eased corners as
+        // drawn, a soil bed 50 below its rim. The tree in it is its own piece.
+        const H = f.height || 450
+        const boxBody = f.poly ? polyPiece(f.poly, 0, H, M.timber, f.room) : box(w, H, d, M.timber)
+        if (boxBody && !f.poly) place(boxBody, cx, cy, H / 2)
+        if (boxBody) g.add(boxBody)
+        const inner = f.poly
+          ? f.poly.map((q) => ({ x: cx + (q.x - cx) * 0.9, y: cy + (q.y - cy) * 0.9 }))
+          : null
+        const soil = inner ? polyPiece(inner, H - 50, H + 2, M.soil, f.room) : box(w * 0.9, 52, d * 0.9, M.soil)
+        if (soil && !inner) place(soil, cx, cy, H - 24)
+        if (soil) g.add(soil)
+        // a scatter of moss and pebbles on the soil
+        for (let i = 0; i < 7; i++) {
+          const a = (i / 7) * Math.PI * 2 + 0.4
+          const rr = Math.min(w, d) * (0.18 + 0.14 * ((i * 37) % 5) / 5)
+          const peb = new THREE.Mesh(new THREE.SphereGeometry((28 + (i % 3) * 10) * S, 7, 5), i % 2 ? M.leaf : M.carved)
+          peb.scale.set(1, 0.5, 1)
+          peb.position.set((cx + Math.cos(a) * rr) * S, (H + 6) * S, (cy + Math.sin(a) * rr) * S)
+          g.add(peb)
+        }
+        return g
       }
       // an indoor planter: a stone bed with a row of low shrubs in it
       const stoneBed = f.poly ? polyPiece(f.poly, 0, 300, M.carved, f.room) : box(w, 300, d, M.carved)
@@ -1184,7 +1209,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       crown.scale.set(1, 0.85, 1)
       crown.castShadow = true
       g.add(crown)
-      place(g, cx, cy)
+      place(g, cx, cy, f.lift ?? 0)                 // a tree in a box stands on its soil
       return g
     }
     case 'drumkit': {

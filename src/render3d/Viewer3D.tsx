@@ -771,6 +771,11 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
         abs.add(polyPrisms(f.poly, f.room, 0, 25, MAT.green, clip))
         break
       case 'planter': {
+        if (/sofa/i.test(f.label)) {
+          // the great room's planter box: joinery, the tree in it is its own piece
+          abs.add(polyPrisms(f.poly, f.room, 0, f.height || 450, MAT.wood, clip))
+          break
+        }
         abs.add(hedgeGroup(f, { bed: withClip(MAT.pot, clip), leaf: withClip(MAT.green, clip), leafDark: withClip(MAT.foliage, clip) },
           polyPrisms(f.poly, f.room, 0, 300, MAT.pot, clip)))
         break
@@ -845,8 +850,9 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
       // Massing from `tree.ts`, which keeps the crown inside the authored footprint so it
       // cannot spread through the canopy glass coming down beside it.
       for (const m of treeMasses(w, d, f.height)) {
-        if (m.kind === 'trunk') cyl(m.r, m.h!, MAT.trunk, m.dx, m.dy, m.dz, 10)
-        else g.add(sphere(m.r, MAT.foliage, m.dx, m.dy, m.dz, clip))
+        const lift = f.lift ?? 0
+        if (m.kind === 'trunk') cyl(m.r, m.h!, MAT.trunk, m.dx, m.dy + lift, m.dz, 10)
+        else g.add(sphere(m.r, MAT.foliage, m.dx, m.dy + lift, m.dz, clip))
       }
       break
     case 'bed': {
@@ -964,7 +970,7 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
       box(w, 25, d, MAT.green, 0, 12.5, 0)
       break
     case 'planter':
-      box(w, 300, d, MAT.pot, 0, 150, 0)
+      box(w, f.height || 300, d, MAT.pot, 0, (f.height || 300) / 2, 0)
       break
     case 'drumkit':
       cyl(Math.min(w, d) * 0.28, 500, MAT.furniture, 0, 250, d * 0.1, 20)

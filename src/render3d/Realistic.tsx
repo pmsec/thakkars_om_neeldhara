@@ -421,6 +421,7 @@ export function makeMaterials() {
     fabricDark: new THREE.MeshStandardMaterial({ map: jute, color: 0xc4ad86, roughness: 0.96 }),
     quilt: new THREE.MeshStandardMaterial({ map: quiltTexture(), color: 0xe6d8bf, roughness: 0.92 }),
     throw: new THREE.MeshStandardMaterial({ map: linen, color: 0xc9a56a, roughness: 0.92 }),
+    velvetGreenBook: new THREE.MeshStandardMaterial({ map: linen, color: 0x3f5a48, roughness: 0.9 }),
     bin: new THREE.MeshStandardMaterial({ color: 0x3b3b3b, roughness: 0.5, metalness: 0.5 }),
     soil: new THREE.MeshStandardMaterial({ color: 0x3b2b1c, roughness: 1.0 }),
     mirror: new THREE.MeshStandardMaterial({ color: 0xc9d6dd, roughness: 0.05, metalness: 0.9 }),
@@ -905,6 +906,56 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         g.add(leg)
       }
       doorFronts(g, f, M, 120, h - 30, true)
+      // classic pieces along the top, in thirds: a brass bowl of fruit, a stack
+      // of books with a small brass sculpture on it, and a tall ceramic vase
+      // with dried stems - all within the console's own depth
+      {
+        const alongX = w >= d
+        const L = alongX ? w : d
+        const at = (t: number, across: number) => ({ x: alongX ? f.x + L * t : cx + across, y: alongX ? cy + across : f.y + L * t })
+        const put = (m: THREE.Object3D, o: { x: number; y: number }, hh: number) => { m.position.set(o.x * S, hh * S, o.y * S); g.add(m) }
+        // the bowl: a shallow brass lathe with a few fruit in it
+        const p1 = at(0.2, 0)
+        const bowlProfile = [[0, 0], [60, 0], [120, 18], [150, 45], [160, 70]].map(([r, y]) => new THREE.Vector2(r * S, y * S))
+        const bowl = new THREE.Mesh(new THREE.LatheGeometry(bowlProfile, 28), M.brass)
+        ;(bowl.material as THREE.Material).side = THREE.DoubleSide
+        put(bowl, p1, h)
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2
+          const fruit = new THREE.Mesh(new THREE.SphereGeometry(34 * S, 10, 8), i % 2 ? M.throw : M.leafDark)
+          put(fruit, { x: p1.x + Math.cos(a) * 52, y: p1.y + Math.sin(a) * 52 }, h + 50)
+        }
+        put(new THREE.Mesh(new THREE.SphereGeometry(34 * S, 10, 8), M.throw), p1, h + 85)
+        // the books: three, stacked with a small offset, a brass figure on top
+        const p2 = at(0.5, 0)
+        const bookMats = [M.velvetGreenBook, M.trunk, M.fabricDark]
+        for (let i = 0; i < 3; i++) {
+          const bw = 230 - i * 20, bd = 160 - i * 10
+          const book = box(alongX ? bw : bd, 28, alongX ? bd : bw, bookMats[i])
+          book.rotation.y = (i - 1) * 0.12
+          put(book, { x: p2.x + (i - 1) * 8, y: p2.y }, h + 14 + i * 28)
+        }
+        const plinth = new THREE.Mesh(new THREE.CylinderGeometry(30 * S, 34 * S, 16 * S, 16), M.carved)
+        put(plinth, p2, h + 92)
+        const figure = new THREE.Mesh(new THREE.TorusKnotGeometry(28 * S, 9 * S, 64, 8, 2, 3), M.brass)
+        put(figure, p2, h + 150)
+        // the vase: a tall ceramic lathe with a narrow neck, dried stems in it
+        const p3 = at(0.8, 0)
+        const vaseProfile = [[0, 0], [55, 0], [80, 60], [92, 160], [80, 260], [50, 320], [38, 360], [44, 380]].map(([r, y]) => new THREE.Vector2(r * S, y * S))
+        const vase = new THREE.Mesh(new THREE.LatheGeometry(vaseProfile, 28), M.porcelain)
+        ;(vase.material as THREE.Material).side = THREE.DoubleSide
+        put(vase, p3, h)
+        for (let i = 0; i < 7; i++) {
+          const a = (i / 7) * Math.PI * 2
+          const stem = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 3 * S, 420 * S, 5), M.trunk)
+          stem.rotation.z = Math.cos(a) * 0.16
+          stem.rotation.x = Math.sin(a) * 0.16
+          put(stem, { x: p3.x + Math.cos(a) * 12, y: p3.y + Math.sin(a) * 12 }, h + 520)
+          const head = new THREE.Mesh(new THREE.SphereGeometry(16 * S, 7, 5), M.fabric)
+          head.scale.set(1, 1.8, 1)
+          put(head, { x: p3.x + Math.cos(a) * 12 + Math.cos(a) * 60, y: p3.y + Math.sin(a) * 12 + Math.sin(a) * 60 }, h + 740)
+        }
+      }
       return g
     }
     const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)

@@ -180,7 +180,7 @@ def poly_rooms():
         ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note, (21300, 4400)),
         ("PARENTS' BATH", '', bath, bath_note, (3140, 7750)),
         ("KARAN'S BATH", '', mirror_poly(bath), bath_note, (D.M(3140), 7750)),
-        ('GUEST / SERVICE WC', '', wc, '', (16620, 9760)),
+        ('GUEST / SERVICE WC', '', wc, '', (16300, 9560)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         # not the mirror of the family room's anchor: that point is on the
         # drummer's throne, and the open north half is the sofa's now.  What is
@@ -1568,7 +1568,7 @@ def lobby_polys():
     out = wc_pts(D.T_WC / 2)
     helps = ([out[0]] + _gal_arc(ro, D._BN1, D._A1)
              + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (18825, D.BAY_S),
-                (18825, 9550), (17580, 9550), (17580, 10255)]
+                (18825, 9550), (17580, 9550), (17580, D.WC_DIE + D.T_WC / 2)]
              + list(reversed(out)))
     wc = ([(D.WC_CX, D.BAY_N), (D.WC_CX, D.WC_DIE - D.T_WC / 2)]
           + list(reversed(wc_pts(-D.T_WC / 2))))

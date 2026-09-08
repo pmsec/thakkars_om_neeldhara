@@ -282,18 +282,24 @@ _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
 # of it.
 #
 # An ellipse and not a circle because the two walls it has to reach are not the
-# same distance away — 2430 along the great-room wall, 1675 down the east one.
+# same distance away — 2430 along the great-room wall, 1495 down the east one.
 # A circle is tangent to both only if it is a quarter round, and a quarter round
 # wide enough to carry a door off the great room (it has to spring west of
 # 15880, where the pod glazing lands) would run the whole 2450 depth of the bay
 # and leave help's room a berth again.  The ellipse reaches west without
 # reaching south, which is exactly the shape of the problem.
+#
+# It dies 1495 down, not 1675 as it first did: the bunk in the merged help's
+# room lies along the south wall with its head on the east wall, so its north
+# edge at 10075 runs past the duct's cheek, and the apse (and the cheek it dies
+# into) has to be out of the way above that line.  The 180 it gives up was
+# the sliver of floor south of the pan; there is still 900 in front of the pan.
 WC_CX, WC_CY = 17430, BAY_N        # the corner it is struck from
-WC_A, WC_B = 2430, 1675            # semi-axes, on the centreline of the wall
+WC_A, WC_B = 2430, 1495            # semi-axes, on the centreline of the wall
 T_WC = 110
 WC_SPRING = WC_CX - WC_A           # 15000, on the great-room wall
-WC_DIE = WC_CY + WC_B              # 10200, on the east wall
-WC_DOOR = (0.42, 0.64)             # help's room's door, as a fraction of the arc
+WC_DIE = WC_CY + WC_B              # 10020, on the east wall; outer face 10075
+WC_DOOR = (0.41, 0.645)            # help's room's door, as a fraction of the arc
 # There is no STORE_W any more: the wall between help's room and the store came
 # down after the walkability check, and the two are one room.  See the note
 # on the service-bay walls below.
@@ -362,9 +368,10 @@ NEW_WALLS = [
     # --- service bay
     # (the kitchen / utility wall is gone — the two are one space now)
     # WC / secondary duct.  This one stops where the apse dies into the east
-    # wall: below that the store runs straight through, so its old cross-wall
-    # and the door in it are both gone.
-    (M(7050 - 75), BAY_N, M(7050 - 75), 10255, T_INT, []),         # WC / duct
+    # wall, at 10075 on its outer face — which is the bunk's north edge, so the
+    # bunk lies under it and past it without touching it.  Below that the room
+    # runs straight through to the east wall.
+    (M(7050 - 75), BAY_N, M(7050 - 75), WC_DIE + T_WC / 2, T_INT, []),  # WC / duct
     # THE WALL BETWEEN HELP'S ROOM AND THE STORE IS GONE.  With it up, help's
     # room was a 4.4 m2 triangle with a 1025 west leg, and the 1900 bunk sat on
     # the only floor in front of the WC door: a 700 body could not reach the
@@ -1140,7 +1147,7 @@ _ONCE = [
     ('shower',   16530, 8425, 17430, 9325, ''),   # 900 x 900
     # Turned a quarter, so its back is on the duct wall rather than floating in
     # the room.  700 deep from that wall, 620 wide, and it clears the apse: the
-    # arc's inner face is at 16439 on this pan's south line.
+    # arc's inner face is at about 16235 on this pan's south line.
     ('wc-e',     16750, 9430, 17430, 9820, ''),  # 680 x 390
     # ------------------------------------------------------ the entry gallery
     # THE U HAS TWO LONG FACES AND NOTHING WAS AGAINST EITHER OF THEM.  Its

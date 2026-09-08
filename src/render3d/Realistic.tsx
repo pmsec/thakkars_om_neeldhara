@@ -1916,7 +1916,7 @@ function entryPainting(M: Mats): THREE.Group | null {
  * counter outlines and the walls with their openings, so nothing hangs over
  * the serving hatch or the south window.
  */
-function kitchenOverheads(M: Mats): THREE.Group {
+export function kitchenOverheads(M: Mats): THREE.Group {
   const g = new THREE.Group()
   const CAB_BOTTOM = 1450
   const CAB_TOP = 2200
@@ -1947,6 +1947,13 @@ function kitchenOverheads(M: Mats): THREE.Group {
         return false
       })
       if (!wall) continue
+      // how far the counter's edge stands off the wall's face: the cabinets and the
+      // splashback hang on the face, so a counter set a little off its wall does not
+      // leave a stone panel standing free on the worktop
+      const edgeMid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+      let wallDist = Infinity
+      for (let k = 0; k < wall.points.length - 1; k++) wallDist = Math.min(wallDist, segDist(edgeMid, wall.points[k], wall.points[k + 1]).d)
+      const gap = Math.max(0, wallDist - wall.thickness / 2)
       // the run along the edge, minus any opening in that wall that rises into the cabinet zone
       const ux = (b.x - a.x) / len
       const uy = (b.y - a.y) / len
@@ -1975,9 +1982,12 @@ function kitchenOverheads(M: Mats): THREE.Group {
       for (const [p, q] of spans) {
         if (q - p < 350) continue
         const L = q - p
-        const sx = a.x + ux * ((p + q) / 2) + nx * (CAB_DEPTH / 2)
-        const sy = a.y + uy * ((p + q) / 2) + ny * (CAB_DEPTH / 2)
-        const ang = Math.atan2(ux, uy)
+        const sx = a.x + ux * ((p + q) / 2) + nx * (CAB_DEPTH / 2 - gap)
+        const sy = a.y + uy * ((p + q) / 2) + ny * (CAB_DEPTH / 2 - gap)
+        // the cabinet's local +x is its FRONT, so the yaw must put local +x on the
+        // inward normal - not merely along the edge, which put the splashback on the
+        // room side of the appliance leg, standing free on the worktop
+        const ang = Math.atan2(-ny, nx)
         const cab = new THREE.Group()
         cab.add(box(CAB_DEPTH, CAB_TOP - CAB_BOTTOM, L, M.timber, 0, (CAB_BOTTOM + CAB_TOP) / 2, 0))
         // door joints
@@ -2991,10 +3001,64 @@ export function buildFixtures(M: Mats): THREE.Group {
       const top = polyPiece(f.poly, h, h + 40, M.marble, f.room)
       if (body) g.add(body)
       if (top) g.add(top)
-      // door and drawer fronts on every edge that does not back on to a wall
       const poly = f.poly
       const pcx0 = poly.reduce((t, q) => t + q.x, 0) / poly.length
       const pcy0 = poly.reduce((t, q) => t + q.y, 0) / poly.length
+      if (f.kind === 'counter' && /KITCHEN/i.test(f.room)) {
+        // a draining rack cut into the worktop beside the sink: a shallow stainless
+        // tray with grooves that fall to the sink, a rod rack, and the vessels in it
+        const sink = fixtures.find((q) => q.kind === 'sink' && q.room === f.room && pointInPolygon(q.at, poly))
+        if (sink) {
+          const RW = 480, RD = Math.min(410, sink.size[1])
+          const rx = sink.at.x + sink.size[0] / 2 + 60 + RW / 2, rz = sink.at.y
+          if (pointInPolygon({ x: rx + RW / 2, y: rz + RD / 2 }, poly) && pointInPolygon({ x: rx + RW / 2, y: rz - RD / 2 }, poly)) {
+            g.add(box(RW, 22, RD, M.chrome, rx, h - 8, rz))                            // the tray, let in
+            for (let k = 0; k < 9; k++) g.add(box(RW - 30, 6, 6, M.gasket, rx, h + 4, rz - RD / 2 + 25 + (k * (RD - 50)) / 8))  // the grooves
+            for (let k = 0; k < 6; k++) {                                              // the rod rack
+              const rod = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 4 * S, 150 * S, 6), M.chrome)
+              rod.position.set((rx - RW / 2 + 60 + k * ((RW - 120) / 5)) * S, (h + 75) * S, (rz - RD / 2 + 40) * S)
+              g.add(rod)
+              const rod2 = rod.clone(); rod2.position.z = (rz + RD / 2 - 40) * S; g.add(rod2)
+            }
+            for (let k = 0; k < 4; k++) {                                              // plates standing in it
+              const plate = new THREE.Mesh(new THREE.CylinderGeometry(105 * S, 105 * S, 8 * S, 24), M.porcelain)
+              plate.rotation.z = Math.PI / 2
+              plate.position.set((rx - RW / 2 + 70 + k * 58) * S, (h + 108) * S, rz * S)
+              g.add(plate)
+            }
+            const pot = new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 62 * S, 110 * S, 16), M.steel)
+            pot.rotation.x = Math.PI                                                   // upside down to drain
+            pot.position.set((rx + RW / 2 - 90) * S, (h + 55) * S, (rz + 40) * S)
+            g.add(pot)
+            const tumbler = new THREE.Mesh(new THREE.CylinderGeometry(34 * S, 30 * S, 95 * S, 12), M.acrylic)
+            tumbler.position.set((rx + RW / 2 - 200) * S, (h + 48) * S, (rz - 90) * S)
+            g.add(tumbler)
+          }
+        }
+        // the condiment rack on the appliance leg by the gallery column: two walnut
+        // tiers against the wall, and a row of jars and bottles on each
+        const legX = Math.max(...poly.map((q) => q.x))
+        const legPts = poly.filter((q) => Math.abs(q.x - legX) < 1)
+        if (legPts.length >= 2 && legX > 10000 && Math.max(...poly.map((q) => q.y)) > 10000) {
+          const y0 = Math.min(...legPts.map((q) => q.y)) + 60, y1 = Math.max(...legPts.map((q) => q.y)) - 260
+          const RL = y1 - y0, cx2 = legX - 75, cz2 = (y0 + y1) / 2
+          g.add(box(140, 18, RL, M.walnut, cx2, h + 9, cz2))                          // the base
+          g.add(box(140, 18, RL, M.walnut, cx2, h + 190, cz2))                        // the upper tier
+          g.add(box(18, 200, RL, M.walnut, legX - 9, h + 100, cz2))                   // its back
+          for (const [tier, n] of [[h + 18, 7], [h + 199, 6]] as const) {
+            for (let k = 0; k < n; k++) {
+              const jr = 22 + (k % 3) * 5, jh = 70 + (k % 4) * 22
+              const jar = new THREE.Mesh(new THREE.CylinderGeometry(jr * S, jr * S, jh * S, 12), k % 2 ? M.acrylic : M.soil)
+              jar.position.set((cx2 + (k % 2 ? 20 : -20)) * S, (tier + jh / 2) * S, (y0 + 40 + (k * (RL - 80)) / (n - 1)) * S)
+              g.add(jar)
+              const lid = new THREE.Mesh(new THREE.CylinderGeometry((jr + 2) * S, (jr + 2) * S, 8 * S, 12), M.walnut)
+              lid.position.set(jar.position.x, (tier + jh + 4) * S, jar.position.z)
+              g.add(lid)
+            }
+          }
+        }
+      }
+      // door and drawer fronts on every edge that does not back on to a wall
       for (let i = 0; i < poly.length; i++) {
         const a = poly[i]
         const b = poly[(i + 1) % poly.length]
@@ -3109,6 +3173,54 @@ export function buildFixtures(M: Mats): THREE.Group {
         )
         gl.position.set(px * S, (100 + gh / 2) * S, py * S)
         g.add(gl)
+      }
+      continue
+    }
+    // The small appliances on the worktop: a stainless microwave with a dark glass
+    // door, and a black air fryer with its basket drawer. Doors to the open side.
+    if (f.kind === 'appliance') {
+      const TOP = 900
+      const { alongX, sgn } = openFace(f)
+      const fx = f.at.x + (alongX ? sgn * (w / 2 + 2) : 0)
+      const fz = f.at.y + (alongX ? 0 : sgn * (d / 2 + 2))
+      if (/microwave/i.test(f.label ?? '')) {
+        const H = 300
+        const body = box(w, H, d, M.steel)
+        place(body, f.at.x, f.at.y, TOP + H / 2)
+        g.add(body)
+        const door = box(alongX ? 6 : w * 0.72, H - 60, alongX ? d * 0.72 : 6, M.hob)
+        place(door, fx + (alongX ? 0 : -(w * 0.1) * 0), fz, TOP + H / 2)
+        // the door sits on the room-side face, offset to leave the control strip beside it
+        door.position.set((fx + (alongX ? 0 : -w * 0.1)) * S, (TOP + H / 2) * S, (fz + (alongX ? -d * 0.1 : 0)) * S)
+        g.add(door)
+        const pull = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, (H - 100) * S, 8), M.chrome)
+        pull.position.set((fx + (alongX ? sgn * 14 : w * 0.24)) * S, (TOP + H / 2) * S, (fz + (alongX ? d * 0.24 : sgn * 14)) * S)
+        g.add(pull)
+        for (let k = 0; k < 3; k++) {
+          const knob = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, 6 * S, 10), M.chrome)
+          knob.rotation.x = alongX ? 0 : Math.PI / 2
+          knob.rotation.z = alongX ? Math.PI / 2 : 0
+          knob.position.set((fx + (alongX ? sgn * 3 : w * 0.4)) * S, (TOP + 70 + k * 70) * S, (fz + (alongX ? d * 0.4 : sgn * 3)) * S)
+          g.add(knob)
+        }
+      } else {
+        // the air fryer: a rounded black body, a drawer front with a handle, a small screen
+        const H = 330
+        const r = Math.min(w, d) / 2
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.92 * S, r * S, H * S, 6), M.hob)
+        body.rotation.y = Math.PI / 6
+        body.position.set(f.at.x * S, (TOP + H / 2) * S, f.at.y * S)
+        body.castShadow = true
+        g.add(body)
+        const drawer = box(alongX ? 8 : w * 0.7, H * 0.55, alongX ? d * 0.7 : 8, M.gasket)
+        drawer.position.set((fx - (alongX ? sgn * 6 : 0)) * S, (TOP + H * 0.33) * S, (fz - (alongX ? 0 : sgn * 6)) * S)
+        g.add(drawer)
+        const handle = box(alongX ? 24 : w * 0.34, 22, alongX ? d * 0.34 : 24, M.chrome)
+        handle.position.set((fx + (alongX ? sgn * 10 : 0)) * S, (TOP + H * 0.42) * S, (fz + (alongX ? 0 : sgn * 10)) * S)
+        g.add(handle)
+        const screen = box(alongX ? 4 : w * 0.3, 40, alongX ? d * 0.3 : 4, M.lamp)
+        screen.position.set((fx - (alongX ? sgn * 8 : 0)) * S, (TOP + H * 0.82) * S, (fz - (alongX ? 0 : sgn * 8)) * S)
+        g.add(screen)
       }
       continue
     }

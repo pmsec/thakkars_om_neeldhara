@@ -432,13 +432,14 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       // amount of depth precision can break that tie, so it stipples. A couple of
       // millimetres of stagger resolves it and is far below any dimension that matters.
       const base = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900
-        : f.kind === 'laundry' ? 1700 : f.kind === 'wc' ? 420 : 800
+        : f.kind === 'laundry' ? 1700 : f.kind === 'wc' ? 420 : f.kind === 'appliance' ? 330 : 800
       const h = base + (i % 5) * 2
+      const lift = f.kind === 'appliance' ? 900 : 0     // worktop appliances stand on the counter
       const geo = new THREE.BoxGeometry(f.size[0] * S, h * S, f.size[1] * S)
       const mat = MAT.furniture.clone()
       mat.clippingPlanes = clip
       const m = new THREE.Mesh(geo, mat)
-      m.position.set(f.at.x * S, (h * S) / 2, f.at.y * S)
+      m.position.set(f.at.x * S, (lift + h / 2) * S, f.at.y * S)
       m.castShadow = true
       m.receiveShadow = true
       groups.fabric.add(m)

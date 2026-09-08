@@ -808,6 +808,10 @@ def emit_fixtures():
             if 7000 < cx < 10000 and cy > 10000:
                 add(f'FX-DW-{len(fx)}', 'washer', cx, cy, c - a, d - b, 'R-KITCHEN',
                     'STK-KITCHEN', 'Integrated dishwasher')
+            elif lab and ('microwave' in lab.lower() or 'fryer' in lab.lower()):
+                # the small appliances on the worktop, one each
+                add(f'FX-APP-{len(fx)}', 'appliance', cx, cy, c - a, d - b, 'R-KITCHEN',
+                    None, 'Microwave' if 'microwave' in lab.lower() else 'Air fryer')
         elif base == 'appliance':
             if 'washer' in (lab or '').lower() or 'dryer' in (lab or '').lower():
                 add(f'FX-LDRY-{len(fx)}', 'laundry', cx, cy, c - a, d - b,

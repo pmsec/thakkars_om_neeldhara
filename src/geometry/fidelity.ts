@@ -227,7 +227,7 @@ export const KNOWN_2D_CLASHES: Array<{
   note: string
 }> = [
   {
-    item: 'FX-SH-5',
+    item: 'Shower',
     wallId: 'W-HELP-N',
     maxArea: 60000,
     note: 'Guest WC shower: drawn from y 8425, which is 100 into the 125 great-room wall band (face at 8525).',

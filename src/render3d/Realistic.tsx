@@ -246,6 +246,8 @@ export function makeMaterials() {
     petal: new THREE.MeshStandardMaterial({ color: 0xd4679a, roughness: 0.8 }),
     petalWhite: new THREE.MeshStandardMaterial({ color: 0xf6eff2, roughness: 0.8 }),
     appliance: new THREE.MeshStandardMaterial({ color: 0xd8d5cc, roughness: 0.4, metalness: 0.25 }),
+    steel: new THREE.MeshStandardMaterial({ color: 0xc6c9cc, roughness: 0.32, metalness: 0.7 }),
+    gasket: new THREE.MeshStandardMaterial({ color: 0x2b2d30, roughness: 0.6 }),
   }
 }
 export type Mats = ReturnType<typeof makeMaterials>
@@ -1038,6 +1040,45 @@ export function buildFixtures(M: Mats): THREE.Group {
       }
       continue
     }
+    // The fridge: a stainless French-door unit, two doors over a freezer drawer,
+    // long bar handles, dark gasket lines, facing the room.
+    if (f.kind === 'fridge') {
+      const H = 1900
+      const room = model.roomById.get(f.room)
+      const dx = (room?.centroid.x ?? f.at.x) - f.at.x
+      const dy = (room?.centroid.y ?? f.at.y) - f.at.y
+      const alongX = Math.abs(dx) >= Math.abs(dy)
+      const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+      const body = box(w, H, d, M.steel)
+      place(body, f.at.x, f.at.y, H / 2)
+      g.add(body)
+      // the front plane, 6 mm proud, with the gasket lines cut into it as dark strips
+      const faceW = alongX ? d : w                    // the width of the face across the room
+      const fx = f.at.x + (alongX ? sgn * (w / 2 + 3) : 0)
+      const fz = f.at.y + (alongX ? 0 : sgn * (d / 2 + 3))
+      const strip = (across: number, up: number, along: number, h: number) => {
+        // `along` runs across the face, `h` is the height
+        const m = box(alongX ? 6 : across, up, alongX ? across : 6, M.gasket)
+        place(m, fx + (alongX ? 0 : along), fz + (alongX ? along : 0), h)
+        g.add(m)
+      }
+      strip(faceW - 40, 14, 0, 760)                   // freezer drawer / doors split
+      strip(14, H - 780, 0, 760 + (H - 780) / 2)      // the two doors meet in the middle
+      strip(faceW - 40, 14, 0, H - 40)                // top reveal
+      // handles: two long bars beside the centre split, one across the drawer
+      for (const side of [-1, 1]) {
+        const hb = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.62, 8), M.metal)
+        const off = side * 70
+        hb.position.set((fx + (alongX ? sgn * 22 : off)) * S, 1.24, (fz + (alongX ? off : sgn * 22)) * S)
+        g.add(hb)
+      }
+      const dh = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, (faceW - 240) * S, 8), M.metal)
+      dh.rotation.set(alongX ? Math.PI / 2 : 0, 0, alongX ? 0 : Math.PI / 2)
+      dh.position.set((fx + (alongX ? sgn * 22 : 0)) * S, 0.64, (fz + (alongX ? 0 : sgn * 22)) * S)
+      g.add(dh)
+      continue
+    }
+
     // A stacked washer and dryer: two machines, one on the other, doors to the room.
     if (f.kind === 'laundry') {
       const MACHINE = 850

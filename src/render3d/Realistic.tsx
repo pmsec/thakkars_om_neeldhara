@@ -2131,6 +2131,76 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   return root
 }
 
+/**
+ * Which way an appliance's doors face. Not "towards the room's centre": the
+ * kitchen's centre is off to the fridge's east, which put its doors against
+ * the hob counter. The doors go on the side with the longest clear run —
+ * rays from the front face in each of the four directions, stopped by the
+ * first wall or the first other fixture (a counter, the next machine) — so
+ * they open on to the floor where someone stands.
+ */
+export function openFace(f: { id: string; at: { x: number; y: number }; size: [number, number] }): { alongX: boolean; sgn: number } {
+  const [w, d] = f.size
+  const x0 = f.at.x - w / 2, x1 = f.at.x + w / 2, y0 = f.at.y - d / 2, y1 = f.at.y + d / 2
+  const boxes = fixtures
+    .filter((o) => o.id !== f.id)
+    .map((o) => {
+      const pts = o.poly ?? [
+        { x: o.at.x - o.size[0] / 2, y: o.at.y - o.size[1] / 2 },
+        { x: o.at.x + o.size[0] / 2, y: o.at.y + o.size[1] / 2 },
+      ]
+      const xs = pts.map((q) => q.x), ys = pts.map((q) => q.y)
+      return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) }
+    })
+  const segs: Array<[{ x: number; y: number }, { x: number; y: number }, number]> = []
+  for (const wl of model.walls) {
+    if (wl.thickness < 60) continue
+    for (let k = 1; k < wl.points.length; k++) segs.push([wl.points[k - 1], wl.points[k], wl.thickness / 2])
+  }
+  // free run from the face out along +x / -x / +y / -y, the least of three rays across the face
+  const run = (alongX: boolean, sgn: number): number => {
+    let best = Infinity
+    const lo = alongX ? y0 : x0, hi = alongX ? y1 : x1
+    const face = alongX ? (sgn > 0 ? x1 : x0) : (sgn > 0 ? y1 : y0)
+    for (const t of [0.15, 0.5, 0.85]) {
+      const c = lo + (hi - lo) * t
+      for (const b of boxes) {
+        const cross = alongX ? (c >= b.y0 && c <= b.y1) : (c >= b.x0 && c <= b.x1)
+        if (!cross) continue
+        const near = alongX ? (sgn > 0 ? b.x0 : b.x1) : (sgn > 0 ? b.y0 : b.y1)
+        const dist = (near - face) * sgn
+        if (dist >= -20) best = Math.min(best, Math.max(0, dist))
+      }
+      for (const [a, b, half] of segs) {
+        // the ray is axis-aligned: solve for where the segment crosses its line
+        const pa = alongX ? a.y : a.x, pb = alongX ? b.y : b.x
+        const qa = alongX ? a.x : a.y, qb = alongX ? b.x : b.y
+        let hit: number | null = null
+        if (Math.abs(pb - pa) < 1e-6) {
+          if (Math.abs(c - pa) <= half) hit = Math.abs(qa - face) < Math.abs(qb - face) ? qa : qb
+        } else {
+          const u = (c - pa) / (pb - pa)
+          if (u >= 0 && u <= 1) hit = qa + u * (qb - qa)
+        }
+        if (hit === null) continue
+        const dist = (hit - face) * sgn - half
+        if (dist >= -half) best = Math.min(best, Math.max(0, dist))
+      }
+    }
+    return best
+  }
+  const options = [
+    { alongX: true, sgn: 1 }, { alongX: true, sgn: -1 },
+    { alongX: false, sgn: 1 }, { alongX: false, sgn: -1 },
+  ]
+  let pick = options[0], most = -1
+  for (const o of options) {
+    const r = run(o.alongX, o.sgn)
+    if (r > most) { most = r; pick = o }
+  }
+  return pick
+}
+
 // fixtures rendered simply
 export function buildFixtures(M: Mats): THREE.Group {
   const g = new THREE.Group()
@@ -2267,14 +2337,10 @@ export function buildFixtures(M: Mats): THREE.Group {
       continue
     }
     // The fridge: a stainless French-door unit, two doors over a freezer drawer,
-    // long bar handles, dark gasket lines, facing the room.
+    // long bar handles, dark gasket lines, doors to the open side of the room.
     if (f.kind === 'fridge') {
       const H = 1900
-      const room = model.roomById.get(f.room)
-      const dx = (room?.centroid.x ?? f.at.x) - f.at.x
-      const dy = (room?.centroid.y ?? f.at.y) - f.at.y
-      const alongX = Math.abs(dx) >= Math.abs(dy)
-      const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+      const { alongX, sgn } = openFace(f)
       const body = box(w, H, d, M.steel)
       place(body, f.at.x, f.at.y, H / 2)
       g.add(body)
@@ -2308,11 +2374,7 @@ export function buildFixtures(M: Mats): THREE.Group {
     // A stacked washer and dryer: two machines, one on the other, doors to the room.
     if (f.kind === 'laundry') {
       const MACHINE = 850
-      const room = model.roomById.get(f.room)
-      const dx = (room?.centroid.x ?? f.at.x) - f.at.x
-      const dy = (room?.centroid.y ?? f.at.y) - f.at.y
-      const alongX = Math.abs(dx) >= Math.abs(dy)     // doors face the room
-      const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+      const { alongX, sgn } = openFace(f)              // doors on the open side
       for (let i = 0; i < 2; i++) {
         const body = box(w, MACHINE - 20, d, M.appliance)
         place(body, f.at.x, f.at.y, i * MACHINE + (MACHINE - 20) / 2)

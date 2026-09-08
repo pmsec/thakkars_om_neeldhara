@@ -27,8 +27,9 @@ What moved, and why
 
 * The service bay keeps only what physically fits between the ducts: the
   kitchen on its existing stack, the entry hall between the two lobby columns,
-  and help's room + WC in the mirrored bay.  Laundry and store move into the
-  two dry balconies, which is what they were built as.
+  and help's room + WC in the mirrored bay.  Laundry moves into the west dry
+  balcony, which is what it was built as; the east one is help's room's
+  store end.
 
 * The entry gallery is re-centred on the home's centreline at X 12240 and sits
   inside the 3220 clear between the lobby columns.  The two existing flat
@@ -198,8 +199,9 @@ ROOMS = [
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
     # is a free-standing drum and the two rooms run up to it.  See
     # retrofit.lobby_polys().
-    # GUEST / SERVICE WC, HELP'S ROOM and STORE are not rectangles either — the
-    # WC's apse cuts all three.  See retrofit.lobby_polys().
+    # GUEST / SERVICE WC and HELP'S ROOM (which the store is part of now) are
+    # not rectangles either — the WC's apse cuts both.  See
+    # retrofit.lobby_polys().
     # The two MASTER SUITES and their BATHS are not rectangles now either: the
     # sweep set out above is the boundary between each pair.  See
     # retrofit.suite_polys().
@@ -292,7 +294,9 @@ T_WC = 110
 WC_SPRING = WC_CX - WC_A           # 15000, on the great-room wall
 WC_DIE = WC_CY + WC_B              # 10200, on the east wall
 WC_DOOR = (0.42, 0.64)             # help's room's door, as a fraction of the arc
-STORE_W = 16800                    # the store's new west wall
+# There is no STORE_W any more: the wall between help's room and the store came
+# down after the walkability check, and the two are one room.  See the note
+# on the service-bay walls below.
 
 
 def wc_y(x):
@@ -361,13 +365,13 @@ NEW_WALLS = [
     # wall: below that the store runs straight through, so its old cross-wall
     # and the door in it are both gone.
     (M(7050 - 75), BAY_N, M(7050 - 75), 10255, T_INT, []),         # WC / duct
-    # The store's new west wall, from the apse down to the outer wall.  The
-    # store is entered from help's room through it — which is where a staff
-    # store should be entered from, rather than through the guest WC.
-    # The opening is hard against the apse rather than centred: the wall is only
-    # 893 long, and centring a door in it leaves two jambs too short to be
-    # anything.  The apse is one jamb, and what is left is a 190 return.
-    (STORE_W, wc_y(STORE_W) - 60, STORE_W, BAY_S, T_THIN, [(0, 700)]),
+    # THE WALL BETWEEN HELP'S ROOM AND THE STORE IS GONE.  With it up, help's
+    # room was a 4.4 m2 triangle with a 1025 west leg, and the 1900 bunk sat on
+    # the only floor in front of the WC door: a 700 body could not reach the
+    # WC or the store from the entry door, whatever the door types were.  With
+    # it down the two are one 6.7 m2 room, the bunk lies at the east end under
+    # the duct and the store's shelving becomes a cupboard in the duct's
+    # corner — and a 700 body reaches 90% of the floor and every door.
 
     # --- the absorbed lobby: new entrance wall on the building line, sitting
     #     in the 150 between the service bay and the building line.  One door,
@@ -1116,15 +1120,16 @@ _ONCE = [
     # The stacked washer and dryer, and nothing loose beside them: the laundry
     # basket and the dustbin that stood here came out after the walkthrough.
     ('appliance', 5755, 10375, 6355, 11025, 'washer + dryer, stacked'),
-    # --------------------------------------------------------- help\'s room
-    # The bunk turns and lies ALONG the south wall.  Standing it on end against
-    # the west wall left a 96 gap between its head and the apse — the apse
-    # leaves its springing vertically, so it hugs 15000 for the first half metre
-    # and there is nothing to be gained there.  Lying down, the bunk leaves the
-    # whole northern 1550 of the room clear, which is the walking space, and
-    # 755 past its foot to the store door.
-    ('bunk',     14090, 10075, 15990, 10975, 'bunk'),
-    ('shelves',  14090, 9425, 14690, 10025, 'cupboard'),
+    # ------------------------------------------ help\'s room (with the store)
+    # The bunk lies ALONG the south wall at the EAST end of the merged room,
+    # head against the east wall, under the secondary duct.  That is the end
+    # the old store was, and the end nothing has to be reached through: the
+    # entry door, the WC door and the whole triangle under the apse are all
+    # west of its foot at 16925, with 1550 of clear floor north of it.  The
+    # cupboard takes the store's old shelving and stands in the duct's corner,
+    # on the wall the bunk's head is against.
+    ('bunk',     16925, 10075, 18825, 10975, 'bunk'),
+    ('shelves',  18225, 9550, 18825, 10005, 'cupboard'),
     # ------------------------------------------------- guest / service WC
     # One WC, one small basin, one very small shower — and nothing else, which
     # is what an apse this size will take.  The shower is flush into the corner

@@ -326,8 +326,8 @@ BATHS = [
     ('The pans', 'All three WCs are drawn at true size — 680 × 390 mm '
          '(2′-3″ × 1′-3″), pan and cistern — as is every appliance in '
          'the house. What you see is what fits.'),
-    ('Service', 'Help’s room (4.4 m² / 47 sq ft) and the store (2.4 m² / '
-         '26 sq ft) sit off the gallery, with their own doors.'),
+    ('Service', 'Help’s room and its store are one room of 6.7 m² / 73 sq ft '
+         'off the gallery, with its own door; the bunk lies at the east end.'),
 ]
 
 TERRACES = [

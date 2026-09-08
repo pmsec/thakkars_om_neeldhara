@@ -166,7 +166,7 @@ def poly_rooms():
     The rectangular ones live in design.ROOMS; these are the two pods and the
     great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
-    kitchen, helps, gallery, wc, store = lobby_polys()
+    kitchen, helps, gallery, wc = lobby_polys()
     bath, suite = suite_polys()
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     suite_note = 'one room  ·  bed + dressing, joinery to be designed'
@@ -181,7 +181,6 @@ def poly_rooms():
         ("PARENTS' BATH", '', bath, bath_note, (3140, 7750)),
         ("KARAN'S BATH", '', mirror_poly(bath), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (16620, 9760)),
-        ('STORE', '', store, '', (18200, 10250)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         # not the mirror of the family room's anchor: that point is on the
         # drummer's throne, and the open north half is the sofa's now.  What is
@@ -193,7 +192,8 @@ def poly_rooms():
         ('KITCHEN', '', kitchen,
          'kitchen and utility as one room  ·  the dry balcony is its utility end',
          (8700, 9500)),
-        ("HELP'S ROOM", '', helps, '', (14780, 9150)),
+        ("HELP'S ROOM", '', helps, 'with the store  ·  one room',
+         (14780, 9150)),
         ('ENTRY GALLERY', '', gallery,
          'a U on the two columns  ·  3220 wide x 3260 deep  ·  '
          'semicircular apse, 230 throughout',
@@ -1537,7 +1537,7 @@ COL_N = D.COL_N               # top of the two 230 x 1800 gallery columns
 
 
 def lobby_polys():
-    """Kitchen, help's room and the entry gallery.
+    """Kitchen, help's room (with the store) and the entry gallery.
 
     The gallery is a U spanning column to column: two legs lining the columns,
     closed across the north by a semicircular apse springing off the top of
@@ -1550,7 +1550,6 @@ def lobby_polys():
     r, t = D.GAL_R, D.T_GAL
     ro, ri = D.GAL_RO, D.GAL_RI
     kw = 6900                              # far face of the kitchen
-    sw = D.STORE_W - D.T_THIN / 2          # store's west face, 16345
     iw, ie = D.GAL_W + t, D.GAL_E - t      # inner faces of the two legs
 
     # the kitchen now includes the builder's dry balcony — one room, one area,
@@ -1562,21 +1561,18 @@ def lobby_polys():
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
                + [(ie, COL_N), (ie, D.BAY_S)])
 
-    # Help's room and the store both run round the OUTSIDE of the WC's apse;
-    # the WC is what is left inside it.  Splitting the outside at the store's
-    # west face is what gives the two of them their curved wall each.
+    # Help's room runs round the whole OUTSIDE of the WC's apse and on under
+    # the secondary duct to the east wall — the store is part of it now, the
+    # wall that split the two having come down.  The WC is what is left inside
+    # the apse.  The duct's south-west corner is the notch at 17580 / 9550.
     out = wc_pts(D.T_WC / 2)
-    h_arc = [p for p in out if p[0] <= sw]
-    s_arc = [p for p in out if p[0] >= sw]
-    helps = ([h_arc[0]] + _gal_arc(ro, D._BN1, D._A1)
-             + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (sw, D.BAY_S),
-                (sw, h_arc[-1][1])] + list(reversed(h_arc)))
-    store = (s_arc + [(D.WC_CX, D.WC_DIE + D.T_WC / 2), (17580, 10255),
-                      (17580, 9550), (18825, 9550), (18825, D.BAY_S),
-                      (sw, D.BAY_S), (sw, s_arc[0][1])])
+    helps = ([out[0]] + _gal_arc(ro, D._BN1, D._A1)
+             + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (18825, D.BAY_S),
+                (18825, 9550), (17580, 9550), (17580, 10255)]
+             + list(reversed(out)))
     wc = ([(D.WC_CX, D.BAY_N), (D.WC_CX, D.WC_DIE - D.T_WC / 2)]
           + list(reversed(wc_pts(-D.T_WC / 2))))
-    return kitchen, helps, gallery, wc, store
+    return kitchen, helps, gallery, wc
 
 
 def arch_haunches():

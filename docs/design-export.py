@@ -995,6 +995,10 @@ def emit_furniture():
         if base in ('wc', 'shower', 'sink', 'hob', 'under', 'appliance',
                     'magic'):
             continue                      # plumbed / fitted: fixtures.ts
+        # The 'shelves' symbol on the hatch line draws the HATCH, not a piece of
+        # furniture: the opening is in the wall and the sash lives in 3D there.
+        if base == 'shelves' and 'hatch' in (lab or '').lower():
+            continue
         # The deck's real grass and the planted strip inside the parapet are
         # DRAWN — so they exist in 3D too, as ground-level items.
         if base == 'grass':
@@ -1180,6 +1184,8 @@ def emit_furniture():
         'The terrace tree — real, in real grass', 2500)
     add('tree', mx(1200) - 350, 600 - 350, 700, 700, 'R-K-TERRACE',
         'The terrace tree — real, in real grass', 2500)
+    # the laundry basket in the utility bay, between the fridge and the stack
+    add('basket', 6467, 10555, 420, 420, 'R-KITCHEN', 'Laundry basket, woven', 560)
     # the great-room tree stands in its planter box: lifted to the soil line
     add('tree', 10123 - 450, 5087 - 450, 900, 900, 'R-GREAT',
         'The tree in the planter box off the sofa’s end', 2400, lift=400)
@@ -1234,7 +1240,7 @@ def emit_furniture():
     A("  | 'sofa' | 'bed' | 'daybed' | 'armchair' | 'table' | 'console'")
     A("  | 'bench' | 'stool' | 'lounger' | 'rug' | 'plant' | 'tree'")
     A("  | 'shelves' | 'dining' | 'chair' | 'drumkit' | 'guitar' | 'stair'")
-    A("  | 'wardrobe' | 'planter' | 'grass' | 'screen' | 'tv'")
+    A("  | 'wardrobe' | 'planter' | 'grass' | 'screen' | 'tv' | 'basket'")
     A('')
     A('export interface FurnitureItem {')
     A('  id: string')

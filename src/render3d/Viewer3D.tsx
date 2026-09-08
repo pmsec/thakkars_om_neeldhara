@@ -972,6 +972,9 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
     case 'planter':
       box(w, f.height || 300, d, MAT.pot, 0, (f.height || 300) / 2, 0)
       break
+    case 'basket':
+      cyl(Math.min(w, d) / 2 - 10, Math.min(f.height, 620), MAT.furniture, 0, Math.min(f.height, 620) / 2, 0, 18)
+      break
     case 'drumkit':
       cyl(Math.min(w, d) * 0.28, 500, MAT.furniture, 0, 250, d * 0.1, 20)
       cyl(190, 300, MAT.furniture, -w * 0.26, 620, -d * 0.1, 16)

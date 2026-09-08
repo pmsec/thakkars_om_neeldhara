@@ -1278,6 +1278,36 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       place(g, cx, cy)
       return g
     }
+    case 'basket': {
+      // a woven laundry basket: a jute drum with a rolled rim, two rope handles
+      // and a folded linen towel over the edge
+      const r = Math.min(w, d) / 2 - 10
+      const H = Math.min(f.height, 620)
+      const drum = new THREE.Mesh(new THREE.CylinderGeometry(r * S, (r - 30) * S, H * S, 22, 1, true), M.fabricDark)
+      ;(drum.material as THREE.Material).side = THREE.DoubleSide
+      drum.position.y = (H / 2) * S
+      drum.castShadow = true
+      g.add(drum)
+      const base = new THREE.Mesh(new THREE.CircleGeometry((r - 30) * S, 22), M.fabricDark)
+      base.rotation.x = -Math.PI / 2
+      base.position.y = 2 * S
+      g.add(base)
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(r * S, 16 * S, 8, 28), M.fabric)
+      rim.rotation.x = Math.PI / 2
+      rim.position.y = H * S
+      g.add(rim)
+      for (const sgn of [-1, 1]) {
+        const handle = new THREE.Mesh(new THREE.TorusGeometry(60 * S, 9 * S, 6, 14, Math.PI), M.fabric)
+        handle.position.set(sgn * (r - 4) * S, (H - 120) * S, 0)
+        handle.rotation.y = sgn * Math.PI / 2
+        g.add(handle)
+      }
+      const towel = box(r * 1.1, 36, r * 0.7, M.duvet, -r * 0.25, H + 14, r * 0.15)
+      towel.rotation.y = 0.3
+      g.add(towel)
+      place(g, cx, cy)
+      return g
+    }
     case 'plant': {
       const pot = new THREE.Mesh(
         new THREE.CylinderGeometry(Math.min(w, d) * 0.32 * S, Math.min(w, d) * 0.26 * S, 340 * S, 12),
@@ -1624,6 +1654,64 @@ function podPortalDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       // the head track the leaves hang from: a slim walnut channel over the
       // whole travel, both states, so the open leaves have something to ride on
       piece(Math.max(0, centre - 2 * leafW - 20), Math.min(total, centre + 2 * leafW + 20), H + 10, H + 50, M.walnut, LEAF_T + 16)
+    }
+  }
+  return g
+}
+
+/**
+ * The serving hatch between the kitchen and the family room, closed with a
+ * partition: the upper half a walnut panel filling the wall's thickness, the
+ * lower half a sash of brown tinted glass in a slim walnut frame that rides
+ * in two guides on the kitchen face and LIFTS to open - shut it fills the
+ * lower half, open it sits up in front of the walnut panel and the counter
+ * is clear to pass food through. Follows the Doors switch.
+ */
+function hatchSash(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  for (const w of model.walls) {
+    for (const op of w.openings) {
+      if (!/hatch/i.test(op.label ?? '') || op.type !== 'window') continue
+      const sill = op.sill ?? 900
+      const head = op.head ?? 2100
+      const half = (head - sill) / 2
+      const a = w.points[0], b = w.points[w.points.length - 1]
+      const L = Math.hypot(b.x - a.x, b.y - a.y) || 1
+      const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L
+      // the kitchen face: the wall's normal that points at the kitchen
+      const kit = model.roomById.get('R-KITCHEN')
+      let nx = -uy, ny = ux
+      if (kit && (kit.centroid.x - op.mid.x) * nx + (kit.centroid.y - op.mid.y) * ny < 0) { nx = -nx; ny = -ny }
+      const ang = Math.atan2(ux, uy)
+      const at = (along: number, out: number, h: number, m: THREE.Object3D) => {
+        const px = a.x + ux * along + nx * out, py = a.y + uy * along + ny * out
+        m.position.set(px * S, h * S, py * S)
+        m.rotation.y = ang
+        g.add(m)
+      }
+      const mid = (op.from + op.to) / 2
+      const width = op.to - op.from
+      // the upper half: a walnut panel filling the wall's thickness
+      at(mid, 0, sill + half + half / 2, box(w.thickness - 4, half, width - 4, M.walnut))
+      // the sash: tinted glass in a walnut frame, 20 off the kitchen face
+      const out = w.thickness / 2 + 22
+      const lift = mode === 'open' ? half - 20 : 0
+      const sashMid = sill + half / 2 + lift
+      const glass = box(10, half - 60, width - 100, M.tintGlass)
+      at(mid, out, sashMid, glass)
+      const FR = 34
+      at(mid, out, sill + lift + FR / 2, box(24, FR, width - 40, M.walnut))                     // bottom rail
+      at(mid, out, sill + lift + half - FR / 2, box(24, FR, width - 40, M.walnut))              // top rail
+      at(op.from + 20 + FR / 2, out, sashMid, box(24, half, FR, M.walnut))                       // stiles
+      at(op.to - 20 - FR / 2, out, sashMid, box(24, half, FR, M.walnut))
+      // a brass lift bar along the top rail
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(7 * S, 7 * S, (width - 260) * S, 8), M.brass)
+      bar.rotation.x = Math.PI / 2
+      at(mid, out + 22, sill + lift + half - 40, bar)
+      // the guides the sash rides in, at each jamb on the kitchen face, sill to head
+      for (const along of [op.from + 8, op.to - 8]) {
+        at(along, out, (sill + head) / 2, box(34, head - sill + 40, 16, M.walnut))
+      }
     }
   }
   return g
@@ -2726,6 +2814,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(podDoorGroup(M, mode))
     set.add(hingedDoors(M, mode))
     set.add(podPortalDoors(M, mode))
+    set.add(hatchSash(M, mode))
     root.add(set)
   }
   const bedDown = wallBedDown(M)

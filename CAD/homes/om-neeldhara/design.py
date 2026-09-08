@@ -186,6 +186,10 @@ TAB_W, TAB_D, TAB_GAP = 550, 450, 50
 ROOMS = [
     ("TERRACE", "PARENTS", [(-350, 0, SUITE_W_E, 1200)],
      "real grass under a high glass roof", (1200, 1980)),
+    # The parents' corner WC: inside the two new walls, the shaft's south
+    # wall and the pod line.  The column at 4300-4405 is a pier in it.
+    ("PARENTS' WC", "", [(2900, 1350, 4405, 2495)],
+     "", (3600, 2230)),
     # Karan's terrace is furnished now — bench, two singles and a table — and
     # the middle of it is exactly where the table is.  The label drops into the
     # gap between the bench and the bed instead, and loses its note to fit.
@@ -331,6 +335,22 @@ NEW_WALLS = [
     # wall the pan sits on because the soil stack is directly behind it.
     (MB_XE + T_INT / 2, BATH_N, MB_XE + T_INT / 2, WING_S, T_INT, []),
     (M(MB_XE + T_INT / 2), BATH_N, M(MB_XE + T_INT / 2), WING_S, T_INT, []),
+
+    # --- THE PARENTS' CORNER WC, where the study desk was.  Two new walls
+    #     close the suite's north-east corner.  The west wall stands on the
+    #     sealed shaft's west wall line (2750-2900) and runs from the shaft's
+    #     south wall down to the WC's south wall; the south wall runs from it
+    #     to the pod line with its SOUTH FACE on Y 2620 — the north jamb of the
+    #     pod's sliding partition — so the WC takes nothing off that opening.
+    #     The door is a 700 sliding leaf in the south wall, X 2950-3650,
+    #     running east along the wall's outside.  The builder's 230 x 1200
+    #     column at X 4300-4530 / Y 1200-2400 is the WC's east side above
+    #     2400, and the pan backs on to it.  The soil goes into the sealed
+    #     shaft directly north — a new drop, to be confirmed against the
+    #     plumbing drawings.  PARENTS' SIDE ONLY: Karan's corner keeps its
+    #     plant, and nothing here is mirrored.
+    (2825, 1275, 2825, 2557.5, T_INT, []),
+    (2750, 2557.5, STRIP_W1 + 62, 2557.5, 125, [(200, 900)]),
 
     # --- suite <-> pod, the 125 line between the two.  The 1050 slider is a
     #     gap left in this wall; it is not a hole cut in anything.
@@ -559,27 +579,21 @@ GLAZING = [
 _ONCE = [
     # ------------------------- the PARENTS' suite, in two zones
     # THE OLD WEST-WALL CUPBOARD RUN IS GONE.  The west wall now carries the
-    # parents' bed at the north end and the grandmother's wall bed at the south,
-    # and the cupboards move on to the partition between them.
+    # parents' bed at the north end and the grandmother's wall bed at the south.
+    # The cupboards that moved on to the partition between them are gone too:
+    # the parents' hanging space is the full-height cupboard on the bath's
+    # arch (retrofit.arch_console_par), and the partition is glass end to end.
     #
-    # ------------------------- the STUDY DESK, in the bedroom's north-east corner
-    # Karan's father's desk, in the one corner of the suite that has two solid
-    # walls and nothing else wanting them: the sealed shaft's south wall above
-    # it at Y 1350, and the pod wall on its east at X 4405.  Both are blank —
-    # the terrace slider stops at X 2750 and the pod's own opening does not
-    # start until Y 2620 — so an L of desk fits into the corner without taking
-    # a window, a door or a route.
-    #
-    # CABINETS OVER, drawn dashed because they are over and not in plan: 350
-    # deep, the full length of both legs, hung above the working surface.
-    #
-    # The east leg stops at Y 2620, dead on the north jamb of the pod's sliding
-    # partition, so the desk never stands in that opening.
-    ('counter',   3005, 1350, 4405, 1950, "study desk  ·  1400 x 600"),
-    ('counter',   3805, 1950, 4405, 2620, "study desk, return  ·  600 x 670"),
-    ('under',     3005, 1350, 4405, 1700, "cabinets over  ·  350 deep"),
-    ('under',     3805, 1950, 4155, 2620, "cabinets over  ·  350 deep"),
-    ('swivel',    3155, 2030, 3705, 2580, "desk chair  ·  550, swivel"),
+    # ------------------------- the CORNER WC, in the bedroom's north-east corner
+    # THE STUDY DESK IS GONE.  The corner it stood in — the sealed shaft's
+    # south wall above, the pod wall (and the builder's column in front of it)
+    # to the east, the terrace slider stopping at X 2750 and the pod's opening
+    # not starting until Y 2620 — is walled off as a small WC for the parents:
+    # 1400 x 1145 inside, pan and basin, nothing else.  See the two walls in
+    # NEW_WALLS.  The pan backs on to the column's face at X 4300 with 700 in
+    # front of it; the basin is on the shaft wall by the door, 450 x 350.
+    ('wc-e',      3620, 1730, 4300, 2120, ''),                  # 680 x 390
+    ('basin',     2900, 1350, 3350, 1700, "basin  ·  450 x 350"),
 
     # THE PARENTS' BED IS KARAN'S BED MIRRORED — the same bed, the same
     # headboard treatment, the same side tables, handed the other way so the
@@ -606,39 +620,33 @@ _ONCE = [
     ('counter-r', -250, 2047, 200, 2597, "side table  ·  550 x 450"),
     ('counter-r', -250, 4627, 200, 5177, "side table  ·  550 x 450"),
 
-    # ------------------------- THE PARTITION: JOINERY, THEN TINTED GLASS
-    # It is not a masonry wall any more.  The line is the same — its north face
-    # lands on Y 5875, which is exactly the crown of the bath's arch, the
-    # northernmost point that sweep reaches — but it is now built of two things,
-    # and the door problem disappears with the wall.
+    # ------------------------- THE PARTITION: TINTED GLASS, END TO END
+    # It is not a masonry wall, and it is not joinery any more either.  The
+    # line is the same — its north face lands on Y 5875, which is exactly the
+    # crown of the bath's arch, the northernmost point that sweep reaches —
+    # but THE CUPBOARD BLOCK IS GONE, and the whole 3182 from the west wall to
+    # the arch is BROWN TINTED GLASS, the same glass as Karan's dressing
+    # screen and the serving hatch.
     #
-    #   X -450 to 1400   a full-height joinery block, 720 deep
-    #   X 1400 to 2732   BROWN TINTED GLASS, the same as Karan's dressing screen
+    # THE GLASS IS THE DOOR.  Two leaves of 1591 on a double track — one on
+    # the north track, one on the south — so either slides behind the other
+    # and half the line is open at a time.  No pocket, because there is no
+    # cupboard to pocket into; bypass leaves need none.  Nothing swings, so
+    # nothing can foul the arch.
     #
-    # THE GLASS IS THE DOOR.  One leaf, 1332, sliding west into a pocket formed
-    # in the BACK of the cupboards — the block is 720 deep because it is a 120
-    # cavity in front of a 600 cupboard, not a 720 cupboard.  Nothing swings, so
-    # nothing can foul the arch: the first version had a 900 hinged leaf that
-    # struck the sweep 161 short of closing, and a 321 stub of wall left over
-    # beside it that did no work.
+    # Shut, the two zones are separately heatable, which is the whole reason
+    # the partition exists.  Open, the suite reads as one room through the
+    # tint.
     #
-    # Shut, the two zones are separately heatable, which is the whole reason the
-    # partition exists.  Open, the leaf is inside the cupboards and the suite is
-    # one room again.
-    #
-    # The glass dies into the arch at X 2732, where the sweep's outer face comes
-    # back to the partition's own south face at Y 5995.  It is scribed to the
-    # curve; there is no gap to see or feel air through.
-    #
-    # ABOVE THE CUPBOARDS IT IS GLASS TOO — tinted from 2100 up to the ceiling,
-    # the whole length, exactly as Karan's screen is wood below and glass above.
-    # Solid to the ceiling would make the dressing zone a cell.
-    ('joinery',   -450, 5875, 1400, 5995,
-     "sliding pocket  ·  120, in the back of the cupboards"),
-    ('hanging',   -450, 5995, 1400, 6595, "cupboards  ·  1850 x 600, sliding"),
-    ('tint',      1400, 5875, 2732, 5995,
-     "sliding screen  ·  brown tinted glass, 1332, shown SHUT"),
-    ('under',     68, 5875, 1400, 5995, "the same leaf open, pocketed"),
+    # The glass dies into the arch at X 2732, where the sweep's outer face
+    # comes back to the partition's own south face at Y 5995, and the south
+    # leaf shuts against the end of the arch cupboard there.  It is scribed to
+    # the curve; there is no gap to see or feel air through.  Tinted from the
+    # floor to the ceiling, the whole length.
+    ('tint',      -450, 5875, 1141, 5935,
+     "sliding screen  ·  brown tinted glass, leaf 1 of 2, 1591, north track"),
+    ('tint',      1141, 5935, 2732, 5995,
+     "sliding screen  ·  brown tinted glass, leaf 2 of 2, 1591, south track"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN

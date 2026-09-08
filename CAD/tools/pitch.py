@@ -284,11 +284,15 @@ DEN = [
 PARENTS = [
     ('', 'The west wing: 32.5 m² (350 sq ft) in two zones — bed to the '
          'north, dressing to the south — split by a sliding partition.'),
-    ('The partition', 'A joinery block plus a 1332 mm (4′-4″) leaf of '
-         'brown tinted glass. The leaf slides into a 120 mm (5″) pocket '
-         'built into the BACK of the cupboards: shut, two rooms that heat '
-         'separately; open, one suite. Nothing swings, so nothing fouls '
-         'the bath’s arch.'),
+    ('The partition', 'Brown tinted glass end to end: two bypass leaves of '
+         '1591 mm (5′-3″) on a double track, no cupboard block and no '
+         'pocket. Shut, two rooms that heat separately; open, one suite '
+         'through the tint. Nothing swings, so nothing fouls the bath’s '
+         'arch. The parents’ clothes hang in a full-height cupboard curled '
+         'round the outside of that arch.'),
+    ('The corner WC', 'Where the study desk was, in the north-east corner: '
+         '1400 × 1145 mm (4′-7″ × 3′-9″) inside, pan and basin, a 700 mm '
+         '(2′-4″) sliding door, draining to the sealed shaft beside it.'),
     ('The wall bed', 'The grandmother’s Murphy bed: a 400 mm (1′-4″) deep '
          'cabinet that is simply furniture 51 weeks a year — and folds '
          'down to a true QUEEN, 1500 × 2000 mm (4′-11″ × 6′-7″), when she '

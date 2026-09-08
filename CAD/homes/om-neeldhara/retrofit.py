@@ -168,13 +168,17 @@ def poly_rooms():
     fam, den, great = pod_polys()
     kitchen, helps, gallery, wc = lobby_polys()
     bath, suite = suite_polys()
+    # The parents' suite loses its north-east corner to the corner WC: the
+    # notch is the WC's west wall face at 2750 and its south face at 2620.
+    # Karan's suite is the un-notched mirror — his corner keeps its plant.
+    par = [suite[0], (2750, 1350), (2750, 2620), (D.MB_XE, 2620)] + suite[2:]
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     suite_note = 'one room  ·  bed + dressing, joinery to be designed'
-    par_note = ('two zones  ·  bed north of the partition, '
-                'dressing + wall bed south of it')
+    par_note = ('two zones  ·  bed north of the glass, '
+                'dressing + wall bed south of it  ·  corner WC')
     bath_note = 'arched wall  ·  1930 clear'
     return [
-        ('MASTER SUITE', 'PARENTS', suite, par_note, (3100, 3500)),
+        ('MASTER SUITE', 'PARENTS', par, par_note, (3100, 3500)),
         # not the mirror of the parents' anchor any more: that point is inside
         # Karan's bed.  His label sits in the open floor west of it.
         ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note, (21300, 4400)),
@@ -434,7 +438,11 @@ def arch_console(dep=400, dep_end=250, n=140, over=900, over_d=250,
 
 def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42,
                      u_a=0.264, u_b=0.618):
-    """The parents' version of the same curl round the bath's arch.
+    """The parents' version of the same curl round the bath's arch — and it is
+    a FULL-HEIGHT CUPBOARD, not a console: the same footprint, struck the same
+    way, but carried to the ceiling, because the hanging cupboards that stood
+    on the partition are gone and this is where the parents' clothes hang now.
+    On plan it is the same solid; in section it is 2300 of doors on the curve.
 
     Karan's runs the whole sweep and dies into his dressing screen at Y 7675.
     This one is CUT BY THE SLIDING SCREEN that divides the parents from the

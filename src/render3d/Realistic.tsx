@@ -1849,7 +1849,12 @@ function tieredFountain(M: Mats, F: { x: number; y: number; r: number }): THREE.
  * Derived from the drum's own geometry — the arc wall's circumcentre and radius,
  * the portal's chord for its extent — so they cannot drift from the plan.
  */
-function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | null {
+/**
+ * The entry drum as a circle: its centre and radius from three points on the
+ * arc wall, and the portal's angular extent from its chord. Shared by the
+ * curved doors and the sconces beside them, so both sit on the same wall.
+ */
+function entryDrum(): { C: { x: number; y: number }; Rwall: number; wallT: number; a0: number; a1: number } | null {
   const walls = model.data.walls
   const chord = walls.find((w) => w.openings?.some((o) => o.id === 'D-GAL-N'))
   const arc = walls.find((w) => w.id === 'W-GAL-ARC-1')
@@ -1872,9 +1877,92 @@ function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | nul
   if (a1 - a0 > Math.PI) a1 -= 2 * Math.PI
   if (a0 - a1 > Math.PI) a0 -= 2 * Math.PI
   if (a1 < a0) [a0, a1] = [a1, a0]
+  return { C, Rwall, wallT: arc.thickness || 230, a0, a1 }
+}
+
+/**
+ * A pair of classic wall lamps on the drum, one either side of the curved
+ * doors, on the entry side: an oval brass backplate, a swept brass arm and a
+ * frosted glass bell that glows warm, with a real light in it. Set 900 mm out
+ * from each jamb along the arc, which keeps them clear of the leaves when the
+ * doors slide open (each leaf runs 527 mm past its jamb).
+ */
+function entrySconces(M: Mats): THREE.Group | null {
+  const drum = entryDrum()
+  if (!drum) return null
+  const { C, Rwall, wallT, a0, a1 } = drum
+  const Ri = Rwall - wallT / 2                     // the drum's inner face
+  const OFF = 900 / Ri                             // 900 mm along the arc, past the jamb
+  const MOUNT = 1750                               // backplate centre above the floor
+  const shadeMat = new THREE.MeshStandardMaterial({
+    color: 0xfff0d2, emissive: 0xffc26a, emissiveIntensity: 0.9, roughness: 0.55,
+    transparent: true, opacity: 0.88, side: THREE.DoubleSide,
+  })
+  const g = new THREE.Group()
+  for (const a of [a0 - OFF, a1 + OFF]) {
+    const lamp = new THREE.Group()
+    // local frame: the backplate in the XY plane, +z out from the wall into the room
+    // a tall oval: the disc's axis turned to +z, then stretched along what is now up
+    const plate = new THREE.Mesh(new THREE.CylinderGeometry(55 * S, 55 * S, 10 * S, 32), M.brass)
+    plate.rotation.x = Math.PI / 2
+    plate.scale.set(1, 1, 1.6)
+    plate.position.z = 5 * S
+    lamp.add(plate)
+    const boss = new THREE.Mesh(new THREE.SphereGeometry(22 * S, 16, 12), M.brass)
+    boss.position.z = 12 * S
+    lamp.add(boss)
+    // the arm: a swept tube from the boss, out and up to the shade
+    const path = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(0, 0, 12 * S),
+      new THREE.Vector3(0, -30 * S, 150 * S),
+      new THREE.Vector3(0, 110 * S, 190 * S),
+    )
+    const arm = new THREE.Mesh(new THREE.TubeGeometry(path, 24, 7 * S, 10, false), M.brass)
+    arm.castShadow = true
+    lamp.add(arm)
+    // the cup the shade hangs from, and a ring where glass meets brass
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(18 * S, 34 * S, 42 * S, 20), M.brass)
+    cup.position.set(0, 128 * S, 190 * S)
+    lamp.add(cup)
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(36 * S, 5 * S, 8, 28), M.brass)
+    ring.rotation.x = Math.PI / 2
+    ring.position.set(0, 108 * S, 190 * S)
+    lamp.add(ring)
+    // the bell: a lathe of frosted glass, its mouth downward, flaring out as it drops
+    const profile = [
+      [30, 0], [36, -20], [48, -60], [62, -110], [76, -160], [88, -205], [94, -235], [90, -250],
+    ].map(([r, y]) => new THREE.Vector2(r * S, y * S))
+    const bell = new THREE.Mesh(new THREE.LatheGeometry(profile, 36), shadeMat)
+    bell.position.set(0, 108 * S, 190 * S)
+    lamp.add(bell)
+    // the lamp inside, and the light it throws
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(20 * S, 14, 10), M.lamp)
+    bulb.position.set(0, -20 * S, 190 * S)
+    lamp.add(bulb)
+    const light = new THREE.PointLight(0xffd39a, 1.15, 3.6, 1.7)
+    light.position.set(0, -30 * S, 200 * S)
+    lamp.add(light)
+    // a soft pool on the wall above the bell, the way a bell shade throws it
+    const up = new THREE.SpotLight(0xffd8a8, 0.6, 2.4, Math.PI / 3, 0.8, 1.5)
+    up.position.set(0, 60 * S, 190 * S)
+    up.target.position.set(0, 700 * S, 40 * S)
+    lamp.add(up, up.target)
+
+    // onto the wall: +z must point from the wall face toward the drum's centre
+    const yaw = Math.atan2(-Math.cos(a), -Math.sin(a))
+    lamp.rotation.y = yaw
+    lamp.position.set((C.x + Ri * Math.cos(a)) * S, MOUNT * S, (C.y + Ri * Math.sin(a)) * S)
+    g.add(lamp)
+  }
+  return g
+}
+
+function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | null {
+  const drum = entryDrum()
+  if (!drum) return null
+  const { C, Rwall, wallT, a0, a1 } = drum
 
   // The leaves slide just inside the drum's inner face.
-  const wallT = arc.thickness || 230
   const R = Rwall - wallT / 2 - 40
   const LEAF_T = 45
   // the leaves run the full height of the drum: wall head to floor, less a clearance
@@ -2064,6 +2152,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(kitchenOverheads(M))
   const painting = entryPainting(M)
   if (painting) root.add(painting)
+  const sconces = entrySconces(M)
+  if (sconces) root.add(sconces)
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

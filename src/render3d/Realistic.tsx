@@ -855,6 +855,38 @@ export function buildFixtures(M: Mats): THREE.Group {
       }
       continue
     }
+    // A stacked washer and dryer: two machines, one on the other, doors to the room.
+    if (f.kind === 'laundry') {
+      const MACHINE = 850
+      const room = model.roomById.get(f.room)
+      const dx = (room?.centroid.x ?? f.at.x) - f.at.x
+      const dy = (room?.centroid.y ?? f.at.y) - f.at.y
+      const alongX = Math.abs(dx) >= Math.abs(dy)     // doors face the room
+      const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+      for (let i = 0; i < 2; i++) {
+        const body = box(w, MACHINE - 20, d, M.appliance)
+        place(body, f.at.x, f.at.y, i * MACHINE + (MACHINE - 20) / 2)
+        g.add(body)
+        // control strip along the top edge of the front, and the round porthole door
+        const strip = box(alongX ? 30 : w - 80, 70, alongX ? d - 80 : 30, M.metal)
+        place(strip, f.at.x + (alongX ? sgn * (w / 2 - 5) : 0), f.at.y + (alongX ? 0 : sgn * (d / 2 - 5)),
+          i * MACHINE + MACHINE - 90)
+        g.add(strip)
+        const r = Math.min(w, d) * 0.36
+        const door = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, 30 * S, 28), M.metal)
+        const glass = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.78 * S, r * 0.78 * S, 34 * S, 28), M.tintGlass)
+        for (const m of [door, glass]) {
+          m.rotation.z = alongX ? Math.PI / 2 : 0
+          m.rotation.x = alongX ? 0 : Math.PI / 2
+          m.position.set(
+            (f.at.x + (alongX ? sgn * (w / 2 + 10) : 0)) * S,
+            (i * MACHINE + MACHINE * 0.46) * S,
+            (f.at.y + (alongX ? 0 : sgn * (d / 2 + 10))) * S)
+          g.add(m)
+        }
+      }
+      continue
+    }
     const mat = f.kind === 'counter' || f.kind === 'basin' ? M.timber
       : f.kind === 'wc' ? M.marble : M.appliance
     const m = box(w, h, d, mat, 0, (f.kind === 'counter' || f.kind === 'basin' ? h / 2 : h / 2), 0)

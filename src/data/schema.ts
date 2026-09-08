@@ -110,6 +110,8 @@ export type FixtureKind =
   | 'dryer'
   | 'hob'
   | 'fridge'
+  /** A washer with a dryer stacked on it: one footprint, two machines. */
+  | 'laundry'
   | 'counter'
 
 export interface FixtureDef {

@@ -772,8 +772,12 @@ def emit_fixtures():
                 add(f'FX-DW-{len(fx)}', 'washer', cx, cy, c - a, d - b, 'R-KITCHEN',
                     'STK-KITCHEN', 'Integrated dishwasher')
         elif base == 'appliance':
-            add(f'FX-FR-{len(fx)}', 'fridge', cx, cy, c - a, d - b, 'R-KITCHEN',
-                None, 'Tall fridge')
+            if 'washer' in (lab or '').lower() or 'dryer' in (lab or '').lower():
+                add(f'FX-LDRY-{len(fx)}', 'laundry', cx, cy, c - a, d - b,
+                    'R-KITCHEN', 'STK-KITCHEN', 'Washer and dryer, stacked')
+            else:
+                add(f'FX-FR-{len(fx)}', 'fridge', cx, cy, c - a, d - b,
+                    'R-KITCHEN', None, 'Tall fridge')
 
     # the kitchen's counter runs, each with its TRUE drawn polygon — the runs
     # turn corners and end on curves, and each ships the shape the sheet

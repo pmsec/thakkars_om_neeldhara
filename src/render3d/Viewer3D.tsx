@@ -413,7 +413,7 @@ export function Viewer3D({ compact = false }: { compact?: boolean }): React.Reac
       // amount of depth precision can break that tie, so it stipples. A couple of
       // millimetres of stagger resolves it and is far below any dimension that matters.
       const base = f.kind === 'counter' ? 900 : f.kind === 'fridge' ? 1900
-        : f.kind === 'wc' ? 420 : 800
+        : f.kind === 'laundry' ? 1700 : f.kind === 'wc' ? 420 : 800
       const h = base + (i % 5) * 2
       const geo = new THREE.BoxGeometry(f.size[0] * S, h * S, f.size[1] * S)
       const mat = MAT.furniture.clone()

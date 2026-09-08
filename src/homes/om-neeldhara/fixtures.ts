@@ -10,7 +10,7 @@ export const fixtures: FixtureDef[] = [
   { id: 'FX-DW-1', kind: 'washer', at: { x: 8800, y: 10675 }, size: [600, 570], room: 'R-KITCHEN', stack: 'STK-KITCHEN', label: 'Integrated dishwasher' },
   { id: 'FX-HOB-2', kind: 'hob', at: { x: 8800, y: 10675 }, size: [600, 510], room: 'R-KITCHEN', label: 'Hob, 600 × 510' },
   { id: 'FX-FR-3', kind: 'fridge', at: { x: 7400, y: 10625 }, size: [800, 700], room: 'R-KITCHEN', label: 'Tall fridge' },
-  { id: 'FX-FR-4', kind: 'fridge', at: { x: 6055, y: 10700 }, size: [600, 650], room: 'R-KITCHEN', label: 'Tall fridge' },
+  { id: 'FX-LDRY-4', kind: 'laundry', at: { x: 6055, y: 10700 }, size: [600, 650], room: 'R-KITCHEN', stack: 'STK-KITCHEN', label: 'Washer and dryer, stacked' },
   { id: 'FX-SH-5', kind: 'shower', at: { x: 16980, y: 8875 }, size: [900, 900], room: 'R-GUEST-BATH', stack: 'STK-GUEST', label: 'Shower' },
   { id: 'FX-WC-6', kind: 'wc', at: { x: 17090, y: 9625 }, size: [680, 390], room: 'R-GUEST-BATH', stack: 'STK-GUEST', label: 'WC' },
   { id: 'FX-WC-7', kind: 'wc', at: { x: 4065, y: 7820 }, size: [680, 390], room: 'R-P-BATH', stack: 'STK-P-BATH', label: 'WC' },

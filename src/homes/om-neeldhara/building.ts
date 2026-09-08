@@ -774,7 +774,7 @@ export const building: BuildingData = {
     { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3704.031, y: 7795.301 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'Mirror of STK-P-BATH about x = 12240.' },
     { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 16467.88, y: 9158.813 }, room: 'R-GUEST-BATH', provenance: 'On the builder’s common-toilet zone beside the secondary duct.' },
-    { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 8580, y: 9750 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
+    { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7738.333, y: 10066.667 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],
 
   glassRoofs: [

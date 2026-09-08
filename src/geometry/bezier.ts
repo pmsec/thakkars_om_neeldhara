@@ -9,11 +9,24 @@ import { dist } from './vec'
 export interface QuadBezier {
   p0: Pt
   p1: Pt
+  /**
+   * Optional second control point. With it the curve is CUBIC (p0, p1, p1b, p2):
+   * the bellied vault needs one, so it can rise near-vertically off its parapet,
+   * bulge well out and round over before landing, which no single control can
+   * give. Without it the curve is the quadratic it always was.
+   */
+  p1b?: Pt
   p2: Pt
 }
 
 export function bezierAt(b: QuadBezier, t: number): Pt {
   const u = 1 - t
+  if (b.p1b) {
+    return {
+      x: u * u * u * b.p0.x + 3 * u * u * t * b.p1.x + 3 * u * t * t * b.p1b.x + t * t * t * b.p2.x,
+      y: u * u * u * b.p0.y + 3 * u * u * t * b.p1.y + 3 * u * t * t * b.p1b.y + t * t * t * b.p2.y,
+    }
+  }
   return {
     x: u * u * b.p0.x + 2 * u * t * b.p1.x + t * t * b.p2.x,
     y: u * u * b.p0.y + 2 * u * t * b.p1.y + t * t * b.p2.y,
@@ -22,9 +35,16 @@ export function bezierAt(b: QuadBezier, t: number): Pt {
 
 /** First derivative — used for arch springing normals and for 3D mullion orientation. */
 export function bezierTangent(b: QuadBezier, t: number): Pt {
+  const u = 1 - t
+  if (b.p1b) {
+    return {
+      x: 3 * u * u * (b.p1.x - b.p0.x) + 6 * u * t * (b.p1b.x - b.p1.x) + 3 * t * t * (b.p2.x - b.p1b.x),
+      y: 3 * u * u * (b.p1.y - b.p0.y) + 6 * u * t * (b.p1b.y - b.p1.y) + 3 * t * t * (b.p2.y - b.p1b.y),
+    }
+  }
   return {
-    x: 2 * (1 - t) * (b.p1.x - b.p0.x) + 2 * t * (b.p2.x - b.p1.x),
-    y: 2 * (1 - t) * (b.p1.y - b.p0.y) + 2 * t * (b.p2.y - b.p1.y),
+    x: 2 * u * (b.p1.x - b.p0.x) + 2 * t * (b.p2.x - b.p1.x),
+    y: 2 * u * (b.p1.y - b.p0.y) + 2 * t * (b.p2.y - b.p1.y),
   }
 }
 

@@ -336,7 +336,7 @@ def pod_wall(P, portal, wid, label, y_end):
     a, b = s_at(portal[0]), s_at(portal[1])
     return w(wid, line, 150, 'curved-glass',
              [op(wid.replace('W-', 'PORTAL-'), 'arch', a, b, head=2400,
-                 label='Arched portal — always open')],
+                 label='Arched portal — a pair of curved glass leaves slide on the screen')],
              label=label, glass='tinted')
 
 
@@ -484,31 +484,39 @@ STACKS = [
 # The bellied glass. ONE vault over the whole north front, terrace to terrace:
 # it used to be three (the deck and a shallower one over each terrace, with a
 # gap over each shaft between them) and the owner wants one belly, bedroom to
-# bedroom. The section is ABSOLUTE (model y, height): it springs from floor
-# datum on the deck's parapet line, bellies 1200 OUT past the building line on
-# the way up, peaks at 6098 (20 ft) and lands on the wall head along the pod
-# line. Over the terraces the same curve sails over the terrace wall head at
-# 4850 and comes down on the suite roof at that same line; its foot there runs
-# 150 proud of the terrace parapet, on the steel sill that carries it along the
-# deck. Both ends are closed with a glazed gable cut to the curve, standing on
-# the building's end walls.
+# bedroom. The section is ABSOLUTE (model y, height) and CUBIC - four points,
+# two of them controls - drawn to the owner's sketch: it springs from floor
+# datum on the deck's parapet line and rises near-vertically, leaning out,
+# bellies 2170 OUT past the building line, rounds over at 6060 (19 ft 11 in)
+# and comes down on the wall head along the pod line. Over the terraces the
+# same curve sails over the terrace wall head at 4560 and comes down on the
+# suite roof at that same line; its foot there runs 150 proud of the terrace
+# parapet, on the steel sill that carries it along the deck. Both ends are
+# closed with a glazed gable cut to the curve, standing on the building's end
+# walls.
 VAULTS = {
-    # id: (springs at y, control, lands at y)
-    'ROOF-FRONT': ((-150, 0), (-3530, 10075), (2620, CEIL)),
+    # id: (springs at y, control 1, control 2, lands at y)
+    'ROOF-FRONT': ((-150, 0), (-2000, 2600), (-5100, 9900), (2620, CEIL)),
 }
 
 
-def _bez(p0, p1, p2, t):
-    return tuple((1 - t) ** 2 * p0[i] + 2 * t * (1 - t) * p1[i] + t * t * p2[i]
+def _bez(*pts, t):
+    """A point on a quadratic (3 points) or cubic (4 points) Bezier."""
+    u = 1 - t
+    if len(pts) == 3:
+        p0, p1, p2 = pts
+        return tuple(u * u * p0[i] + 2 * t * u * p1[i] + t * t * p2[i] for i in range(2))
+    p0, p1, p1b, p2 = pts
+    return tuple(u ** 3 * p0[i] + 3 * u * u * t * p1[i] + 3 * u * t * t * p1b[i] + t ** 3 * p2[i]
                  for i in range(2))
 
 
 def vault_extent(rid, x0, x1):
     """Plan extent of a vault: x range, and y from the belly's outermost point
     to the landing line, so the extent is the true plan footprint."""
-    p0, p1, p2 = VAULTS[rid]
-    ys = [_bez(p0, p1, p2, i / 400)[0] for i in range(401)]
-    return (x0, math.floor(min(ys) / 10) * 10, x1, p2[0])
+    pts = VAULTS[rid]
+    ys = [_bez(*pts, t=i / 400)[0] for i in range(401)]
+    return (x0, math.floor(min(ys) / 10) * 10, x1, pts[-1][0])
 
 
 ROOFS = [
@@ -652,9 +660,15 @@ def emit_building():
     for rid, name, kind, ext, ht, retr, glz, notes in ROOFS:
         n = f', notes: {notes!r}' if notes else ''
         if kind == 'barrel':
-            p0, p1, p2 = VAULTS[rid]
-            sec = (f'section: {{ p0: {pt(*p0)}, p1: {pt(*p1)}, p2: {pt(*p2)} }}, '
-                   f"gableEnds: ['x0', 'x1'], ")
+            vp = VAULTS[rid]
+            if len(vp) == 4:
+                p0, p1, p1b, p2 = vp
+                sec = (f'section: {{ p0: {pt(*p0)}, p1: {pt(*p1)}, p1b: {pt(*p1b)}, p2: {pt(*p2)} }}, '
+                       f"gableEnds: ['x0', 'x1'], ")
+            else:
+                p0, p1, p2 = vp
+                sec = (f'section: {{ p0: {pt(*p0)}, p1: {pt(*p1)}, p2: {pt(*p2)} }}, '
+                       f"gableEnds: ['x0', 'x1'], ")
         else:
             sec = f'height: {ht}, '
         A(f'    {{ id: {rid!r}, name: {name!r}, kind: {kind!r}, '

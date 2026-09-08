@@ -1537,6 +1537,98 @@ export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
  * gallery's glazed thresholds. The swing side follows the drawing where it is
  * given, and is checked against the rooms so no leaf opens into a wall.
  */
+/**
+ * The doors in the two pod screens: each arched portal in the curved tinted
+ * glass gets a pair of curved glass leaves in slim walnut frames that slide on
+ * the screen's own curve, just inside it on the pod side. Shut, they meet at
+ * the portal's middle; open, each slides its own width past its jamb along the
+ * screen, so the portal is clear. Built from the wall's polyline and the
+ * opening's position along it, so they cannot drift from the sheet.
+ */
+function podPortalDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  const LEAF_T = 24
+  const OFF = 60                                   // leaf centreline off the wall centreline
+  const OVERLAP = 30
+  for (const w of model.walls) {
+    if (!w.id.startsWith('W-CURVE') || w.points.length < 3) continue
+    const pts = w.points
+    // arc length along the run
+    const acc: number[] = [0]
+    for (let i = 1; i < pts.length; i++) acc.push(acc[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y))
+    const total = acc[acc.length - 1]
+    const at = (d: number): { x: number; y: number; tx: number; ty: number } => {
+      const dd = Math.max(0, Math.min(total, d))
+      let i = 1
+      while (i < acc.length - 1 && acc[i] < dd) i++
+      const a = pts[i - 1], b = pts[i]
+      const L = acc[i] - acc[i - 1] || 1
+      const t = (dd - acc[i - 1]) / L
+      return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, tx: (b.x - a.x) / L, ty: (b.y - a.y) / L }
+    }
+    // which side of the screen the pod is: the leaves hang there
+    const podId = w.id.includes('PARENTS') ? 'R-P-FAMILY' : 'R-K-DEN'
+    const pod = model.roomById.get(podId)
+    const mid = at(total / 2)
+    let side = 1
+    if (pod) {
+      const nx = -mid.ty, ny = mid.tx
+      side = (pod.centroid.x - mid.x) * nx + (pod.centroid.y - mid.y) * ny > 0 ? 1 : -1
+    }
+    const offsetPt = (d: number, off: number) => {
+      const q = at(d)
+      return { x: q.x + (-q.ty) * side * off, y: q.y + q.tx * side * off }
+    }
+    const piece = (d0: number, d1: number, base: number, top: number, mat: THREE.Material, t = LEAF_T, off = OFF) => {
+      const n = Math.max(3, Math.ceil((d1 - d0) / 60))
+      const outer: Array<{ x: number; y: number }> = []
+      const inner: Array<{ x: number; y: number }> = []
+      for (let i = 0; i <= n; i++) {
+        const d = d0 + ((d1 - d0) * i) / n
+        outer.push(offsetPt(d, off + t / 2))
+        inner.push(offsetPt(d, off - t / 2))
+      }
+      const m = new THREE.Mesh(prismGeometry([...outer, ...inner.reverse()], base, top), mat)
+      m.castShadow = mat === M.walnut
+      g.add(m)
+    }
+    for (const op of w.openings) {
+      if (op.type !== 'arch') continue
+      const from = op.from, to = op.to
+      const H = Math.min(op.head ?? 2400, model.data.levels.ceiling - 20) - 20
+      const half = (to - from) / 2
+      const leafW = half + OVERLAP
+      const centre = (from + to) / 2
+      // open: each leaf slides its own width along the screen, past its jamb
+      const slide = mode === 'open' ? leafW : 0
+      const leaves: Array<[number, number]> = [
+        [centre - leafW - slide, centre - slide],
+        [centre + slide, centre + leafW + slide],
+      ]
+      for (const [s0, s1] of leaves) {
+        const a0 = Math.max(0, s0), a1 = Math.min(total, s1)
+        if (a1 - a0 < 100) continue
+        const STILE = 50, RAIL = 70
+        piece(a0, a1, 0, H, M.tintGlass, 10)                       // the glass
+        piece(a0, a0 + STILE, 0, H, M.walnut)                      // stiles
+        piece(a1 - STILE, a1, 0, H, M.walnut)
+        piece(a0, a1, 0, RAIL, M.walnut)                           // bottom rail
+        piece(a0, a1, H - RAIL, H, M.walnut)                       // top rail
+        // a pull on the meeting stile, on the pod side
+        const meet = s0 < centre ? a1 - STILE / 2 : a0 + STILE / 2
+        const q = offsetPt(meet, OFF + LEAF_T / 2 + 14)
+        const pull = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, 240 * S, 8), M.brass)
+        pull.position.set(q.x * S, 1050 * S, q.y * S)
+        g.add(pull)
+      }
+      // the head track the leaves hang from: a slim walnut channel over the
+      // whole travel, both states, so the open leaves have something to ride on
+      piece(Math.max(0, centre - 2 * leafW - 20), Math.min(total, centre + 2 * leafW + 20), H + 10, H + 50, M.walnut, LEAF_T + 16)
+    }
+  }
+  return g
+}
+
 function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   const ceiling = model.data.levels.ceiling
@@ -2633,6 +2725,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     if (curved) set.add(curved)
     set.add(podDoorGroup(M, mode))
     set.add(hingedDoors(M, mode))
+    set.add(podPortalDoors(M, mode))
     root.add(set)
   }
   const bedDown = wallBedDown(M)

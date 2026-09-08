@@ -520,7 +520,7 @@ export const building: BuildingData = {
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
-        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [2155.254, 2978.772], head: 2400, label: 'Arched portal — always open' },
+        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [2155.254, 2978.772], head: 2400, label: 'Arched portal — a pair of curved glass leaves slide on the screen' },
       ],
       label: 'Family pod — curved glass screen',
     },
@@ -566,7 +566,7 @@ export const building: BuildingData = {
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
-        { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2400, label: 'Arched portal — always open' },
+        { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2400, label: 'Arched portal — a pair of curved glass leaves slide on the screen' },
       ],
       label: 'Den pod — curved glass screen, wood dado below',
     },
@@ -757,7 +757,7 @@ export const building: BuildingData = {
   ],
 
   glassRoofs: [
-    { id: 'ROOF-FRONT', name: 'One retractable bellied glass vault over the whole north front', kind: 'barrel', extent: [-600, -1350, 25080, 2620], section: { p0: { x: -150, y: 0 }, p1: { x: -3530, y: 10075 }, p2: { x: 2620, y: 3505 } }, gableEnds: ['x0', 'x1'], retractable: true, glazing: 'Laminated acoustic glass', notes: "Roof AND wall, terrace to terrace: springs from the deck's parapet line, bellies 1.2 m out over the street, peaks at 6.1 m - 2.6 m above the ceiling - and lands on the pod line. It sails over both terrace walls and both shafts, so the deck, the parents' terrace and Karan's terrace are one glass room: cooled under glass, open when the roof retracts. Real grass and a real tree on each terrace under it." },
+    { id: 'ROOF-FRONT', name: 'One retractable bellied glass vault over the whole north front', kind: 'barrel', extent: [-600, -2360, 25080, 2620], section: { p0: { x: -150, y: 0 }, p1: { x: -2000, y: 2600 }, p1b: { x: -5100, y: 9900 }, p2: { x: 2620, y: 3505 } }, gableEnds: ['x0', 'x1'], retractable: true, glazing: 'Laminated acoustic glass', notes: "Roof AND wall, terrace to terrace: springs from the deck's parapet line, bellies 1.2 m out over the street, peaks at 6.1 m - 2.6 m above the ceiling - and lands on the pod line. It sails over both terrace walls and both shafts, so the deck, the parents' terrace and Karan's terrace are one glass room: cooled under glass, open when the roof retracts. Real grass and a real tree on each terrace under it." },
     { id: 'ROOF-FAMILY', name: 'Glass roof over the family-room bay', kind: 'flat', extent: [4650, 2620, 8315, 4900], height: 3505, retractable: false, glazing: 'Laminated glass' },
     { id: 'ROOF-DEN', name: 'Glass roof over the den bay', kind: 'flat', extent: [16165, 2620, 19830, 4900], height: 3505, retractable: false, glazing: 'Laminated glass' },
   ],

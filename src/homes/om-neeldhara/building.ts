@@ -98,6 +98,23 @@ export const building: BuildingData = {
       ],
     },
     {
+      id: 'W-P-WC-W',
+      points: [{ x: 2825, y: 1275 }, { x: 2825, y: 2557.5 }],
+      thickness: 150,
+      kind: 'interior',
+      notes: "Corner WC's west wall, on the shaft wall's line.",
+    },
+    {
+      id: 'W-P-WC-S',
+      points: [{ x: 2750, y: 2557.5 }, { x: 4467, y: 2557.5 }],
+      thickness: 125,
+      kind: 'interior',
+      openings: [
+        { id: 'SL-P-WC', type: 'slider', at: [200, 900], head: 2100, label: "Parents' corner WC — 700 sliding leaf, runs east on the outside" },
+      ],
+      notes: "Corner WC's south wall; its south face is the pod slider's north jamb.",
+    },
+    {
       id: 'W-FAM-S',
       points: [{ x: 4467, y: 8462.5 }, { x: 6900, y: 8462.5 }],
       thickness: 125,
@@ -365,7 +382,7 @@ export const building: BuildingData = {
       kind: 'partition',
       glass: 'tinted',
       openings: [
-        { id: 'SL-P-DRESS', type: 'slider', at: [2000, 3332], head: 2100, label: 'Tinted-glass leaf — pockets into the cupboard backs' },
+        { id: 'SL-P-DRESS', type: 'slider', at: [150, 3332], head: 2100, label: 'Tinted glass end to end — two 1591 bypass leaves on a double track, no pocket' },
       ],
       label: "Parents' dressing partition",
     },
@@ -721,8 +738,9 @@ export const building: BuildingData = {
     { id: 'R-SHAFT-E', name: 'Sealed shaft (east)', anchor: { x: 20800, y: 600 }, category: 'void', zone: 'core', carpet: false, finish: 'Sealed', notes: 'Builder shaft, sealed. 1480 × 1200.' },
     { id: 'R-VOID-W', name: 'Retained deck void (west)', anchor: { x: 8300, y: 1900 }, category: 'void', zone: 'core', carpet: false, finish: 'Open void', notes: 'Retained builder void, 1615 × 1420. The west deck recliner backs on to it.' },
     { id: 'R-VOID-E', name: 'Retained deck void (east)', anchor: { x: 16180, y: 1900 }, category: 'void', zone: 'core', carpet: false, finish: 'Open void', notes: 'Retained builder void, 1615 × 1420. The east deck recliner backs on to it.' },
-    { id: 'R-P-SUITE', name: 'Master suite — parents', anchor: { x: 1500, y: 3500 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'Bed zone north of the sliding partition; opens full-width to the terrace.' },
-    { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — and the sliding cupboards whose backs pocket the partition leaf.' },
+    { id: 'R-P-SUITE', name: 'Master suite — parents', anchor: { x: 1500, y: 3500 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'Bed zone north of the tinted-glass partition; opens full-width to the terrace. A full-height cupboard curls round the bath’s arch.' },
+    { id: 'R-P-WC', name: "Parents' corner WC", anchor: { x: 3250, y: 2000 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', notes: 'Where the study desk was: pan on the column face, basin by the door, a 700 sliding leaf. Drains to the sealed shaft directly north — a new drop.' },
+    { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — behind a partition of brown tinted glass end to end, two bypass leaves.' },
     { id: 'R-P-BATH', name: "Parents' bath", anchor: { x: 3400, y: 8000 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 69, notes: 'Entered through the arched sweep; curved vanity, WC, shower.' },
     { id: 'R-K-SUITE', name: 'Master suite — Karan', anchor: { x: 22980, y: 3500 }, category: 'habitable', zone: 'karan', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'The king bed, headboard window-jamb to window-jamb; the dressing zone south of the screen, with two hanging wardrobes and the dresser.' },
     { id: 'R-K-BATH', name: "Karan's bath", anchor: { x: 21080, y: 8000 }, category: 'wet', zone: 'karan', carpet: true, finish: 'Stone', publishedSqFt: 69, notes: 'Mirror of the parents’ bath.' },
@@ -743,6 +761,7 @@ export const building: BuildingData = {
     { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3704.031, y: 7795.301 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'Mirror of STK-P-BATH about x = 12240.' },
     { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 16465.434, y: 9141.59 }, room: 'R-GUEST-BATH', provenance: 'On the builder’s common-toilet zone beside the secondary duct.' },
+    { id: 'STK-P-WC', name: "Parents' corner WC stack", at: { x: 3542.5, y: 1725 }, room: 'R-P-WC', provenance: 'Into the sealed shaft directly north of the WC — a NEW drop, to be confirmed against the sanctioned plumbing drawings.' },
     { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7738.333, y: 10066.667 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],
 

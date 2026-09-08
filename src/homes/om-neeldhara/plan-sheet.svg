@@ -390,6 +390,9 @@
 <polygon points="3490.1,1573.2 3490.1,1701.4 3510.4,1701.4 3510.4,1573.2" fill="#1b1a18" stroke="none"/>
 <polygon points="1115.9,1310.8 1115.9,1701.4 1136.1,1701.4 1136.1,1310.8" fill="#1b1a18" stroke="none"/>
 <polygon points="3209.5,1310.8 3209.5,1701.4 3229.8,1701.4 3229.8,1310.8" fill="#1b1a18" stroke="none"/>
+<polygon points="892.7,585.8 892.7,758.8 912.9,758.8 912.9,585.8" fill="#1b1a18" stroke="none"/>
+<polygon points="892.7,767.2 919.6,767.2 919.6,750.3 892.7,750.3" fill="#1b1a18" stroke="none"/>
+<polygon points="1014.1,767.2 1124.3,767.2 1124.3,750.3 1014.1,750.3" fill="#1b1a18" stroke="none"/>
 <polygon points="1115.8,575.6 1115.8,767.2 1132.7,767.2 1132.7,575.6" fill="#1b1a18" stroke="none"/>
 <polygon points="1115.8,1246.8 1115.8,1310.8 1132.7,1310.8 1132.7,1246.8" fill="#1b1a18" stroke="none"/>
 <polygon points="3213.0,575.6 3213.0,767.2 3229.8,767.2 3229.8,575.6" fill="#1b1a18" stroke="none"/>
@@ -622,28 +625,18 @@
 <circle cx="2826.4" cy="1452.5" r="33.7" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <circle cx="2833.2" cy="1351.3" r="28.3" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <circle cx="3005.8" cy="1455.2" r="28.3" fill="none" stroke="#9a9184" stroke-width="0.8"/>
-<rect x="927.1" y="595.9" width="188.9" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="1035.0" y="676.8" width="80.9" height="90.4" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="927.1" y="595.9" width="188.9" height="47.2" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
-<rect x="1035.0" y="676.8" width="47.2" height="90.4" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
-<circle cx="984.4" cy="724.7" r="37.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<circle cx="984.4" cy="716.5" r="23.0" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
+<polygon points="1052.8,649.2 1055.3,649.4 1057.8,649.8 1060.3,650.4 1062.6,651.3 1064.9,652.5 1067.0,653.9 1069.0,655.5 1070.8,657.2 1072.4,659.2 1073.7,661.3 1074.9,663.6 1075.8,666.0 1076.4,668.4 1076.8,670.9 1077.0,673.4 1077.0,673.4 1076.8,676.0 1076.4,678.5 1075.8,680.9 1074.9,683.3 1073.7,685.5 1072.4,687.7 1070.8,689.6 1069.0,691.4 1067.0,693.0 1064.9,694.4 1062.6,695.5 1060.3,696.5 1057.8,697.1 1055.3,697.5 1052.8,697.6 1034.2,697.6 1031.7,697.5 1029.2,697.1 1026.7,696.5 1024.4,695.5 1022.1,694.4 1020.0,693.0 1018.0,691.4 1016.2,689.6 1014.6,687.7 1013.3,685.5 1012.1,683.3 1011.2,680.9 1010.5,678.5 1010.1,676.0 1010.0,673.4 1010.0,673.4 1010.1,670.9 1010.5,668.4 1011.2,666.0 1012.1,663.6 1013.3,661.3 1014.6,659.2 1016.2,657.2 1018.0,655.5 1020.0,653.9 1022.1,652.5 1024.4,651.3 1026.7,650.4 1029.2,649.8 1031.7,649.4 1034.2,649.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<rect x="1077.0" y="647.1" width="24.8" height="52.6" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
+<rect x="912.9" y="595.9" width="60.7" height="47.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
+<circle cx="943.2" cy="619.5" r="14.2" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="461.0" y="676.8" width="27.0" height="529.5" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <polygon points="488.0,770.8 676.2,770.8 685.1,771.3 694.0,772.7 702.7,775.0 711.1,778.3 719.1,782.3 726.7,787.2 733.6,792.9 740.0,799.3 745.7,806.3 750.6,813.8 754.6,821.8 757.9,830.2 760.2,838.9 761.6,847.8 762.1,856.8 762.1,945.3 761.6,954.3 760.2,963.1 757.9,971.8 754.6,980.2 750.6,988.2 745.7,995.8 740.0,1002.8 733.6,1009.1 726.7,1014.8 719.1,1019.7 711.1,1023.8 702.7,1027.0 694.0,1029.3 685.1,1030.7 676.2,1031.2 488.0,1031.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="508.2" y="813.3" width="47.2" height="83.6" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <rect x="508.2" y="905.1" width="47.2" height="83.6" fill="#efe9dd" stroke="#9a9184" stroke-width="1.0"/>
 <polygon points="521.7,689.9 524.5,690.0 527.3,690.5 530.0,691.2 532.7,692.2 535.2,693.5 537.5,695.1 539.7,696.8 541.7,698.8 543.5,701.0 545.0,703.4 546.3,705.9 547.3,708.5 548.1,711.3 548.5,714.1 548.7,716.9 548.7,737.1 548.5,739.9 548.1,742.7 547.3,745.4 546.3,748.1 545.0,750.6 543.5,753.0 541.7,755.2 539.7,757.2 537.5,758.9 535.2,760.5 532.7,761.8 530.0,762.8 527.3,763.5 524.5,763.9 521.7,764.1 514.9,764.1 512.1,763.9 509.3,763.5 506.6,762.8 504.0,761.8 501.4,760.5 499.1,758.9 496.9,757.2 494.9,755.2 493.1,753.0 491.6,750.6 490.3,748.1 489.3,745.4 488.5,742.7 488.1,739.9 488.0,737.1 488.0,716.9 488.1,714.1 488.5,711.3 489.3,708.5 490.3,705.9 491.6,703.4 493.1,701.0 494.9,698.8 496.9,696.8 499.1,695.1 501.4,693.5 504.0,692.2 506.6,691.2 509.3,690.5 512.1,690.0 514.9,689.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <polygon points="521.7,1037.9 524.5,1038.1 527.3,1038.5 530.0,1039.3 532.7,1040.3 535.2,1041.6 537.5,1043.1 539.7,1044.9 541.7,1046.9 543.5,1049.1 545.0,1051.4 546.3,1053.9 547.3,1056.6 548.1,1059.3 548.5,1062.1 548.7,1064.9 548.7,1085.2 548.5,1088.0 548.1,1090.8 547.3,1093.5 546.3,1096.1 545.0,1098.6 543.5,1101.0 541.7,1103.2 539.7,1105.2 537.5,1107.0 535.2,1108.5 532.7,1109.8 530.0,1110.8 527.3,1111.5 524.5,1112.0 521.7,1112.1 514.9,1112.1 512.1,1112.0 509.3,1111.5 506.6,1110.8 504.0,1109.8 501.4,1108.5 499.1,1107.0 496.9,1105.2 494.9,1103.2 493.1,1101.0 491.6,1098.6 490.3,1096.1 489.3,1093.5 488.5,1090.8 488.1,1088.0 488.0,1085.2 488.0,1064.9 488.1,1062.1 488.5,1059.3 489.3,1056.6 490.3,1053.9 491.6,1051.4 493.1,1049.1 494.9,1046.9 496.9,1044.9 499.1,1043.1 501.4,1041.6 504.0,1040.3 506.6,1039.3 509.3,1038.5 512.1,1038.1 514.9,1037.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="461.0" y="1206.3" width="249.6" height="16.2" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<rect x="461.0" y="1222.5" width="249.6" height="80.9" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
-<line x1="470.4" y1="1256.5" x2="701.1" y2="1256.5" stroke="#9a9184" stroke-width="0.8"/>
-<line x1="502.6" y1="1226.5" x2="502.6" y2="1299.4" stroke="#9a9184" stroke-width="0.8"/>
-<line x1="544.2" y1="1226.5" x2="544.2" y2="1299.4" stroke="#9a9184" stroke-width="0.8"/>
-<line x1="585.8" y1="1226.5" x2="585.8" y2="1299.4" stroke="#9a9184" stroke-width="0.8"/>
-<line x1="627.3" y1="1226.5" x2="627.3" y2="1299.4" stroke="#9a9184" stroke-width="0.8"/>
-<line x1="668.9" y1="1226.5" x2="668.9" y2="1299.4" stroke="#9a9184" stroke-width="0.8"/>
-<rect x="710.5" y="1206.3" width="179.7" height="16.2" fill="#e2cfae" stroke="#8a6440" stroke-width="1.0"/>
-<rect x="530.9" y="1206.3" width="179.7" height="16.2" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
+<rect x="461.0" y="1206.3" width="214.6" height="8.1" fill="#e2cfae" stroke="#8a6440" stroke-width="1.0"/>
+<rect x="675.6" y="1214.4" width="214.6" height="8.1" fill="#e2cfae" stroke="#8a6440" stroke-width="1.0"/>
 <polygon points="498.7,1350.6 501.6,1350.8 504.4,1351.2 507.1,1352.0 509.7,1353.0 512.2,1354.2 514.6,1355.8 516.8,1357.6 518.8,1359.6 520.6,1361.8 522.1,1364.1 523.4,1366.6 524.4,1369.3 525.1,1372.0 525.6,1374.8 525.7,1377.6 525.7,1391.1 525.6,1393.9 525.1,1396.7 524.4,1399.4 523.4,1402.1 522.1,1404.6 520.6,1407.0 518.8,1409.2 516.8,1411.2 514.6,1412.9 512.2,1414.5 509.7,1415.8 507.1,1416.8 504.4,1417.5 501.6,1417.9 498.7,1418.1 488.0,1418.1 485.1,1417.9 482.3,1417.5 479.6,1416.8 477.0,1415.8 474.5,1414.5 472.1,1412.9 469.9,1411.2 467.9,1409.2 466.1,1407.0 464.6,1404.6 463.3,1402.1 462.3,1399.4 461.6,1396.7 461.1,1393.9 461.0,1391.1 461.0,1377.6 461.1,1374.8 461.6,1372.0 462.3,1369.3 463.3,1366.6 464.6,1364.1 466.1,1361.8 467.9,1359.6 469.9,1357.6 472.1,1355.8 474.5,1354.2 477.0,1353.0 479.6,1352.0 482.3,1351.2 485.1,1350.8 488.0,1350.6" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <rect x="471.8" y="1418.1" width="54.0" height="202.3" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <polygon points="589.5,1418.1 590.6,1418.1 591.7,1418.3 592.7,1418.6 593.8,1419.0 594.7,1419.5 595.6,1420.1 596.5,1420.8 597.3,1421.5 597.9,1422.4 598.5,1423.3 599.0,1424.2 599.4,1425.3 599.7,1426.3 599.9,1427.4 599.9,1428.5 599.9,1610.0 599.9,1611.1 599.7,1612.2 599.4,1613.3 599.0,1614.3 598.5,1615.2 597.9,1616.2 597.3,1617.0 596.5,1617.8 595.6,1618.4 594.7,1619.0 593.8,1619.5 592.7,1619.9 591.7,1620.2 590.6,1620.4 589.5,1620.4 536.1,1620.4 535.0,1620.4 534.0,1620.2 532.9,1619.9 531.9,1619.5 530.9,1619.0 530.0,1618.4 529.2,1617.8 528.4,1617.0 527.7,1616.2 527.1,1615.2 526.6,1614.3 526.2,1613.3 526.0,1612.2 525.8,1611.1 525.7,1610.0 525.7,1428.5 525.8,1427.4 526.0,1426.3 526.2,1425.3 526.6,1424.2 527.1,1423.3 527.7,1422.4 528.4,1421.5 529.2,1420.8 530.0,1420.1 530.9,1419.5 531.9,1419.0 532.9,1418.6 534.0,1418.3 535.0,1418.1 536.1,1418.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
@@ -1004,6 +997,8 @@
 <text x="683.6" y="693.0" font-size="14" fill="#2c5c61" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif" letter-spacing="2.5">PARENTS</text>
 <text x="683.6" y="711.9" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">3.7 m²  ·  40 sq ft</text>
 <text x="683.6" y="734.8" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">real grass under a high glass roof</text>
+<text x="1007.3" y="694.3" font-size="16" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">PARENTS' WC</text>
+<text x="1007.3" y="732.1" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">1.7 m²  ·  19 sq ft</text>
 <text x="3662.1" y="728.1" font-size="16" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">TERRACE</text>
 <text x="3662.1" y="760.4" font-size="14" fill="#2c5c61" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif" letter-spacing="2.5">KARAN</text>
 <text x="3662.1" y="779.3" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">3.7 m²  ·  40 sq ft</text>
@@ -1012,8 +1007,8 @@
 <text x="2172.8" y="610.7" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">15 420 long × 2620 deep  ·  net of the two retained voids</text>
 <text x="939.9" y="885.9" font-size="30" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="9">MASTER SUITE</text>
 <text x="939.9" y="930.4" font-size="15" fill="#2c5c61" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif" letter-spacing="2.5">PARENTS</text>
-<text x="939.9" y="961.4" font-size="14" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">32.5 m²  ·  350 sq ft</text>
-<text x="939.9" y="992.5" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">two zones  ·  bed north of the partition, dressing + wall bed south of it</text>
+<text x="939.9" y="961.4" font-size="14" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">30.4 m²  ·  327 sq ft</text>
+<text x="939.9" y="992.5" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">two zones  ·  bed north of the glass, dressing + wall bed south of it  ·  corner WC</text>
 <text x="3395.0" y="1007.3" font-size="30" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="9">MASTER SUITE</text>
 <text x="3395.0" y="1051.8" font-size="15" fill="#2c5c61" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif" letter-spacing="2.5">KARAN</text>
 <text x="3395.0" y="1082.9" font-size="14" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">32.5 m²  ·  350 sq ft</text>

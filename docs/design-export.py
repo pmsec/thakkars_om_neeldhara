@@ -145,6 +145,15 @@ WALLS += [
     w('W-K-SUITE-W', [(20013, 1275), (20013, 6650)], 125, 'interior',
       [op('SL-K-SUITE', 'slider', 1345, 4900, head=2400,
           label='Sliding partition — suite to den')]),
+    # The parents' corner WC, where the study desk was: a west wall on the
+    # sealed shaft's west wall line, and a south wall whose south face is the
+    # pod slider's north jamb at 2620. Parents' side only — not mirrored.
+    w('W-P-WC-W', [(2825, 1275), (2825, 2557.5)], 150, 'interior',
+      notes="Corner WC's west wall, on the shaft wall's line."),
+    w('W-P-WC-S', [(2750, 2557.5), (4467, 2557.5)], 125, 'interior',
+      [op('SL-P-WC', 'slider', 200, 900, head=2100,
+          label="Parents' corner WC — 700 sliding leaf, runs east on the outside")],
+      notes="Corner WC's south wall; its south face is the pod slider's north jamb."),
     w('W-FAM-S', [(4467, 8462.5), (6900, 8462.5)], 125, 'interior',
       notes="Family room's south wall, bath bay to the hatch wall."),
     w('W-DUCT-W-E', [(6900, 8462.5), (6900, 9395)], 150, 'interior'),
@@ -238,8 +247,8 @@ WALLS += [
 # pocketing into the cupboard backs; both suites
 WALLS += [
     w('W-P-DRESS', [(-600, 5935), (2732, 5935), (2940, 6300)], 120, 'partition',
-      [op('SL-P-DRESS', 'slider', 2000, 3332, head=2100,
-          label='Tinted-glass leaf — pockets into the cupboard backs')],
+      [op('SL-P-DRESS', 'slider', 150, 3332, head=2100,
+          label='Tinted glass end to end — two 1591 bypass leaves on a double track, no pocket')],
       label="Parents' dressing partition", glass='tinted'),
     # Karan's side has NO partition on this line: his suite runs from the terrace
     # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on
@@ -424,10 +433,14 @@ ROOMS = [
      'Open void', 'Retained builder void, 1615 × 1420. The east deck recliner backs on to it.'),
 
     ('R-P-SUITE', 'Master suite — parents', (1500, 3500), 'habitable', 'parents', True,
-     'Oak plank', 'Bed zone north of the sliding partition; opens full-width to the terrace.'),
+     'Oak plank', 'Bed zone north of the tinted-glass partition; opens full-width to the '
+     'terrace. A full-height cupboard curls round the bath’s arch.'),
+    ('R-P-WC', "Parents' corner WC", (3250, 2000), 'wet', 'parents', True,
+     'Stone', 'Where the study desk was: pan on the column face, basin by the door, a 700 '
+     'sliding leaf. Drains to the sealed shaft directly north — a new drop.'),
     ('R-P-DRESSING', "Parents' dressing", (1200, 8000), 'circulation', 'parents', True,
      'Oak plank', 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — '
-     'and the sliding cupboards whose backs pocket the partition leaf.'),
+     'behind a partition of brown tinted glass end to end, two bypass leaves.'),
     ('R-P-BATH', "Parents' bath", (3400, 8000), 'wet', 'parents', True,
      'Stone', 'Entered through the arched sweep; curved vanity, WC, shower.'),
     ('R-K-SUITE', 'Master suite — Karan', (mx(1500), 3500), 'habitable', 'karan', True,
@@ -477,6 +490,8 @@ STACKS = [
      'Mirror of STK-P-BATH about x = 12240.'),
     ('STK-GUEST', 'Guest WC stack', 'R-GUEST-BATH',
      'On the builder’s common-toilet zone beside the secondary duct.'),
+    ('STK-P-WC', "Parents' corner WC stack", 'R-P-WC',
+     'Into the sealed shaft directly north of the WC — a NEW drop, to be confirmed against the sanctioned plumbing drawings.'),
     ('STK-KITCHEN', 'Kitchen stack', 'R-KITCHEN',
      'At the sink and dishwasher run.'),
 ]
@@ -790,9 +805,14 @@ def emit_fixtures():
         cx, cy = (a + c) / 2, (b + d) / 2
         if base == 'wc':
             room, stack = (('R-GUEST-BATH', 'STK-GUEST') if 15000 < cx < 18500
+                           else ('R-P-WC', 'STK-P-WC') if cx < M and cy < 2620
                            else ('R-P-BATH', 'STK-P-BATH') if cx < M
                            else ('R-K-BATH', 'STK-K-BATH'))
             add(f'FX-WC-{len(fx)}', 'wc', cx, cy, c - a, d - b, room, stack, 'WC')
+        elif base == 'basin':
+            # the corner WC's wall-hung basin (the vanities come from their consoles)
+            add(f'FX-BASIN-{len(fx)}', 'basin', cx, cy, c - a, d - b, 'R-P-WC',
+                'STK-P-WC', 'Basin, 450 × 350')
         elif base == 'shower':
             room, stack = (('R-GUEST-BATH', 'STK-GUEST') if 15000 < cx < 18500
                            else ('R-P-BATH', 'STK-P-BATH') if cx < M
@@ -942,6 +962,8 @@ def room_for(cx, cy):
         return 'R-P-TERRACE' if cx < M else 'R-K-TERRACE'
     if cy < 2545 and 4530 <= cx <= 19950:
         return 'R-DECK'
+    if 2825 < cx < 4467 and 1275 < cy < 2557.5:
+        return 'R-P-WC'
     if cy < 5935 and cx < 4467:
         return 'R-P-SUITE'
     if cy >= 5935 and cx < 2400:
@@ -1223,8 +1245,10 @@ def emit_furniture():
                 'The great-room rug, leaf-patterned', 12, styles=('soft',))
     # the arch consoles either side: the parents' (cut by the sliding screen)
     # and Karan's, drawn mirrored
-    add_outline(R.arch_console_par(), 'console', 'R-P-SUITE',
-                'Arch console', 800)
+    # the parents' is a FULL-HEIGHT CUPBOARD on the same curl: their hanging
+    # space, now that the partition cupboards are gone
+    add_outline(R.arch_console_par(), 'wardrobe', 'R-P-SUITE',
+                'Arch cupboard — full height, on the bath sweep', 2300)
     add_outline(R.arch_console(), 'console', 'R-K-SUITE',
                 'Arch console', 800, mirror=True)
     # Karan's dressing screen — wood below, tinted glass above

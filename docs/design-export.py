@@ -479,6 +479,33 @@ ROOMS = [
      'Stone', 'Behind the quarter-ellipse sweep: curved console, WC, 900 shower.'),
 ]
 
+# The sheet publishes the parents' suite as ONE figure, bed zone and dressing
+# zone together; the portal models them as two rooms either side of the
+# glass partition at y 5935. Split the sheet's polygon there so each room is
+# compared with its own share, not the bed zone with the whole suite.
+def _clip_y(poly, y, north):
+    out = []
+    for i in range(len(poly)):
+        a, b = poly[i], poly[(i + 1) % len(poly)]
+        ina = a[1] <= y if north else a[1] >= y
+        inb = b[1] <= y if north else b[1] >= y
+        if ina:
+            out.append(a)
+        if ina != inb:
+            t = (y - a[1]) / (b[1] - a[1])
+            out.append((a[0] + t * (b[0] - a[0]), y))
+    return out
+
+
+def _sheet_sqft(poly):
+    return round(abs(R.poly_area(poly)) * 10.7639)
+
+
+_PAR_SUITE = next(p for n, sub, p, _note, _xy in R.poly_rooms()
+                  if n == 'MASTER SUITE' and sub == 'PARENTS')
+PUB_P_SUITE_N = _sheet_sqft(_clip_y(_PAR_SUITE, 5935, True))
+PUB_P_SUITE_S = _sheet_sqft(_clip_y(_PAR_SUITE, 5935, False))
+
 # Stack positions are DERIVED: each sits at the centroid of the plumbed
 # fixtures it serves, so the wet-stack integrity check is self-consistent and
 # still catches any fixture that later wanders off its group.
@@ -651,7 +678,7 @@ def emit_building():
     A('  cages: [],')
     A('')
     A('  rooms: [')
-    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': 350, 'R-K-SUITE': 350, 'R-P-BATH': 69, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': 230, 'R-GREAT': 407, 'R-KITCHEN': 126, 'R-ENTRY': 101, 'R-HELP': 77, 'R-GUEST-BATH': 29}
+    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-P-WC': 19, 'R-K-SUITE': 350, 'R-P-BATH': 69, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': 230, 'R-GREAT': 407, 'R-KITCHEN': 126, 'R-ENTRY': 101, 'R-HELP': 77, 'R-GUEST-BATH': 29}
     # One floor runs out through the sliding glass: the deck is finished as the
     # great room is, and whatever the great room's floor is dressed as, the
     # deck follows.

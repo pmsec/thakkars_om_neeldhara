@@ -19,10 +19,12 @@ const DOME_R = 370
  * unaffected by tone mapping so it never washes out. It is centred on the camera
  * every frame (see followCamera), which is why it can be smaller than the city.
  */
-export function skyDome(sunDir: THREE.Vector3): THREE.Group {
+export type SkyMode = 'day' | 'evening' | 'night'
+
+export function skyDome(sunDir: THREE.Vector3, mode: SkyMode = 'day'): THREE.Group {
   const g = new THREE.Group()
   const sun = sunDir.clone().normalize()
-  const tex = new THREE.CanvasTexture(skyCanvas(sun))
+  const tex = new THREE.CanvasTexture(skyCanvas(sun, mode))
   tex.colorSpace = THREE.SRGBColorSpace
   const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false, depthWrite: false, toneMapped: false })
   const dome = new THREE.Mesh(new THREE.SphereGeometry(DOME_R, 48, 32), mat)
@@ -39,7 +41,7 @@ export function followCamera(sky: THREE.Object3D, camera: THREE.Camera): void {
 }
 
 /** Blue overhead to pale haze at the horizon, a sun glow, and two bands of cumulus. */
-function skyCanvas(sun: THREE.Vector3): HTMLCanvasElement {
+function skyCanvas(sun: THREE.Vector3, mode: SkyMode = 'day'): HTMLCanvasElement {
   const W = 2048
   const H = 1024
   const c = document.createElement('canvas')
@@ -48,15 +50,35 @@ function skyCanvas(sun: THREE.Vector3): HTMLCanvasElement {
   const ctx = c.getContext('2d')!
   // v = 0 is the top of the dome (zenith), v = 1 the bottom
   const grad = ctx.createLinearGradient(0, 0, 0, H)
-  grad.addColorStop(0.0, '#2f66b8')
-  grad.addColorStop(0.2, '#4a86cf')
-  grad.addColorStop(0.38, '#8db7e2')
-  grad.addColorStop(0.48, '#cfdfec')
-  grad.addColorStop(0.5, '#dfe6ea')
-  grad.addColorStop(0.62, '#c9cfd2')
-  grad.addColorStop(1.0, '#b3b8ba')
+  const stops: Array<[number, string]> =
+    mode === 'night'
+      ? [[0, '#050814'], [0.25, '#0a1226'], [0.42, '#13203a'], [0.5, '#1d2a44'], [0.62, '#141a26'], [1, '#0c0f16']]
+      : mode === 'evening'
+        ? [[0, '#2a4a86'], [0.2, '#4f6fa8'], [0.36, '#b28aa0'], [0.45, '#e9a878'], [0.5, '#f3c48e'], [0.62, '#b9a08e'], [1, '#8f8a86']]
+        : [[0, '#2f66b8'], [0.2, '#4a86cf'], [0.38, '#8db7e2'], [0.48, '#cfdfec'], [0.5, '#dfe6ea'], [0.62, '#c9cfd2'], [1, '#b3b8ba']]
+  for (const [v, col] of stops) grad.addColorStop(v, col)
   ctx.fillStyle = grad
   ctx.fillRect(0, 0, W, H)
+  if (mode === 'night') {
+    // stars, thicker toward the zenith, and a small moon where the sun would be
+    let st = 91
+    const rs = () => { st = (st * 9301 + 49297) % 233280; return st / 233280 }
+    for (let i = 0; i < 900; i++) {
+      const x = rs() * W, y = rs() * rs() * H * 0.48
+      const r = 0.6 + rs() * 1.6
+      ctx.fillStyle = `rgba(255,255,${230 + Math.floor(rs() * 25)},${0.35 + rs() * 0.65})`
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill()
+    }
+    const mx = W * 0.5, my = H * 0.22
+    const moon = ctx.createRadialGradient(mx, my, 0, mx, my, 120)
+    moon.addColorStop(0, 'rgba(255,250,235,1)')
+    moon.addColorStop(0.18, 'rgba(255,250,235,1)')
+    moon.addColorStop(0.22, 'rgba(230,236,255,0.35)')
+    moon.addColorStop(1, 'rgba(200,214,255,0)')
+    ctx.fillStyle = moon
+    ctx.fillRect(mx - 120, my - 120, 240, 240)
+    return c
+  }
 
   // the sun: a soft glow where the light comes from. u = 0 faces +x after the
   // dome's rotation, so the sun sits at u = 0.5 of the wrap.
@@ -64,13 +86,14 @@ function skyCanvas(sun: THREE.Vector3): HTMLCanvasElement {
   const sunV = 0.5 - (elev / (Math.PI / 2)) * 0.5
   const sx = W * 0.5
   const sy = H * sunV
-  const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, 260)
-  glow.addColorStop(0, 'rgba(255,250,235,0.95)')
-  glow.addColorStop(0.12, 'rgba(255,245,220,0.7)')
-  glow.addColorStop(0.5, 'rgba(255,240,215,0.18)')
+  const evening = mode === 'evening'
+  const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, evening ? 420 : 260)
+  glow.addColorStop(0, evening ? 'rgba(255,225,170,0.98)' : 'rgba(255,250,235,0.95)')
+  glow.addColorStop(0.12, evening ? 'rgba(255,190,120,0.75)' : 'rgba(255,245,220,0.7)')
+  glow.addColorStop(0.5, evening ? 'rgba(255,170,110,0.22)' : 'rgba(255,240,215,0.18)')
   glow.addColorStop(1, 'rgba(255,240,215,0)')
   ctx.fillStyle = glow
-  ctx.fillRect(sx - 260, sy - 260, 520, 520)
+  ctx.fillRect(sx - 420, sy - 420, 840, 840)
 
   // cumulus: flat-bottomed clusters of soft puffs, larger low, smaller high
   let s = 17
@@ -82,9 +105,9 @@ function skyCanvas(sun: THREE.Vector3): HTMLCanvasElement {
       const x = cx + (rnd() - 0.5) * 220 * scale
       const y = cy - rnd() * 60 * scale
       const gr = ctx.createRadialGradient(x, y, 0, x, y, r)
-      gr.addColorStop(0, `rgba(255,255,255,${alpha})`)
-      gr.addColorStop(0.55, `rgba(250,252,255,${alpha * 0.75})`)
-      gr.addColorStop(0.85, `rgba(228,234,240,${alpha * 0.35})`)
+      gr.addColorStop(0, evening ? `rgba(255,214,190,${alpha})` : `rgba(255,255,255,${alpha})`)
+      gr.addColorStop(0.55, evening ? `rgba(240,190,170,${alpha * 0.75})` : `rgba(250,252,255,${alpha * 0.75})`)
+      gr.addColorStop(0.85, evening ? `rgba(180,140,140,${alpha * 0.35})` : `rgba(228,234,240,${alpha * 0.35})`)
       gr.addColorStop(1, 'rgba(220,228,236,0)')
       ctx.fillStyle = gr
       ctx.beginPath()

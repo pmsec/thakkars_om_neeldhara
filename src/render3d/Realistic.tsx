@@ -33,7 +33,7 @@ import { AiRenderPanel } from './AiRenderPanel'
 import { StylePanel } from './StylePanel'
 import { decimate, prismGeometry, S } from './prism'
 import { customObject, floorMaterial, getAssign, primeStyle, wallMaterial } from './styleOverrides'
-import { lightRig } from './lighting'
+import { lightRig, timeRig, TIMES_OF_DAY, type TimeOfDay } from './lighting'
 import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWalk } from './touchWalk'
 import { PRESETS, presetCamera } from './cameras'
 import { podDoorLeaves, type PodDoorMode } from './podDoors'
@@ -235,19 +235,47 @@ function walnutTexture(): THREE.CanvasTexture {
   }, 0.9)
 }
 
-function weaveTexture(): THREE.CanvasTexture {
-  return canvasTexture(128, (g, s) => {
-    g.fillStyle = '#e9e1cf'
+/** Jute: a coarse basket weave in oat and straw, the strands reading one by one. */
+function juteTexture(): THREE.CanvasTexture {
+  return canvasTexture(256, (g, s) => {
+    g.fillStyle = '#c7b28c'
     g.fillRect(0, 0, s, s)
-    for (let y = 0; y < s; y += 4) {
-      for (let x = 0; x < s; x += 4) {
-        const k = ((x + y) / 4) % 2
-        g.fillStyle = k ? 'rgba(120,100,70,0.16)' : 'rgba(255,255,255,0.10)'
-        g.fillRect(x, y, 3, 3)
+    const cell = 8
+    for (let y = 0; y < s; y += cell) {
+      for (let x = 0; x < s; x += cell) {
+        const over = ((x / cell + y / cell) % 2) === 0
+        const tone = 165 + ((x * 7 + y * 13) % 30)
+        g.fillStyle = over ? `rgb(${tone + 30}, ${tone + 8}, ${tone - 30})` : `rgb(${tone}, ${tone - 14}, ${tone - 48})`
+        g.fillRect(x + 1, y + 1, cell - 2, cell - 2)
+        // the strand's own twist, a darker thread across it
+        g.fillStyle = 'rgba(70,50,25,0.22)'
+        if (over) g.fillRect(x + 1, y + cell / 2 - 1, cell - 2, 1)
+        else g.fillRect(x + cell / 2 - 1, y + 1, 1, cell - 2)
       }
     }
-  }, 0.12)
+  }, 0.28)
 }
+
+/** Linen: a fine, even weave with a soft slub, for cushions and bedding. */
+function linenTexture(): THREE.CanvasTexture {
+  return canvasTexture(256, (g, s) => {
+    g.fillStyle = '#e8dfcc'
+    g.fillRect(0, 0, s, s)
+    for (let y = 0; y < s; y += 3) {
+      g.fillStyle = `rgba(120,100,70,${0.06 + ((y / 3) % 4) * 0.02})`
+      g.fillRect(0, y, s, 1)
+    }
+    for (let x = 0; x < s; x += 3) {
+      g.fillStyle = `rgba(120,100,70,${0.05 + ((x / 3) % 5) * 0.015})`
+      g.fillRect(x, 0, 1, s)
+    }
+    for (let k = 0; k < 60; k++) {
+      g.fillStyle = 'rgba(255,255,250,0.35)'
+      g.fillRect((k * 53) % s, (k * 97) % s, 6 + (k % 5), 1)
+    }
+  }, 0.5)
+}
+
 
 function quiltTexture(): THREE.CanvasTexture {
   return canvasTexture(256, (g, s) => {
@@ -272,57 +300,37 @@ function quiltTexture(): THREE.CanvasTexture {
 }
 
 function rugTexture(): THREE.CanvasTexture {
-  // a palace carpet: a burgundy field, a gold-and-ivory guard border, a
-  // central medallion with lobed petals and quarter medallions in the corners
+  // a natural rug: rows of braided jute in oat and straw, with a plain darker
+  // border band and a fringe line at each end
   return canvasTexture(1024, (g, s) => {
-    g.fillStyle = '#5a4030'
+    g.fillStyle = '#cbb691'
     g.fillRect(0, 0, s, s)
-    for (let k = 0; k < 9000; k++) {
-      g.fillStyle = `rgba(${120 + (k % 40)}, ${90 + (k % 20)}, ${64 + (k % 24)}, 0.22)`
-      g.fillRect((k * 31) % s, (k * 87) % s, 2, 2)
-    }
-    const band = (inset: number, w: number, col: string) => {
-      g.strokeStyle = col
-      g.lineWidth = w
-      g.strokeRect(inset, inset, s - inset * 2, s - inset * 2)
-    }
-    band(18, 10, '#b58d4a')
-    band(40, 26, '#e9dcc2')
-    band(70, 6, '#b58d4a')
-    // vine motif along the ivory band
-    g.strokeStyle = '#8a5a2a'
-    g.lineWidth = 3
-    for (let t = 52; t < s - 52; t += 32) {
-      for (const [x, y, dx, dy] of [[t, 40, 1, 0], [t, s - 40, 1, 0], [40, t, 0, 1], [s - 40, t, 0, 1]] as const) {
+    const row = 14
+    for (let y = 0; y < s; y += row) {
+      for (let x = 0; x < s; x += row * 2) {
+        const k = ((x / (row * 2)) + (y / row)) % 3
+        g.fillStyle = k === 0 ? '#d8c39c' : k === 1 ? '#bda579' : '#c9b48a'
         g.beginPath()
-        g.arc(x + dx * 8, y + dy * 8, 9, 0, Math.PI * 2)
-        g.stroke()
-      }
-    }
-    const medallion = (cx: number, cy: number, r: number) => {
-      for (let i = 0; i < 16; i++) {
-        const a = (i / 16) * Math.PI * 2
-        g.fillStyle = i % 2 ? '#b58d4a' : '#e9dcc2'
+        g.ellipse(x + row, y + row / 2, row, row * 0.42, 0.35, 0, Math.PI * 2)
+        g.fill()
+        g.fillStyle = 'rgba(80,60,30,0.14)'
         g.beginPath()
-        g.ellipse(cx + Math.cos(a) * r * 0.62, cy + Math.sin(a) * r * 0.62, r * 0.36, r * 0.14, a, 0, Math.PI * 2)
+        g.ellipse(x + row + 4, y + row / 2 + 3, row * 0.8, row * 0.3, 0.35, 0, Math.PI * 2)
         g.fill()
       }
-      g.fillStyle = '#4a5a3e'
-      g.beginPath(); g.arc(cx, cy, r * 0.42, 0, Math.PI * 2); g.fill()
-      g.fillStyle = '#b58d4a'
-      g.beginPath(); g.arc(cx, cy, r * 0.28, 0, Math.PI * 2); g.fill()
-      g.fillStyle = '#5a4030'
-      g.beginPath(); g.arc(cx, cy, r * 0.12, 0, Math.PI * 2); g.fill()
     }
-    medallion(s / 2, s / 2, s * 0.24)
-    for (const [cx, cy] of [[76, 76], [s - 76, 76], [76, s - 76], [s - 76, s - 76]] as const) medallion(cx, cy, s * 0.11)
-    // a scatter of small gold sprigs across the field
-    g.fillStyle = 'rgba(181,141,74,0.7)'
-    for (let i = 0; i < 40; i++) {
-      const x = 130 + ((i * 197) % (s - 260)), y = 130 + ((i * 311) % (s - 260))
-      if (Math.hypot(x - s / 2, y - s / 2) < s * 0.27) continue
-      g.beginPath(); g.arc(x, y, 5, 0, Math.PI * 2); g.fill()
-      g.fillRect(x - 1, y - 14, 2, 28); g.fillRect(x - 14, y - 1, 28, 2)
+    g.strokeStyle = '#a8905f'
+    g.lineWidth = 34
+    g.strokeRect(34, 34, s - 68, s - 68)
+    g.strokeStyle = '#e4d3ae'
+    g.lineWidth = 4
+    g.strokeRect(58, 58, s - 116, s - 116)
+    // the fringe at the two ends
+    g.strokeStyle = 'rgba(230,214,180,0.9)'
+    g.lineWidth = 2
+    for (let x = 12; x < s; x += 9) {
+      g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 2, 16); g.stroke()
+      g.beginPath(); g.moveTo(x, s); g.lineTo(x + 2, s - 16); g.stroke()
     }
   }, 3.0)
 }
@@ -352,6 +360,8 @@ export function makeMaterials() {
   const wood = woodTexture()
   const walnut = walnutTexture()
   const rug = rugTexture()
+  const jute = juteTexture()
+  const linen = linenTexture()
 
   return {
     oak: new THREE.MeshStandardMaterial({ map: oak, roughness: 0.6, metalness: 0.02, side: THREE.DoubleSide }),
@@ -380,19 +390,20 @@ export function makeMaterials() {
     // the upholstery: crushed velvets with a silk sheen, the way a palace
     // seat catches the light - burgundy for the seats, a deeper wine for the
     // backs and arms, bottle green for the cushions on the beds
-    fabric: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x8a7462, roughness: 0.66, sheen: 0.8, sheenColor: new THREE.Color(0xd9c3a8), sheenRoughness: 0.6 }),
-    fabricDark: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x6a5546, roughness: 0.66, sheen: 0.8, sheenColor: new THREE.Color(0xc9ae90), sheenRoughness: 0.6 }),
-    velvetGreen: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x4a5a3e, roughness: 0.62, sheen: 0.9, sheenColor: new THREE.Color(0xb8c49a), sheenRoughness: 0.5 }),
-    quilt: new THREE.MeshPhysicalMaterial({ map: quiltTexture(), color: 0xe4d6bd, roughness: 0.55, sheen: 0.8, sheenColor: new THREE.Color(0xf3e2b8), sheenRoughness: 0.4 }),
-    throw: new THREE.MeshPhysicalMaterial({ color: 0xa8843f, roughness: 0.5, sheen: 0.9, sheenColor: new THREE.Color(0xf0d9a0), sheenRoughness: 0.4 }),
+    // the upholstery: natural fibres - jute on the seats, a shade deeper on the
+    // backs and arms, linen for the cushions and bedding, sage linen bolsters
+    fabric: new THREE.MeshStandardMaterial({ map: jute, color: 0xe2cfa8, roughness: 0.96 }),
+    fabricDark: new THREE.MeshStandardMaterial({ map: jute, color: 0xc4ad86, roughness: 0.96 }),
+    quilt: new THREE.MeshStandardMaterial({ map: quiltTexture(), color: 0xe6d8bf, roughness: 0.92 }),
+    throw: new THREE.MeshStandardMaterial({ map: linen, color: 0xc9a56a, roughness: 0.92 }),
     bin: new THREE.MeshStandardMaterial({ color: 0x3b3b3b, roughness: 0.5, metalness: 0.5 }),
     soil: new THREE.MeshStandardMaterial({ color: 0x3b2b1c, roughness: 1.0 }),
     mirror: new THREE.MeshStandardMaterial({ color: 0xc9d6dd, roughness: 0.05, metalness: 0.9 }),
     stoneTop: new THREE.MeshStandardMaterial({ color: 0xd9d4cb, roughness: 0.3 }),
     hob: new THREE.MeshStandardMaterial({ color: 0x151719, roughness: 0.15, metalness: 0.2 }),
     // bedding and seat cushions in ivory silk; bolsters in green velvet
-    duvet: new THREE.MeshPhysicalMaterial({ color: 0xf6efe0, roughness: 0.5, sheen: 0.9, sheenColor: new THREE.Color(0xfff2cc), sheenRoughness: 0.4 }),
-    pillow: new THREE.MeshPhysicalMaterial({ map: weaveTexture(), color: 0x4a5a3e, roughness: 0.62, sheen: 0.9, sheenColor: new THREE.Color(0xb8c49a), sheenRoughness: 0.5 }),
+    duvet: new THREE.MeshStandardMaterial({ map: linen, color: 0xf4ecdc, roughness: 0.94 }),
+    pillow: new THREE.MeshStandardMaterial({ map: linen, color: 0xb4bb9c, roughness: 0.94 }),
     timber: new THREE.MeshStandardMaterial({ map: walnut, roughness: 0.42 }),
     walnut: new THREE.MeshStandardMaterial({ map: walnut, roughness: 0.42 }),
     leaf: new THREE.MeshStandardMaterial({ color: 0x6e9450, roughness: 0.9 }),
@@ -2531,9 +2542,9 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
       .filter((r) => r.kind === 'flat')
       .map((r) => [[[r.extent[0], r.extent[1]], [r.extent[2], r.extent[1]], [r.extent[2], r.extent[3]], [r.extent[0], r.extent[3]], [r.extent[0], r.extent[1]]]] as [number, number][][])
     // dim amber: the downlights and the cove glow low and warm, not bright
-    const downMat = new THREE.MeshStandardMaterial({ color: 0xf2dcb0, emissive: 0xffb860, emissiveIntensity: 0.9, roughness: 0.4 })
+    const downMat = new THREE.MeshStandardMaterial({ color: 0xf2dcb0, emissive: 0xffbe68, emissiveIntensity: 1.1, roughness: 0.4 })
     const trimMat = M.walnut
-    const coveMat = new THREE.MeshStandardMaterial({ color: 0xe8c890, emissive: 0xffae4e, emissiveIntensity: 0.8, roughness: 0.5 })
+    const coveMat = new THREE.MeshStandardMaterial({ color: 0xe8c890, emissive: 0xffb45c, emissiveIntensity: 1.0, roughness: 0.5 })
     for (const room of model.rooms) {
       const cat = room.def.category
       if (cat === 'outdoor' || cat === 'void') continue
@@ -3080,6 +3091,40 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const wallBed = uiState.show3d.wallBedDown
   const ceilingOn = uiState.show3d.ceiling
   const roofOpen = uiState.show3d.roofOpen
+  const timeOfDay = uiState.show3d.timeOfDay
+  const timeRef = useRef(timeOfDay)
+  timeRef.current = timeOfDay
+  /** The pieces the time-of-day switch retunes, kept from the mount. */
+  const dayRef = useRef<{
+    renderer: THREE.WebGLRenderer; scene: THREE.Scene; sun: THREE.DirectionalLight; hemi: THREE.HemisphereLight
+    sky: THREE.Object3D; lamps: Array<{ light: THREE.PointLight | THREE.SpotLight; base: number; pool: boolean }>
+  } | null>(null)
+  const applyTime = (t: TimeOfDay): void => {
+    const d = dayRef.current
+    if (!d) return
+    const { rig, sky, lampGain } = timeRig(t)
+    d.renderer.toneMappingExposure = rig.exposure
+    d.scene.background = new THREE.Color(rig.background)
+    if (d.scene.fog) d.scene.fog.color.set(rig.background)
+    d.sun.color.set(rig.sunColor)
+    d.sun.intensity = rig.sunIntensity
+    d.sun.position.set(12.24 + rig.sunOffset[0], rig.sunOffset[1], 5 + rig.sunOffset[2])
+    d.hemi.color.set(rig.hemiSky)
+    d.hemi.groundColor.set(rig.hemiGround)
+    d.hemi.intensity = rig.hemiIntensity
+    const fresh = skyDome(new THREE.Vector3(rig.sunOffset[0], rig.sunOffset[1], rig.sunOffset[2]), sky)
+    fresh.position.copy(d.sky.position)
+    d.scene.remove(d.sky)
+    d.scene.add(fresh)
+    d.sky = fresh
+    for (const l of d.lamps) {
+      if (l.pool) {
+        l.light.color.set(rig.pointColor)
+        l.light.intensity = rig.pointIntensity
+      } else l.light.intensity = l.base * lampGain
+    }
+  }
+  useEffect(() => { applyTime(timeOfDay) }, [timeOfDay])
   const shutRef = useRef(doorsShut)
   shutRef.current = doorsShut
   const bedRef = useRef(wallBed)
@@ -3122,7 +3167,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFShadowMap
-    const rig = lightRig(getAssign().lighting ?? null, 'walk')
+    const mood = getAssign().lighting ?? null
+    const rig = mood ? lightRig(mood, 'walk') : timeRig(timeRef.current).rig
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = rig.exposure
     mount.appendChild(renderer.domElement)
@@ -3134,7 +3180,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // smoggy; the block itself, seen from the overview, stays crisp.
     scene.fog = new THREE.Fog(rig.background, 160, 380)
     // sky, clouds and the city below and around - the things the hedge is there to hide
-    const sky = skyDome(new THREE.Vector3(rig.sunOffset[0], rig.sunOffset[1], rig.sunOffset[2]))
+    let sky: THREE.Object3D = skyDome(new THREE.Vector3(rig.sunOffset[0], rig.sunOffset[1], rig.sunOffset[2]), timeRig(timeRef.current).sky)
     scene.add(sky)
     scene.add(cityscape({ bbox: model.envelopeBBox }))
 
@@ -3161,7 +3207,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     scene.add(furn)
 
     // ---- light
-    scene.add(new THREE.HemisphereLight(rig.hemiSky, rig.hemiGround, rig.hemiIntensity))
+    const hemi = new THREE.HemisphereLight(rig.hemiSky, rig.hemiGround, rig.hemiIntensity)
+    scene.add(hemi)
     const sun = new THREE.DirectionalLight(rig.sunColor, rig.sunIntensity)
     sun.position.set(12.24 + rig.sunOffset[0], rig.sunOffset[1], 5 + rig.sunOffset[2])
     sun.castShadow = true
@@ -3180,8 +3227,21 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       if (r.def.category !== 'habitable' && r.def.id !== 'R-ENTRY') continue
       const p = new THREE.PointLight(rig.pointColor, rig.pointIntensity, Math.max(r.width, r.depth) * S * 1.4, 1.8)
       p.position.set(r.centroid.x * S, (r.ceiling - 350) * S, r.centroid.y * S)
+      p.userData.pool = true
       scene.add(p)
     }
+    // every lamp in the house, with the intensity it was built with, so the time
+    // of day can turn them up for the evening and the night
+    const lamps: Array<{ light: THREE.PointLight | THREE.SpotLight; base: number; pool: boolean }> = []
+    scene.traverse((o) => {
+      if (o instanceof THREE.PointLight || o instanceof THREE.SpotLight) lamps.push({ light: o, base: o.intensity, pool: !!o.userData.pool })
+    })
+    dayRef.current = {
+      renderer, scene, sun, hemi,
+      get sky() { return sky }, set sky(v: THREE.Object3D) { sky = v },
+      lamps,
+    }
+    if (!mood) applyTime(timeRef.current)
 
     // the street, far below, so looking over the parapet reads as height
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(1400, 1400),
@@ -3354,7 +3414,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       } else {
         orbit.update()
       }
-      followCamera(sky, camera)
+      followCamera(dayRef.current?.sky ?? sky, camera)
       renderer.render(scene, camera)
     }
 
@@ -3441,6 +3501,15 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           >
             Ceiling: {ceilingOn ? 'on' : 'off'}
           </button>
+          <span style={{ width: 6 }} />
+          <select
+            value={timeOfDay}
+            style={{ width: 104 }}
+            onChange={(e) => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, timeOfDay: e.target.value as TimeOfDay } }))}
+            title="Time of day: the sun, the sky and how much the house's own lamps carry"
+          >
+            {TIMES_OF_DAY.map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+          </select>
           {solids.roofs.some((r) => r.kind === 'barrel' && r.retractable) && (
             <button
               onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, roofOpen: !st.show3d.roofOpen } }))}

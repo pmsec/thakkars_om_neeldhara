@@ -121,6 +121,8 @@ export interface PortalState {
     ceiling: boolean
     /** The telescoping glass roof slid open: each half stacked at its own end. */
     roofOpen: boolean
+    /** The walkthrough's time of day: sun, sky and how much the lamps carry. */
+    timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night'
   }
   sun: Sun
   /**
@@ -167,7 +169,7 @@ export const initialState: PortalState = {
   snap: true,
   cutaway: 3505,
   section: { axis: null, at: 12240 },
-  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false, ceiling: true, roofOpen: false },
+  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false, ceiling: true, roofOpen: false, timeOfDay: 'afternoon' },
   sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
   panels: { left: true, right: true },

@@ -54,11 +54,11 @@ export function lightRig(mood: LightMood | null, view: 'walk' | 'top'): LightRig
   if (!mood) {
     return view === 'walk'
       ? {
-          // a palace afternoon: gilded sun, warm bounce off the stone, candle-warm
-          // pools in the rooms
+          // an afternoon: a warm sun, warm bounce off the stone, and in every room
+          // the same amber pool the kitchen's under-cabinet strips throw
           sunColor: 0xffe9c8, sunIntensity: 1.7, sunOffset: [6, 22, 14],
           hemiSky: 0xe6eef5, hemiGround: 0x9a8666, hemiIntensity: 0.95,
-          pointColor: 0xffc27a, pointIntensity: 0.55, exposure: 1.02, background: 0xcfe0ea,
+          pointColor: 0xffc978, pointIntensity: 0.65, exposure: 1.02, background: 0xcfe0ea,
         }
       : {
           sunColor: 0xfff2dd, sunIntensity: 1.7, sunOffset: [-8, 26, 12],
@@ -88,5 +88,38 @@ export function lightRig(mood: LightMood | null, view: 'walk' | 'top'): LightRig
     pointIntensity: 0.15 + 0.85 * (1 - b),
     exposure: 0.85 + 0.35 * b,
     background: lerpColor(lerpColor(0x2e3644, 0xcfe0ea, b), 0xd9b98a, w * (1 - b) * 0.5),
+  }
+}
+
+export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night'
+export const TIMES_OF_DAY: Array<[TimeOfDay, string]> = [
+  ['morning', 'Morning'], ['afternoon', 'Afternoon'], ['evening', 'Evening'], ['night', 'Night'],
+]
+
+/**
+ * The walkthrough at a time of day: the sun, sky and exposure for it, which
+ * sky to paint, and how much the house's own lamps count (they carry the
+ * night). Afternoon is the rig the walkthrough always had.
+ */
+export function timeRig(t: TimeOfDay): { rig: LightRig; sky: 'day' | 'evening' | 'night'; lampGain: number } {
+  switch (t) {
+    case 'morning':
+      return {
+        rig: lightRig({ name: 'Morning', warmth: 0.12, brightness: 1.0, sunDir: 'E', sunHeight: 'mid' }, 'walk'),
+        sky: 'day', lampGain: 0.7,
+      }
+    case 'evening':
+      return { rig: lightRig(LIGHT_PRESETS.evening, 'walk'), sky: 'evening', lampGain: 1.5 }
+    case 'night':
+      return {
+        rig: {
+          sunColor: 0x8fa8d8, sunIntensity: 0.12, sunOffset: [-8, 16, -12],
+          hemiSky: 0x1a2438, hemiGround: 0x0c0a08, hemiIntensity: 0.3,
+          pointColor: 0xffc070, pointIntensity: 0.95, exposure: 0.95, background: 0x080c18,
+        },
+        sky: 'night', lampGain: 2.0,
+      }
+    default:
+      return { rig: lightRig(null, 'walk'), sky: 'day', lampGain: 1.0 }
   }
 }

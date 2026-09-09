@@ -541,6 +541,26 @@ def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42, u_end=0.05):
     return [('poly', back + list(reversed(front)), 'solid')]
 
 
+def arch_console_par_flank(dep=300, n=90, u0=0.05, u1=1.0):
+    """The parents' console on the WEST FLANK of their bath's arch.
+
+    The full-height cupboard (arch_console_par) stops just past the crown, so
+    its doors stay clear of the bed's foot.  From that cut an 800 CONSOLE with
+    cabinets under — Karan's piece, on the part of the sweep the cupboard
+    leaves free — carries the same face on round the flank to the foot of the
+    arch at MB_YW.  300 deep, not Karan's 400: the flank's front swings west
+    as it comes down, and at 400 it came within 430 of the bed's foot and cut
+    the bed zone in two.  It ends in a vertical face at the foot, 15 above the
+    bath door's jamb.  The cupboard's end cut and the console's start are the
+    same radial line, so the two read as one run of joinery that drops from
+    full height to counter height at the crown."""
+    h = D.T_MB / 2
+    us = np.linspace(u0, u1, n)
+    back = [mb_pt(u, -h) for u in us]
+    front = [mb_pt(u, -h - dep) for u in us]
+    return [('poly', back + list(reversed(front)), 'solid')]
+
+
 def bath_divider(leaves=4):
     """The folding wooden divider across the parents' cubicle, shown SHUT.
 

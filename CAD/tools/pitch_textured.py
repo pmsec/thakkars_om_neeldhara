@@ -302,6 +302,8 @@ def main():
         prim(p, shadow=False)
     for p in R.arch_console_par():
         prim(p)
+    for p in R.arch_console_par_flank():  # and the console on the flank below it
+        prim(p)
     for p in R.east(R.arch_console):
         prim(p)
     for p in R.suite_screen():

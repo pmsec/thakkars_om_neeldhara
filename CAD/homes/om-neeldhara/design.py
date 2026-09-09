@@ -630,23 +630,24 @@ _ONCE = [
     # there is no column to swallow, so it is simply the full stretch and the
     # joinery runs on into the partition block without a break.
     #
-    # The bed used to centre on the room.  It sits 250 NORTH of that now,
-    # because the bath's arch moved up to 4350 and its west flank came within
-    # 700 of the bed's foot: with the bed at 2397-4327 the foot line is 52
-    # above the crown's outer face, so the way from the bed round to the bath
-    # door and the glass is open floor, not a slot between the foot and the
-    # arch.  1047 to the terrace wall, 1548 to the partition.  The headboard
-    # does not move — it is the whole blank wall either way.
+    # The bed used to centre on the room.  It sits 450 NORTH of that now,
+    # because the bath's arch moved up to 4350 and the console on its west
+    # flank swings out toward the bed's foot as it comes down: with the bed at
+    # 2197-4127 the foot line is 250 above the crown, and the way from the bed
+    # round to the bath door and the glass is 800 clear past the console.
+    # 847 to the terrace wall, 1748 to the partition.  The headboard does not
+    # move — it is the whole blank wall either way; the north side table sits
+    # under the window's sill.
     ('joinery',   -450, 1950, -250, 5875, "headboard  ·  3925 x 200"),
     # A DRAWER BASE under the bed: one deep drawer on each long side, 900 x
     # 350 pull, 250 high in the 260 frame, between the side table and the
     # foot's rounding.  Drawn dashed pulled out.  About 0.9 m3 a bed.
-    ('bed-rw',    -250, 2397, 1782, 4327,
+    ('bed-rw',    -250, 2197, 1782, 4127,
      "king 1930 x 2032, drawer base  ·  foot corners 594, head square on the headboard"),
-    ('under',     250, 2047, 1150, 2397, "drawer pulled out  ·  900 x 350"),
-    ('under',     250, 4327, 1150, 4677, "drawer pulled out  ·  900 x 350"),
-    ('counter-r', -250, 1950, 200, 2347, "side table  ·  550 x 400, on the window jamb"),
-    ('counter-r', -250, 4377, 200, 4927, "side table  ·  550 x 450"),
+    ('under',     250, 1847, 1150, 2197, "drawer pulled out  ·  900 x 350"),
+    ('under',     250, 4127, 1150, 4477, "drawer pulled out  ·  900 x 350"),
+    ('counter-r', -250, 1750, 200, 2147, "side table  ·  550 x 400, under the window sill"),
+    ('counter-r', -250, 4177, 200, 4727, "side table  ·  550 x 450"),
 
     # ------------------------- THE PARTITION: TINTED GLASS, END TO END
     # It is not a masonry wall, and it is not joinery any more either.  The

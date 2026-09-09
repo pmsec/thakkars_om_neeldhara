@@ -394,6 +394,9 @@ export function makeMaterials() {
     grass: new THREE.MeshStandardMaterial({ map: grass, roughness: 1.0, side: THREE.DoubleSide }),
     deckBoard: new THREE.MeshStandardMaterial({ map: oak, roughness: 0.75 }),
     plaster: new THREE.MeshStandardMaterial({ map: plaster, roughness: 0.92, side: THREE.DoubleSide }),
+    // a loft's soffit: plaster that reads lit from below, because the room's
+    // lamps hang above the deck and a loft carries its own light in reality
+    loftPlaster: new THREE.MeshStandardMaterial({ map: plaster, emissive: 0x8a8076, roughness: 0.92, side: THREE.DoubleSide }),
     wallWood: new THREE.MeshStandardMaterial({ map: wood, roughness: 0.55, side: THREE.DoubleSide }),
     glass: new THREE.MeshPhysicalMaterial({
       color: 0xe4f0f4, transparent: true, opacity: 0.13, roughness: 0.06,
@@ -833,11 +836,14 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // A loft is a built deck, not joinery: plastered like the ceiling it hangs
       // from, with a walnut fascia along its open edges
       const loft = /loft/i.test(f.label)
-      const body = polyPiece(f.poly, lift, lift + h, loft ? M.plaster : M.timber, f.room)
+      const body = polyPiece(f.poly, lift, lift + h, loft ? M.loftPlaster : M.timber, f.room)
       if (body) g.add(body)
       if (loft) {
+        // the room's lights hang from the ceiling above the deck; in reality the
+        // loft carries its own lamps, so the deck must not shadow the room below
+        body?.traverse((o) => { o.castShadow = false })
         const fascia = polyPiece(f.poly, lift - 2, lift + 120, M.walnut, f.room)
-        if (fascia) g.add(fascia)
+        if (fascia) { fascia.traverse((o) => { o.castShadow = false }); g.add(fascia) }
         return g
       }
       const alongX = w >= d

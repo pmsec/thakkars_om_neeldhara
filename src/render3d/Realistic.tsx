@@ -4682,8 +4682,17 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       // the piece icons: only those within reach of where you stand
       const iconsGroup = scene.getObjectByName('item-icons')
       if (iconsGroup) {
-        const near = orbit.enabled && !touchWalk.enabled && !lock.isLocked ? 8 : 5.5
-        for (const ic of iconsGroup.children) ic.visible = ic.position.distanceToSquared(camera.position) < near * near
+        // within 4.5 m, and only the nearer of a piece's two icons
+        const nearest = new Map<string, { d: number; o: THREE.Object3D }>()
+        for (const ic of iconsGroup.children) {
+          ic.visible = false
+          const d = ic.position.distanceToSquared(camera.position)
+          if (d > 4.5 * 4.5) continue
+          const id = ic.userData.item as string
+          const cur = nearest.get(id)
+          if (!cur || d < cur.d) nearest.set(id, { d, o: ic })
+        }
+        for (const { o } of nearest.values()) o.visible = true
       }
       renderer.render(scene, camera)
       // adaptive resolution: a run of slow frames steps the pixel ratio down, a

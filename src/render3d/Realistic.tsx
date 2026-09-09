@@ -2367,61 +2367,23 @@ function tagItem(o: THREE.Object3D, id: string, mode: 'open' | 'shut', anchor: I
   o.userData.anchor = anchor
 }
 
-let iconTex: THREE.CanvasTexture | null = null
-function iconTexture(): THREE.CanvasTexture | null {
-  if (iconTex) return iconTex
-  if (typeof document === 'undefined') return null
-  const c = document.createElement('canvas')
-  c.width = 128
-  c.height = 128
-  const g = c.getContext('2d')
-  if (!g) return null
-  // a small soft dot, warm white with a faint dark rim, and nothing else: it is
-  // there for whoever looks for it, not to announce itself
-  const grad = g.createRadialGradient(64, 64, 6, 64, 64, 40)
-  grad.addColorStop(0, 'rgba(255, 246, 225, 0.95)')
-  grad.addColorStop(0.55, 'rgba(255, 236, 200, 0.85)')
-  grad.addColorStop(1, 'rgba(120, 90, 50, 0)')
-  g.fillStyle = grad
-  g.beginPath(); g.arc(64, 64, 40, 0, Math.PI * 2); g.fill()
-  iconTex = new THREE.CanvasTexture(c)
-  iconTex.colorSpace = THREE.SRGBColorSpace
-  return iconTex
-}
 
 /**
- * One tiny dot per interactive piece, all of them one draw call: a Points
- * cloud whose entries the render loop moves under the floor when they are out
- * of reach. A tap picks the nearest shown dot on screen.
+ * The anchor points of every interactive piece - one on each face of an
+ * opening, so one is always clear of the leaf - in scene units. Nothing is
+ * drawn for them: they are what names the piece in front of you, and what a
+ * tap on the canvas is matched against.
  */
 type DotEntry = { id: string; x: number; y: number; z: number; shown: boolean }
-function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAnchor>): THREE.Points | null {
-  const tex = iconTexture()
-  if (!tex) return null
+function pieceAnchors(root: THREE.Object3D, extra: Array<{ id: string } & ItemAnchor>): DotEntry[] {
   const seen = new Set<string>()
   const entries: Array<{ id: string } & ItemAnchor> = [...extra]
   root.traverse((o) => {
     const id = o.userData.item as string | undefined
     const a = o.userData.anchor as ItemAnchor | ItemAnchor[] | undefined
-    // an opening carries a dot on each of its faces, so one is always clear of the leaf
     if (id && a && !seen.has(id)) { seen.add(id); for (const q of Array.isArray(a) ? a : [a]) entries.push({ id, ...q }) }
   })
-  const dots: DotEntry[] = entries.map((e) => ({ id: e.id, x: e.x * S, y: e.h * S, z: e.y * S, shown: false }))
-  const pos = new Float32Array(dots.length * 3)
-  for (let i = 0; i < dots.length; i++) { pos[i * 3] = dots[i].x; pos[i * 3 + 1] = -100; pos[i * 3 + 2] = dots[i].z }
-  const geo = new THREE.BufferGeometry()
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
-  geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(12, 1.5, 6), 40)
-  const mat = new THREE.PointsMaterial({ map: tex, size: 0.07, sizeAttenuation: true, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false, alphaTest: 0.02 })
-  const pts = new THREE.Points(geo, mat)
-  pts.name = 'item-dots'
-  pts.frustumCulled = false
-  pts.renderOrder = 990
-  // not drawn: the dots were the tap targets before the touch button took over,
-  // and the list behind them still names the piece in front of you
-  pts.visible = false
-  pts.userData.dots = dots
-  return pts
+  return entries.map((e) => ({ id: e.id, x: e.x * S, y: e.h * S, z: e.y * S, shown: false }))
 }
 
 /**
@@ -3948,8 +3910,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   if (cab) extra.push({ id: 'wallbed', x: cab.x + cab.w / 2 + (cab.w >= cab.d ? 0 : 500), y: cab.y + cab.d / 2 + (cab.w >= cab.d ? 500 : 0), h: 1250 })
   const dry = furniture.find((f) => /clothes dryer/i.test(f.label))
   if (dry) extra.push({ id: 'dryer', x: dry.x + dry.w / 2, y: dry.y + dry.d / 2, h: 1550 })
-  const dots = itemIcons(root, extra)
-  if (dots) root.add(dots)
+  root.userData.anchors = pieceAnchors(root, extra)
   root.add(wallArt(M))
   root.add(kitchenOverheads(M))
   root.add(bathMirrors(M))
@@ -4877,8 +4838,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // The dot nearest the tap on screen, within a finger's radius, wins - a
     // screen-space test rather than a ray, so a tap a few pixels off a 55 mm
     // dot still lands. The dot pulses once so the tap is seen to register.
-    const dotsObj = scene.getObjectByName('item-dots') as THREE.Points | undefined
-    const dotList = (dotsObj?.userData.dots ?? []) as DotEntry[]
+    const dotList = (house.userData.anchors ?? []) as DotEntry[]
     let lastPickAt = 0
     const pickAt = (cx: number, cy: number): void => {
       lastPickAt = performance.now()
@@ -5012,7 +4972,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       followCamera(dayRef.current?.sky ?? sky, camera)
       frame++
       // the piece dots: within 4.5 m, the nearer of a piece's two, the rest parked under the floor
-      if (dotsObj && frame % 4 === 0) {
+      if (dotList.length && frame % 4 === 0) {
         const nearest = new Map<string, { d: number; i: number }>()
         for (let i = 0; i < dotList.length; i++) {
           const dt = dotList[i]
@@ -5023,9 +4983,6 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           if (!cur || d < cur.d) nearest.set(dt.id, { d, i })
         }
         for (const { i } of nearest.values()) dotList[i].shown = true
-        const arr = (dotsObj.geometry.getAttribute('position') as THREE.BufferAttribute)
-        for (let i = 0; i < dotList.length; i++) arr.setY(i, dotList[i].shown ? dotList[i].y : -100)
-        arr.needsUpdate = true
         // the piece in front of you: of the shown dots, the one nearest the
         // centre of the view (ahead of the camera, within its field), else none
         const fwd = new THREE.Vector3()

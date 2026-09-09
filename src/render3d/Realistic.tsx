@@ -367,6 +367,28 @@ function rugTexture(): THREE.CanvasTexture {
   }, 2.4)
 }
 
+/** a pale teak veneer for the wardrobes: warm, a shade lighter than the walnut
+ * joinery, a straight quarter-cut grain */
+function teakTexture(): THREE.CanvasTexture {
+  return canvasTexture(256, (g, s) => {
+    g.fillStyle = '#b8895a'
+    g.fillRect(0, 0, s, s)
+    for (let k = 0; k < 44; k++) {
+      const x = (k * 23 + (k % 3) * 7) % s
+      g.strokeStyle = `rgba(92, 58, 28, ${0.08 + (k % 4) / 40})`
+      g.lineWidth = 0.8 + (k % 3) * 0.5
+      g.beginPath()
+      g.moveTo(x, 0)
+      g.bezierCurveTo(x + 2, s * 0.3, x - 2, s * 0.7, x + 1, s)
+      g.stroke()
+    }
+    for (let k = 0; k < 6; k++) {
+      g.fillStyle = `rgba(255, 230, 190, ${0.05 + (k % 2) / 40})`
+      g.fillRect((k * 47) % s, 0, 14, s)
+    }
+  }, 1.6)
+}
+
 function woodTexture(): THREE.CanvasTexture {
   return canvasTexture(256, (g, s) => {
     g.fillStyle = '#8a6238'
@@ -390,6 +412,7 @@ export function makeMaterials() {
   const grass = grassTexture()
   const plaster = plasterTexture()
   const wood = woodTexture()
+  const teak = teakTexture()
   const walnut = walnutTexture()
   const rug = rugTexture()
   const jute = juteTexture()
@@ -405,6 +428,7 @@ export function makeMaterials() {
     // lamps hang above the deck and a loft carries its own light in reality
     loftPlaster: new THREE.MeshStandardMaterial({ map: plaster, emissive: 0x8a8076, roughness: 0.92, side: THREE.DoubleSide }),
     wallWood: new THREE.MeshStandardMaterial({ map: wood, roughness: 0.55, side: THREE.DoubleSide }),
+    teak: new THREE.MeshStandardMaterial({ map: teak, roughness: 0.5, metalness: 0.02 }),
     glass: new THREE.MeshPhysicalMaterial({
       color: 0xe4f0f4, transparent: true, opacity: 0.13, roughness: 0.06,
       metalness: 0, side: THREE.DoubleSide, depthWrite: false,
@@ -642,6 +666,57 @@ function treeGroup(M: Mats, w: number, d: number, height: number): THREE.Group {
   return g
 }
 
+/**
+ * A wardrobe in pale teak: the carcass set 20 back from the drawn face on a
+ * recessed dark plinth, door slabs bringing the front out to the face, a
+ * shadow gap under the top, and a long brass bar on every door. The wall
+ * bed's cabinet is the same box with one blank panel and no bars.
+ */
+function teakWardrobe(f: FurnitureItem, M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const w = f.w, d = f.d
+  const cx = f.x + w / 2, cy = f.y + d / 2
+  const wallBed = /wall bed/i.test(f.label)
+    // a pale teak wardrobe: the carcass set 20 back from the drawn face on a
+    // recessed dark plinth, the door slabs bringing the front out to the
+    // face, a shadow gap under the top, long brass bars for handles
+    const H = f.height
+    const room = model.roomById.get(f.room)
+    const ddx = (room?.centroid.x ?? cx) - cx, ddy = (room?.centroid.y ?? cy) - cy
+    const alongX = Math.abs(ddx) >= Math.abs(ddy)
+    const sgn = alongX ? Math.sign(ddx) || 1 : Math.sign(ddy) || 1
+    const PL = 80, DT = 20
+    const carcW = alongX ? w - DT : w, carcD = alongX ? d : d - DT
+    const carcX = alongX ? -sgn * DT / 2 : 0, carcZ = alongX ? 0 : -sgn * DT / 2
+    g.add(box(carcW - (alongX ? 0 : 60), PL, carcD - (alongX ? 60 : 0), M.trunk, carcX + (alongX ? -sgn * 30 : 0), PL / 2, carcZ + (alongX ? 0 : -sgn * 30)))
+    g.add(box(carcW, H - PL, carcD, M.teak, carcX, PL + (H - PL) / 2, carcZ))
+    const faceLen = alongX ? d : w
+    const n = wallBed ? 1 : Math.max(1, Math.round(faceLen / 500))
+    const doorH = H - PL - 24
+    const gap = 4
+    const fx = alongX ? sgn * (w / 2 - DT / 2) : 0
+    const fz = alongX ? 0 : sgn * (d / 2 - DT / 2)
+    for (let k = 0; k < n; k++) {
+      const c = -faceLen / 2 + (k + 0.5) * (faceLen / n)
+      const leaf = faceLen / n - gap
+      g.add(box(alongX ? DT : leaf, doorH, alongX ? leaf : DT, M.teak, alongX ? fx : c, PL + doorH / 2, alongX ? c : fz))
+      if (wallBed) continue
+      // the bar: on the leading stile, pairs meeting in the middle
+      const lead = (k % 2 ? -1 : 1) * (leaf / 2 - 70)
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, Math.min(320, doorH * 0.28) * S, 10), M.brass)
+      bar.position.set((alongX ? fx + sgn * 24 : c + lead) * S, (PL + Math.min(doorH * 0.5, 1050)) * S, (alongX ? c + lead : fz + sgn * 24) * S)
+      g.add(bar)
+      for (const e of [-1, 1]) {
+        g.add(box(alongX ? 24 : 12, 12, alongX ? 12 : 24, M.brass, alongX ? fx + sgn * 12 : c + lead, PL + Math.min(doorH * 0.5, 1050) + e * (Math.min(320, doorH * 0.28) / 2 - 20), alongX ? c + lead : fz + sgn * 12))
+      }
+    }
+    // the shadow gap under the top and the top rail
+    g.add(box(alongX ? DT + 2 : faceLen, 8, alongX ? faceLen : DT + 2, M.trunk, alongX ? fx - sgn * 4 : 0, PL + doorH + 4, alongX ? 0 : fz - sgn * 4))
+    g.add(box(alongX ? DT : faceLen, 16, alongX ? faceLen : DT, M.teak, alongX ? fx : 0, H - 8, alongX ? 0 : fz))
+    place(g, cx, cy)
+    return g
+}
+
 export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null {
   // A real 3D object assigned to this piece replaces the built-in mesh —
   // already FITTED to the drawn footprint, so the projection gate still holds.
@@ -849,7 +924,9 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // A loft is a built deck, not joinery: plastered like the ceiling it hangs
       // from, with a walnut fascia along its open edges
       const loft = /loft/i.test(f.label)
-      const body = polyPiece(f.poly, lift, lift + h, loft ? M.loftPlaster : M.timber, f.room)
+      // a loft's fascia band and its body used to share the same outline over the
+      // same 120 mm of height: two faces on one plane, which flickered
+      const body = polyPiece(f.poly, loft ? lift + 120 : lift, lift + h, loft ? M.loftPlaster : M.timber, f.room)
       if (body) g.add(body)
       if (loft) {
         // the room's lights hang from the ceiling above the deck; in reality the
@@ -862,9 +939,9 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       const alongX = w >= d
       const n = Math.max(1, Math.round(Math.max(w, d) / 450))
       for (let i = 1; i < n; i++) {
-        const line = box(alongX ? 4 : d + 2, h - 60, alongX ? w + 2 : 4, M.trunk)
-        if (alongX) line.scale.set(1, 1, (d + 2) / (w + 2))
-        else line.scale.set((w + 2) / (d + 2), 1, 1)
+        const line = box(alongX ? 4 : d + 12, h - 60, alongX ? w + 12 : 4, M.trunk)
+        if (alongX) line.scale.set(1, 1, (d + 12) / (w + 12))
+        else line.scale.set((w + 12) / (d + 12), 1, 1)
         place(line, cx + (alongX ? -w / 2 + (i * w) / n : 0), cy + (alongX ? 0 : -d / 2 + (i * d) / n), lift + h / 2)
         g.add(line)
       }
@@ -895,6 +972,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       }
       return g
     }
+    if (f.kind === 'wardrobe' && lift === 0 && !/hatch|headboard/i.test(f.label) && f.poly.length <= 8) return teakWardrobe(f, M)
     if (f.kind === 'wardrobe' || f.kind === 'shelves') {
       const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
       if (body) g.add(body)
@@ -1522,6 +1600,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     }
     case 'wardrobe':
     case 'shelves': {
+      if (f.kind === 'wardrobe' && !/headboard/i.test(f.label)) return teakWardrobe(f, M)
       g.add(box(w, f.height, d, M.timber, 0, f.height / 2, 0))
       doorFronts(g, f, M, 0, f.height)
       place(g, cx, cy)

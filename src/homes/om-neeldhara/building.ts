@@ -55,8 +55,8 @@ export const building: BuildingData = {
       thickness: 150,
       kind: 'interior',
       openings: [
-        { id: 'D-P-BATH', type: 'door', at: [15, 715], head: 2100, hinge: 0, side: 1, label: "Parents' bath door — from the bed zone" },
-        { id: 'D-G-BATH', type: 'door', at: [2185, 2985], head: 2100, hinge: 0, side: 1, label: "Grandmother's bath door — from her zone" },
+        { id: 'D-P-BATH', type: 'door', at: [15, 715], head: 2100, hinge: 1, side: 1, label: "Parents' bath door — from the bed zone" },
+        { id: 'D-G-BATH', type: 'door', at: [2185, 2985], head: 2100, hinge: 1, side: 1, label: "Grandmother's bath door — from her zone" },
       ],
     },
     {

@@ -1030,7 +1030,10 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
            'screen': 2100, 'tv': 1300}
 
 
-HINGE_AT_END = {'D-GAL-E'}
+HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH'}
+# the two west-frame bath doors hinge at the SOUTH jamb and swing INTO the bath
+# (retrofit.mb_door, hinge='S'), so the grandmother's wardrobe can run to the jamb;
+# hinge 1 is the wall's second point, the south end of W-P-BATH-W
 
 
 def room_for(cx, cy):

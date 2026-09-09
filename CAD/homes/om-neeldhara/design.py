@@ -722,6 +722,13 @@ _ONCE = [
     ('sofa-e',   1750, 200, 2550, 1000,
      'single sofa  ·  800, facing west at the tree  ·  200 clear each side'),
 
+    # ------------------------- THE VOID STORES: an aluminium rack in each
+    # A slotted-angle aluminium rack across the back (south) wall of each
+    # void, 400 deep, 2400 high, the void's full 1235 width; 720 of standing
+    # room between it and the door in the north wall.
+    ('shelves',  7730, 2070, 8965, 2470, 'aluminium rack  ·  400 deep, 2400 high'),
+    ('shelves',  15515, 2070, 16750, 2470, 'aluminium rack  ·  400 deep, 2400 high'),
+
     # ------------------------- THE PARENTS' CUBICLE: TWO BATHS
     # The vanities are NOT here — the parents' is a curved console struck off
     # the sweep, see retrofit.mb_console().  The cubicle is 1930 clear and runs

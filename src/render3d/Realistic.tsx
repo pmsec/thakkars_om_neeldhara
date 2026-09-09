@@ -4415,6 +4415,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const [walking, setWalking] = useState(false)
   const [touchWalking, setTouchWalking] = useState(false)
   const [hint, setHint] = useState(true)
+  // the interactive piece nearest the middle of the view, for the one-piece button
+  const [nearItem, setNearItem] = useState<string | null>(null)
+  const nearRef = useRef<string | null>(null)
   const touch = isTouchDevice()
   const touchRef = useRef<TouchWalk | null>(null)
   const walkRef = useRef<((on: boolean) => void) | null>(null)
@@ -4930,6 +4933,20 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         const arr = (dotsObj.geometry.getAttribute('position') as THREE.BufferAttribute)
         for (let i = 0; i < dotList.length; i++) arr.setY(i, dotList[i].shown ? dotList[i].y : -100)
         arr.needsUpdate = true
+        // the piece in front of you: of the shown dots, the one nearest the
+        // centre of the view (ahead of the camera, within its field), else none
+        const fwd = new THREE.Vector3()
+        camera.getWorldDirection(fwd)
+        let bestId: string | null = null
+        let bestScore = 0.55                       // cos of the widest angle that still counts as "in front"
+        for (const dt of dotList) {
+          if (!dt.shown) continue
+          const vx = dt.x - camera.position.x, vy = dt.y - camera.position.y, vz = dt.z - camera.position.z
+          const L = Math.hypot(vx, vy, vz) || 1
+          const c = (vx * fwd.x + vy * fwd.y + vz * fwd.z) / L
+          if (c > bestScore) { bestScore = c; bestId = dt.id }
+        }
+        if (bestId !== nearRef.current) { nearRef.current = bestId; setNearItem(bestId) }
       }
       // the lamps: only the nearest few shade the scene - a constant count, so the
       // shaders compile once - and the far ones stay off until you walk up to them
@@ -5066,6 +5083,35 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           )}
         </div>
       )}
+      {nearItem && (() => {
+        // what the piece is, and which way it is
+        const id = nearItem
+        const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? !doorsShut)
+        const kind = id.split(':')[0]
+        const noun =
+          kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
+          : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
+          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : 'door'
+        const verb =
+          kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
+          : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
+          : `${open ? 'Shut' : 'Open'} this ${noun}`
+        return (
+          <button
+            onClick={() => { diag.log(`button ${id}`); toggleItemRef.current(id) }}
+            title="The piece in front of you; the dot on it does the same"
+            style={{
+              position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: 64,
+              padding: '10px 18px', fontSize: 14, minHeight: 44,
+              background: 'rgba(250,248,244,0.95)', color: '#1e1c18',
+              border: '1px solid #d5cdbb', borderRadius: 10, cursor: 'pointer', zIndex: 6,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+            }}
+          >
+            {verb}
+          </button>
+        )
+      })()}
       <button
         onClick={() => walkRef.current?.(!(walking || touchWalking))}
         aria-pressed={walking || touchWalking}

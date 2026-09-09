@@ -638,8 +638,13 @@ _ONCE = [
     # arch.  1047 to the terrace wall, 1548 to the partition.  The headboard
     # does not move — it is the whole blank wall either way.
     ('joinery',   -450, 1950, -250, 5875, "headboard  ·  3925 x 200"),
+    # A DRAWER BASE under the bed: one deep drawer on each long side, 900 x
+    # 350 pull, 250 high in the 260 frame, between the side table and the
+    # foot's rounding.  Drawn dashed pulled out.  About 0.9 m3 a bed.
     ('bed-rw',    -250, 2397, 1782, 4327,
-     "king 1930 x 2032  ·  foot corners 594, head square on the headboard"),
+     "king 1930 x 2032  ·  foot corners 594, head square on the headboard  ·  drawer base"),
+    ('under',     250, 2047, 1150, 2397, "drawer pulled out  ·  900 x 350"),
+    ('under',     250, 4327, 1150, 4677, "drawer pulled out  ·  900 x 350"),
     ('counter-r', -250, 1950, 200, 2347, "side table  ·  550 x 400, on the window jamb"),
     ('counter-r', -250, 4377, 200, 4927, "side table  ·  550 x 450"),
 
@@ -826,8 +831,13 @@ _ONCE = [
     # Rounded at the FOOT only — 594, a third of the width — and square at the
     # head, so the bed sits flush on the headboard instead of leaving two
     # crescent gaps behind the pillows.
+    # A DRAWER BASE under this bed too: one deep drawer each long side,
+    # 900 x 350 pull, between the side table at the head and the foot's
+    # rounding.  Drawn dashed pulled out.
     ('bed-rr',   HB_X - BED_L, BED_Y0, HB_X, BED_Y1,
-     "king 1930 x 2032  ·  foot corners 594, head square on the headboard"),
+     "king 1930 x 2032  ·  foot corners 594, head square on the headboard  ·  drawer base"),
+    ('under',    23300, BED_Y0 - 350, 24200, BED_Y0, "drawer pulled out  ·  900 x 350"),
+    ('under',    23300, BED_Y1, 24200, BED_Y1 + 350, "drawer pulled out  ·  900 x 350"),
     ('counter-r', HB_X - TAB_D, BED_Y0 - TAB_GAP - TAB_W, HB_X, BED_Y0 - TAB_GAP,
      "side table  ·  550 x 450"),
     ('counter-r', HB_X - TAB_D, BED_Y1 + TAB_GAP, HB_X, BED_Y1 + TAB_GAP + TAB_W,

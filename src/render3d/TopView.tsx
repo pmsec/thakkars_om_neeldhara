@@ -56,11 +56,16 @@ export function TopView({ compact = false }: { compact?: boolean }): React.React
     scene.background = new THREE.Color(rig.background)   // the mat around the plan
 
     const M = makeMaterials()
-    scene.add(buildScene(M, { roofs: false }))
+    const built = buildScene(M, { roofs: false })
+    // the interior ceiling (a toggle in the walkthrough) would hide every room
+    // that is not under the glass vault from a camera looking straight down
+    built.traverse((o) => { if (o.name === 'ceiling') o.visible = false })
+    scene.add(built)
     scene.add(buildFixtures(M))
     const furn = new THREE.Group()
     for (const f of furniture) {
       if (f.label.toLowerCase().includes('fountain')) continue
+      if ((f.lift ?? 0) >= 2000) continue          // lofts would hide the room under them
       const o = furnitureMesh(f, M)
       if (o) furn.add(o)
     }

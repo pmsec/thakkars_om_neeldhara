@@ -204,9 +204,14 @@ WALLS += [
 ]
 
 # --- the two retained deck voids (between deck and pods)
-for vid, (a, b, c, d) in (('W', D.VOID_KEEP[0]), ('E', D.VOID_KEEP[1])):
+# The builder has agreed they can be floored and used as bulk storage, so each
+# has a 700 door cut through its north enclosure on to the deck walk.
+for vid, (a, b, c, d), (g0, g1) in (('W', D.VOID_KEEP[0], D.VOID_DOORS[0]),
+                                     ('E', D.VOID_KEEP[1], D.VOID_DOORS[1])):
     WALLS += [
-        w(f'W-VOID-{vid}-N', [(a, b), (c, b)], 150, 'interior'),
+        w(f'W-VOID-{vid}-N', [(a, b), (c, b)], 150, 'interior',
+          [op(f'D-VOID-{vid}', 'door', g0 - a, g1 - a,
+              label='Void store — 700 door on to the deck walk')]),
         w(f'W-VOID-{vid}-W', [(a, b), (a, d)], 150, 'interior'),
         w(f'W-VOID-{vid}-E', [(c, b), (c, d)], 150, 'interior'),
         w(f'W-VOID-{vid}-S', [(a, d), (c, d)], 150, 'interior'),
@@ -438,10 +443,12 @@ ROOMS = [
      'Sealed', 'Builder shaft, sealed. 1480 × 1200.'),
     ('R-SHAFT-E', 'Sealed shaft (east)', (20800, 600), 'void', 'core', False,
      'Sealed', 'Builder shaft, sealed. 1480 × 1200.'),
-    ('R-VOID-W', 'Retained deck void (west)', (8300, 1900), 'void', 'core', False,
-     'Open void', 'Retained builder void, 1615 × 1420. The west deck recliner backs on to it.'),
-    ('R-VOID-E', 'Retained deck void (east)', (mx(8300), 1900), 'void', 'core', False,
-     'Open void', 'Retained builder void, 1615 × 1420. The east deck recliner backs on to it.'),
+    ('R-VOID-W', 'Void store (west)', (8300, 1900), 'storage', 'shared', True,
+     'Screed', 'The retained builder void, floored as bulk storage with the builder’s '
+     'agreement; a 700 door on to the deck walk. The west recliner backs on to it.'),
+    ('R-VOID-E', 'Void store (east)', (mx(8300), 1900), 'storage', 'shared', True,
+     'Screed', 'The retained builder void, floored as bulk storage with the builder’s '
+     'agreement; a 700 door on to the deck walk. The east recliner backs on to it.'),
 
     ('R-P-SUITE', 'Master suite — parents', (1500, 3500), 'habitable', 'parents', True,
      'Oak plank', 'Bed zone north of the tinted-glass partition; opens full-width to the '
@@ -678,7 +685,9 @@ def emit_building():
                     bits.append(f'sill: {o2["sill"]}')
                     bits.append('nonCirculating: true')
                 if o2['type'] == 'door':
-                    bits.append('hinge: 0')
+                    # help's room's door hinges at the arc end so its leaf
+                    # swings against the arc, clear of the rack on the leg
+                    bits.append(f"hinge: {1 if o2['id'] in HINGE_AT_END else 0}")
                     bits.append('side: 1')
                 if o2['label']:
                     bits.append(f'label: {o2["label"]!r}')
@@ -1019,6 +1028,9 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
            'screen': 2100, 'tv': 1300}
 
 
+HINGE_AT_END = {'D-GAL-E'}
+
+
 def room_for(cx, cy):
     if cy < 1275 and (cx < 2900 or cx > mx(2900)):
         return 'R-P-TERRACE' if cx < M else 'R-K-TERRACE'
@@ -1075,6 +1087,12 @@ def emit_furniture():
         suff = kind.split('-')[1] if '-' in kind else None
         # Wall cabinets hung over a desk are drawn as 'under' with "over" in
         # the label: they exist in 3D as shelves lifted off the floor.
+        if base == 'under' and 'loft' in (lab or '').lower():
+            # a loft: a deep shelf hung high, 2300 up to the ceiling's cove
+            add('shelves', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
+                'Loft, 2300 up', 1100,
+                poly=[(a, b), (c, b), (c, d), (a, d)], lift=2300)
+            continue
         if base == 'under' and 'over' in (lab or '').lower():
             add('shelves', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
                 'Wall cabinets, 350 deep', 700,
@@ -1124,6 +1142,8 @@ def emit_furniture():
         room = room_for(cx, cy)
         label = (lab.split('·')[0].strip() or base) if lab else base
         h = HEIGHTS.get(mapped, 600)
+        if 'full-height' in (lab or '').lower():
+            h = 3300                      # racks to the ceiling's cove
         if base == 'bunk':
             label, h = 'Bunk bed', 2000
         if base == 'gym':
@@ -1272,8 +1292,6 @@ def emit_furniture():
         'The terrace tree — real, in real grass', 2500)
     add('tree', mx(1200) - 350, 600 - 350, 700, 700, 'R-K-TERRACE',
         'The terrace tree — real, in real grass', 2500)
-    # the laundry basket in the utility bay, between the fridge and the stack
-    add('basket', 6467, 10555, 420, 420, 'R-KITCHEN', 'Laundry basket, woven', 560)
     # the great-room tree stands in its planter box: lifted to the soil line
     add('tree', 10123 - 450, 5087 - 450, 900, 900, 'R-GREAT',
         'The tree in the planter box off the sofa’s end', 2400, lift=400)
@@ -1300,6 +1318,9 @@ def emit_furniture():
         add(kind, min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys),
             room, label, h, poly=p)
 
+    # the curved full-height rack on the outside of the guest WC's apse
+    add_outline(R.help_rack(), 'shelves', 'R-HELP',
+                'Full-height rack on the apse, 300 deep', 3300)
     # the great-room rug — the full-width field the sitting group stands on
     add_outline(R.great_room_rug(), 'rug', 'R-GREAT',
                 'The great-room rug, leaf-patterned', 12, styles=('soft',))
@@ -1414,6 +1435,7 @@ def audit_coverage():
             take(fn.__name__, fn(), mirror=True)
     take('arch_console_par', R.arch_console_par())
     take('bath_divider', R.bath_divider())
+    take('help_rack', R.help_rack())
     with R.karan():
         take('arch_console', R.arch_console(), mirror=True)
     take('suite_screen', R.suite_screen())

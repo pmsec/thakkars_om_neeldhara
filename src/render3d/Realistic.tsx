@@ -843,6 +843,28 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       }
       return g
     }
+    if (f.kind === 'shelves' && /\brack\b/i.test(f.label)) {
+      // an open rack: posts at the outline's corners, a shelf every 420 on
+      // the drawn outline, no doors and no back — the wall is its back
+      const H = lift + h
+      const rackPoly = f.poly
+      const shelfAt = (z0: number) => polyPiece(rackPoly, z0, z0 + 24, M.timber, f.room)
+      for (let z = lift + 80; z < H - 40; z += 420) {
+        const sh = shelfAt(z)
+        if (sh) g.add(sh)
+      }
+      const top = shelfAt(H - 24)
+      if (top) g.add(top)
+      // posts: every corner of a straight rack, every eighth point of a curved one
+      const step = f.poly.length <= 6 ? 1 : 8
+      for (let i = 0; i < f.poly.length; i += step) {
+        const q = f.poly[i]
+        const post = box(30, H - lift, 30, M.trunk)
+        place(post, q.x + (q.x < cx ? 15 : -15), q.y + (q.y < cy ? 15 : -15), lift + (H - lift) / 2)
+        g.add(post)
+      }
+      return g
+    }
     if (f.kind === 'wardrobe' || f.kind === 'shelves') {
       const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
       if (body) g.add(body)

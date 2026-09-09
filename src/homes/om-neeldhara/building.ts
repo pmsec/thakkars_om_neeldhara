@@ -253,6 +253,9 @@ export const building: BuildingData = {
       points: [{ x: 7500, y: 1200 }, { x: 9115, y: 1200 }],
       thickness: 150,
       kind: 'interior',
+      openings: [
+        { id: 'D-VOID-W', type: 'door', at: [500, 1200], head: 2100, hinge: 0, side: 1, label: 'Void store — 700 door on to the deck walk' },
+      ],
     },
     {
       id: 'W-VOID-W-W',
@@ -277,6 +280,9 @@ export const building: BuildingData = {
       points: [{ x: 15365, y: 1200 }, { x: 16980, y: 1200 }],
       thickness: 150,
       kind: 'interior',
+      openings: [
+        { id: 'D-VOID-E', type: 'door', at: [415, 1115], head: 2100, hinge: 0, side: 1, label: 'Void store — 700 door on to the deck walk' },
+      ],
     },
     {
       id: 'W-VOID-E-W',
@@ -717,7 +723,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-E', type: 'door', at: [0, 773.147], head: 2100, hinge: 0, side: 1, label: "Service door — east, to help's side" },
+        { id: 'D-GAL-E', type: 'door', at: [0, 773.147], head: 2100, hinge: 1, side: 1, label: "Service door — east, to help's side" },
       ],
     },
   ],
@@ -731,8 +737,8 @@ export const building: BuildingData = {
     { id: 'R-DECK', name: 'All-weather deck', anchor: { x: 12240, y: 1800 }, category: 'outdoor', zone: 'shared', carpet: false, finish: 'Oak plank', finishFollows: 'R-GREAT', publishedSqFt: 385, notes: 'Glazed, cooled, retractable roof. The fountain on the home’s centre; spa in the east grass bed, gym in the west one.' },
     { id: 'R-SHAFT-W', name: 'Sealed shaft (west)', anchor: { x: 3700, y: 600 }, category: 'void', zone: 'core', carpet: false, finish: 'Sealed', notes: 'Builder shaft, sealed. 1480 × 1200.' },
     { id: 'R-SHAFT-E', name: 'Sealed shaft (east)', anchor: { x: 20800, y: 600 }, category: 'void', zone: 'core', carpet: false, finish: 'Sealed', notes: 'Builder shaft, sealed. 1480 × 1200.' },
-    { id: 'R-VOID-W', name: 'Retained deck void (west)', anchor: { x: 8300, y: 1900 }, category: 'void', zone: 'core', carpet: false, finish: 'Open void', notes: 'Retained builder void, 1615 × 1420. The west deck recliner backs on to it.' },
-    { id: 'R-VOID-E', name: 'Retained deck void (east)', anchor: { x: 16180, y: 1900 }, category: 'void', zone: 'core', carpet: false, finish: 'Open void', notes: 'Retained builder void, 1615 × 1420. The east deck recliner backs on to it.' },
+    { id: 'R-VOID-W', name: 'Void store (west)', anchor: { x: 8300, y: 1900 }, category: 'storage', zone: 'shared', carpet: true, finish: 'Screed', notes: 'The retained builder void, floored as bulk storage with the builder’s agreement; a 700 door on to the deck walk. The west recliner backs on to it.' },
+    { id: 'R-VOID-E', name: 'Void store (east)', anchor: { x: 16180, y: 1900 }, category: 'storage', zone: 'shared', carpet: true, finish: 'Screed', notes: 'The retained builder void, floored as bulk storage with the builder’s agreement; a 700 door on to the deck walk. The east recliner backs on to it.' },
     { id: 'R-P-SUITE', name: 'Master suite — parents', anchor: { x: 1500, y: 3500 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 206, notes: 'Bed zone north of the tinted-glass partition; opens full-width to the terrace. The bath’s arch stands in its south-east corner with a full-height cupboard curled round it; the study desk is back in the north-east corner.' },
     { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 108, notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — behind a partition of brown tinted glass end to end, three bypass leaves that stack into a third of it.' },
     { id: 'R-P-BATH', name: "Parents' bath", anchor: { x: 3550, y: 5700 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 53, notes: 'The north half of the cubicle, under the arch: curved vanity, WC on the duct wall, 900 walk-in shower; its own door from the bed zone. The folding divider on its south side opens it into the grandmother’s bath.' },

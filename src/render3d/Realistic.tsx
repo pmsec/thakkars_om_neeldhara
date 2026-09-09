@@ -2022,18 +2022,21 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
           // a walnut-framed leaf with a grid of bevelled glass squares: stiles and
           // rails, muntins between the squares, and each square's bevel read as a
           // brighter border let into the pane
+          // the lighter wood (the pod doors' oak-toned walnut), so the frame reads
+          // as wood and not as a black lattice, and clear glass in the squares
+          const WD = M.wallWood
           const ST = 70, RL = 90, MU = 26, FT = T + 24
           at(c, track, H / 2, box(leaf - 2 * ST, H - 2 * RL, 8, M.glass))
-          at(c, track, RL / 2, box(leaf, RL, FT, M.walnut))
-          at(c, track, H - RL / 2, box(leaf, RL, FT, M.walnut))
-          at(c - leaf / 2 + ST / 2, track, H / 2, box(ST, H, FT, M.walnut))
-          at(c + leaf / 2 - ST / 2, track, H / 2, box(ST, H, FT, M.walnut))
+          at(c, track, RL / 2, box(leaf, RL, FT, WD))
+          at(c, track, H - RL / 2, box(leaf, RL, FT, WD))
+          at(c - leaf / 2 + ST / 2, track, H / 2, box(ST, H, FT, WD))
+          at(c + leaf / 2 - ST / 2, track, H / 2, box(ST, H, FT, WD))
           const cols = 3
           const rows = Math.max(4, Math.round((H - 2 * RL) / ((leaf - 2 * ST) / cols)))
           const cw = (leaf - 2 * ST) / cols
           const rh = (H - 2 * RL) / rows
-          for (let i = 1; i < cols; i++) at(c - leaf / 2 + ST + i * cw, track, H / 2, box(MU, H - 2 * RL, FT - 6, M.walnut))
-          for (let j = 1; j < rows; j++) at(c, track, RL + j * rh, box(leaf - 2 * ST, MU, FT - 6, M.walnut))
+          for (let i = 1; i < cols; i++) at(c - leaf / 2 + ST + i * cw, track, H / 2, box(MU, H - 2 * RL, FT - 6, WD))
+          for (let j = 1; j < rows; j++) at(c, track, RL + j * rh, box(leaf - 2 * ST, MU, FT - 6, WD))
           for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
             const px = c - leaf / 2 + ST + (i + 0.5) * cw
             const ph = RL + (j + 0.5) * rh
@@ -2057,7 +2060,7 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         at(c + leaf / 2 - 25, track, H / 2, box(50, H, T + 8, M.metal))
       }
       // the track itself, along the head of the opening
-      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, grid ? M.walnut : M.metal))
+      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, grid ? M.wallWood : M.metal))
     }
   }
   return g
@@ -2269,15 +2272,14 @@ function iconTexture(): THREE.CanvasTexture | null {
   c.height = 128
   const g = c.getContext('2d')
   if (!g) return null
-  g.beginPath(); g.arc(64, 64, 54, 0, Math.PI * 2)
-  g.fillStyle = 'rgba(255, 201, 96, 0.96)'; g.fill()
-  g.lineWidth = 7; g.strokeStyle = '#fff8ea'; g.stroke()
-  g.strokeStyle = '#3b2a12'; g.lineWidth = 8; g.lineCap = 'round'
-  // two arrows, apart: the piece moves
-  for (const [dir, y] of [[1, 50], [-1, 78]] as const) {
-    g.beginPath(); g.moveTo(64 - dir * 26, y); g.lineTo(64 + dir * 26, y); g.stroke()
-    g.beginPath(); g.moveTo(64 + dir * 12, y - 12); g.lineTo(64 + dir * 26, y); g.lineTo(64 + dir * 12, y + 12); g.stroke()
-  }
+  // a small soft dot, warm white with a faint dark rim, and nothing else: it is
+  // there for whoever looks for it, not to announce itself
+  const grad = g.createRadialGradient(64, 64, 6, 64, 64, 40)
+  grad.addColorStop(0, 'rgba(255, 246, 225, 0.95)')
+  grad.addColorStop(0.55, 'rgba(255, 236, 200, 0.85)')
+  grad.addColorStop(1, 'rgba(120, 90, 50, 0)')
+  g.fillStyle = grad
+  g.beginPath(); g.arc(64, 64, 40, 0, Math.PI * 2); g.fill()
   iconTex = new THREE.CanvasTexture(c)
   iconTex.colorSpace = THREE.SRGBColorSpace
   return iconTex
@@ -2298,15 +2300,24 @@ function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAncho
     if (id && a && !seen.has(id)) { seen.add(id); for (const q of Array.isArray(a) ? a : [a]) entries.push({ id, ...q }) }
   })
   for (const e of entries) {
-    // drawn on top, so an open leaf or a counter never hides it; the render loop
-    // shows only the icons within a few metres, so other rooms' do not clutter
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false }))
-    sp.scale.set(0.26, 0.26, 1)
+    // the dot: drawn on top, so an open leaf never hides it; the render loop
+    // shows only the dots within a few metres, so other rooms' do not clutter
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, opacity: 0.9 }))
+    sp.scale.set(0.055, 0.055, 1)
     sp.position.set(e.x * S, e.h * S, e.y * S)
     sp.userData.item = e.id
+    sp.userData.role = 'dot'
     sp.name = `icon:${e.id}`
     sp.renderOrder = 990
     g.add(sp)
+    // the pad: an invisible, finger-sized target around the dot, for the tap
+    const pad = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, opacity: 0, depthWrite: false, depthTest: false }))
+    pad.scale.set(0.32, 0.32, 1)
+    pad.position.copy(sp.position)
+    pad.userData.item = e.id
+    pad.userData.role = 'pad'
+    pad.name = `hit:${e.id}`
+    g.add(pad)
   }
   return g
 }
@@ -4630,7 +4641,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       const r = renderer.domElement.getBoundingClientRect()
       const ndc = new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1)
       raycaster.setFromCamera(ndc, camera)
-      const hit = raycaster.intersectObjects(icons.children, false)[0]
+      const hit = raycaster.intersectObjects(icons.children.filter((o) => o.userData.role === 'pad'), false)[0]
       if (hit) toggleItemRef.current(hit.object.userData.item as string)
     }
     pickRef.current = pickAt
@@ -4688,7 +4699,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           ic.visible = false
           const d = ic.position.distanceToSquared(camera.position)
           if (d > 4.5 * 4.5) continue
-          const id = ic.userData.item as string
+          const id = `${ic.userData.item as string}|${ic.userData.role as string}`
           const cur = nearest.get(id)
           if (!cur || d < cur.d) nearest.set(id, { d, o: ic })
         }

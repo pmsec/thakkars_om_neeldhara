@@ -527,11 +527,20 @@ NEW_WALLS = [
      # The glass runs up to the hatch and picks up again after it, so moving
      # the counter moves the break in the glazing with it. 900 (2'-11") of
      # solid is left at each top end, where the tall units and the fridge go.
-     [('window', _arc_d(0.104), HATCH[0], 1050, 2400),
-      ('cased', HATCH[0], HATCH[1], BAR_TOP, 2100),           # the hatch
-      ('window', HATCH[1], KDOOR[0], 1050, 2400),
-      ('door', KDOOR[0], KDOOR[1], 0, 2100, -1),              # the way in
-      ('window', KDOOR[1], _arc_d(0.896), 1050, 2400)],
+     # (type, from, to, sill, head, side, label, glass). The label and the
+     # glass travel to the app: 'tinted' is the brown glass the walkthrough
+     # sets in the opening, and a label with 'hatch' in it is drawn there as
+     # Home 1's lifting sash over its counter.
+     [('window', _arc_d(0.104), HATCH[0], 1050, 2400, 0,
+       'brown tinted glass over the timber dado', 'tinted'),
+      ('cased', HATCH[0], HATCH[1], BAR_TOP, 2100, 0,
+       'serving hatch — a lifting sash over the counter'),        # the hatch
+      ('window', HATCH[1], KDOOR[0], 1050, 2400, 0,
+       'brown tinted glass over the timber dado', 'tinted'),
+      ('door', KDOOR[0], KDOOR[1], 0, 2100, -1,
+       'the kitchen door — swings out into the living room'),     # the way in
+      ('window', KDOOR[1], _arc_d(0.896), 1050, 2400, 0,
+       'brown tinted glass over the timber dado', 'tinted')],
      'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),
 
     # --- 40 mm of nothing, so the kitchen closes. See ENV_NE above.
@@ -564,7 +573,9 @@ NEW_WALLS = [
     # wall. Closed, the arm is a room; open, the whole 2700 (8'-10") of it is
     # living room again — there is nothing fixed left in the way.
     (ARM_X, ARM_N, ARM_X, ARM_S, 125,
-     [('slider', ARM_N + ARM_REVEAL, ARM_S - ARM_REVEAL, 0, 2400, +1)],
+     [('slider', ARM_N + ARM_REVEAL, ARM_S - ARM_REVEAL, 0, 2400, +1,
+       "sliding screen — three timber panels of 900 (2'-11\"), stacking "
+       'north against the kitchen wall')],
      'partition', 'W-ARM', 'room | living — the sliding screen', 0),
 
     # --- the south-east bath: one wall, round the column
@@ -583,9 +594,34 @@ NEW_WALLS = [
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
      'foyer | living', 0),
 
-    # --- the balcony line: an opening, not a wall
-    (3725, 10995, 6875, 10995, 0, [], 'threshold', 'T-BALC',
-     'living | balcony — the sliding door', 0),
+    # --- the balcony line: glass end to end, and the sliding door in it
+    # Zero thickness, so the plan still draws it as the dashed line it always
+    # was and the floor runs out to the glass. The KIND is glazing, not
+    # threshold: the app stands a pane on a glazing line, and the slider on it
+    # is drawn as three glass leaves that open and shut.
+    (3725, 10995, 6875, 10995, 0,
+     [('slider', 3885, 6720, 0, 2400, 0,
+       'the balcony slider — glass, three leaves on a track')],
+     'glazing', 'T-BALC', 'living | balcony — glass end to end, the sliding '
+     'door in it', 0, None, 'clear'),
+]
+
+# ---------------------------------------------- the balcony's open edges
+# (x1, y1, x2, y2, id, parapet, rail, note) — endpoints on the envelope.
+#
+# THE BALCONY IS NOT WALLED IN. The builder draws its three outer edges on
+# DA_RAILING, a 100 mm band and not a wall, and the envelope was derived from
+# the carpet line, which runs round the outside of it — so an app that builds
+# a wall on every envelope edge stands the balcony inside a full-height box.
+# These three edges are open above a parapet: 900 (2'-11") of solid, a glass
+# balustrade to 1200 (3'-11"), and the sky from there.
+ENVELOPE_OPEN = [
+    (3650, 11070, 3650, 12470, 'EO-BALC-W', 900, 1200,
+     'balcony, west edge — parapet and glass balustrade, open above'),
+    (3650, 12470, 6950, 12470, 'EO-BALC-S', 900, 1200,
+     'balcony, south edge — parapet and glass balustrade, open above'),
+    (6950, 12470, 6950, 11070, 'EO-BALC-E', 900, 1200,
+     'balcony, east edge — parapet and glass balustrade, open above'),
 ]
 
 # ------------------------------------------------------------------ screens
@@ -848,7 +884,10 @@ def _ellipse(cx, cy, rx, ry, n=32):
             for i in range(n)]
 
 
-# Loose furniture. (kind, x1, y1, x2, y2, label, room, height, poly)
+# Loose furniture. (kind, x1, y1, x2, y2, label, room, height, poly, ghost, face)
+# `face` is the way a piece faces — a sofa's front, a sleeper's view down the
+# bed — for the app; left out, the app reads 'facing east' off the label, and
+# turns a chair toward the nearest table.
 # 'screen' because that is the nearest thing the app already knows how to
 # stand up: a panel of a given height with a shape of its own.
 FURNITURE = []
@@ -947,8 +986,8 @@ FURNITURE += [
     # shows the everyday state and says what happens to it, rather than showing
     # a bed that is up against the wall for twenty-three hours a day.
     ('sofa', MURPHY[0], MURPHY[1], MURPHY[0] + MURPHY_FOLDED, MURPHY[3],
-     "sofa — 1500 x 900 (4'-11\" x 2'-11\") over the Murphy cabinet; the bed "
-     'folds down inside the dashed line',
+     "sofa — 1500 x 900 (4'-11\" x 2'-11\") over the Murphy cabinet, facing "
+     'east; the bed folds down inside the dashed line',
      'R-BEDROOM', 800, _round_rect(MURPHY[0], MURPHY[1],
                                    MURPHY[0] + MURPHY_FOLDED, MURPHY[3],
                                    (40, 200, 200, 40))),
@@ -1182,7 +1221,7 @@ FURNITURE += [
     ('bed', *ARM_BED,
      "king — 1830 x 2000 (6'-0\" x 6'-7\"), head on the blind party wall, "
      "945 (3'-1\") at the foot and both sides open",
-     'R-ROOM', 600),
+     'R-ROOM', 600, None, False, 'W'),      # the sleeper looks west, to the foot
     ('wardrobe', *ARM_WARD,
      f"wardrobes — 600 x {ARM_WARD[3] - ARM_WARD[1]:.0f} (2'-0\" x "
      f"{_ft(ARM_WARD[3] - ARM_WARD[1])}) down the party wall, stopping where "
@@ -1357,7 +1396,7 @@ OTTO = (_otto_c - 400.0, _otto_s - 500.0, _otto_c + 400.0, _otto_s)   # 800 x 50
 
 FURNITURE += [
     (kind, cx - r, SWIV_Y - r, cx + r, SWIV_Y + r, label, 'R-LIVING-DINING',
-     h, _ellipse(cx, SWIV_Y, r, r), ghost)
+     h, _ellipse(cx, SWIV_Y, r, r), ghost, 'S')
     for cx in SWIV_X
     for kind, r, label, h, ghost in [
         ('armchair', SWIV_R,

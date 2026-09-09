@@ -14,8 +14,15 @@ design.py provides only the generic contract:
                polyline, and its openings are absolute distances ALONG it.
                Otherwise the wall is the straight line between its ends, or
                the quadratic bow of it.
-               openings are (type, from, to[, sill, head]) ABSOLUTE along the
-               wall's own axis; a wall
+               openings are (type, from, to[, sill, head, side, label,
+               glass]) ABSOLUTE along the wall's own axis. `side` is the
+               drawer's: +1 swings the leaf to the LEFT of the wall's travel
+               (the app's sign is the opposite, and is flipped here);
+               `glass` ('clear' | 'tinted') stands a pane in the opening;
+               a 'cased' opening above a sill whose label says 'hatch' is
+               the serving hatch, and the app draws its lifting sash. A
+               12th wall field, `glass`, makes the whole wall that glass.
+               A wall
                of thickness 0 and kind 'threshold' divides two rooms without
                putting anything on the floor; `bow` is the sagitta in mm and
                becomes a quadratic Bezier, positive to the LEFT of travel.
@@ -25,6 +32,17 @@ design.py provides only the generic contract:
                (x1, y1, x2, y2, type, id, note) — optional, endpoints on the
                OUTER face of the envelope.
     ROOMS      (name, subtitle, anchor, note[, dimension text, sq ft])
+    GLAZING    (x1, y1, x2, y2, 'window') — the builder's window lines, as
+               drawn: every line of each frame. The ones on the envelope
+               become the app's exterior windows, one per span, glazed.
+    ENVELOPE_OPEN
+               (x1, y1, x2, y2, id, parapet, rail, note) — optional. An
+               envelope edge that is NOT a wall: a parapet to `parapet`, a
+               glass balustrade to `rail`, and nothing above.
+    FURNITURE  (kind, x1, y1, x2, y2, label, room, height, poly, ghost, face)
+               `face` is which way a piece faces; missing, it is read off a
+               'facing east' in the label, and a chair turns to the nearest
+               table.
 
 Rooms carry an anchor and no shape — the app derives every room polygon from
 the wall centrelines, so that is genuinely all it needs. Where a home gives
@@ -111,6 +129,92 @@ def slug(s, used):
     return out
 
 
+def _seg_dist(p, a, b):
+    ax, ay = a
+    bx, by = b
+    dx, dy = bx - ax, by - ay
+    l2 = dx * dx + dy * dy
+    t = 0.0 if l2 == 0 else max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / l2))
+    return ((p[0] - (ax + t * dx)) ** 2 + (p[1] - (ay + t * dy)) ** 2) ** 0.5
+
+
+def envelope_windows(D):
+    """The exterior windows, one per span, from the builder's window lines.
+
+    GLAZING carries every line of every frame — four to a window, 30 or 60 mm
+    apart. Lines are grouped by orientation and span; a group that lies on an
+    envelope edge is one window, and the line nearest the edge stands for it.
+    A group off the envelope (the balcony line, glazed on the builder's plan
+    but inside our outline) is left to the walls."""
+    env = list(D.ENVELOPE)
+    edges = [(env[i], env[(i + 1) % len(env)]) for i in range(len(env))]
+    spans = {}
+    for g in getattr(D, 'GLAZING', []):
+        x1, y1, x2, y2 = g[:4]
+        vert = abs(x2 - x1) < abs(y2 - y1)
+        key = (vert, round(min(y1, y2) if vert else min(x1, x2)),
+               round(max(y1, y2) if vert else max(x1, x2)))
+        spans.setdefault(key, []).append((x1, y1, x2, y2))
+    # Two windows can share a span on opposite walls (the kitchen's north
+    # light and the notch's south one both run 7235-7985), so a span is split
+    # into frames wherever the lines are more than a wall apart.
+    groups = []
+    for key in sorted(spans, key=lambda k: (k[0], k[1])):
+        pos = lambda ln: ln[0] if key[0] else ln[1]
+        frame = []
+        for ln in sorted(spans[key], key=pos):
+            if frame and pos(ln) - pos(frame[-1]) > 200:
+                groups.append(frame)
+                frame = []
+            frame.append(ln)
+        groups.append(frame)
+    out = []
+    for lines in groups:
+        best, best_d = None, 1e9
+        for x1, y1, x2, y2 in lines:
+            d = min(max(_seg_dist((x1, y1), a, b), _seg_dist((x2, y2), a, b))
+                    for a, b in edges)
+            if d < best_d:
+                best, best_d = (x1, y1, x2, y2), d
+        if best_d > 160:
+            continue
+        out.append(((best[0], best[1]), (best[2], best[3])))
+    return out
+
+
+_FACING = {'north': 'N', 'south': 'S', 'east': 'E', 'west': 'W'}
+
+
+def face_of(f, D):
+    """Which way a piece faces, for the app: given outright as the 11th
+    field, else read off 'facing east' in its label, else — for a chair —
+    turned toward the nearest table."""
+    if len(f) > 10 and f[10]:
+        return f[10]
+    import re
+    m = re.search(r'facing (north|south|east|west)', f[5], re.I)
+    if m:
+        return _FACING[m.group(1).lower()]
+    if f[0] == 'chair':
+        cx, cy = (f[1] + f[3]) / 2, (f[2] + f[4]) / 2
+        best, best_d = None, 1e9
+        for g in getattr(D, 'FURNITURE', []):
+            if g[0] not in ('table', 'dining', 'console') or (len(g) > 9 and g[9]):
+                continue
+            tx, ty = (g[1] + g[3]) / 2, (g[2] + g[4]) / 2
+            # the nearest point of the table's box, not its centre: a long
+            # bar's centre is not where the chair is looking
+            nx = min(max(cx, min(g[1], g[3])), max(g[1], g[3]))
+            ny = min(max(cy, min(g[2], g[4])), max(g[2], g[4]))
+            d = ((cx - nx) ** 2 + (cy - ny) ** 2) ** 0.5
+            if d < best_d:
+                best, best_d = (nx - cx, ny - cy), d
+        if best and best_d < 1200:
+            dx, dy = best
+            return ('E' if dx > 0 else 'W') if abs(dx) >= abs(dy) else ('S' if dy > 0 else 'N')
+    return None
+
+
 CATEGORY = {'TOILET': 'wet', 'BATH': 'wet', 'PASSAGE': 'circulation',
             'FOYER': 'circulation', 'BALCONY': 'outdoor', 'STORE': 'storage'}
 FINISH = {'wet': 'Stone', 'outdoor': 'Stone', 'circulation': 'Stone'}
@@ -169,9 +273,21 @@ def main():
         sill = 0 if typ in ('door', 'cased', 'arch') else 750
         A(f"    {{ id: {oid!r}, type: {typ!r}, abs: [{pt(x1, y1)}, {pt(x2, y2)}], "
           f'head: {head}, sill: {sill}'
+          + (', hinge: 0, side: 1' if typ == 'door' else '')
           + (f', notes: {note!r}' if note else '') + ' },')
+    for i, (p1, p2) in enumerate(envelope_windows(D), 1):
+        w = ((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2) ** 0.5
+        A(f"    {{ id: 'WIN-{i:02d}', type: 'window', abs: [{pt(*p1)}, {pt(*p2)}], "
+          f"head: 2400, sill: 900, nonCirculating: true, glass: 'clear', "
+          f"label: 'window — {w:.0f} wide, as the builder drew it' }},")
     A('  ],')
-    A('  envelopeGlazing: [],')
+    A('  envelopeGlazing: [')
+    for eo in getattr(D, 'ENVELOPE_OPEN', []):
+        x1, y1, x2, y2, oid, para, rail = eo[:7]
+        note = eo[7] if len(eo) > 7 else ''
+        A(f"    {{ id: {oid!r}, p1: {pt(x1, y1)}, p2: {pt(x2, y2)}, pane: false, "
+          f'parapet: {fnum(para)}, rail: {fnum(rail)}, label: {note!r} }},')
+    A('  ],')
     A('  walls: [')
     for i, w in enumerate(D.NEW_WALLS, 1):
         x1, y1, x2, y2, t = w[:5]
@@ -189,10 +305,19 @@ def main():
         sgn = 1 if (y2 > y1 if vert else x2 > x1) else -1
         pts = flatten(x1, y1, x2, y2, bow)
         oo = []
+        wglass = w[11] if len(w) > 11 else None
         for j, op in enumerate(ops, 1):
             typ, f0, f1 = op[:3]
             sill = op[3] if len(op) > 3 else 0
             head = op[4] if len(op) > 4 else (2400 if typ == 'window' else 2100)
+            side = op[5] if len(op) > 5 and op[5] else 1
+            label = op[6] if len(op) > 6 else None
+            oglass = op[7] if len(op) > 7 else None
+            # The serving hatch is a cased opening over the counter on the
+            # drawing; to the app it is Home 1's hatch — a window it hangs the
+            # lifting sash in, found by the word in its label.
+            if typ == 'cased' and sill > 0 and label and 'hatch' in label.lower():
+                typ = 'window'
             if pts_in:
                 a0, a1 = f0, f1          # already distances along the wall
             elif bow:
@@ -200,9 +325,18 @@ def main():
             else:
                 a0, a1 = sgn * (f0 - base), sgn * (f1 - base)
             d0, d1 = sorted((a0, a1))
+            extra = ''
+            if typ == 'door':
+                # The drawer's +1 is the LEFT of the wall's travel; the app's
+                # +1 is its right. Both hinge at the opening's start.
+                extra += f', hinge: 0, side: {-side}'
+            if oglass:
+                extra += f', glass: {oglass!r}'
+            if label:
+                extra += f', label: {label!r}'
             oo.append(f"{{ id: '{wid}-O{j}', type: {typ!r}, "
                       f'at: [{fnum(d0)}, {fnum(d1)}], head: {fnum(head)}, '
-                      f'sill: {fnum(sill)} }}')
+                      f'sill: {fnum(sill)}{extra} }}')
         if pts_in:
             shape = 'points: [' + ', '.join(pt(px, py) for px, py in pts_in) + ']'
         elif bow:
@@ -213,7 +347,10 @@ def main():
             shape = f'points: [{pt(x1, y1)}, {pt(x2, y2)}]'
         A(f"    {{ id: {wid!r}, {shape}, "
           f"thickness: {fnum(t)}, kind: {kind!r},"
-          + (f' renderPane: false,' if t == 0 else '')
+          # a threshold is a line on the floor and nothing else; a glazing
+          # line of no thickness gets the app's nominal pane
+          + (' renderPane: false,' if t == 0 and kind == 'threshold' else '')
+          + (f' glass: {wglass!r},' if wglass else '')
           + (f" notes: {note!r}," if note else '')
           + ' openings: [' + ', '.join(oo) + '] },')
     A('  ],')
@@ -275,10 +412,13 @@ def main():
         poly = f[8] if len(f) > 8 else None
         shape = ('' if not poly else
                  ', poly: [' + ', '.join(pt(px, py) for px, py in poly) + ']')
+        face = face_of(f, D)
         fitems.append(
             f"  {{ id: 'F-{i:02d}', kind: {kind!r}, x: {fnum(min(x1, x2))}, "
             f'y: {fnum(min(y1, y2))}, w: {fnum(abs(x2 - x1))}, '
-            f'd: {fnum(abs(y2 - y1))}, room: {room!r}, label: {label!r}, '
+            f'd: {fnum(abs(y2 - y1))}'
+            + (f', face: {face!r}' if face else '')
+            + f', room: {room!r}, label: {label!r}, '
             f'height: {fnum(height)}{shape} }},')
 
     open(os.path.join(a.out, 'furniture.ts'), 'w').write(

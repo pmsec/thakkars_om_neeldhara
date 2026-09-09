@@ -40,11 +40,14 @@ def outputs():
 def main():
     update = '--update' in sys.argv
     print(f'home: {home.current()}')
-    r = subprocess.run([sys.executable, os.path.join(HERE, 'draw_design.py'),
+    # Home 1 is drawn by draw_design.py, which imports its retrofit module; an
+    # imported home has none and is drawn by draw_home.py. Pick by origin.
+    drawer = 'draw_home.py' if home.meta().get('origin') == 'imported' else 'draw_design.py'
+    r = subprocess.run([sys.executable, os.path.join(HERE, drawer),
                         '--home', home.current()],
                        capture_output=True, text=True)
     if r.returncode:
-        sys.exit(f'draw_design failed:\n{r.stderr[-2000:]}')
+        sys.exit(f'{drawer} failed:\n{r.stderr[-2000:]}')
 
     now = {n: sha(p) for n, p in outputs().items() if os.path.isfile(p)}
     if update:

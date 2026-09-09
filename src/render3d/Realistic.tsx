@@ -829,9 +829,17 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     if (lift > 0 && f.kind === 'shelves') {
-      // wall cabinets: a carcass hung at `lift`, door joints read as shadow lines
-      const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
+      // wall cabinets: a carcass hung at `lift`, door joints read as shadow lines.
+      // A loft is a built deck, not joinery: plastered like the ceiling it hangs
+      // from, with a walnut fascia along its open edges
+      const loft = /loft/i.test(f.label)
+      const body = polyPiece(f.poly, lift, lift + h, loft ? M.plaster : M.timber, f.room)
       if (body) g.add(body)
+      if (loft) {
+        const fascia = polyPiece(f.poly, lift - 2, lift + 120, M.walnut, f.room)
+        if (fascia) g.add(fascia)
+        return g
+      }
       const alongX = w >= d
       const n = Math.max(1, Math.round(Math.max(w, d) / 450))
       for (let i = 1; i < n; i++) {

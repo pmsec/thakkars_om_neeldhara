@@ -1206,6 +1206,24 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         g.add(box(w, 260, d, M.timber, 0, 130, 0))                    // frame
         g.add(box(w - 60, 210, d - 60, M.duvet, 0, 260 + 105, 0))    // mattress+duvet
       }
+      // a drawer base: one deep drawer front on each long side, proud of the
+      // frame with a brass pull, set between the head end and the foot's rounding
+      if (/drawer/i.test(f.label) && f.face) {
+        const ewD = f.face === 'E' || f.face === 'W'
+        const L = ewD ? w : d                        // the bed's length
+        const headSgn = f.face === 'E' || f.face === 'S' ? 1 : -1   // where the head is, along the length
+        const c = headSgn * (L / 2 - 500 - 450)      // drawer centre, 500 to 1400 from the head
+        for (const side of [-1, 1]) {
+          const out = (ewD ? d : w) / 2 + 12
+          const front = box(ewD ? 900 : 24, 200, ewD ? 24 : 900, M.walnut, ewD ? c : side * out, 130, ewD ? side * out : c)
+          g.add(front)
+          const pull = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, 160 * S, 8), M.brass)
+          pull.rotation.z = ewD ? Math.PI / 2 : 0
+          pull.rotation.x = ewD ? 0 : Math.PI / 2
+          pull.position.set((ewD ? c : side * (out + 14)) * S, 130 * S, (ewD ? side * (out + 14) : c) * S)
+          g.add(pull)
+        }
+      }
       // a folded throw across the foot: the end away from the pillows
       {
         const ewT = f.face === 'E' || f.face === 'W'

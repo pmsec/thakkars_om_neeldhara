@@ -4634,15 +4634,32 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     renderer.domElement.addEventListener('dblclick', onClick)
 
     // ---- one piece at a time: a click or tap on a piece's icon switches just that piece
-    const raycaster = new THREE.Raycaster()
+    // The dot nearest the tap on screen, within a finger's radius, wins - a
+    // screen-space test rather than a ray, so a tap a few pixels off a 55 mm
+    // dot still lands. The dot pulses once so the tap is seen to register.
     const pickAt = (cx: number, cy: number): void => {
       const icons = scene.getObjectByName('item-icons')
       if (!icons) return
       const r = renderer.domElement.getBoundingClientRect()
-      const ndc = new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1)
-      raycaster.setFromCamera(ndc, camera)
-      const hit = raycaster.intersectObjects(icons.children.filter((o) => o.userData.role === 'pad'), false)[0]
-      if (hit) toggleItemRef.current(hit.object.userData.item as string)
+      const RADIUS = Math.max(28, Math.min(r.width, r.height) * 0.06)
+      let best: THREE.Object3D | null = null
+      let bestD = RADIUS
+      const v = new THREE.Vector3()
+      for (const o of icons.children) {
+        if (o.userData.role !== 'dot' || !o.visible) continue
+        v.copy(o.position).project(camera)
+        if (v.z > 1) continue
+        const sx = r.left + ((v.x + 1) / 2) * r.width
+        const sy = r.top + ((1 - v.y) / 2) * r.height
+        const d = Math.hypot(sx - cx, sy - cy)
+        if (d < bestD) { bestD = d; best = o }
+      }
+      if (!best) return
+      const dot = best
+      const s0 = dot.scale.x
+      dot.scale.setScalar(s0 * 2.6)
+      setTimeout(() => dot.scale.setScalar(s0), 220)
+      toggleItemRef.current(dot.userData.item as string)
     }
     pickRef.current = pickAt
     ;(window as unknown as { __omScene?: THREE.Scene; __omCamera?: THREE.Camera }).__omScene = scene   // for headless checks

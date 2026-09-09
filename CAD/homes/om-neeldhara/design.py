@@ -631,11 +631,13 @@ _ONCE = [
     # ------------------------- the WARDROBE, in the bedroom's north-east corner
     # THE STUDY DESK IS GONE FOR GOOD (Karan's call: no desk here and none in
     # the den either).  The corner it stood in — the sealed shaft's south wall
-    # above, the builder's column at X 4300 on the east — takes a 1400 x 600
+    # above, the builder's column at X 4300 on the east — takes a 1550 x 600
     # hanging wardrobe instead, back on the shaft wall, end on the column's
-    # face.  With the partition cupboards gone and the arch cupboard only 400
-    # deep, this is the parents' one wardrobe at hanging depth.
-    ('hanging',   2900, 1350, 4300, 1950, "wardrobe  ·  1400 x 600, hanging"),
+    # face, and its other end flush with the shaft's west face at 2750, where
+    # the terrace glass ends: it was 1400 and stopped 150 short of that line
+    # (Karan's call).  With the partition cupboards gone and the arch cupboard
+    # only 400 deep, this is the parents' one wardrobe at hanging depth.
+    ('hanging',   SUITE_W_E, 1350, 4300, 1950, "wardrobe  ·  1550 x 600, hanging"),
 
     # THE PARENTS' BED IS KARAN'S BED MIRRORED — the same bed, the same
     # headboard treatment, the same side tables, handed the other way so the

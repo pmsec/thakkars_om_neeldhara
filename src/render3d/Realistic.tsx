@@ -2298,7 +2298,9 @@ function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAncho
     if (id && a && !seen.has(id)) { seen.add(id); for (const q of Array.isArray(a) ? a : [a]) entries.push({ id, ...q }) }
   })
   for (const e of entries) {
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }))
+    // drawn on top, so an open leaf or a counter never hides it; the render loop
+    // shows only the icons within a few metres, so other rooms' do not clutter
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false }))
     sp.scale.set(0.26, 0.26, 1)
     sp.position.set(e.x * S, e.h * S, e.y * S)
     sp.userData.item = e.id
@@ -4677,6 +4679,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         orbit.update()
       }
       followCamera(dayRef.current?.sky ?? sky, camera)
+      // the piece icons: only those within reach of where you stand
+      const iconsGroup = scene.getObjectByName('item-icons')
+      if (iconsGroup) {
+        const near = orbit.enabled && !touchWalk.enabled && !lock.isLocked ? 8 : 5.5
+        for (const ic of iconsGroup.children) ic.visible = ic.position.distanceToSquared(camera.position) < near * near
+      }
       renderer.render(scene, camera)
       // adaptive resolution: a run of slow frames steps the pixel ratio down, a
       // long run of fast ones steps it back up toward the cap, so a slow tablet

@@ -97,11 +97,16 @@ def keep_demo():
     return out, demo
 
 
-def help_rack(u0=0.03, u1=0.37, dep=300, n=60):
+def help_rack(u0=0.15, u1=0.37, dep=200, n=60):
     """The full-height rack on the OUTSIDE of the guest WC's apse, in help's
-    room: a 300 band struck off the apse's outer face, from just off the
-    great-room wall round to the WC door's jamb.  Open shelving to the
-    ceiling, curved to the wall so it beds on it for its whole length."""
+    room: a 200 band struck off the apse's outer face, from a third of the
+    way down the arc round to the WC door's jamb.  Open shelving to the
+    ceiling, curved to the wall so it beds on it for its whole length.
+
+    Only 200 deep, and not from the springing: the neck between the gallery's
+    arc and the apse is barely a metre wide, and a 300 rack from the
+    springing left the entry door cut off from the room for a 700 body.
+    200 from u 0.15 keeps the walk from the door at 740 and over."""
     h = D.T_WC / 2
     us = list(np.linspace(u0, u1, n))
     return [('poly', [wc_pt(u, h) for u in us]
@@ -499,7 +504,7 @@ def arch_console(dep=400, dep_end=250, n=140, over=900, over_d=250,
             ('rect', xb - over_d, ys - over, xb, ys, 'dash')]
 
 
-def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42, u_end=0.35):
+def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42, u_end=0.05):
     """The parents' curl round the OUTSIDE of their bath's arch — and it is a
     FULL-HEIGHT CUPBOARD, not a console: the same footprint as Karan's
     console, struck the same way, carried to the ceiling, because the hanging
@@ -507,11 +512,12 @@ def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42, u_end=0.35):
     parents' clothes hang now.  On plan it is a solid; in section it is 2300
     of doors on the curve.
 
-    It runs from the pod wall over the crown and a third of the way down the
-    west flank, and stops there at u_end in a radial cut.  Not the whole
-    flank: the sweep sits 1600 further north than Karan's, the bed's foot is
-    at X 1782, and a cupboard carried on round would put its doors within
-    400 of that foot.  Stopping at u_end keeps them 650 clear.
+    It runs from the pod wall over the crown and stops just past it, at
+    u_end, in a radial cut.  Not down the west flank at all: the sweep sits
+    1600 further north than Karan's, the bed's foot is at X 1782, and a
+    cupboard on the flank narrows the way from the bed round to the bath
+    door below 700.  Stopping at the crown keeps that way a full 765 and
+    more; the parents' hanging depth is in the corner wardrobe now.
 
     Struck as an offset of the sweep's own outer face, 400 deep, tapering to
     250 at the pod wall and stopping there in a clean face rather than a

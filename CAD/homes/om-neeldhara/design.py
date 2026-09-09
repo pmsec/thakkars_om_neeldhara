@@ -630,15 +630,18 @@ _ONCE = [
     # there is no column to swallow, so it is simply the full stretch and the
     # joinery runs on into the partition block without a break.
     #
-    # The bed CENTRES ON THE ROOM, not on the headboard — the same decision as
-    # Karan's.  The two lines it lies between are the terrace wall at Y 1350 and
-    # the partition's north face at 5875, 4525 clear, so an 1930 bed leaves 1297
-    # to each.  That is why 97 of headboard shows above it and 697 below.
+    # The bed used to centre on the room.  It sits 250 NORTH of that now,
+    # because the bath's arch moved up to 4350 and its west flank came within
+    # 700 of the bed's foot: with the bed at 2397-4327 the foot line is 52
+    # above the crown's outer face, so the way from the bed round to the bath
+    # door and the glass is open floor, not a slot between the foot and the
+    # arch.  1047 to the terrace wall, 1548 to the partition.  The headboard
+    # does not move — it is the whole blank wall either way.
     ('joinery',   -450, 1950, -250, 5875, "headboard  ·  3925 x 200"),
-    ('bed-rw',    -250, 2647, 1782, 4577,
+    ('bed-rw',    -250, 2397, 1782, 4327,
      "king 1930 x 2032  ·  foot corners 594, head square on the headboard"),
-    ('counter-r', -250, 2047, 200, 2597, "side table  ·  550 x 450"),
-    ('counter-r', -250, 4627, 200, 5177, "side table  ·  550 x 450"),
+    ('counter-r', -250, 1950, 200, 2347, "side table  ·  550 x 400, on the window jamb"),
+    ('counter-r', -250, 4377, 200, 4927, "side table  ·  550 x 450"),
 
     # ------------------------- THE PARTITION: TINTED GLASS, END TO END
     # It is not a masonry wall, and it is not joinery any more either.  The
@@ -1216,12 +1219,16 @@ _ONCE = [
     # stands in front of it on the room's main floor.
     ('bunk',     16925, 10075, 18825, 10975, 'bunk'),
     ('shelves',  17580, 9550, 18825, 10005, 'shelves at the bunk head'),
-    # FULL-HEIGHT RACKS, 300 deep, floor to ceiling: down the gallery leg from
-    # below the entry door's swing, along the south wall to the bunk's foot,
-    # and round the outside of the apse to the WC door (retrofit.help_rack).
-    # The 600 cupboard is gone — the racks carry more and take less floor.
-    # The band in front of the south rack is 600 deep, the bunk's approach.
-    ('shelves',  14080, 9400, 14380, 10675, 'full-height rack  ·  300 deep, on the gallery leg'),
+    # FULL-HEIGHT RACKS, floor to ceiling: down the gallery leg, along the
+    # south wall to the bunk's foot, and round the outside of the apse to the
+    # WC door (retrofit.help_rack, 200 deep).  The 600 cupboard is gone — the
+    # racks carry more and take less floor.  The leg rack starts at 9700, not
+    # at the entry door's jamb: the neck between the gallery arc and the apse
+    # is only a metre wide, and with the rack higher a 700 body could not get
+    # from the door to the room.  The band in front of the south rack is 600
+    # deep, the bunk's approach.  As drawn a 700 body reaches every door; an
+    # 800 body does not reach the entry door.
+    ('shelves',  14080, 9700, 14380, 10675, 'full-height rack  ·  300 deep, on the gallery leg'),
     ('shelves',  14080, 10675, 16925, 10975, 'full-height rack  ·  300 deep, on the south wall'),
     # ------------------------------------------------- guest / service WC
     # One WC, one small basin, one very small shower — and nothing else, which

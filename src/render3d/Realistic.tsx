@@ -1211,7 +1211,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       if (/drawer/i.test(f.label) && f.face) {
         const ewD = f.face === 'E' || f.face === 'W'
         const L = ewD ? w : d                        // the bed's length
-        const headSgn = f.face === 'E' || f.face === 'S' ? 1 : -1   // where the head is, along the length
+        // face is the way the sleeper looks, so the head is at the opposite end
+        const headSgn = f.face === 'E' || f.face === 'S' ? -1 : 1
         const c = headSgn * (L / 2 - 500 - 450)      // drawer centre, 500 to 1400 from the head
         // flush with the frame's face, inside the drawn footprint: an oak front
         // let into the walnut, with a recessed finger groove along its top edge

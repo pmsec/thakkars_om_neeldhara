@@ -1213,15 +1213,14 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         const L = ewD ? w : d                        // the bed's length
         const headSgn = f.face === 'E' || f.face === 'S' ? 1 : -1   // where the head is, along the length
         const c = headSgn * (L / 2 - 500 - 450)      // drawer centre, 500 to 1400 from the head
+        // flush with the frame's face, inside the drawn footprint: an oak front
+        // let into the walnut, with a recessed finger groove along its top edge
         for (const side of [-1, 1]) {
-          const out = (ewD ? d : w) / 2 + 12
+          const out = (ewD ? d : w) / 2 - 13
           const front = box(ewD ? 900 : 24, 200, ewD ? 24 : 900, M.wallWood, ewD ? c : side * out, 130, ewD ? side * out : c)
           g.add(front)
-          const pull = new THREE.Mesh(new THREE.CylinderGeometry(8 * S, 8 * S, 320 * S, 10), M.brass)
-          pull.rotation.z = ewD ? Math.PI / 2 : 0
-          pull.rotation.x = ewD ? 0 : Math.PI / 2
-          pull.position.set((ewD ? c : side * (out + 14)) * S, 130 * S, (ewD ? side * (out + 14) : c) * S)
-          g.add(pull)
+          const groove = box(ewD ? 320 : 8, 22, ewD ? 8 : 320, M.trunk, ewD ? c : side * (out + 9), 218, ewD ? side * (out + 9) : c)
+          g.add(groove)
         }
       }
       // a folded throw across the foot: the end away from the pillows

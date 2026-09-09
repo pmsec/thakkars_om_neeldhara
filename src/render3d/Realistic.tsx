@@ -862,7 +862,10 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // the drawn outline, no doors and no back — the wall is its back
       const H = lift + h
       const rackPoly = f.poly
-      const shelfAt = (z0: number) => polyPiece(rackPoly, z0, z0 + 24, M.timber, f.room)
+      const alu = /alumin/i.test(f.label)              // the void stores' slotted-angle racks
+      const shelfMat = alu ? M.metal : M.timber
+      const postMat = alu ? M.metal : M.trunk
+      const shelfAt = (z0: number) => polyPiece(rackPoly, z0, z0 + 24, shelfMat, f.room)
       for (let z = lift + 80; z < H - 40; z += 420) {
         const sh = shelfAt(z)
         if (sh) g.add(sh)
@@ -873,7 +876,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       const step = f.poly.length <= 6 ? 1 : 8
       for (let i = 0; i < f.poly.length; i += step) {
         const q = f.poly[i]
-        const post = box(30, H - lift, 30, M.trunk)
+        const post = box(30, H - lift, 30, postMat)
         place(post, q.x + (q.x < cx ? 15 : -15), q.y + (q.y < cy ? 15 : -15), lift + (H - lift) / 2)
         g.add(post)
       }
@@ -1505,6 +1508,10 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         place(g, cx, cy)
         return g
       }
+      // the parents' sliding screen leaves are drawn from their opening
+      // (slidingGlass), in both states; the static sheet pieces would stand
+      // shut across an open partition
+      if (/sliding screen/i.test(f.label)) return null
       // a drawn screen is thin and SEE-THROUGH — rendering it as an opaque
       // slab once put a phantom wall in Karan's suite. Only a screen the sheet
       // labels with a dado gets one; the rest are tinted glass floor to head.
@@ -1919,6 +1926,66 @@ function podPortalDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
  * lower half, open it sits up in front of the walnut panel and the counter
  * is clear to pass food through. Follows the Doors switch.
  */
+/**
+ * Every sliding glass leaf the pod doors and the bath divider do not already
+ * draw: the deck and terrace glazing, and the parents' tinted partition. The
+ * static solids carry only the transom above each opening; the leaves live
+ * here in both states. Shut, they fill the opening on alternating tracks;
+ * open, they stack at one end (both ends for the great room's four).
+ */
+function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  const ceiling = model.data.levels.ceiling
+  const HANDLED = new Set(['SL-P-SUITE', 'SL-K-SUITE', 'SL-P-BATH-DIV'])
+  for (const w of model.walls) {
+    const glassy = w.kind === 'glazing' || !!w.def.glass
+    if (!glassy) continue
+    for (const op of w.openings) {
+      if (op.type !== 'slider' || HANDLED.has(op.id)) continue
+      const width = op.to - op.from
+      if (width < 400) continue
+      const L = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y) || 1
+      const d = { x: (op.p2.x - op.p1.x) / L, y: (op.p2.y - op.p1.y) / L }
+      const nx = -d.y, ny = d.x
+      const n = op.id === 'SL-P-DRESS' ? 3 : Math.max(2, Math.round(width / 1600))
+      const leaf = width / n
+      const H = Math.min((op.head ?? ceiling) - 40, ceiling - 40)
+      const T = 12
+      const glass = w.def.glass === 'tinted' ? M.tintGlass : M.glass
+      const ang = -Math.atan2(d.y, d.x)
+      const at = (along: number, out: number, h: number, m: THREE.Object3D) => {
+        const px = op.p1.x + d.x * (along - op.from) + nx * out
+        const py = op.p1.y + d.y * (along - op.from) + ny * out
+        m.position.set(px * S, h * S, py * S)
+        m.rotation.y = ang
+        g.add(m)
+      }
+      // where each leaf's centre sits, and which track it rides
+      const places: Array<[number, number]> = []
+      for (let k = 0; k < n; k++) {
+        const track = (k % 2 ? 1 : -1) * (T + 6) / 2 * (n === 3 ? (k - 1) : 1)
+        if (mode === 'shut') {
+          places.push([op.from + (k + 0.5) * leaf, track])
+        } else if (n >= 4 && k >= n / 2) {
+          places.push([op.to - leaf / 2, track])
+        } else {
+          places.push([op.from + leaf / 2, track])
+        }
+      }
+      for (const [c, track] of places) {
+        at(c, track, H / 2, box(leaf - 6, H - 100, T, glass))
+        at(c, track, 25, box(leaf, 50, T + 8, M.metal))                       // bottom rail
+        at(c, track, H - 25, box(leaf, 50, T + 8, M.metal))                   // top rail
+        at(c - leaf / 2 + 25, track, H / 2, box(50, H, T + 8, M.metal))       // stiles
+        at(c + leaf / 2 - 25, track, H / 2, box(50, H, T + 8, M.metal))
+      }
+      // the track itself, along the head of the opening
+      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, M.metal))
+    }
+  }
+  return g
+}
+
 /**
  * The folding wooden divider across the parents' cubicle: four walnut leaves
  * on a top track. Shut, they close the line between the parents' bath and the
@@ -3383,6 +3450,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(podPortalDoors(M, mode))
     set.add(hatchSash(M, mode))
     set.add(dividerPanels(M, mode))
+    set.add(slidingGlass(M, mode))
     root.add(set)
   }
   const bedDown = wallBedDown(M)

@@ -150,7 +150,10 @@ describe('the bronze glass walls', () => {
     expect(tinted).toEqual(['W-CURVE-KARAN', 'W-CURVE-PARENTS', 'W-P-DRESS'])
   })
 
-  it("the parents' dressing partition is one translucent plane, floor to ceiling, leaf included", () => {
+  it("the parents' dressing partition is tinted glass, with its sliding leaves left to the door states", () => {
+    // The static solid carries the fixed glass either side and the transom over
+    // the leaves' head; the leaves themselves are drawn open and shut by the
+    // walkthrough, so nothing static may stand across the opening below the head.
     const solids = buildSolids(model)
     for (const id of ['W-P-DRESS']) {
       const ps = solids.prisms.filter((p) => p.wallId === id)
@@ -158,10 +161,12 @@ describe('the bronze glass walls', () => {
       for (const p of ps) {
         expect(p.glass).toBe('tinted')
         expect(p.transparent).toBe(true)
-        expect(p.base).toBe(0)
         expect(p.top).toBe(CEILING)
       }
-      expect(ps.some((p) => p.id.includes(':leaf'))).toBe(true)
+      const transom = ps.filter((p) => p.id.includes(':transom'))
+      expect(transom.length).toBe(1)
+      expect(transom[0].base).toBe(2100)
+      expect(ps.some((p) => p.id.includes(':leaf'))).toBe(false)
       expect(ps.some((p) => p.kind === 'lintel')).toBe(false)
     }
   })

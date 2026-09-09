@@ -29,6 +29,7 @@ curve into a box.
 
 import argparse
 import math
+import re
 import os
 import sys
 
@@ -1035,6 +1036,9 @@ HINGE_AT_END = {'D-GAL-E'}
 def room_for(cx, cy):
     if cy < 1275 and (cx < 2900 or cx > mx(2900)):
         return 'R-P-TERRACE' if cx < M else 'R-K-TERRACE'
+    for a, b, c, d in D.VOID_KEEP:
+        if a < cx < c and b < cy < d:
+            return 'R-VOID-W' if cx < M else 'R-VOID-E'
     if cy < 2545 and 4530 <= cx <= 19950:
         return 'R-DECK'
     if cy < 5935 and cx < 4467:
@@ -1145,6 +1149,9 @@ def emit_furniture():
         h = HEIGHTS.get(mapped, 600)
         if 'full-height' in (lab or '').lower():
             h = 3300                      # racks to the ceiling's cove
+        m_h = re.search(r'(\d{3,4}) high', lab or '')
+        if m_h:
+            h = int(m_h.group(1))
         if base == 'bunk':
             label, h = 'Bunk bed', 2000
         if base == 'gym':

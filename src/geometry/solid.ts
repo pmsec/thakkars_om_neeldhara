@@ -308,10 +308,20 @@ export function buildSolids(model: BuiltModel): SolidModel {
       }
       const sill = op.sill ?? 0
       const head = op.head ?? model.data.levels.doorHead
-      if (glass && op.type !== 'door') {
-        // A slider or fixed light in a glass wall is more of the same glass: the leaf is
-        // drawn shut, floor to ceiling, so the partition reads as one translucent plane.
+      if (glass && op.type !== 'door' && op.type !== 'arch' && op.type !== 'slider') {
+        // A fixed light in a glass wall is more of the same glass: drawn floor to
+        // ceiling, so the partition reads as one translucent plane.
         pushRun(prisms, w, runPoints, accPts, from, to, 0, ceiling, kind, solidThickness, transparent, ':leaf')
+        cursor = Math.max(cursor, to)
+        continue
+      }
+      if (glass && (op.type === 'arch' || op.type === 'slider')) {
+        // A portal or a slider in a glass wall is a MOVING leaf: the 3D draws it in
+        // both states from the opening, so the static solid carries only the transom
+        // above its head. A fixed pane here once left glass standing in an open portal.
+        if (head < ceiling) {
+          pushRun(prisms, w, runPoints, accPts, from, to, head, ceiling, kind, solidThickness, transparent, ':transom')
+        }
         cursor = Math.max(cursor, to)
         continue
       }

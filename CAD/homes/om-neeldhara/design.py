@@ -1200,10 +1200,12 @@ _ONCE = [
     # A FULL-HEIGHT RACK between the washer-dryer and the fridge, 600 x 600,
     # with the laundry basket in its base.  There is no room for another
     # opposite the washer — a 600 rack on the north end would leave 305 in
-    # front of a front-loader — so that end gets a LOFT instead, 2300 up, the
-    # full 1195 x 905 of the utility strip's north end.
+    # front of a front-loader — so the whole utility strip gets a LOFT
+    # instead, 2300 up: the north end, and the run over the washer-dryer, the
+    # rack and the fridge to the fridge's east side at 7800.
     ('shelves',  6400, 10425, 7000, 11025, 'full-height rack  ·  600 x 600, basket in its base'),
-    ('under',    5705, 9470, 6900, 10375, 'loft over  ·  2300 up, 1195 x 905'),
+    ('under',    5705, 9470, 6900, 10275, 'loft over  ·  2300 up, 1195 x 805'),
+    ('under',    5705, 10275, 7800, 11025, 'loft over  ·  2300 up, 2095 x 750, over the washer, rack and fridge'),
     # ------------------------------------------ help\'s room (with the store)
     # The bunk lies ALONG the south wall at the EAST end of the merged room,
     # head against the east wall, under the secondary duct.  That is the end

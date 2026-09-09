@@ -557,6 +557,21 @@ def bath_divider(leaves=4):
     return out
 
 
+def lofts():
+    """The lofts over the service bay's small rooms, drawn dashed because
+    they are over and not in plan.
+
+    Help's room: the whole room, at 2500 — not 2300, because the bunk's top
+    berth is at about 1550 and whoever sits up on it wants 950 of headroom.
+    900 of loft under the 3505 ceiling.  The guest WC: the whole apse, at
+    2300, 1100 of loft.  (The utility strip's lofts are plain rectangles and
+    live in design.FURNITURE as 'under' rows.)  A loft over a wet room is
+    a real deck — a thin slab or steel framing, not a false ceiling — and
+    the WC's exhaust duct has to be routed round it."""
+    _kitchen, helps, _gallery, wc = lobby_polys()
+    return [('poly', helps, 'dash'), ('poly', wc, 'dash')]
+
+
 def clip_y(poly, y, north):
     """The part of a polygon north (y <= y) or south of a horizontal line."""
     out = []

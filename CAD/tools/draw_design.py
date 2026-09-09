@@ -313,6 +313,8 @@ def main():
         prim(p)                                 # the parents' two doors, the divider
     for p in R.help_rack():                     # the curved rack on the apse
         prim(p)
+    for p in R.lofts():                         # over help's room and the guest WC, dashed
+        prim(p)
     for p in R.east(R.mb_door, D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
         prim(p)
     for p in R.arch_console_par():      # the parents' full-height cupboard

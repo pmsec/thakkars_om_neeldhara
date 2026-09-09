@@ -2285,41 +2285,36 @@ function iconTexture(): THREE.CanvasTexture | null {
   return iconTex
 }
 
-/** One small floating icon per interactive piece; a tap or click on it switches that piece alone. */
-function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAnchor>): THREE.Group {
-  const g = new THREE.Group()
-  g.name = 'item-icons'
+/**
+ * One tiny dot per interactive piece, all of them one draw call: a Points
+ * cloud whose entries the render loop moves under the floor when they are out
+ * of reach. A tap picks the nearest shown dot on screen.
+ */
+type DotEntry = { id: string; x: number; y: number; z: number; shown: boolean }
+function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAnchor>): THREE.Points | null {
   const tex = iconTexture()
-  if (!tex) return g
+  if (!tex) return null
   const seen = new Set<string>()
   const entries: Array<{ id: string } & ItemAnchor> = [...extra]
   root.traverse((o) => {
     const id = o.userData.item as string | undefined
     const a = o.userData.anchor as ItemAnchor | ItemAnchor[] | undefined
-    // an opening carries an icon on each of its faces, so one is always clear of the leaf
+    // an opening carries a dot on each of its faces, so one is always clear of the leaf
     if (id && a && !seen.has(id)) { seen.add(id); for (const q of Array.isArray(a) ? a : [a]) entries.push({ id, ...q }) }
   })
-  for (const e of entries) {
-    // the dot: drawn on top, so an open leaf never hides it; the render loop
-    // shows only the dots within a few metres, so other rooms' do not clutter
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, opacity: 0.9 }))
-    sp.scale.set(0.055, 0.055, 1)
-    sp.position.set(e.x * S, e.h * S, e.y * S)
-    sp.userData.item = e.id
-    sp.userData.role = 'dot'
-    sp.name = `icon:${e.id}`
-    sp.renderOrder = 990
-    g.add(sp)
-    // the pad: an invisible, finger-sized target around the dot, for the tap
-    const pad = new THREE.Sprite(new THREE.SpriteMaterial({ transparent: true, opacity: 0, depthWrite: false, depthTest: false }))
-    pad.scale.set(0.32, 0.32, 1)
-    pad.position.copy(sp.position)
-    pad.userData.item = e.id
-    pad.userData.role = 'pad'
-    pad.name = `hit:${e.id}`
-    g.add(pad)
-  }
-  return g
+  const dots: DotEntry[] = entries.map((e) => ({ id: e.id, x: e.x * S, y: e.h * S, z: e.y * S, shown: false }))
+  const pos = new Float32Array(dots.length * 3)
+  for (let i = 0; i < dots.length; i++) { pos[i * 3] = dots[i].x; pos[i * 3 + 1] = -100; pos[i * 3 + 2] = dots[i].z }
+  const geo = new THREE.BufferGeometry()
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+  geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(12, 1.5, 6), 40)
+  const mat = new THREE.PointsMaterial({ map: tex, size: 0.07, sizeAttenuation: true, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false, alphaTest: 0.02 })
+  const pts = new THREE.Points(geo, mat)
+  pts.name = 'item-dots'
+  pts.frustumCulled = false
+  pts.renderOrder = 990
+  pts.userData.dots = dots
+  return pts
 }
 
 /**
@@ -3736,7 +3731,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   if (cab) extra.push({ id: 'wallbed', x: cab.x + cab.w / 2 + (cab.w >= cab.d ? 0 : 500), y: cab.y + cab.d / 2 + (cab.w >= cab.d ? 500 : 0), h: 1250 })
   const dry = furniture.find((f) => /clothes dryer/i.test(f.label))
   if (dry) extra.push({ id: 'dryer', x: dry.x + dry.w / 2, y: dry.y + dry.d / 2, h: 1550 })
-  root.add(itemIcons(root, extra))
+  const dots = itemIcons(root, extra)
+  if (dots) root.add(dots)
   root.add(wallArt(M))
   const idol = mandirIdol(M)
   if (idol) root.add(idol)
@@ -4317,6 +4313,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     d.hemi.color.set(rig.hemiSky)
     d.hemi.groundColor.set(rig.hemiGround)
     d.hemi.intensity = rig.hemiIntensity
+    shadowRef.current?.()
     const fresh = skyDome(new THREE.Vector3(rig.sunOffset[0], rig.sunOffset[1], rig.sunOffset[2]), sky)
     fresh.position.copy(d.sky.position)
     d.scene.remove(d.sky)
@@ -4345,6 +4342,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const itemsRef = useRef(itemOpen)
   itemsRef.current = itemOpen
   const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean, roof: boolean, dryer = dryerDown, items: Record<string, boolean> = itemOpen): void => {
+    shadowRef.current?.()
     sc.traverse((o) => {
       // each movable piece follows its own switch if it has one, else the Doors switch
       const id = o.userData.item as string | undefined
@@ -4355,6 +4353,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       if (o.name === 'wallbed-down') o.visible = down
       if (o.name === 'dryer-down') o.visible = dryer
       if (o.name === 'dryer-up') o.visible = !dryer
+      if (o.name === 'roof-open' || o.name === 'roof-shut' || o.name === 'ceiling') shadowRef.current?.()
       if (o.name === 'ceiling') o.visible = ceiling
       if (o.name === 'roof-open') o.visible = roof
       if (o.name === 'roof-shut') o.visible = !roof
@@ -4365,6 +4364,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   }, [doorsShut, wallBed, ceilingOn, roofOpen, dryerDown, itemOpen])
   // a tap or click on a piece's icon switches that piece alone
   const pickRef = useRef<((x: number, y: number) => void) | null>(null)
+  const shadowRef = useRef<(() => void) | null>(null)
   const toggleItemRef = useRef<(id: string) => void>(() => {})
   toggleItemRef.current = (id) => uiUpdate((st) => {
     const s3 = st.show3d
@@ -4391,7 +4391,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     // 1.5 not 2: a retina iPad at full ratio pushes four times the pixels of a
     // laptop through a forward renderer with dozens of lights, and it lagged
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+    // phones and tablets start a notch under the cap; the adaptive loop raises it
+    // when frames stay fast, and drops it when they do not
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isTouchDevice() ? 1.25 : 1.5))
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFShadowMap
     const mood = getAssign().lighting ?? null
@@ -4637,33 +4639,29 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // The dot nearest the tap on screen, within a finger's radius, wins - a
     // screen-space test rather than a ray, so a tap a few pixels off a 55 mm
     // dot still lands. The dot pulses once so the tap is seen to register.
+    const dotsObj = scene.getObjectByName('item-dots') as THREE.Points | undefined
+    const dotList = (dotsObj?.userData.dots ?? []) as DotEntry[]
     const pickAt = (cx: number, cy: number): void => {
-      const icons = scene.getObjectByName('item-icons')
-      if (!icons) return
       const r = renderer.domElement.getBoundingClientRect()
       const RADIUS = Math.max(28, Math.min(r.width, r.height) * 0.06)
-      let best: THREE.Object3D | null = null
+      let best: DotEntry | null = null
       let bestD = RADIUS
       const v = new THREE.Vector3()
-      for (const o of icons.children) {
-        if (o.userData.role !== 'dot' || !o.visible) continue
-        v.copy(o.position).project(camera)
+      for (const dt of dotList) {
+        if (!dt.shown) continue
+        v.set(dt.x, dt.y, dt.z).project(camera)
         if (v.z > 1) continue
         const sx = r.left + ((v.x + 1) / 2) * r.width
         const sy = r.top + ((1 - v.y) / 2) * r.height
         const d = Math.hypot(sx - cx, sy - cy)
-        if (d < bestD) { bestD = d; best = o }
+        if (d < bestD) { bestD = d; best = dt }
       }
-      if (!best) return
-      const dot = best
-      const s0 = dot.scale.x
-      dot.scale.setScalar(s0 * 2.6)
-      setTimeout(() => dot.scale.setScalar(s0), 220)
-      toggleItemRef.current(dot.userData.item as string)
+      if (best) toggleItemRef.current(best.id)
     }
     pickRef.current = pickAt
     ;(window as unknown as { __omScene?: THREE.Scene; __omCamera?: THREE.Camera }).__omScene = scene   // for headless checks
     ;(window as unknown as { __omCamera?: THREE.Camera }).__omCamera = camera
+    ;(window as unknown as { __omRenderer?: THREE.WebGLRenderer }).__omRenderer = renderer
     let downAt: { x: number; y: number } | null = null
     const onPickDown = (e: PointerEvent): void => { downAt = { x: e.clientX, y: e.clientY } }
     const onPickUp = (e: PointerEvent): void => {
@@ -4683,6 +4681,32 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
 
     const clock = new THREE.Clock()
     let raf = 0
+    let frame = 0
+    // ---- the lamp budget: only the NEAR_LIGHTS lamps that matter most from
+    // where you stand shade the scene - ranked by reach (intensity x range^2 over
+    // distance^2), so a room's big downlight across the hall outranks a small
+    // niche lamp behind you - the rest are off until you walk up to them
+    const NEAR_LIGHTS = 16
+    const pointLights: THREE.PointLight[] = []
+    scene.traverse((o) => { if (o instanceof THREE.PointLight) pointLights.push(o) })
+    const lightScore = new Map<THREE.PointLight, number>()
+    const wp = new THREE.Vector3()
+    const cullLights = (): void => {
+      if (pointLights.length <= NEAR_LIGHTS) return
+      for (const l of pointLights) {
+        l.getWorldPosition(wp)
+        const range = l.distance || 4
+        lightScore.set(l, (l.intensity * range * range) / (wp.distanceToSquared(camera.position) + 1))
+      }
+      const order = [...pointLights].sort((a, b2) => (lightScore.get(b2) ?? 0) - (lightScore.get(a) ?? 0))
+      order.forEach((l, i) => { l.visible = i < NEAR_LIGHTS })
+    }
+    cullLights()
+    // ---- shadows only when something changes: the sun is fixed and the house
+    // does not move, so the 2048 shadow pass need not be redrawn every frame
+    renderer.shadowMap.autoUpdate = false
+    renderer.shadowMap.needsUpdate = true
+    shadowRef.current = () => { renderer.shadowMap.needsUpdate = true }
     let slowFrames = 0
     let fastFrames = 0
     const DPR_CAP = Math.min(window.devicePixelRatio, 1.5)
@@ -4707,21 +4731,26 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         orbit.update()
       }
       followCamera(dayRef.current?.sky ?? sky, camera)
-      // the piece icons: only those within reach of where you stand
-      const iconsGroup = scene.getObjectByName('item-icons')
-      if (iconsGroup) {
-        // within 4.5 m, and only the nearer of a piece's two icons
-        const nearest = new Map<string, { d: number; o: THREE.Object3D }>()
-        for (const ic of iconsGroup.children) {
-          ic.visible = false
-          const d = ic.position.distanceToSquared(camera.position)
+      frame++
+      // the piece dots: within 4.5 m, the nearer of a piece's two, the rest parked under the floor
+      if (dotsObj && frame % 4 === 0) {
+        const nearest = new Map<string, { d: number; i: number }>()
+        for (let i = 0; i < dotList.length; i++) {
+          const dt = dotList[i]
+          dt.shown = false
+          const d = (dt.x - camera.position.x) ** 2 + (dt.y - camera.position.y) ** 2 + (dt.z - camera.position.z) ** 2
           if (d > 4.5 * 4.5) continue
-          const id = `${ic.userData.item as string}|${ic.userData.role as string}`
-          const cur = nearest.get(id)
-          if (!cur || d < cur.d) nearest.set(id, { d, o: ic })
+          const cur = nearest.get(dt.id)
+          if (!cur || d < cur.d) nearest.set(dt.id, { d, i })
         }
-        for (const { o } of nearest.values()) o.visible = true
+        for (const { i } of nearest.values()) dotList[i].shown = true
+        const arr = (dotsObj.geometry.getAttribute('position') as THREE.BufferAttribute)
+        for (let i = 0; i < dotList.length; i++) arr.setY(i, dotList[i].shown ? dotList[i].y : -100)
+        arr.needsUpdate = true
       }
+      // the lamps: only the nearest few shade the scene - a constant count, so the
+      // shaders compile once - and the far ones stay off until you walk up to them
+      if (frame % 12 === 1) cullLights()
       renderer.render(scene, camera)
       // adaptive resolution: a run of slow frames steps the pixel ratio down, a
       // long run of fast ones steps it back up toward the cap, so a slow tablet

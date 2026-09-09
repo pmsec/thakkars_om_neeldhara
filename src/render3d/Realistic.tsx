@@ -2338,6 +2338,9 @@ function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAncho
   pts.name = 'item-dots'
   pts.frustumCulled = false
   pts.renderOrder = 990
+  // not drawn: the dots were the tap targets before the touch button took over,
+  // and the list behind them still names the piece in front of you
+  pts.visible = false
   pts.userData.dots = dots
   return pts
 }
@@ -5119,16 +5122,22 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         return (
           <button
             onClick={() => { diag.log(`button ${id}`); toggleItemRef.current(id) }}
-            title="The piece in front of you; the dot on it does the same"
+            title={verb}
+            aria-label={verb}
             style={{
               position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: 64,
-              padding: '10px 18px', fontSize: 14, minHeight: 44,
-              background: 'rgba(250,248,244,0.95)', color: '#1e1c18',
-              border: '1px solid #d5cdbb', borderRadius: 10, cursor: 'pointer', zIndex: 6,
+              width: 56, height: 56, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(250,248,244,0.92)', color: '#1e1c18',
+              border: '1px solid #d5cdbb', borderRadius: 28, cursor: 'pointer', zIndex: 6,
               boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
             }}
           >
-            {verb}
+            {/* a fingertip on a tap ripple: touch here to switch the piece in front of you */}
+            <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+              <circle cx="12" cy="10" r="7.5" fill="none" stroke="#1e1c18" strokeWidth="1.4" opacity="0.45" />
+              <circle cx="12" cy="10" r="3.2" fill="none" stroke="#1e1c18" strokeWidth="1.4" opacity="0.7" />
+              <path d="M12 10.5v9.5l-2.6-2.2c-.9-.7-2.2-.5-2.8.5-.4.7-.3 1.5.3 2.1l4.2 4.6c.7.8 1.7 1.2 2.8 1.2h4.4c2 0 3.7-1.6 3.7-3.6v-4.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-1.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-.9c0-1-.8-1.8-1.8-1.8s-1.7.8-1.7 1.8V10.5c0-1-.7-1.8-1.6-1.8s-1.5.8-1.5 1.8z" fill="#f3ecdd" stroke="#1e1c18" strokeWidth="1.3" strokeLinejoin="round" />
+            </svg>
           </button>
         )
       })()}

@@ -38,6 +38,7 @@ import { createTouchWalk, isTouchDevice, preventPageZoom, zoomLens, type TouchWa
 import { PRESETS, presetCamera } from './cameras'
 import { podDoorLeaves, type PodDoorMode } from './podDoors'
 import { mergeStatic } from './merge'
+import { diag, DiagOverlay } from './diag'
 import { isStrengthTrainer, strengthTrainer } from './gym'
 import { hedgeGroup } from './hedge'
 import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
@@ -4343,12 +4344,14 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   itemsRef.current = itemOpen
   const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean, roof: boolean, dryer = dryerDown, items: Record<string, boolean> = itemOpen): void => {
     shadowRef.current?.()
+    let pieces = 0
     sc.traverse((o) => {
       // each movable piece follows its own switch if it has one, else the Doors switch
       const id = o.userData.item as string | undefined
       if (id && o.userData.mode) {
         const open = items[id] ?? !shut
         o.visible = (o.userData.mode === 'open') === open
+        pieces++
       }
       if (o.name === 'wallbed-down') o.visible = down
       if (o.name === 'dryer-down') o.visible = dryer
@@ -4358,6 +4361,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       if (o.name === 'roof-open') o.visible = roof
       if (o.name === 'roof-shut') o.visible = !roof
     })
+    diag.log(`apply doors=${shut ? 'shut' : 'open'} own=${Object.keys(items).length} ceiling=${ceiling} roof=${roof} -> ${pieces} pieces`)
   }
   useEffect(() => {
     if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn, roofOpen, dryerDown, itemOpen)
@@ -4365,8 +4369,10 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   // a tap or click on a piece's icon switches that piece alone
   const pickRef = useRef<((x: number, y: number) => void) | null>(null)
   const shadowRef = useRef<(() => void) | null>(null)
+  const diagInfoRef = useRef<() => string>(() => '')
   const toggleItemRef = useRef<(id: string) => void>(() => {})
   toggleItemRef.current = (id) => uiUpdate((st) => {
+    diag.log(`toggle ${id}`)
     const s3 = st.show3d
     if (id === 'wallbed') return { ...st, show3d: { ...s3, wallBedDown: !s3.wallBedDown } }
     if (id === 'dryer') return { ...st, show3d: { ...s3, dryerDown: !s3.dryerDown } }
@@ -4641,35 +4647,66 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // dot still lands. The dot pulses once so the tap is seen to register.
     const dotsObj = scene.getObjectByName('item-dots') as THREE.Points | undefined
     const dotList = (dotsObj?.userData.dots ?? []) as DotEntry[]
+    let lastPickAt = 0
     const pickAt = (cx: number, cy: number): void => {
+      lastPickAt = performance.now()
       const r = renderer.domElement.getBoundingClientRect()
       const RADIUS = Math.max(28, Math.min(r.width, r.height) * 0.06)
       let best: DotEntry | null = null
       let bestD = RADIUS
+      let nearest: DotEntry | null = null
+      let nearestD = Infinity
+      let shown = 0
       const v = new THREE.Vector3()
       for (const dt of dotList) {
         if (!dt.shown) continue
+        shown++
         v.set(dt.x, dt.y, dt.z).project(camera)
         if (v.z > 1) continue
         const sx = r.left + ((v.x + 1) / 2) * r.width
         const sy = r.top + ((1 - v.y) / 2) * r.height
         const d = Math.hypot(sx - cx, sy - cy)
+        if (d < nearestD) { nearestD = d; nearest = dt }
         if (d < bestD) { bestD = d; best = dt }
       }
+      diag.log(`pick @${Math.round(cx)},${Math.round(cy)} shown=${shown} r=${Math.round(RADIUS)} -> ${best ? best.id : 'none'}${nearest ? ` (nearest ${nearest.id} ${Math.round(nearestD)}px)` : ''}`)
       if (best) toggleItemRef.current(best.id)
     }
     pickRef.current = pickAt
+    diagInfoRef.current = () => `pr ${renderer.getPixelRatio().toFixed(2)} ${touchWalk.enabled ? 'walk' : 'orbit'}`
     ;(window as unknown as { __omScene?: THREE.Scene; __omCamera?: THREE.Camera }).__omScene = scene   // for headless checks
     ;(window as unknown as { __omCamera?: THREE.Camera }).__omCamera = camera
     ;(window as unknown as { __omRenderer?: THREE.WebGLRenderer }).__omRenderer = renderer
     let downAt: { x: number; y: number } | null = null
-    const onPickDown = (e: PointerEvent): void => { downAt = { x: e.clientX, y: e.clientY } }
+    const onPickDown = (e: PointerEvent): void => { downAt = { x: e.clientX, y: e.clientY }; diag.log(`${e.pointerType} down @${Math.round(e.clientX)},${Math.round(e.clientY)} walk=${touchWalk.enabled}`) }
     const onPickUp = (e: PointerEvent): void => {
-      if (!downAt) return
+      if (!downAt) { diag.log(`${e.pointerType} up (no down)`); return }
       const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y)
       downAt = null
+      diag.log(`${e.pointerType} up moved=${Math.round(moved)}`)
       if (moved < 6 && !touchWalk.enabled && !lock.isLocked) pickAt(e.clientX, e.clientY)
     }
+    // some touch engines drop the pointerup after a capture, or never raise one for a
+    // quick tap; the raw touch events still arrive, so a clean tap that produced no
+    // pick within the last half second is picked from here
+    let touchAt: { x: number; y: number; t: number } | null = null
+    const onTouchStart = (e: TouchEvent): void => {
+      touchAt = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() } : null
+    }
+    const onTouchEnd = (e: TouchEvent): void => {
+      const t0 = touchAt
+      touchAt = null
+      if (!t0 || e.touches.length || e.changedTouches.length !== 1) return
+      const t = e.changedTouches[0]
+      const now = performance.now()
+      const moved = Math.hypot(t.clientX - t0.x, t.clientY - t0.y)
+      if (moved < 10 && now - t0.t < 600 && now - lastPickAt > 500) {
+        diag.log('touchend fallback')
+        pickAt(t.clientX, t.clientY)
+      }
+    }
+    const onContextLost = (e: Event): void => { e.preventDefault(); diag.log('WEBGL CONTEXT LOST') }
+    const onContextRestored = (): void => { diag.log('webgl context restored'); shadowRef.current?.() }
     const onLockedClick = (): void => {
       if (!lock.isLocked) return
       const r = renderer.domElement.getBoundingClientRect()
@@ -4678,6 +4715,11 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     renderer.domElement.addEventListener('pointerdown', onPickDown)
     renderer.domElement.addEventListener('pointerup', onPickUp)
     renderer.domElement.addEventListener('click', onLockedClick)
+    renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: true })
+    renderer.domElement.addEventListener('touchend', onTouchEnd, { passive: true })
+    renderer.domElement.addEventListener('webglcontextlost', onContextLost)
+    renderer.domElement.addEventListener('webglcontextrestored', onContextRestored)
+    diag.install()
 
     const clock = new THREE.Clock()
     let raf = 0
@@ -4709,6 +4751,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     shadowRef.current = () => { renderer.shadowMap.needsUpdate = true }
     let slowFrames = 0
     let fastFrames = 0
+    let frameErrors = 0
     const DPR_CAP = Math.min(window.devicePixelRatio, 1.5)
     const bb = model.envelopeBBox
     const animate = (): void => {
@@ -4751,7 +4794,13 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       // the lamps: only the nearest few shade the scene - a constant count, so the
       // shaders compile once - and the far ones stay off until you walk up to them
       if (frame % 12 === 1) cullLights()
-      renderer.render(scene, camera)
+      try {
+        renderer.render(scene, camera)
+      } catch (err) {
+        if (frameErrors++ < 3) diag.log(`FRAME ERROR ${String(err).slice(0, 140)}`)
+        if (frameErrors === 1) console.error(err)
+      }
+      diag.frame(dt)
       // adaptive resolution: a run of slow frames steps the pixel ratio down, a
       // long run of fast ones steps it back up toward the cap, so a slow tablet
       // stays fluid instead of crisp and laggy
@@ -4790,6 +4839,10 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       renderer.domElement.removeEventListener('pointerdown', onPickDown)
       renderer.domElement.removeEventListener('pointerup', onPickUp)
       renderer.domElement.removeEventListener('click', onLockedClick)
+      renderer.domElement.removeEventListener('touchstart', onTouchStart)
+      renderer.domElement.removeEventListener('touchend', onTouchEnd)
+      renderer.domElement.removeEventListener('webglcontextlost', onContextLost)
+      renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored)
       if (lock.isLocked) lock.unlock()
       renderer.dispose()
       mount.removeChild(renderer.domElement)
@@ -4799,6 +4852,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={mountRef} style={{ position: 'absolute', inset: 0 }} />
+      {diag.on && <DiagOverlay info={() => diagInfoRef.current()} />}
       {!compact && bars && <StylePanel />}
       {!compact && bars && (
         <AiRenderPanel

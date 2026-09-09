@@ -79,6 +79,16 @@ export function preventPageZoom(el: HTMLElement): () => void {
   }
 }
 
+/**
+ * A touch pointer is captured implicitly by the element that saw its pointerdown,
+ * and asking again has tripped some touch engines into dropping the pointerup;
+ * only a mouse or a pen needs the explicit capture to keep a drag past the edge.
+ */
+function capture(el: HTMLElement, e: PointerEvent): void {
+  if (e.pointerType === 'touch') return
+  try { el.setPointerCapture(e.pointerId) } catch { /* a pointer already gone */ }
+}
+
 export function createTouchWalk(
   camera: THREE.PerspectiveCamera,
   canvas: HTMLElement,
@@ -133,7 +143,7 @@ export function createTouchWalk(
       const b = r.el.getBoundingClientRect()
       apply(THREE.MathUtils.clamp(1 - (e.clientY - b.top - RAIL_W / 2) / (b.height - RAIL_W), 0, 1))
     }
-    r.el.addEventListener('pointerdown', (e) => { id = e.pointerId; r.el.setPointerCapture(e.pointerId); at(e); e.preventDefault(); e.stopPropagation() })
+    r.el.addEventListener('pointerdown', (e) => { id = e.pointerId; capture(r.el, e); at(e); e.preventDefault(); e.stopPropagation() })
     r.el.addEventListener('pointermove', (e) => { if (e.pointerId === id) { at(e); e.preventDefault() } })
     const up = (e: PointerEvent): void => { if (e.pointerId === id) id = null }
     r.el.addEventListener('pointerup', up)
@@ -174,7 +184,7 @@ export function createTouchWalk(
   }
   const onStickDown = (e: PointerEvent): void => {
     stickPointer = e.pointerId
-    base.setPointerCapture(e.pointerId)
+    capture(base, e)
     onStickMove(e)
     e.preventDefault()
   }
@@ -225,7 +235,7 @@ export function createTouchWalk(
       pinchStartDist = Math.max(1, pinchDist())
       pinchStartFov = camera.fov
     } else return
-    canvas.setPointerCapture(e.pointerId)
+    capture(canvas, e)
     e.preventDefault()
     e.stopImmediatePropagation()
   }

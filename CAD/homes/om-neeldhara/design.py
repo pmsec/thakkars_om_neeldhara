@@ -785,6 +785,15 @@ _ONCE = [
     # retrofit.terrace_pieces(), which does the same on the parents' terrace.
     ('sofa-w',   21930, 200, 22730, 1000,
      'single sofa  ·  800, facing east at the tree  ·  200 clear each side'),
+    # A CEILING CLOTHES DRYER on a pulley, over the back half of the sofa:
+    # four rods on an 850 x 400 frame, pulled down to 1900 to hang the wash
+    # and hauled up to 3650 — above the slider's head at 3505, so from the
+    # street it is behind the terrace's high wall.  Drawn dashed, over and
+    # not in plan.  Over the sofa rather than the tree or the jhoola: the
+    # tree's crown starts at 1900 and the jhoola's frame is 1900 high, and a
+    # rack lowered on to either would foul it.
+    ('under',    21830, 750, 22680, 1150,
+     'ceiling clothes dryer  ·  pulley, 850 x 400, 4 rods, down to 1900, up to 3650'),
 
     # The reading chair and its ottoman came out of this corner.  The bed moved
     # south into the floor they were standing on, and two pieces of loose

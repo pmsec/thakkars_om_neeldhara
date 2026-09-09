@@ -29,7 +29,7 @@ type Side = 'N' | 'S' | 'E' | 'W'
 const SIDES: Side[] = ['N', 'S', 'E', 'W']
 
 /** How far each side of a piece's footprint is from the nearest wall face. */
-function wallGaps(f: FurnitureItem): Record<Side, number> {
+export function wallGaps(f: FurnitureItem): Record<Side, number> {
   const model = getModel()
   const cx = f.x + f.w / 2, cy = f.y + f.d / 2
   const probe: Record<Side, { x: number; y: number }> = {

@@ -43,7 +43,7 @@ import { isStrengthTrainer, strengthTrainer } from './gym'
 import { hedgeGroup } from './hedge'
 import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
 import { useStore } from '../ui/store'
-import { importedPiece } from './imported'
+import { importedPiece, wallGaps } from './imported'
 import { activeHomeId } from '../homes/registry'
 
 const model = getModel()
@@ -681,10 +681,19 @@ function teakWardrobe(f: FurnitureItem, M: Mats): THREE.Group {
     // recessed dark plinth, the door slabs bringing the front out to the
     // face, a shadow gap under the top, long brass bars for handles
     const H = f.height
+    // the doors go on the LONGEST side that is clear of a wall: a wardrobe in
+    // a corner backs on to two walls and its front is the long free side,
+    // wherever the room's centre happens to lie. Ties go toward the room.
     const room = model.roomById.get(f.room)
     const ddx = (room?.centroid.x ?? cx) - cx, ddy = (room?.centroid.y ?? cy) - cy
-    const alongX = Math.abs(ddx) >= Math.abs(ddy)
-    const sgn = alongX ? Math.sign(ddx) || 1 : Math.sign(ddy) || 1
+    const gaps = wallGaps(f)
+    const lenOf = (s: 'N' | 'S' | 'E' | 'W'): number => (s === 'N' || s === 'S' ? w : d)
+    const toward = (s: 'N' | 'S' | 'E' | 'W'): number => (s === 'N' ? -ddy : s === 'S' ? ddy : s === 'E' ? ddx : -ddx)
+    const free = (['N', 'S', 'E', 'W'] as const).filter((s) => gaps[s] > 100)
+    const front = [...free].sort((a, b) => lenOf(b) - lenOf(a) || toward(b) - toward(a))[0]
+      ?? (Math.abs(ddx) >= Math.abs(ddy) ? (ddx >= 0 ? 'E' : 'W') : (ddy >= 0 ? 'S' : 'N'))
+    const alongX = front === 'E' || front === 'W'
+    const sgn = front === 'E' || front === 'S' ? 1 : -1
     const PL = 80, DT = 20
     const carcW = alongX ? w - DT : w, carcD = alongX ? d : d - DT
     const carcX = alongX ? -sgn * DT / 2 : 0, carcZ = alongX ? 0 : -sgn * DT / 2
@@ -974,7 +983,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     }
     if (f.kind === 'wardrobe' && lift === 0 && !/hatch|headboard/i.test(f.label) && f.poly.length <= 8) return teakWardrobe(f, M)
     if (f.kind === 'wardrobe' || f.kind === 'shelves') {
-      const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
+      // a curved wardrobe (the arch cupboard) is the same pale teak as the rest
+      const body = polyPiece(f.poly, lift, lift + h, f.kind === 'wardrobe' ? M.teak : M.timber, f.room)
       if (body) g.add(body)
       if (/hatch/i.test(f.label)) {
         // the serving hatch's open shelves: two boards and a few things on them

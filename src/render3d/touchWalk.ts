@@ -9,10 +9,10 @@
  *     and further to hurry;
  *   - a one-finger drag anywhere else on the view to look around;
  *   - a two-finger pinch to widen or narrow the lens (the desktop's scroll wheel);
- *   - two rails on the right edge: EYE sets how high you stand, from a child's
- *     height right up to a look down over the walls, and TILT sets how far the
- *     view is pitched up or down. Eye height is otherwise held, so walking never
- *     floats or sinks.
+ *   - one rail on the right edge: EYE sets how high you stand, from a child's
+ *     height right up to a look down over the walls. Eye height is otherwise
+ *     held, so walking never floats or sinks. (There was a TILT rail beside it;
+ *     the look-drag already pitches the view, so it went.)
  *
  * It drives the camera directly, in the same yaw/pitch (YXZ) convention as
  * PointerLockControls, so the orbit rig can be handed back the camera untouched.
@@ -102,7 +102,7 @@ export function createTouchWalk(
   let stick = { x: 0, y: 0 }
   let eye = opts.eye
 
-  // ---- the two rails on the right edge: eye height and tilt
+  // ---- the rail on the right edge: eye height
   const rail = (label: string, bottom: number): { el: HTMLDivElement; knob: HTMLDivElement; set: (t: number) => void } => {
     const el = document.createElement('div')
     Object.assign(el.style, {
@@ -133,10 +133,8 @@ export function createTouchWalk(
     }
     return { el, knob, set }
   }
-  const eyeRail = rail('EYE', 54 + RAIL_H + 34)
-  const tiltRail = rail('TILT', 54)
+  const eyeRail = rail('EYE', 54)
   const eyeT = (): number => (eye - EYE_MIN) / (EYE_MAX - EYE_MIN)
-  const tiltT = (): number => (euler.x + MAX_PITCH) / (2 * MAX_PITCH)
   const railDrag = (r: { el: HTMLDivElement }, apply: (t: number) => void): void => {
     let id: number | null = null
     const at = (e: PointerEvent): void => {
@@ -153,11 +151,6 @@ export function createTouchWalk(
     eye = EYE_MIN + t * (EYE_MAX - EYE_MIN)
     camera.position.y = eye
     eyeRail.set(t)
-  })
-  railDrag(tiltRail, (t) => {
-    euler.x = -MAX_PITCH + t * 2 * MAX_PITCH
-    camera.quaternion.setFromEuler(euler)
-    tiltRail.set(t)
   })
 
   // ---- the stick
@@ -248,7 +241,6 @@ export function createTouchWalk(
         euler.x -= (e.clientY - last.y) * LOOK_RATE
         euler.x = THREE.MathUtils.clamp(euler.x, -MAX_PITCH, MAX_PITCH)
         camera.quaternion.setFromEuler(euler)
-        tiltRail.set(tiltT())
       }
       last = { x: e.clientX, y: e.clientY }
     } else return
@@ -282,7 +274,6 @@ export function createTouchWalk(
     euler.setFromQuaternion(camera.quaternion, 'YXZ')
     euler.z = 0
     camera.quaternion.setFromEuler(euler)
-    tiltRail.set(tiltT())
     eyeRail.set(eyeT())
   }
 
@@ -296,7 +287,6 @@ export function createTouchWalk(
       canvas.style.touchAction = 'none'
       base.style.display = 'block'
       eyeRail.el.style.display = 'block'
-      tiltRail.el.style.display = 'block'
       camera.position.y = eye
       sync()
     },
@@ -310,7 +300,6 @@ export function createTouchWalk(
       canvas.style.touchAction = savedTouchAction
       base.style.display = 'none'
       eyeRail.el.style.display = 'none'
-      tiltRail.el.style.display = 'none'
     },
     sync,
     update(dt) {
@@ -342,7 +331,6 @@ export function createTouchWalk(
       canvas.removeEventListener('pointercancel', onLookUp, true)
       base.remove()
       eyeRail.el.remove()
-      tiltRail.el.remove()
     },
   }
 }

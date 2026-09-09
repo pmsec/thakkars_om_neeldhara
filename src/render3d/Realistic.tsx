@@ -1215,9 +1215,9 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         const c = headSgn * (L / 2 - 500 - 450)      // drawer centre, 500 to 1400 from the head
         for (const side of [-1, 1]) {
           const out = (ewD ? d : w) / 2 + 12
-          const front = box(ewD ? 900 : 24, 200, ewD ? 24 : 900, M.walnut, ewD ? c : side * out, 130, ewD ? side * out : c)
+          const front = box(ewD ? 900 : 24, 200, ewD ? 24 : 900, M.wallWood, ewD ? c : side * out, 130, ewD ? side * out : c)
           g.add(front)
-          const pull = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, 160 * S, 8), M.brass)
+          const pull = new THREE.Mesh(new THREE.CylinderGeometry(8 * S, 8 * S, 320 * S, 10), M.brass)
           pull.rotation.z = ewD ? Math.PI / 2 : 0
           pull.rotation.x = ewD ? 0 : Math.PI / 2
           pull.position.set((ewD ? c : side * (out + 14)) * S, 130 * S, (ewD ? side * (out + 14) : c) * S)

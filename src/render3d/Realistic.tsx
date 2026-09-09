@@ -1214,13 +1214,14 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         // face is the way the sleeper looks, so the head is at the opposite end
         const headSgn = f.face === 'E' || f.face === 'S' ? -1 : 1
         const c = headSgn * (L / 2 - 500 - 450)      // drawer centre, 500 to 1400 from the head
-        // flush with the frame's face, inside the drawn footprint: an oak front
-        // let into the walnut, with a recessed finger groove along its top edge
+        // an oak front standing 14 proud of the walnut frame - within the 30 the
+        // fidelity check allows past the drawn footprint - with a dark finger
+        // groove along its top edge
         for (const side of [-1, 1]) {
-          const out = (ewD ? d : w) / 2 - 13
+          const out = (ewD ? d : w) / 2 + 2
           const front = box(ewD ? 900 : 24, 200, ewD ? 24 : 900, M.wallWood, ewD ? c : side * out, 130, ewD ? side * out : c)
           g.add(front)
-          const groove = box(ewD ? 320 : 8, 22, ewD ? 8 : 320, M.trunk, ewD ? c : side * (out + 9), 218, ewD ? side * (out + 9) : c)
+          const groove = box(ewD ? 320 : 8, 22, ewD ? 8 : 320, M.trunk, ewD ? c : side * (out + 10), 218, ewD ? side * (out + 10) : c)
           g.add(groove)
         }
       }

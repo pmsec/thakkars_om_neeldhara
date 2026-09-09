@@ -4520,10 +4520,15 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     return { ...st, show3d: { ...s3, itemOpen: { ...s3.itemOpen, [id]: !open } } }
   })
 
-  const [styleTick, setStyleTick] = useState(0)
+  // The scene is built once the style library is primed, and again when the
+  // style changes. It used to be built at mount AND again the moment priming
+  // resolved - two full builds on every load, and a teardown of the first that
+  // had to succeed on every engine for the second to be the one on screen.
+  const [styleTick, setStyleTick] = useState(-1)
   useEffect(() => {
     const onStyle = (): void => {
-      void primeStyle().then(() => setStyleTick((t) => t + 1))
+      const bounded = Promise.race([primeStyle(), new Promise<void>((r) => setTimeout(r, 2500))])
+      void bounded.catch(() => undefined).then(() => setStyleTick((t) => t + 1))
     }
     onStyle()
     window.addEventListener('om-style-changed', onStyle)
@@ -4532,7 +4537,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
 
   useEffect(() => {
     const mount = mountRef.current
-    if (!mount) return
+    if (!mount || styleTick < 0) return
+    // a canvas left behind by a teardown that failed would sit on top of the
+    // new one, live to the eye and deaf to every switch: nothing but this
+    // effect's own renderer may be in the mount
+    for (const stale of Array.from(mount.querySelectorAll('canvas'))) { diag.log('stale canvas removed'); stale.remove() }
+    let alive = true
 
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     // 1.5 not 2: a retina iPad at full ratio pushes four times the pixels of a
@@ -4898,6 +4908,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const DPR_CAP = Math.min(window.devicePixelRatio, 2)
     const bb = model.envelopeBBox
     const animate = (): void => {
+      if (!alive) return
       raf = requestAnimationFrame(animate)
       const dt = Math.min(clock.getDelta(), 0.1)
       if (touchWalk.enabled) {
@@ -4979,30 +4990,39 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     animate()
 
     return () => {
+      // the loop and the canvas go first, unconditionally: whatever else in this
+      // teardown an engine may refuse, nothing of this scene stays on screen or
+      // keeps drawing
+      alive = false
+      cancelAnimationFrame(raf)
+      try { renderer.domElement.remove() } catch { /* already gone */ }
       captureRef.current = null
       standRef.current = null
       walkRef.current = null
       wholeRef.current = null
       touchRef.current = null
-      touchWalk.dispose()
-      undoPageZoom()
-      window.removeEventListener('hashchange', applyCamHash)
-      renderer.domElement.removeEventListener('wheel', onWheel)
-      cancelAnimationFrame(raf)
-      ro.disconnect()
-      window.removeEventListener('keydown', kd)
-      window.removeEventListener('keyup', ku)
-      renderer.domElement.removeEventListener('dblclick', onClick)
-      renderer.domElement.removeEventListener('pointerdown', onPickDown)
-      renderer.domElement.removeEventListener('pointerup', onPickUp)
-      renderer.domElement.removeEventListener('click', onLockedClick)
-      renderer.domElement.removeEventListener('touchstart', onTouchStart)
-      renderer.domElement.removeEventListener('touchend', onTouchEnd)
-      renderer.domElement.removeEventListener('webglcontextlost', onContextLost)
-      renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored)
-      if (lock.isLocked) lock.unlock()
-      renderer.dispose()
-      mount.removeChild(renderer.domElement)
+      const steps: Array<() => void> = [
+        () => touchWalk.dispose(),
+        () => undoPageZoom(),
+        () => window.removeEventListener('hashchange', applyCamHash),
+        () => renderer.domElement.removeEventListener('wheel', onWheel),
+        () => ro.disconnect(),
+        () => window.removeEventListener('keydown', kd),
+        () => window.removeEventListener('keyup', ku),
+        () => renderer.domElement.removeEventListener('dblclick', onClick),
+        () => renderer.domElement.removeEventListener('pointerdown', onPickDown),
+        () => renderer.domElement.removeEventListener('pointerup', onPickUp),
+        () => renderer.domElement.removeEventListener('click', onLockedClick),
+        () => renderer.domElement.removeEventListener('touchstart', onTouchStart),
+        () => renderer.domElement.removeEventListener('touchend', onTouchEnd),
+        () => renderer.domElement.removeEventListener('webglcontextlost', onContextLost),
+        () => renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored),
+        () => { if (lock.isLocked) lock.unlock() },
+        () => renderer.dispose(),
+      ]
+      for (const step of steps) {
+        try { step() } catch (err) { diag.log(`teardown step failed: ${String(err).slice(0, 80)}`); console.warn(err) }
+      }
     }
   }, [styleTick])
 

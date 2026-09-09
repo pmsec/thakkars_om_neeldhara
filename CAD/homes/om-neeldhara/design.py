@@ -693,13 +693,11 @@ _ONCE = [
     # Y 7745-8945 with its face 80 proud, so the cabinet backs on to that face
     # at X -370 and its northern 300 has 80 of void behind it, packed out.
     #
-    # A SIDE TABLE EACH SIDE, 500 long and 480 deep, flanking the cabinet on the
-    # same wall.  Neither of them stands on the column, so they go back to the
-    # wall face at X -450 and are 480 deep rather than 400 — and all three
-    # pieces then share one flush front at X 30, a single 2500 run.  Standing
-    # against the wall they are the dressing zone's console when the bed is up
-    # and the bed's side tables when it is down.
-    ('counter-r', -450, 6945, 30, 7445, "side table  ·  500 x 480"),
+    # ONE SIDE TABLE, south of the cabinet, 500 long and 480 deep.  It does not
+    # stand on the column, so it goes back to the wall face at X -450 and is
+    # 480 deep rather than 400, sharing the cabinet's flush front at X 30.
+    # The north one is gone: the wardrobe has come across to this wall and
+    # takes the stretch between the sliding screen and the cabinet (below).
     # The wall bed is a SOFA WALL BED: a 400 cabinet on the wall and a two-seat
     # sofa, 550 deep, in front of it with its back to the cabinet.  Closed, the
     # dressing zone has a sofa; open, the queen folds down over the sofa.  The
@@ -718,12 +716,15 @@ _ONCE = [
     # to edge round for the sake of a surface the cupboards already provide.
     ('mirror',    2310, 8605, 2400, 9545,
      "mirror  ·  940 on the bath wall, no console"),
-    # THE GRANDMOTHER'S WARDROBE, on the bath's straight wall between the glass
-    # partition and her bath door: 1300 x 600, hanging.  It clears the wall
-    # bed (which folds down south of 7445) and the glass leaves, which stack at
-    # the far end of the line.  Her door's leaf swings into the bath, so the
-    # wardrobe can run right up to the jamb.
-    ('hanging',   1725, 6000, 2325, 7300, "wardrobe  ·  1300 x 600, hanging"),
+    # THE GRANDMOTHER'S WARDROBE, on the WEST wall between the sliding screen
+    # and the wall bed: 1300 x 600, hanging, back to the wall face at X -450.
+    # It came across from the bath wall (Karan's call), and the north side
+    # table went to make room.  The screen's leaves stack at this end of the
+    # partition on tracks down to Y 5995, so it starts 45 below them at 6040
+    # and ends at 7340, 105 short of the cabinet at 7445.  Its doors open east
+    # into the zone, and the bath wall opposite is clear again from the glass
+    # to her door.
+    ('hanging',   -450, 6040, 150, 7340, "wardrobe  ·  1300 x 600, hanging"),
 
     ('sofa-e',   1750, 200, 2550, 1000,
      'single sofa  ·  800, facing west at the tree  ·  200 clear each side'),

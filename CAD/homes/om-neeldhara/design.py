@@ -649,11 +649,13 @@ _ONCE = [
     # the arch is BROWN TINTED GLASS, the same glass as Karan's dressing
     # screen and the serving hatch.
     #
-    # THE GLASS IS THE DOOR.  Two leaves of 1388 on a double track — one on
-    # the north track, one on the south — so either slides behind the other
-    # and half the line is open at a time.  No pocket, because there is no
-    # cupboard to pocket into; bypass leaves need none.  Nothing swings, so
-    # nothing can foul anything.
+    # THE GLASS IS THE DOOR.  THREE leaves of 925 on a triple track — north,
+    # middle, south — so all three slide behind one another and stack into a
+    # third of the line: open, the leaves take 925 against the west wall and
+    # 1850 of the 2775 is clear.  Two leaves left half the line shut whenever
+    # it was open, which is why there are three.  No pocket, because there is
+    # no cupboard to pocket into; bypass leaves need none.  Nothing swings,
+    # so nothing can foul anything.
     #
     # Shut, the two zones are separately heatable, which is the whole reason
     # the partition exists.  Open, the suite reads as one room through the
@@ -663,10 +665,12 @@ _ONCE = [
     # X 2325 — the sweep is north of this line now, so the line meets a flat
     # wall, not a curve.  2775 in all.  Tinted from the floor to the ceiling,
     # the whole length.
-    ('tint',      -450, 5875, 937.5, 5935,
-     "sliding screen  ·  brown tinted glass, leaf 1 of 2, 1388, north track"),
-    ('tint',      937.5, 5935, 2325, 5995,
-     "sliding screen  ·  brown tinted glass, leaf 2 of 2, 1388, south track"),
+    ('tint',      -450, 5875, 475, 5915,
+     "sliding screen  ·  brown tinted glass, leaf 1 of 3, 925, north track"),
+    ('tint',      475, 5915, 1400, 5955,
+     "sliding screen  ·  brown tinted glass, leaf 2 of 3, 925, middle track"),
+    ('tint',      1400, 5955, 2325, 5995,
+     "sliding screen  ·  brown tinted glass, leaf 3 of 3, 925, south track"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN

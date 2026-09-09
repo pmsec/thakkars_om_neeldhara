@@ -284,12 +284,12 @@ DEN = [
 PARENTS = [
     ('', 'The west wing: 32.5 m² (350 sq ft) in two zones — bed to the '
          'north, dressing to the south — split by a sliding partition.'),
-    ('The partition', 'Brown tinted glass end to end: two bypass leaves of '
-         '1591 mm (5′-3″) on a double track, no cupboard block and no '
-         'pocket. Shut, two rooms that heat separately; open, one suite '
-         'through the tint. Nothing swings, so nothing fouls the bath’s '
-         'arch. The parents’ clothes hang in a full-height cupboard curled '
-         'round the outside of that arch.'),
+    ('The partition', 'Brown tinted glass end to end: three bypass leaves of '
+         '925 mm (3′-0″) on a triple track, no cupboard block and no pocket. '
+         'Open, they stack into a third of the line and 1850 mm (6′-1″) is '
+         'clear; shut, two rooms that heat separately. Nothing swings. The '
+         'parents’ clothes hang in a full-height cupboard curled round the '
+         'outside of the bath’s arch.'),
     ('Two baths in one cubicle', 'The arched sweep has moved 1600 mm '
          '(5′-3″) north, so the 1930 mm (6′-4″) cubicle is long enough for '
          'two baths: the parents’ under the arch, entered from the bed zone, '

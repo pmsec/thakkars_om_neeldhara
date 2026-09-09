@@ -418,7 +418,7 @@ def symbol(kind, a, b, c, d):
         # it takes when it is folded down, because that is the thing you need to
         # see the room around, and it is not there in plan the rest of the time.
         # The rectangle given is the whole closed unit: cabinet plus sofa.
-        L = 2000                                   # the bed, folded down
+        L = 1905                                   # the bed, folded down: 60 x 75 in
         CAB = 400                                  # the cabinet
         if kind.endswith('-e'):
             out = [_rr(a, b, a + CAB, d, 'solid')]

@@ -105,6 +105,21 @@ MB_DOOR_P = (15, 715)
 # The grandmother's door: the door the bath always had, from the dressing zone,
 # 800, Y 7300-8100, into the south half.
 MB_DOOR = (2185, 2985)
+# THE GRANDMOTHER'S HALF IS NARROWER THAN THE PARENTS'.  Her half of the
+# cubicle is 5'-0" (1524) clear where the parents' keeps the full 1917: the
+# west wall jogs east on the divider's line and runs down to the outer wall
+# from there.  What it buys is the way past the wall bed's foot to her own
+# door when the bed is down — 295 before, 783 now with the shorter mattress
+# (see the wall bed in FURNITURE).  Her fittings sit in a line down the
+# length, so nothing in her half needed the width: the walk-in shower goes
+# from 1850 to 1457 across, which is still a walk-in.
+G_BATH_W = 1524
+MB_XW_G = MB_XE - G_BATH_W          # 2868 — her bath's west face
+MB_XW_G_K = MB_XW                   # Karan's has no jog: one width, top to bottom
+MB_DIV_MID = (MB_DIV[0] + MB_DIV[1]) / 2   # 7200 — the divider's line, where the wall jogs
+# Her door on her own tail, which starts on the divider's north face: still
+# Y 7300-8100, measured from 7150.
+MB_DOOR_G = (7300 - MB_DIV[0], 8100 - MB_DIV[0])
 # Karan's sweep, as first drawn: crown 5950, meets the pod wall at 6550,
 # turns vertical at 6715, east wall from 6650, shelves to 7500.
 MB_CY_K, MB_YE_K = 5950, 6550
@@ -360,7 +375,14 @@ NEW_WALLS = [
     # a gap in that tail, hard against the curve.  See retrofit.mb_wall().
     # The parents' tail carries TWO doors now: theirs at the top, into the
     # north half, and the grandmother's lower down, into hers.
-    (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR_P, MB_DOOR]),
+    # The parents' tail runs from the sweep to the divider's south face.
+    (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, MB_DIV[1], T_MB, [MB_DOOR_P]),
+    # The jog: on the divider's own line and at its thickness, from the
+    # parents' tail's west face across to the grandmother's tail.
+    (MB_XW - T_MB, MB_DIV_MID, MB_XW_G - T_MB / 2, MB_DIV_MID, MB_DIV[1] - MB_DIV[0], []),
+    # Her tail, 393 further east, from the divider's north face to the outer
+    # wall, with her door in it.
+    (MB_XW_G - T_MB / 2, MB_DIV[0], MB_XW_G - T_MB / 2, WING_S, T_MB, [MB_DOOR_G]),
     (M(MB_XW - T_MB / 2), MB_YW_K, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR_E]),
     # The bath's east side is the enclosure to the builder's main service duct.
     # It was never drawn — the shell arrives with the shaft simply open — and
@@ -702,8 +724,12 @@ _ONCE = [
     # sofa, 550 deep, in front of it with its back to the cabinet.  Closed, the
     # dressing zone has a sofa; open, the queen folds down over the sofa.  The
     # unit's front is at X 580, 1730 clear to the mirror wall.
+    # THE MATTRESS IS 1905 LONG, NOT 2000: the Indian queen, 60 x 75 in, which
+    # is what this bed will be bought as.  With her bath's wall moved 393 east
+    # (see MB_XW_G) the foot of the bed, down, stops 783 short of that wall —
+    # a way through to her door, where 295 was a wall of mattress.
     ('murphy-e',  -370, 7445, 580, 8945,
-     "wall bed  ·  QUEEN 1500 x 2000 folds down over a 2-seat sofa  ·  shown down, dashed"),
+     "wall bed  ·  QUEEN 1500 x 1905 folds down over a 2-seat sofa  ·  shown down, dashed"),
     ('counter-r', -450, 8945, 30, 9445, "side table  ·  500 x 480"),
     # A MIRROR ON THE BATH WALL AND NOTHING ELSE — no console under it.  It is in
     # the corner where the bath wall meets the south window, so you face east
@@ -714,7 +740,7 @@ _ONCE = [
     # The console that used to stand under it is gone.  With the wall bed down
     # this corner is the bed's, and a console here would be furniture you have
     # to edge round for the sake of a surface the cupboards already provide.
-    ('mirror',    2310, 8605, 2400, 9545,
+    ('mirror',    MB_XW_G - T_MB - 90, 8605, MB_XW_G - T_MB, 9545,
      "mirror  ·  940 on the bath wall, no console"),
     # THE GRANDMOTHER'S WARDROBE, on the WEST wall between the sliding screen
     # and the wall bed: 1300 x 600, hanging, back to the wall face at X -450.
@@ -756,8 +782,8 @@ _ONCE = [
     ('wc-e',     3725, 7625, 4405, 8015, ''),   # 680 x 390      # 600 off the duct wall
     # 4325, not the wall at 4405: the builder leaves a 230 x 1000 column on
     # the duct's corner and 80 of it stands in this corner of the room.
-    ('shower',   2475, 8595, 4325, 9545, 'walk-in, 1850 x 950'),
-    ('basin',    2475, 8150, 2925, 8550, "basin  ·  450 x 400, wall hung"),
+    ('shower',   MB_XW_G, 8595, 4325, 9545, 'walk-in, 1457 x 950'),
+    ('basin',    MB_XW_G, 8150, MB_XW_G + 450, 8550, "basin  ·  450 x 400, wall hung"),
 
     # ------------------------- KARAN'S BATH, as first drawn (in his own frame)
     # The pan on the duct wall, the walk-in shower across the south end, and

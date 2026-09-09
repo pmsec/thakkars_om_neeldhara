@@ -201,7 +201,9 @@ def poly_rooms():
         bath_k, suite_k = suite_polys()            # Karan's, crown at 5950
     # The parents' cubicle is two baths either side of the folding divider.
     bath_p = clip_y(bath, D.MB_DIV[0], True)
-    bath_g = clip_y(bath, D.MB_DIV[1], False)
+    # hers is the narrower rectangle south of the divider, off her own tail
+    bath_g = [(D.MB_XW_G, D.MB_DIV[1]), (D.MB_XE, D.MB_DIV[1]),
+              (D.MB_XE, D.WING_S), (D.MB_XW_G, D.WING_S)]
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     suite_note = 'one room  ·  bed + dressing, joinery to be designed'
     par_note = ('two zones  ·  bed north of the glass, '
@@ -214,7 +216,7 @@ def poly_rooms():
         ('MASTER SUITE', 'KARAN', mirror_poly(suite_k), suite_note, (21300, 4400)),
         ("PARENTS' BATH", '', bath_p, 'under the arch  ·  divider folds open',
          (3440, 5600)),
-        ("GRANDMOTHER'S BATH", '', bath_g, 'her own  ·  off her zone',
+        ("GRANDMOTHER'S BATH", '', bath_g, 'her own  ·  5\'-0" clear',
          (3350, 8330)),
         ("KARAN'S BATH", '', mirror_poly(bath_k), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (16200, 9150)),
@@ -245,7 +247,8 @@ def poly_rooms():
 # same names with _K.  Everything on Karan's side is drawn inside karan(),
 # which swaps his set in for the duration — see east() and east_polys().
 _MB_K = {'MB_CY': 'MB_CY_K', 'MB_YE': 'MB_YE_K', 'MB_BE': 'MB_BE_K',
-         'MB_YW': 'MB_YW_K', 'BATH_N': 'BATH_N_K', 'MB_SHELF_END': 'MB_SHELF_END_K'}
+         'MB_YW': 'MB_YW_K', 'BATH_N': 'BATH_N_K', 'MB_SHELF_END': 'MB_SHELF_END_K',
+         'MB_XW_G': 'MB_XW_G_K'}
 
 
 @contextlib.contextmanager
@@ -424,7 +427,7 @@ def mb_shelves(y_end=None, taper=33):
     return out
 
 
-def mb_door(door=None, hinge='S'):
+def mb_door(door=None, hinge='S', x=None):
     """The bath door, drawn open into the room.  Always in the WEST frame; the
     east one is the mirror of it, with its own opening.
 
@@ -438,9 +441,11 @@ def mb_door(door=None, hinge='S'):
     and a south hinge there would swing the leaf straight across the way into
     the shower.  So his hinges NORTH, and the leaf opens back along the same
     line his dressing screen runs on outside."""
+    # the grandmother's door (no door given) is on HER tail, 393 further east
+    x = (D.MB_XW_G if door is None else D.MB_XW) if x is None else x
     door = D.MB_DOOR if door is None else door
     y0, y1 = D.MB_YW + door[0], D.MB_YW + door[1]
-    w, x = y1 - y0, D.MB_XW
+    w = y1 - y0
     p, sgn = (y1, -1) if hinge == 'S' else (y0, 1)      # pivot, and which way
     arc = [(x + w * math.cos(math.radians(t)), p + sgn * w * math.sin(math.radians(t)))
            for t in np.linspace(0, 90, 28)]
@@ -564,12 +569,13 @@ def arch_console_par_flank(dep=300, n=90, u0=0.05, u1=1.0):
 def bath_divider(leaves=4):
     """The folding wooden divider across the parents' cubicle, shown SHUT.
 
-    Four leaves of 482 on a top track, hinged in pairs, folding back against
+    Four leaves of 381 on a top track, hinged in pairs, folding back against
     the duct wall; 100 thick.  Shut, two baths — the parents' under the arch
     and the grandmother's at the south end, each with its own door.  Open,
-    one bath the length of the cubicle."""
+    one bath the length of the cubicle.  It spans HER half's width: west of
+    it, on the same line, the wall jogs from the parents' tail to hers."""
     y0, y1 = D.MB_DIV
-    x0, x1 = D.MB_XW, D.MB_XE
+    x0, x1 = D.MB_XW_G, D.MB_XE
     out = [('poly', [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], 'wood')]
     for k in range(1, leaves):
         x = x0 + (x1 - x0) * k / leaves
@@ -648,8 +654,14 @@ def suite_polys():
     else in the wing."""
     inner, outer = mb_pts(D.T_MB / 2), mb_pts(-D.T_MB / 2)
     bath = (inner + [(D.MB_XW, D.WING_S), (D.MB_XE, D.WING_S)])
+    # the suite's east edge follows the bath's west wall; where that wall jogs
+    # east on the divider's line (the parents' cubicle, not Karan's) the suite
+    # takes the notch
+    east_edge = ([(D.MB_XW - D.T_MB, D.MB_DIV[0]), (D.MB_XW_G - D.T_MB, D.MB_DIV[0]),
+                  (D.MB_XW_G - D.T_MB, D.WING_S)]
+                 if D.MB_XW_G != D.MB_XW else [(D.MB_XW - D.T_MB, D.WING_S)])
     suite = ([(D.END_W + 150, 1350), (D.MB_XE, 1350)] + outer
-             + [(D.MB_XW - D.T_MB, D.WING_S), (D.END_W + 150, D.WING_S)])
+             + east_edge + [(D.END_W + 150, D.WING_S)])
     return bath, suite
 
 

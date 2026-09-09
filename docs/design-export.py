@@ -138,14 +138,21 @@ WALLS += [
     # straight west wall carries two doors — the parents' at its top, into the
     # north half, and the grandmother's lower down, into hers — and a folding
     # wooden divider splits the cubicle at 7150-7250.
-    w('W-P-BATH-W', [(2400, D.MB_YW), (2400, 9695)], 150, 'interior',
+    # The west wall JOGS on the divider's line: the parents' tail at 2400 down
+    # to the divider's south face, a short return along that line, and the
+    # grandmother's tail 393 further east, so her half is 5'-0" clear and the
+    # wall bed's foot has a way past it to her door.
+    w('W-P-BATH-W', [(2400, D.MB_YW), (2400, D.MB_DIV[1])], 150, 'interior',
       [op('D-P-BATH', 'door', D.MB_DOOR_P[0], D.MB_DOOR_P[1],
-          label="Parents' bath door — from the bed zone"),
-       op('D-G-BATH', 'door', D.MB_DOOR[0], D.MB_DOOR[1],
+          label="Parents' bath door — from the bed zone")]),
+    w('W-P-BATH-JOG', [(D.MB_XW - D.T_MB, D.MB_DIV_MID), (D.MB_XW_G - 75, D.MB_DIV_MID)],
+      D.MB_DIV[1] - D.MB_DIV[0], 'interior', [],
+      label='The jog', notes="On the divider's line: the parents' tail across to the grandmother's."),
+    w('W-G-BATH-W', [(D.MB_XW_G - 75, D.MB_DIV[0]), (D.MB_XW_G - 75, 9695)], 150, 'interior',
+      [op('D-G-BATH', 'door', D.MB_DOOR_G[0], D.MB_DOOR_G[1],
           label="Grandmother's bath door — from her zone")]),
-    w('W-P-BATH-DIV', [(2400, (D.MB_DIV[0] + D.MB_DIV[1]) / 2),
-                       (4467, (D.MB_DIV[0] + D.MB_DIV[1]) / 2)], 100, 'partition',
-      [op('SL-P-BATH-DIV', 'slider', 75, 2005, head=2100,
+    w('W-P-BATH-DIV', [(D.MB_XW_G - 75, D.MB_DIV_MID), (4467, D.MB_DIV_MID)], 100, 'partition',
+      [op('SL-P-BATH-DIV', 'slider', 75, D.MB_XE - (D.MB_XW_G - 75), head=2100,
           label='Folding wooden divider — four leaves, folds back to make one bath')],
       label="Bath divider", notes='Parents’ half north of it, grandmother’s south.'),
     w('W-K-BATH-E', [(22080, 6715), (22080, 9695)], 150, 'interior',
@@ -974,7 +981,7 @@ def emit_fixtures():
                 poly=[(mx(q[0]), q[1]) for q in shl])
     # the folding divider is a wall in the model (W-P-BATH-DIV), not a
     # fixture; the sheet's prim for it is covered by that wall
-    EXPORTED.append(('W-P-BATH-DIV', (D.MB_XW, D.MB_DIV[0], D.MB_XE, D.MB_DIV[1]), None))
+    EXPORTED.append(('W-P-BATH-DIV', (D.MB_XW_G, D.MB_DIV[0], D.MB_XE, D.MB_DIV[1]), None))
 
     # place each stack at its fixture group's centroid
     groups = {}
@@ -1142,7 +1149,7 @@ def emit_furniture():
             sb = (a + CAB, b, c, d) if east else (a, b, c - CAB, d)
             room = room_for((a + c) / 2, (b + d) / 2)
             add('wardrobe', cab[0], cab[1], cab[2] - cab[0], cab[3] - cab[1],
-                room, 'Wall bed cabinet — queen 1500 x 2000 folds down over the sofa',
+                room, 'Wall bed cabinet — queen 1500 x 1905 folds down over the sofa',
                 2200, poly=[(cab[0], cab[1]), (cab[2], cab[1]),
                             (cab[2], cab[3]), (cab[0], cab[3])])
             sprims = SY.symbol('sofa-w' if east else 'sofa-e', *sb)

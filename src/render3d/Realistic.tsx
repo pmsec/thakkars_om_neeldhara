@@ -2600,7 +2600,7 @@ function wallBedDown(M: Mats): THREE.Group | null {
   const sy = sofa ? sofa.y + sofa.d / 2 : cy
   const alongX = Math.abs(sx - cx) >= Math.abs(sy - cy)
   const sgn = alongX ? Math.sign(sx - cx) || 1 : Math.sign(sy - cy) || 1
-  const L = 2000
+  const L = 1905                                   // the Indian queen, 60 x 75 in
   const W = alongX ? cab.d : cab.w
   const faceX = alongX ? (sgn > 0 ? cab.x + cab.w : cab.x) : cx
   const faceY = alongX ? cy : (sgn > 0 ? cab.y + cab.d : cab.y)

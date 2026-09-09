@@ -4752,7 +4752,10 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     let slowFrames = 0
     let fastFrames = 0
     let frameErrors = 0
-    const DPR_CAP = Math.min(window.devicePixelRatio, 1.5)
+    // the cap is the device's own ratio (a retina 2, never more): a tablet with the
+    // power for it earns its way up to full sharpness through the fast-frame count
+    // below, and one without stays where its frames are fluid
+    const DPR_CAP = Math.min(window.devicePixelRatio, 2)
     const bb = model.envelopeBBox
     const animate = (): void => {
       raf = requestAnimationFrame(animate)
@@ -4807,7 +4810,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       if (dt > 0.05) { slowFrames++; fastFrames = 0 } else if (dt < 0.022) { fastFrames++; slowFrames = 0 } else { slowFrames = 0; fastFrames = 0 }
       const pr = renderer.getPixelRatio()
       if (slowFrames > 40 && pr > 0.75) { renderer.setPixelRatio(Math.max(0.75, pr - 0.25)); resize(); slowFrames = 0 }
-      else if (fastFrames > 400 && pr < DPR_CAP) { renderer.setPixelRatio(Math.min(DPR_CAP, pr + 0.25)); resize(); fastFrames = 0 }
+      else if (fastFrames > 150 && pr < DPR_CAP) { renderer.setPixelRatio(Math.min(DPR_CAP, pr + 0.25)); resize(); fastFrames = 0 }
     }
 
     const resize = (): void => {

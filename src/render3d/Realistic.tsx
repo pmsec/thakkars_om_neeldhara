@@ -1813,6 +1813,11 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
 export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
   const g = new THREE.Group()
   g.name = `pod-doors-${mode}`
+  const finish = (): THREE.Group => {
+    wrapItems(g, mode, (o) => (o.position.x / S < 12240 ? 'pod:W' : 'pod:E'),
+      { 'pod:W': [{ x: 4300, y: 3600, h: 1450 }, { x: 4800, y: 3600, h: 1450 }], 'pod:E': [{ x: 20180, y: 4400, h: 1450 }, { x: 19680, y: 4400, h: 1450 }] })
+    return g
+  }
   for (const leaf of podDoorLeaves(model.data, mode)) {
     const w = leaf.x1 - leaf.x0
     const d = leaf.y1 - leaf.y0
@@ -1837,7 +1842,7 @@ export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
     pull.position.set((cx + towardCentre * (w / 2 + 25)) * S, 1.05, (cy + leaf.handleAt * (d / 2 - 90)) * S)
     g.add(pull)
   }
-  return g
+  return finish()
 }
 
 /**
@@ -1856,6 +1861,7 @@ export function podDoorGroup(M: Mats, mode: PodDoorMode): THREE.Group {
  */
 function podPortalDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
+  const portalAnchors: Record<string, ItemAnchor | ItemAnchor[]> = {}
   const LEAF_T = 24
   const OFF = 60                                   // leaf centreline off the wall centreline
   const OVERLAP = 30
@@ -1908,6 +1914,8 @@ function podPortalDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const half = (to - from) / 2
       const leafW = half + OVERLAP
       const centre = (from + to) / 2
+      const q1 = offsetPt(centre, OFF + 240), q2 = offsetPt(centre, -(OFF + 240))
+      portalAnchors[`portal:${w.id}`] = [{ x: q1.x, y: q1.y, h: 1450 }, { x: q2.x, y: q2.y, h: 1450 }]
       // open: each leaf slides its own width along the screen, past its jamb
       const slide = mode === 'open' ? leafW : 0
       const leaves: Array<[number, number]> = [
@@ -1933,6 +1941,19 @@ function podPortalDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       // the head track the leaves hang from: a slim walnut channel over the
       // whole travel, both states, so the open leaves have something to ride on
       piece(Math.max(0, centre - 2 * leafW - 20), Math.min(total, centre + 2 * leafW + 20), H + 10, H + 50, M.walnut, LEAF_T + 16)
+    }
+  }
+  wrapItems(g, mode, (o) => `portal:${o.position.x / S < 12240 ? 'W-CURVE-PARENTS' : 'W-CURVE-KARAN'}`, portalAnchors)
+  // (a leaf's meshes are prisms in world space; their position is the origin, so
+  // sort them by their geometry's centre instead)
+  for (const it of g.children) if (it.userData.item) {
+    for (const m of [...it.children]) {
+      const mm = m as THREE.Mesh
+      if (mm.geometry) { mm.geometry.computeBoundingBox(); const bb = mm.geometry.boundingBox; if (bb) {
+        const cx = (bb.min.x + bb.max.x) / 2 + mm.position.x
+        const want = `portal:${cx / S < 12240 ? 'W-CURVE-PARENTS' : 'W-CURVE-KARAN'}`
+        if (want !== it.userData.item) { const other = g.children.find((q) => q.userData.item === want); if (other) other.add(m) }
+      } }
     }
   }
   return g
@@ -1973,17 +1994,21 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const T = 12
       const glass = w.def.glass === 'tinted' ? M.tintGlass : M.glass
       const ang = -Math.atan2(d.y, d.x)
+      const item = new THREE.Group()
+      tagItem(item, `slider:${op.id}`, mode, [{ x: op.mid.x + nx * 260, y: op.mid.y + ny * 260, h: 1450 }, { x: op.mid.x - nx * 260, y: op.mid.y - ny * 260, h: 1450 }])
+      g.add(item)
       const at = (along: number, out: number, h: number, m: THREE.Object3D) => {
         const px = op.p1.x + d.x * (along - op.from) + nx * out
         const py = op.p1.y + d.y * (along - op.from) + ny * out
         m.position.set(px * S, h * S, py * S)
         m.rotation.y = ang
-        g.add(m)
+        item.add(m)
       }
+      const grid = op.id === 'SL-P-DRESS'
       // where each leaf's centre sits, and which track it rides
       const places: Array<[number, number]> = []
       for (let k = 0; k < n; k++) {
-        const track = (k % 2 ? 1 : -1) * (T + 6) / 2 * (n === 3 ? (k - 1) : 1)
+        const track = (k % 2 ? 1 : -1) * ((op.id === 'SL-P-DRESS' ? T + 30 : T) + 6) / 2 * (n === 3 ? (k - 1) : 1)
         if (mode === 'shut') {
           places.push([op.from + (k + 0.5) * leaf, track])
         } else if (n >= 4 && k >= n / 2) {
@@ -1993,6 +2018,38 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         }
       }
       for (const [c, track] of places) {
+        if (grid) {
+          // a walnut-framed leaf with a grid of bevelled glass squares: stiles and
+          // rails, muntins between the squares, and each square's bevel read as a
+          // brighter border let into the pane
+          const ST = 70, RL = 90, MU = 26, FT = T + 24
+          at(c, track, H / 2, box(leaf - 2 * ST, H - 2 * RL, 8, M.glass))
+          at(c, track, RL / 2, box(leaf, RL, FT, M.walnut))
+          at(c, track, H - RL / 2, box(leaf, RL, FT, M.walnut))
+          at(c - leaf / 2 + ST / 2, track, H / 2, box(ST, H, FT, M.walnut))
+          at(c + leaf / 2 - ST / 2, track, H / 2, box(ST, H, FT, M.walnut))
+          const cols = 3
+          const rows = Math.max(4, Math.round((H - 2 * RL) / ((leaf - 2 * ST) / cols)))
+          const cw = (leaf - 2 * ST) / cols
+          const rh = (H - 2 * RL) / rows
+          for (let i = 1; i < cols; i++) at(c - leaf / 2 + ST + i * cw, track, H / 2, box(MU, H - 2 * RL, FT - 6, M.walnut))
+          for (let j = 1; j < rows; j++) at(c, track, RL + j * rh, box(leaf - 2 * ST, MU, FT - 6, M.walnut))
+          for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+            const px = c - leaf / 2 + ST + (i + 0.5) * cw
+            const ph = RL + (j + 0.5) * rh
+            const bw = cw - MU - 8, bh = rh - MU - 8
+            // the bevel: a frosted border 22 wide, standing just proud of the pane on both faces
+            for (const face of [-1, 1]) {
+              at(px, track + face * 6, ph + bh / 2 - 11, box(bw, 22, 4, M.acrylic))
+              at(px, track + face * 6, ph - bh / 2 + 11, box(bw, 22, 4, M.acrylic))
+              at(px - bw / 2 + 11, track + face * 6, ph, box(22, bh - 44, 4, M.acrylic))
+              at(px + bw / 2 - 11, track + face * 6, ph, box(22, bh - 44, 4, M.acrylic))
+            }
+          }
+          // a recessed brass pull in the leading stile
+          at(c + leaf / 2 - ST / 2, track + FT / 2 + 2, 1000, box(24, 140, 6, M.brass))
+          continue
+        }
         at(c, track, H / 2, box(leaf - 6, H - 100, T, glass))
         at(c, track, 25, box(leaf, 50, T + 8, M.metal))                       // bottom rail
         at(c, track, H - 25, box(leaf, 50, T + 8, M.metal))                   // top rail
@@ -2000,7 +2057,7 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         at(c + leaf / 2 - 25, track, H / 2, box(50, H, T + 8, M.metal))
       }
       // the track itself, along the head of the opening
-      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, M.metal))
+      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, grid ? M.walnut : M.metal))
     }
   }
   return g
@@ -2063,6 +2120,8 @@ function dividerPanels(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       }
     }
   }
+  const dop = model.walls.flatMap((w) => w.openings).find((o) => o.id === 'SL-P-BATH-DIV')
+  if (dop) wrapItems(g, mode, () => 'divider', { divider: [{ x: dop.mid.x, y: dop.mid.y + 260, h: 1350 }, { x: dop.mid.x, y: dop.mid.y - 260, h: 1350 }] })
   return g
 }
 
@@ -2113,6 +2172,8 @@ function hatchSash(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       }
     }
   }
+  const hop = model.walls.flatMap((w) => w.openings).find((o) => /hatch/i.test(o.label ?? '') && o.type === 'window')
+  if (hop) wrapItems(g, mode, () => 'hatch', { hatch: [{ x: hop.mid.x, y: hop.mid.y + 260, h: 1500 }, { x: hop.mid.x, y: hop.mid.y - 260, h: 1500 }] })
   return g
 }
 
@@ -2157,8 +2218,133 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       }
       leaf.rotation.y = -Math.atan2(dir.y, dir.x)
       leaf.position.set(hingeAt.x * S, 0, hingeAt.y * S)
+      const fx = -op.dir.y, fy = op.dir.x
+      tagItem(leaf, `door:${op.id}`, mode, [{ x: op.mid.x + fx * 230, y: op.mid.y + fy * 230, h: 1350 }, { x: op.mid.x - fx * 230, y: op.mid.y - fy * 230, h: 1350 }])
       g.add(leaf)
     }
+  }
+  return g
+}
+
+type ItemAnchor = { x: number; y: number; h: number }
+
+/**
+ * Gather a state group's children into one group per interactive piece, so a
+ * single door or slider can be switched on its own: each piece keeps its own
+ * merged meshes (merge.ts leaves userData.item units alone) and carries the
+ * anchor its icon hangs at.
+ */
+function wrapItems(g: THREE.Group, mode: 'open' | 'shut', idOf: (o: THREE.Object3D) => string, anchors: Record<string, ItemAnchor | ItemAnchor[]>): void {
+  const groups = new Map<string, THREE.Group>()
+  for (const o of [...g.children]) {
+    if (o.userData.item) continue
+    const id = idOf(o)
+    let it = groups.get(id)
+    if (!it) {
+      it = new THREE.Group()
+      it.name = `item:${id}`
+      it.userData.item = id
+      it.userData.mode = mode
+      it.userData.anchor = anchors[id]
+      groups.set(id, it)
+      g.add(it)
+    }
+    it.add(o)
+  }
+}
+
+function tagItem(o: THREE.Object3D, id: string, mode: 'open' | 'shut', anchor: ItemAnchor | ItemAnchor[]): void {
+  o.name = `item:${id}`
+  o.userData.item = id
+  o.userData.mode = mode
+  o.userData.anchor = anchor
+}
+
+let iconTex: THREE.CanvasTexture | null = null
+function iconTexture(): THREE.CanvasTexture | null {
+  if (iconTex) return iconTex
+  if (typeof document === 'undefined') return null
+  const c = document.createElement('canvas')
+  c.width = 128
+  c.height = 128
+  const g = c.getContext('2d')
+  if (!g) return null
+  g.beginPath(); g.arc(64, 64, 54, 0, Math.PI * 2)
+  g.fillStyle = 'rgba(255, 201, 96, 0.96)'; g.fill()
+  g.lineWidth = 7; g.strokeStyle = '#fff8ea'; g.stroke()
+  g.strokeStyle = '#3b2a12'; g.lineWidth = 8; g.lineCap = 'round'
+  // two arrows, apart: the piece moves
+  for (const [dir, y] of [[1, 50], [-1, 78]] as const) {
+    g.beginPath(); g.moveTo(64 - dir * 26, y); g.lineTo(64 + dir * 26, y); g.stroke()
+    g.beginPath(); g.moveTo(64 + dir * 12, y - 12); g.lineTo(64 + dir * 26, y); g.lineTo(64 + dir * 12, y + 12); g.stroke()
+  }
+  iconTex = new THREE.CanvasTexture(c)
+  iconTex.colorSpace = THREE.SRGBColorSpace
+  return iconTex
+}
+
+/** One small floating icon per interactive piece; a tap or click on it switches that piece alone. */
+function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAnchor>): THREE.Group {
+  const g = new THREE.Group()
+  g.name = 'item-icons'
+  const tex = iconTexture()
+  if (!tex) return g
+  const seen = new Set<string>()
+  const entries: Array<{ id: string } & ItemAnchor> = [...extra]
+  root.traverse((o) => {
+    const id = o.userData.item as string | undefined
+    const a = o.userData.anchor as ItemAnchor | ItemAnchor[] | undefined
+    // an opening carries an icon on each of its faces, so one is always clear of the leaf
+    if (id && a && !seen.has(id)) { seen.add(id); for (const q of Array.isArray(a) ? a : [a]) entries.push({ id, ...q }) }
+  })
+  for (const e of entries) {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }))
+    sp.scale.set(0.26, 0.26, 1)
+    sp.position.set(e.x * S, e.h * S, e.y * S)
+    sp.userData.item = e.id
+    sp.name = `icon:${e.id}`
+    sp.renderOrder = 990
+    g.add(sp)
+  }
+  return g
+}
+
+/**
+ * Minimal abstract canvases on the blank walls, each under its own picture
+ * light: a brass bar at the frame's head with a warm lamp in it.
+ */
+function wallArt(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  // (x, y) on the wall's face, (nx, ny) into the room, the canvas's width and a seed
+  const spots: Array<{ x: number; y: number; nx: number; ny: number; w: number; seed: number }> = [
+    { x: 5700, y: 8400, nx: 0, ny: -1, w: 900, seed: 11 },      // family room, south wall
+    { x: 19000, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall, east of the kit
+    { x: 20900, y: 1350, nx: 0, ny: 1, w: 800, seed: 37 },      // Karan's suite, over the plant table
+    { x: 14450, y: 8400, nx: 0, ny: -1, w: 700, seed: 41 },     // great room, between the drum and the WC door
+  ]
+  for (const sp of spots) {
+    const cnv = abstractCanvas(sp.seed)
+    if (!cnv) continue
+    const PW = sp.w
+    const PH = Math.round(PW * 1.35)
+    const mid = 1650
+    const yaw = Math.atan2(sp.nx, sp.ny)                  // a plane faces +z; turn it to face (nx, ny)
+    const put = (m: THREE.Object3D, off: number, h: number) => {
+      m.position.set((sp.x + sp.nx * off) * S, h * S, (sp.y + sp.ny * off) * S)
+      m.rotation.y = yaw
+      g.add(m)
+    }
+    const frame = new THREE.Mesh(new THREE.BoxGeometry((PW + 60) * S, (PH + 60) * S, 30 * S), M.trunk)
+    frame.castShadow = true
+    put(frame, 16, mid)
+    const tex = new THREE.CanvasTexture(cnv)
+    tex.colorSpace = THREE.SRGBColorSpace
+    put(new THREE.Mesh(new THREE.PlaneGeometry(PW * S, PH * S), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 })), 33, mid)
+    // the picture light: a slim brass bar cantilevered off the wall above the frame
+    put(new THREE.Mesh(new THREE.BoxGeometry(Math.min(500, PW * 0.6) * S, 16 * S, 150 * S), M.brass), 75, mid + PH / 2 + 90)
+    put(new THREE.Mesh(new THREE.BoxGeometry(40 * S, 16 * S, 120 * S), M.brass), 60, mid + PH / 2 + 130)
+    const lamp = new THREE.PointLight(0xffd9a3, 0.5, 2.4, 2)
+    put(lamp, 150, mid + PH / 2 + 60)
   }
   return g
 }
@@ -3513,7 +3699,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     const set = new THREE.Group()
     set.name = `doors-${mode}`
     const curved = curvedDoors(M, mode)
-    if (curved) set.add(curved)
+    if (curved) { tagItem(curved, 'entry', mode, { x: 12240, y: 7250, h: 1450 }); set.add(curved) }
     set.add(podDoorGroup(M, mode))
     set.add(hingedDoors(M, mode))
     set.add(podPortalDoors(M, mode))
@@ -3531,6 +3717,14 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     const dryer = clothesDryer(M, st)
     if (dryer) { dryer.name = `dryer-${st}`; root.add(dryer) }
   }
+  // the icons: one per movable piece, plus the wall bed's and the dryer's
+  const extra: Array<{ id: string } & ItemAnchor> = []
+  const cab = furniture.find((f) => /wall bed cabinet/i.test(f.label))
+  if (cab) extra.push({ id: 'wallbed', x: cab.x + cab.w / 2 + (cab.w >= cab.d ? 0 : 500), y: cab.y + cab.d / 2 + (cab.w >= cab.d ? 500 : 0), h: 1250 })
+  const dry = furniture.find((f) => /clothes dryer/i.test(f.label))
+  if (dry) extra.push({ id: 'dryer', x: dry.x + dry.w / 2, y: dry.y + dry.d / 2, h: 1550 })
+  root.add(itemIcons(root, extra))
+  root.add(wallArt(M))
   const idol = mandirIdol(M)
   if (idol) root.add(idol)
   root.add(kitchenOverheads(M))
@@ -3726,15 +3920,15 @@ export function buildFixtures(M: Mats): THREE.Group {
             for (let k = 0; k < 4; k++) {                                              // plates standing in it
               const plate = new THREE.Mesh(new THREE.CylinderGeometry(105 * S, 105 * S, 8 * S, 24), M.porcelain)
               plate.rotation.z = Math.PI / 2
-              plate.position.set((rx - RW / 2 + 70 + k * 58) * S, (h + 108) * S, rz * S)
+              plate.position.set((rx - RW / 2 + 70 + k * 58) * S, (h + 116) * S, rz * S)   // clear of the grooves' top
               g.add(plate)
             }
             const pot = new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 62 * S, 110 * S, 16), M.steel)
             pot.rotation.x = Math.PI                                                   // upside down to drain
-            pot.position.set((rx + RW / 2 - 90) * S, (h + 55) * S, (rz + 40) * S)
+            pot.position.set((rx + RW / 2 - 90) * S, (h + 97) * S, (rz + 40) * S)          // rim just above the worktop
             g.add(pot)
             const tumbler = new THREE.Mesh(new THREE.CylinderGeometry(34 * S, 30 * S, 95 * S, 12), M.acrylic)
-            tumbler.position.set((rx + RW / 2 - 200) * S, (h + 48) * S, (rz - 90) * S)
+            tumbler.position.set((rx + RW / 2 - 200) * S, (h + 89) * S, (rz - 90) * S)
             g.add(tumbler)
           }
         }
@@ -4005,8 +4199,8 @@ export function buildFixtures(M: Mats): THREE.Group {
     }
     if (f.kind === 'sink') {
       // an undermount sink: a dark basin let into the worktop, a tall tap behind
-      const basin = box(w - 40, 180, d - 40, M.gasket)
-      place(basin, f.at.x, f.at.y, 850)
+      const basin = box(w - 40, 170, d - 40, M.gasket)
+      place(basin, f.at.x, f.at.y, 845)          // its top 10 below the worktop's, not on it
       g.add(basin)
       const room = model.roomById.get(f.room)
       const dy = f.at.y - (room?.centroid.y ?? f.at.y)
@@ -4134,10 +4328,17 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const roofRef = useRef(roofOpen)
   roofRef.current = roofOpen
   const dryerDown = uiState.show3d.dryerDown
-  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean, roof: boolean, dryer = dryerDown): void => {
+  const itemOpen = uiState.show3d.itemOpen
+  const itemsRef = useRef(itemOpen)
+  itemsRef.current = itemOpen
+  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean, roof: boolean, dryer = dryerDown, items: Record<string, boolean> = itemOpen): void => {
     sc.traverse((o) => {
-      if (o.name === 'doors-open') o.visible = !shut
-      if (o.name === 'doors-shut') o.visible = shut
+      // each movable piece follows its own switch if it has one, else the Doors switch
+      const id = o.userData.item as string | undefined
+      if (id && o.userData.mode) {
+        const open = items[id] ?? !shut
+        o.visible = (o.userData.mode === 'open') === open
+      }
       if (o.name === 'wallbed-down') o.visible = down
       if (o.name === 'dryer-down') o.visible = dryer
       if (o.name === 'dryer-up') o.visible = !dryer
@@ -4147,8 +4348,18 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     })
   }
   useEffect(() => {
-    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn, roofOpen, dryerDown)
-  }, [doorsShut, wallBed, ceilingOn, roofOpen, dryerDown])
+    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn, roofOpen, dryerDown, itemOpen)
+  }, [doorsShut, wallBed, ceilingOn, roofOpen, dryerDown, itemOpen])
+  // a tap or click on a piece's icon switches that piece alone
+  const pickRef = useRef<((x: number, y: number) => void) | null>(null)
+  const toggleItemRef = useRef<(id: string) => void>(() => {})
+  toggleItemRef.current = (id) => uiUpdate((st) => {
+    const s3 = st.show3d
+    if (id === 'wallbed') return { ...st, show3d: { ...s3, wallBedDown: !s3.wallBedDown } }
+    if (id === 'dryer') return { ...st, show3d: { ...s3, dryerDown: !s3.dryerDown } }
+    const open = s3.itemOpen[id] ?? !s3.doorsShut
+    return { ...st, show3d: { ...s3, itemOpen: { ...s3.itemOpen, [id]: !open } } }
+  })
 
   const [styleTick, setStyleTick] = useState(0)
   useEffect(() => {
@@ -4201,7 +4412,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const house = buildScene(M)
     scene.add(house)
     built.push(house)
-    applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current, roofRef.current, dryerRef.current)
+    applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current, roofRef.current, dryerRef.current, itemsRef.current)
     const fixed = buildFixtures(M)
     scene.add(fixed)
     built.push(fixed)
@@ -4380,7 +4591,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     }
 
     const lock = new PointerLockControls(camera, renderer.domElement)
-    const touchWalk = createTouchWalk(camera, renderer.domElement, mount, { eye: 1.62, speed: 0.35 })
+    const touchWalk = createTouchWalk(camera, renderer.domElement, mount, { eye: 1.62, speed: 0.35, onTap: (x, y) => pickRef.current?.(x, y) })
     touchRef.current = touchWalk
     walkRef.current = (on) => {
       if (touch) {
@@ -4408,6 +4619,37 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       else if (!lock.isLocked) lock.lock()
     }
     renderer.domElement.addEventListener('dblclick', onClick)
+
+    // ---- one piece at a time: a click or tap on a piece's icon switches just that piece
+    const raycaster = new THREE.Raycaster()
+    const pickAt = (cx: number, cy: number): void => {
+      const icons = scene.getObjectByName('item-icons')
+      if (!icons) return
+      const r = renderer.domElement.getBoundingClientRect()
+      const ndc = new THREE.Vector2(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1)
+      raycaster.setFromCamera(ndc, camera)
+      const hit = raycaster.intersectObjects(icons.children, false)[0]
+      if (hit) toggleItemRef.current(hit.object.userData.item as string)
+    }
+    pickRef.current = pickAt
+    ;(window as unknown as { __omScene?: THREE.Scene; __omCamera?: THREE.Camera }).__omScene = scene   // for headless checks
+    ;(window as unknown as { __omCamera?: THREE.Camera }).__omCamera = camera
+    let downAt: { x: number; y: number } | null = null
+    const onPickDown = (e: PointerEvent): void => { downAt = { x: e.clientX, y: e.clientY } }
+    const onPickUp = (e: PointerEvent): void => {
+      if (!downAt) return
+      const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y)
+      downAt = null
+      if (moved < 6 && !touchWalk.enabled && !lock.isLocked) pickAt(e.clientX, e.clientY)
+    }
+    const onLockedClick = (): void => {
+      if (!lock.isLocked) return
+      const r = renderer.domElement.getBoundingClientRect()
+      pickAt(r.left + r.width / 2, r.top + r.height / 2)
+    }
+    renderer.domElement.addEventListener('pointerdown', onPickDown)
+    renderer.domElement.addEventListener('pointerup', onPickUp)
+    renderer.domElement.addEventListener('click', onLockedClick)
 
     const clock = new THREE.Clock()
     let raf = 0
@@ -4471,6 +4713,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       window.removeEventListener('keydown', kd)
       window.removeEventListener('keyup', ku)
       renderer.domElement.removeEventListener('dblclick', onClick)
+      renderer.domElement.removeEventListener('pointerdown', onPickDown)
+      renderer.domElement.removeEventListener('pointerup', onPickUp)
+      renderer.domElement.removeEventListener('click', onLockedClick)
       if (lock.isLocked) lock.unlock()
       renderer.dispose()
       mount.removeChild(renderer.domElement)
@@ -4511,8 +4756,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           <button onClick={() => wholeRef.current?.()} title="Pull right back to see the whole block">Whole house</button>
           <span style={{ width: 6 }} />
           <button
-            onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, doorsShut: !st.show3d.doorsShut } }))}
-            title="Every door: hinged leaves, the pod sliders, the entry pair"
+            onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, doorsShut: !st.show3d.doorsShut, itemOpen: {} } }))}
+            title="Every door at once; tap the icon on any one piece to switch it alone"
           >
             Doors: {doorsShut ? 'shut' : 'open'}
           </button>

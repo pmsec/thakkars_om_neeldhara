@@ -179,12 +179,26 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
     })
   }, [])
 
+  // two fingers: a pinch zooms about the fingers' midpoint and pans with it
+  const pointers = useRef(new Map<number, { x: number; y: number }>())
+  const pinch = useRef<{ d0: number; z0: number; mx0: number; my0: number; x0: number; y0: number } | null>(null)
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       // capturing the pointer on the container would steal the click from
       // the toolbar buttons layered over the sheet — leave their events alone
       if ((e.target as HTMLElement).closest('button, select, input, a, label')) return
       ;(e.currentTarget as Element).setPointerCapture?.(e.pointerId)
+      pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      if (pointers.current.size === 2) {
+        const [p1, p2] = [...pointers.current.values()]
+        const rect = outerRef.current!.getBoundingClientRect()
+        pinch.current = {
+          d0: Math.max(1, Math.hypot(p2.x - p1.x, p2.y - p1.y)), z0: view.z,
+          mx0: (p1.x + p2.x) / 2 - rect.left, my0: (p1.y + p2.y) / 2 - rect.top, x0: view.x, y0: view.y,
+        }
+        drag.current = null
+        return
+      }
       drag.current = { px: e.clientX, py: e.clientY, x: view.x, y: view.y, moved: false }
     },
     [view],
@@ -192,6 +206,19 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent) => {
+      if (pointers.current.has(e.pointerId)) pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      const pz = pinch.current
+      if (pz && pointers.current.size >= 2) {
+        const [p1, p2] = [...pointers.current.values()]
+        const rect = outerRef.current!.getBoundingClientRect()
+        const dist = Math.max(1, Math.hypot(p2.x - p1.x, p2.y - p1.y))
+        const z = Math.min(MAX_Z, Math.max(MIN_Z, pz.z0 * (dist / pz.d0)))
+        const k = z / pz.z0
+        const mx = (p1.x + p2.x) / 2 - rect.left
+        const my = (p1.y + p2.y) / 2 - rect.top
+        setView({ x: mx - (pz.mx0 - pz.x0) * k, y: my - (pz.my0 - pz.y0) * k, z })
+        return
+      }
       const d = drag.current
       if (d) {
         const dx = e.clientX - d.px
@@ -212,6 +239,13 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
 
   const onPointerUp = useCallback(
     (e: React.PointerEvent) => {
+      pointers.current.delete(e.pointerId)
+      if (pinch.current) {
+        // the pinch ends when either finger lifts; the other does not become a pan
+        if (pointers.current.size < 2) pinch.current = null
+        drag.current = null
+        return
+      }
       const d = drag.current
       drag.current = null
       if (d?.moved) return                       // it was a pan, not a click
@@ -487,7 +521,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             background: 'rgba(250,248,244,0.92)', border: '1px solid #d5cdbb', borderRadius: 5, color: '#6d6558',
             display: 'flex', gap: 8, alignItems: 'center' }}>
             <span>
-              {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel to zoom · tap a room to inspect.'}
+              {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel or pinch to zoom · tap a room to inspect.'}
               {state.tool === 'measure' && 'Measure: tap point A, then point B. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
               {state.tool === 'area' && (live.length < 3
                 ? `Area: tap the corners (${live.length} so far), then close.`

@@ -24,7 +24,9 @@ export function mergeStatic(root: THREE.Object3D): { before: number; after: numb
   let after = 0
   // toggled sets keep their own merged meshes so visibility still flips as one
   const named: THREE.Object3D[] = []
-  root.traverse((o) => { if (o !== root && o.name && o.parent && !isUnderNamed(o.parent, root)) named.push(o) })
+  // an interactive piece (userData.item) is its own unit even inside a toggled set,
+  // so one door can be switched without the others
+  root.traverse((o) => { if (o !== root && o.name && o.parent && (o.userData.item || !isUnderNamed(o.parent, root))) named.push(o) })
   const roots = [root, ...named]
   for (const r of roots) {
     const buckets = new Map<string, { mat: THREE.Material; geos: THREE.BufferGeometry[]; cast: boolean; receive: boolean }>()
@@ -63,7 +65,7 @@ export function mergeStatic(root: THREE.Object3D): { before: number; after: numb
   }
   // drop groups left empty
   const empties: THREE.Object3D[] = []
-  root.traverse((o) => { if (o !== root && o.children.length === 0 && !(o instanceof THREE.Mesh) && !(o instanceof THREE.Light) && !o.name) empties.push(o) })
+  root.traverse((o) => { if (o !== root && o.children.length === 0 && !(o instanceof THREE.Mesh) && !(o instanceof THREE.Light) && !(o instanceof THREE.Sprite) && !o.name) empties.push(o) })
   for (const e of empties) e.parent?.remove(e)
   return { before, after }
 }

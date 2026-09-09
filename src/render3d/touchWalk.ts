@@ -83,7 +83,7 @@ export function createTouchWalk(
   camera: THREE.PerspectiveCamera,
   canvas: HTMLElement,
   host: HTMLElement,
-  opts: { eye: number; speed: number },
+  opts: { eye: number; speed: number; onTap?: (x: number, y: number) => void },
 ): TouchWalk {
   const euler = new THREE.Euler(0, 0, 0, 'YXZ')
   const right = new THREE.Vector3()
@@ -207,6 +207,8 @@ export function createTouchWalk(
   let pinchLast = { x: 0, y: 0 }
   let pinchStartDist = 0
   let pinchStartFov = 0
+  let lookDownAt = { x: 0, y: 0 }
+  let lookPinched = false
   let savedTouchAction = ''
   const pinchDist = (): number => Math.hypot(pinchLast.x - last.x, pinchLast.y - last.y)
   const onLookDown = (e: PointerEvent): void => {
@@ -214,8 +216,11 @@ export function createTouchWalk(
     if (lookPointer === null) {
       lookPointer = e.pointerId
       last = { x: e.clientX, y: e.clientY }
+      lookDownAt = { x: e.clientX, y: e.clientY }
+      lookPinched = false
     } else if (pinchPointer === null && e.pointerId !== stickPointer) {
       pinchPointer = e.pointerId
+      lookPinched = true
       pinchLast = { x: e.clientX, y: e.clientY }
       pinchStartDist = Math.max(1, pinchDist())
       pinchStartFov = camera.fov
@@ -249,6 +254,8 @@ export function createTouchWalk(
     if (e.pointerId === pinchPointer) pinchPointer = null
     else if (e.pointerId === lookPointer) {
       lookPointer = null
+      // a tap - no drag, no pinch - is a touch on whatever it landed on
+      if (!lookPinched && Math.hypot(e.clientX - lookDownAt.x, e.clientY - lookDownAt.y) < 8) opts.onTap?.(e.clientX, e.clientY)
       // the remaining finger, if any, carries on as the look-drag
       if (pinchPointer !== null) { lookPointer = pinchPointer; last = pinchLast; pinchPointer = null }
     } else return

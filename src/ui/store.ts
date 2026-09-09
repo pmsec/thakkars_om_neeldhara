@@ -121,6 +121,8 @@ export interface PortalState {
     wallBedDown: boolean
     /** The terrace's pulley clothes dryer lowered for loading. */
     dryerDown: boolean
+    /** One piece switched on its own, by its icon in the walkthrough: id -> open. Cleared by the Doors switch. */
+    itemOpen: Record<string, boolean>
     /** The walkthrough's plaster ceilings, with their downlights and cornices. Off for a top-down look. */
     ceiling: boolean
     /** The telescoping glass roof slid open: each half stacked at its own end. */
@@ -174,7 +176,7 @@ export const initialState: PortalState = {
   walkBars: false,
   cutaway: 3505,
   section: { axis: null, at: 12240 },
-  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false, dryerDown: false, ceiling: true, roofOpen: false, timeOfDay: 'afternoon' },
+  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false, dryerDown: false, itemOpen: {}, ceiling: true, roofOpen: false, timeOfDay: 'afternoon' },
   sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
   panels: { left: true, right: true },

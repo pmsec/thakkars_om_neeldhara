@@ -93,7 +93,7 @@ describe('2D↔3D fidelity', () => {
       furniture.filter((f) => f.label.toLowerCase().includes(s)).length
     expect(byLabel('rug'), 'the great-room rug').toBeGreaterThanOrEqual(1)
     expect(furniture.find((f) => f.label.includes('rug'))?.poly, 'rug outline').toBeDefined()
-    expect(byLabel('arch console'), "Karan's arch console").toBe(1)
+    expect(byLabel('arch console'), "Karan's arch console and the parents' flank console").toBe(2)
     expect(byLabel('arch cupboard'), "the parents' full-height arch cupboard").toBe(1)
     expect(byLabel('dressing screen'), "Karan's dressing screen").toBe(1)
     expect(byLabel('jhoola'), 'both jhoolas').toBe(2)

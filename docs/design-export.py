@@ -1346,6 +1346,9 @@ def emit_furniture():
     # space, now that the partition cupboards are gone
     add_outline(R.arch_console_par(), 'wardrobe', 'R-P-SUITE',
                 'Arch cupboard — full height, on the bath sweep', 2300)
+    # and, below the crown, the console with cabinets under on the west flank
+    add_outline(R.arch_console_par_flank(), 'console', 'R-P-SUITE',
+                'Arch console — the west flank, cabinets under', 800)
     with R.karan():
         add_outline(R.arch_console(), 'console', 'R-K-SUITE',
                     'Arch console', 800, mirror=True)
@@ -1450,6 +1453,7 @@ def audit_coverage():
         with R.karan():
             take(fn.__name__, fn(), mirror=True)
     take('arch_console_par', R.arch_console_par())
+    take('arch_console_par_flank', R.arch_console_par_flank())
     take('bath_divider', R.bath_divider())
     take('help_rack', R.help_rack())
     with R.karan():

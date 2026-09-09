@@ -831,6 +831,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       }
       return g
     }
+    if (/clothes dryer/i.test(f.label)) return null      // drawn by clothesDryer(), in both states
     if (lift > 0 && f.kind === 'shelves') {
       // wall cabinets: a carcass hung at `lift`, door joints read as shadow lines.
       // A loft is a built deck, not joinery: plastered like the ceiling it hangs
@@ -2163,6 +2164,55 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
 }
 
 /**
+ * The terrace's pulley clothes dryer in one state: a frame of rods hung on
+ * four cords from a pulley bar under the canopy. Down, the rods are at loading
+ * height with a few things pegged over them; up, the frame is hauled above
+ * the slider's head and hangs empty.
+ */
+function clothesDryer(M: Mats, state: 'up' | 'down'): THREE.Group | null {
+  const f = furniture.find((q) => /clothes dryer/i.test(q.label))
+  if (!f) return null
+  const g = new THREE.Group()
+  const cx = f.x + f.w / 2
+  const cy = f.y + f.d / 2
+  const alongX = f.w >= f.d
+  const L = alongX ? f.w : f.d
+  const D = alongX ? f.d : f.w
+  const BAR = 4300                                   // the pulley bar, under the canopy
+  const H = state === 'down' ? 1900 : (f.lift ?? 3650)
+  // the pulley bar and its four pulleys
+  g.add(box(alongX ? L + 80 : 60, 40, alongX ? 60 : L + 80, M.metal, cx, BAR, cy))
+  // the frame: two end bars and four rods between them
+  for (const e of [-1, 1]) {
+    g.add(box(alongX ? 36 : D, 36, alongX ? D : 36, M.metal, alongX ? cx + e * (L / 2 - 18) : cx, H, alongX ? cy : cy + e * (L / 2 - 18)))
+  }
+  const rods = 4
+  for (let k = 0; k < rods; k++) {
+    const t = -D / 2 + 40 + (k * (D - 80)) / (rods - 1)
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, (L - 40) * S, 8), M.metal)
+    rod.rotation.z = alongX ? Math.PI / 2 : 0
+    rod.rotation.x = alongX ? 0 : Math.PI / 2
+    rod.position.set((alongX ? cx : cx + t) * S, H * S, (alongX ? cy + t : cy) * S)
+    g.add(rod)
+    if (state === 'down' && k !== 1) {
+      // something pegged over the rod: a towel folded over it, 700 long each side
+      const cloth = box(alongX ? L * 0.55 : 10, 700, alongX ? 10 : L * 0.55, k === 0 ? M.duvet : k === 2 ? M.fabric : M.throw,
+        alongX ? cx + (k - 1.5) * 90 : cx + t, H - 350, alongX ? cy + t : cy + (k - 1.5) * 90)
+      g.add(cloth)
+    }
+  }
+  // the four cords, corner to pulley
+  for (const ex of [-1, 1]) for (const ez of [-1, 1]) {
+    const px = cx + ex * ((alongX ? L : D) / 2 - 30)
+    const pz = cy + ez * ((alongX ? D : L) / 2 - 30)
+    const cord = new THREE.Mesh(new THREE.CylinderGeometry(2.5 * S, 2.5 * S, (BAR - H) * S, 6), M.trunk)
+    cord.position.set(px * S, ((BAR + H) / 2) * S, pz * S)
+    g.add(cord)
+  }
+  return g
+}
+
+/**
  * The wall bed folded down: the queen comes out of its cabinet and lies over
  * the sofa, platform, mattress and pillows at the cabinet end. Drawn where a
  * cabinet labelled wall bed exists, toward the sofa in front of it.
@@ -3477,6 +3527,10 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     bedDown.name = 'wallbed-down'
     root.add(bedDown)
   }
+  for (const st of ['up', 'down'] as const) {
+    const dryer = clothesDryer(M, st)
+    if (dryer) { dryer.name = `dryer-${st}`; root.add(dryer) }
+  }
   const idol = mandirIdol(M)
   if (idol) root.add(idol)
   root.add(kitchenOverheads(M))
@@ -4073,23 +4127,28 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   shutRef.current = doorsShut
   const bedRef = useRef(wallBed)
   bedRef.current = wallBed
+  const dryerRef = useRef(uiState.show3d.dryerDown)
+  dryerRef.current = uiState.show3d.dryerDown
   const ceilingRef = useRef(ceilingOn)
   ceilingRef.current = ceilingOn
   const roofRef = useRef(roofOpen)
   roofRef.current = roofOpen
-  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean, roof: boolean): void => {
+  const dryerDown = uiState.show3d.dryerDown
+  const applyToggles = (sc: THREE.Scene, shut: boolean, down: boolean, ceiling: boolean, roof: boolean, dryer = dryerDown): void => {
     sc.traverse((o) => {
       if (o.name === 'doors-open') o.visible = !shut
       if (o.name === 'doors-shut') o.visible = shut
       if (o.name === 'wallbed-down') o.visible = down
+      if (o.name === 'dryer-down') o.visible = dryer
+      if (o.name === 'dryer-up') o.visible = !dryer
       if (o.name === 'ceiling') o.visible = ceiling
       if (o.name === 'roof-open') o.visible = roof
       if (o.name === 'roof-shut') o.visible = !roof
     })
   }
   useEffect(() => {
-    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn, roofOpen)
-  }, [doorsShut, wallBed, ceilingOn, roofOpen])
+    if (sceneRef.current) applyToggles(sceneRef.current, doorsShut, wallBed, ceilingOn, roofOpen, dryerDown)
+  }, [doorsShut, wallBed, ceilingOn, roofOpen, dryerDown])
 
   const [styleTick, setStyleTick] = useState(0)
   useEffect(() => {
@@ -4142,7 +4201,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const house = buildScene(M)
     scene.add(house)
     built.push(house)
-    applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current, roofRef.current)
+    applyToggles(scene, shutRef.current, bedRef.current, ceilingRef.current, roofRef.current, dryerRef.current)
     const fixed = buildFixtures(M)
     scene.add(fixed)
     built.push(fixed)
@@ -4462,6 +4521,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
             title="The grandmother's wall bed"
           >
             Wall bed: {wallBed ? 'down' : 'up'}
+          </button>
+          <button
+            onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, dryerDown: !st.show3d.dryerDown } }))}
+            title="The pulley clothes dryer on Karan's terrace: down to load, up out of the way"
+          >
+            Dryer: {dryerDown ? 'down' : 'up'}
           </button>
           <button
             onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, ceiling: !st.show3d.ceiling } }))}

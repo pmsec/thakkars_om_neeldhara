@@ -1092,6 +1092,13 @@ def emit_furniture():
         suff = kind.split('-')[1] if '-' in kind else None
         # Wall cabinets hung over a desk are drawn as 'under' with "over" in
         # the label: they exist in 3D as shelves lifted off the floor.
+        if base == 'under' and 'clothes dryer' in (lab or '').lower():
+            # the pulley dryer: its frame, hung at its raised height; the 3D
+            # draws the rods and cords in both states from this piece
+            add('shelves', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
+                'Ceiling clothes dryer, pulley', 40,
+                poly=[(a, b), (c, b), (c, d), (a, d)], lift=3650)
+            continue
         if base == 'under' and 'loft' in (lab or '').lower():
             # a loft: a deep shelf hung high, 2300 up to the ceiling's cove
             add('shelves', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),

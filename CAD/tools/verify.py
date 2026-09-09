@@ -48,6 +48,10 @@ def main():
     # 2 -------------------------------------------- shafts, ducts and voids
     worst = 0.0
     for name, x0, y0, x1, y1, kind in C.NAMED:
+        if kind == 'void store':
+            print(f'  n/a   {name:28s} {kind:11s} floored as a store, '
+                  f'with the builder\'s agreement')
+            continue
         m = C.blank()
         C.put_rect(m, x0, y0, x1, y1)
         built = m & allm

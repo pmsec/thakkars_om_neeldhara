@@ -192,6 +192,8 @@ def main():
     for name, a, b, c, d, kind in C.NAMED:
         s.rect(a, b, c, d, fill='#ffffff', stroke=KEEP, stroke_width=2.2,
                stroke_dasharray='9 6')
+        if kind == 'void store':          # floored, with the builder's agreement: outline only
+            continue
         for k in range(0, int(c - a) + int(d - b), 260):
             x1_, y1_ = a + k, b
             x2_, y2_ = a, b + k
@@ -309,6 +311,8 @@ def main():
         prim(p)
     for p in R.mb_door(D.MB_DOOR_P) + R.mb_door() + R.bath_divider():
         prim(p)                                 # the parents' two doors, the divider
+    for p in R.help_rack():                     # the curved rack on the apse
+        prim(p)
     for p in R.east(R.mb_door, D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
         prim(p)
     for p in R.arch_console_par():      # the parents' full-height cupboard

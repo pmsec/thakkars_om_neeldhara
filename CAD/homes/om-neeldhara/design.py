@@ -148,6 +148,12 @@ SCR_GAP = 795                       # left open at the end-wall end
 # The two retained deck voids stay exactly as built: opening plus the builder's
 # own enclosure (a 230 column on the outboard face, 150 walls elsewhere).
 VOID_KEEP = [(7500, 1200, 9115, 2620), (2 * 12240 - 9115, 1200, 2 * 12240 - 7500, 2620)]
+# THE VOIDS ARE STORES NOW.  The builder has agreed they can be floored and
+# used as bulk storage — the one thing this home was short of — so each gets
+# a floor and a 700 door cut through its north enclosure on to the deck walk
+# (the recliners back on to their inner faces).  The store inside each is the
+# builder's own opening, 1235 x 1120.  See immovables ('void store').
+VOID_DOORS = [(8000, 8700), (2 * 12240 - 8700, 2 * 12240 - 8000)]
 
 
 def M(v):
@@ -220,6 +226,10 @@ ROOMS = [
     ("MUSIC + WORK DEN", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay",
      None),
     ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck", None),
+    ("VOID STORE", "WEST", [(7730, 1350, 8965, 2470)],
+     "floored  ·  door to the deck walk", None),
+    ("VOID STORE", "EAST", [(M(8965), 1350, M(7730), 2470)],
+     "floored  ·  door to the deck walk", None),
     ("ALL-WEATHER DECK", "", [(POD_W0, DECK_N, M(POD_W0), DECK_S)],
      "15 420 long × 2620 deep  ·  net of the two retained voids", None),  # voids below
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
@@ -596,25 +606,14 @@ _ONCE = [
     # the parents' hanging space is the full-height cupboard on the bath's
     # arch (retrofit.arch_console_par), and the partition is glass end to end.
     #
-    # ------------------------- the STUDY DESK, in the bedroom's north-east corner
-    # Karan's father's desk, in the one corner of the suite that has two solid
-    # walls and nothing else wanting them: the sealed shaft's south wall above
-    # it at Y 1350, and the pod wall on its east at X 4405.  Both are blank —
-    # the terrace slider stops at X 2750 and the pod's own opening does not
-    # start until Y 2620 — so an L of desk fits into the corner without taking
-    # a window, a door or a route.  (It went out for a corner WC once; the WC
-    # became the second bath in the cubicle instead, and the desk came back.)
-    #
-    # CABINETS OVER, drawn dashed because they are over and not in plan: 350
-    # deep, the full length of both legs, hung above the working surface.
-    #
-    # The east leg stops at Y 2620, dead on the north jamb of the pod's sliding
-    # partition, so the desk never stands in that opening.
-    ('counter',   3005, 1350, 4405, 1950, "study desk  ·  1400 x 600"),
-    ('counter',   3805, 1950, 4405, 2620, "study desk, return  ·  600 x 670"),
-    ('under',     3005, 1350, 4405, 1700, "cabinets over  ·  350 deep"),
-    ('under',     3805, 1950, 4155, 2620, "cabinets over  ·  350 deep"),
-    ('swivel',    3155, 2030, 3705, 2580, "desk chair  ·  550, swivel"),
+    # ------------------------- the WARDROBE, in the bedroom's north-east corner
+    # THE STUDY DESK IS GONE FOR GOOD (Karan's call: no desk here and none in
+    # the den either).  The corner it stood in — the sealed shaft's south wall
+    # above, the builder's column at X 4300 on the east — takes a 1400 x 600
+    # hanging wardrobe instead, back on the shaft wall, end on the column's
+    # face.  With the partition cupboards gone and the arch cupboard only 400
+    # deep, this is the parents' one wardrobe at hanging depth.
+    ('hanging',   2900, 1350, 4300, 1950, "wardrobe  ·  1400 x 600, hanging"),
 
     # THE PARENTS' BED IS KARAN'S BED MIRRORED — the same bed, the same
     # headboard treatment, the same side tables, handed the other way so the
@@ -710,6 +709,12 @@ _ONCE = [
     # to edge round for the sake of a surface the cupboards already provide.
     ('mirror',    2310, 8605, 2400, 9545,
      "mirror  ·  940 on the bath wall, no console"),
+    # THE GRANDMOTHER'S WARDROBE, on the bath's straight wall between the glass
+    # partition and her bath door: 1300 x 600, hanging.  It clears the wall
+    # bed (which folds down south of 7445) and the glass leaves, which stack at
+    # the far end of the line.  Her door's leaf swings into the bath, so the
+    # wardrobe can run right up to the jamb.
+    ('hanging',   1725, 6000, 2325, 7300, "wardrobe  ·  1300 x 600, hanging"),
 
     ('sofa-e',   1750, 200, 2550, 1000,
      'single sofa  ·  800, facing west at the tree  ·  200 clear each side'),
@@ -1189,6 +1194,13 @@ _ONCE = [
     # The stacked washer and dryer, and nothing loose beside them: the laundry
     # basket and the dustbin that stood here came out after the walkthrough.
     ('appliance', 5755, 10375, 6355, 11025, 'washer + dryer, stacked'),
+    # A FULL-HEIGHT RACK between the washer-dryer and the fridge, 600 x 600,
+    # with the laundry basket in its base.  There is no room for another
+    # opposite the washer — a 600 rack on the north end would leave 305 in
+    # front of a front-loader — so that end gets a LOFT instead, 2300 up, the
+    # full 1195 x 905 of the utility strip's north end.
+    ('shelves',  6400, 10425, 7000, 11025, 'full-height rack  ·  600 x 600, basket in its base'),
+    ('under',    5705, 9470, 6900, 10375, 'loft over  ·  2300 up, 1195 x 905'),
     # ------------------------------------------ help\'s room (with the store)
     # The bunk lies ALONG the south wall at the EAST end of the merged room,
     # head against the east wall, under the secondary duct.  That is the end
@@ -1204,7 +1216,13 @@ _ONCE = [
     # stands in front of it on the room's main floor.
     ('bunk',     16925, 10075, 18825, 10975, 'bunk'),
     ('shelves',  17580, 9550, 18825, 10005, 'shelves at the bunk head'),
-    ('shelves',  14090, 10375, 14690, 10975, 'cupboard'),
+    # FULL-HEIGHT RACKS, 300 deep, floor to ceiling: down the gallery leg from
+    # below the entry door's swing, along the south wall to the bunk's foot,
+    # and round the outside of the apse to the WC door (retrofit.help_rack).
+    # The 600 cupboard is gone — the racks carry more and take less floor.
+    # The band in front of the south rack is 600 deep, the bunk's approach.
+    ('shelves',  14080, 9400, 14380, 10675, 'full-height rack  ·  300 deep, on the gallery leg'),
+    ('shelves',  14080, 10675, 16925, 10975, 'full-height rack  ·  300 deep, on the south wall'),
     # ------------------------------------------------- guest / service WC
     # One WC, one small basin, one very small shower — and nothing else, which
     # is what an apse this size will take.  The shower is flush into the corner

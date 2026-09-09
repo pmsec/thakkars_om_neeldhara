@@ -279,6 +279,8 @@ def main():
         prim(p)
     for p in R.mb_door(D.MB_DOOR_P) + R.mb_door() + R.bath_divider():
         prim(p)                                 # the parents' two doors, the divider
+    for p in R.help_rack():
+        prim(p)
     for p in R.east(R.mb_door, D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
         prim(p)
     for p in R.arch_console_par():      # the parents' full-height cupboard

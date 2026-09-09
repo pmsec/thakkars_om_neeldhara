@@ -82,7 +82,30 @@ def keep_demo():
             continue
         clipped = _clip_to_shell(x1, y1, x2, y2, edges)
         (keep.append(clipped) if clipped else demo.append((x1, y1, x2, y2)))
-    return keep, demo
+    # THE VOID STORES' DOORS: a 700 cut through each void's north enclosure,
+    # on to the deck walk — the recliners back on to the east/west faces, so
+    # the north face is the only one with clear deck in front of it.
+    out = []
+    for x1, y1, x2, y2 in keep:
+        for gx0, gx1 in D.VOID_DOORS:
+            if abs(y1 - y2) < 5 and 1150 < y1 < 1400 and min(x1, x2) < gx0 and max(x1, x2) > gx1:
+                lo, hi = min(x1, x2), max(x1, x2)
+                out += [(lo, y1, gx0, y2), (gx1, y1, hi, y2)]
+                break
+        else:
+            out.append((x1, y1, x2, y2))
+    return out, demo
+
+
+def help_rack(u0=0.03, u1=0.37, dep=300, n=60):
+    """The full-height rack on the OUTSIDE of the guest WC's apse, in help's
+    room: a 300 band struck off the apse's outer face, from just off the
+    great-room wall round to the WC door's jamb.  Open shelving to the
+    ceiling, curved to the wall so it beds on it for its whole length."""
+    h = D.T_WC / 2
+    us = list(np.linspace(u0, u1, n))
+    return [('poly', [wc_pt(u, h) for u in us]
+             + [wc_pt(u, h + dep) for u in reversed(us)], 'solid')]
 
 
 # ------------------------------------------------------------------ design
@@ -1910,7 +1933,9 @@ def design_masks():
     shell and the shaft enclosures, so they must not be counted as new build
     when testing the design against those zones."""
     fl, wl = C.blank(), C.blank()
-    for _, _, rects, _, _anchor in D.ROOMS:
+    for name, _, rects, _, _anchor in D.ROOMS:
+        if name == 'VOID STORE':
+            continue                       # after the voids are cut, below
         for a, b, c, d in rects:
             C.put_rect(fl, a, b, c, d)
     for _n, _s, p, _note, _xy in poly_rooms():
@@ -1933,9 +1958,14 @@ def design_masks():
                        min(ay_, by_) - (t / 2 if uy == 0 else 0),
                        max(ax_, bx_) + (t / 2 if ux == 0 else 0),
                        max(ay_, by_) + (t / 2 if uy == 0 else 0))
-    # the two retained voids stay as holes in the deck, with their enclosures
+    # the two retained voids come out of the deck with their enclosures, and
+    # the stores inside them — floored with the builder's agreement — go back
     for a, b, c, d in D.VOID_KEEP:
         C.put_rect(fl, a, b, c, d, False)
+    for name, _, rects, _, _anchor in D.ROOMS:
+        if name == 'VOID STORE':
+            for a, b, c, d in rects:
+                C.put_rect(fl, a, b, c, d)
 
     cx, cy, r, t, gaps = D.GALLERY
     for a in np.arange(0, 360, 0.5):
@@ -1948,6 +1978,6 @@ def design_masks():
                    cy + math.sin(rad) * (r - t / 2) - C.CELL,
                    cx + math.cos(rad) * (r + t / 2) + C.CELL,
                    cy + math.sin(rad) * (r + t / 2) + C.CELL)
-    for q in wc_wall() + mb_wall() + [mirror_poly(q_) for q_ in mb_wall()]:
+    for q in wc_wall() + mb_wall() + east_polys(mb_wall):
         C.put_poly(wl, q)
     return fl, wl, keep_wall_mask()

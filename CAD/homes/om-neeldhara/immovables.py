@@ -23,7 +23,10 @@ def mirror(z):
 
 _WEST = [
     ("sealed shaft, wing end",   2900,    0,  4380, 1200, 'open shaft'),
-    ("retained deck void",       7730, 1350,  8965, 2470, 'void'),
+    # The builder has agreed the two retained deck voids can be floored and
+    # used as bulk storage: they are 'void store', not 'void' — still his
+    # zones, still drawn, but Round 1 is allowed a floor and a door in them.
+    ("retained deck void",       7730, 1350,  8965, 2470, 'void store'),
     ("main service duct",        4555, 6175,  5555, 11125, 'open shaft'),
     ("secondary duct",           5555, 8550,  6900, 9320, 'open shaft'),
 ]

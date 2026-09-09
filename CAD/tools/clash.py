@@ -54,7 +54,9 @@ PTS = np.column_stack([GX.ravel(), GY.ravel()])
 
 mirror = IMM.mirror
 NAMED = IMM.NAMED
-NO_FLOOR = NAMED
+# A 'void store' is a builder zone the design IS allowed to floor: the two
+# retained deck voids, with the builder's agreement, as bulk storage.
+NO_FLOOR = [z for z in NAMED if z[5] != 'void store']
 COMMON = IMM.COMMON
 
 

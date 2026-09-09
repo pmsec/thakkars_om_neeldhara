@@ -236,9 +236,8 @@ def main():
             s.poly(q, fill=NEWW, stroke='none')
     for q in R.wc_wall():                # the guest WC's apse — same masonry
         s.poly(q, fill=NEWW, stroke='none')
-    for q in R.mb_wall():                # the two master baths' sweep
+    for q in R.mb_wall() + R.east_polys(R.mb_wall):   # the two baths' sweeps, each its own
         s.poly(q, fill=NEWW, stroke='none')
-        s.poly(R.mirror_poly(q), fill=NEWW, stroke='none')
     for q in R.wc_door():                # its door, curved and drawn shut
         s.poly(q, fill='none', stroke=FURN, stroke_width=1.1)
 
@@ -305,17 +304,17 @@ def main():
         prim(p)
     for p in R.wc_console():
         prim(p)
-    for p in R.mb_console() + R.mb_cabinet() + R.mb_shelves():
+    for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
+              + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)):
         prim(p)
-        prim(R.mirror_prim(p))
-    for p in R.mb_door():                       # the parents' bath door
+    for p in R.mb_door(D.MB_DOOR_P) + R.mb_door() + R.bath_divider():
+        prim(p)                                 # the parents' two doors, the divider
+    for p in R.east(R.mb_door, D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
         prim(p)
-    for p in R.mb_door(D.MB_DOOR_E, hinge='N'):  # Karan's, moved and re-hung
-        prim(R.mirror_prim(p))
-    for p in R.arch_console_par():      # the parents' — cut by the sliding screen
+    for p in R.arch_console_par():      # the parents' full-height cupboard
         prim(p)
-    for p in R.arch_console():          # Karan's — drawn mirrored
-        prim(R.mirror_prim(p))
+    for p in R.east(R.arch_console):    # Karan's console — drawn in his frame, mirrored
+        prim(p)
     for p in R.suite_screen():                  # Karan's dressing screen
         prim(p)
     for p in R.wc_out_door():

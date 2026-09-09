@@ -290,9 +290,12 @@ PARENTS = [
          'through the tint. Nothing swings, so nothing fouls the bath’s '
          'arch. The parents’ clothes hang in a full-height cupboard curled '
          'round the outside of that arch.'),
-    ('The corner WC', 'Where the study desk was, in the north-east corner: '
-         '1400 × 1145 mm (4′-7″ × 3′-9″) inside, pan and basin, a 700 mm '
-         '(2′-4″) sliding door, draining to the sealed shaft beside it.'),
+    ('Two baths in one cubicle', 'The arched sweep has moved 1600 mm '
+         '(5′-3″) north, so the 1930 mm (6′-4″) cubicle is long enough for '
+         'two baths: the parents’ under the arch, entered from the bed zone, '
+         'and the grandmother’s at the south end, entered from her zone. A '
+         'four-leaf folding wooden divider stands between them and folds back '
+         'to make one long bath when she is away — she must not share a WC.'),
     ('The wall bed', 'The grandmother’s Murphy bed: a 400 mm (1′-4″) deep '
          'cabinet that is simply furniture 51 weeks a year — and folds '
          'down to a true QUEEN, 1500 × 2000 mm (4′-11″ × 6′-7″), when she '

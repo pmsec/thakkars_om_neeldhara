@@ -8,6 +8,7 @@ infill partition and comes out, which is what merging two flats means.
 Columns and beams are never touched and are not classified here.
 """
 
+import contextlib
 import math
 import os
 import sys
@@ -167,23 +168,27 @@ def poly_rooms():
     great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
     kitchen, helps, gallery, wc = lobby_polys()
-    bath, suite = suite_polys()
-    # The parents' suite loses its north-east corner to the corner WC: the
-    # notch is the WC's west wall face at 2750 and its south face at 2620.
-    # Karan's suite is the un-notched mirror — his corner keeps its plant.
-    par = [suite[0], (2750, 1350), (2750, 2620), (D.MB_XE, 2620)] + suite[2:]
+    bath, suite = suite_polys()                    # the parents', crown at 4350
+    with karan():
+        bath_k, suite_k = suite_polys()            # Karan's, crown at 5950
+    # The parents' cubicle is two baths either side of the folding divider.
+    bath_p = clip_y(bath, D.MB_DIV[0], True)
+    bath_g = clip_y(bath, D.MB_DIV[1], False)
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     suite_note = 'one room  ·  bed + dressing, joinery to be designed'
     par_note = ('two zones  ·  bed north of the glass, '
-                'dressing + wall bed south of it  ·  corner WC')
+                'dressing + wall bed south of it')
     bath_note = 'arched wall  ·  1930 clear'
     return [
-        ('MASTER SUITE', 'PARENTS', par, par_note, (3100, 3500)),
+        ('MASTER SUITE', 'PARENTS', suite, par_note, (2000, 3300)),
         # not the mirror of the parents' anchor any more: that point is inside
         # Karan's bed.  His label sits in the open floor west of it.
-        ('MASTER SUITE', 'KARAN', mirror_poly(suite), suite_note, (21300, 4400)),
-        ("PARENTS' BATH", '', bath, bath_note, (3140, 7750)),
-        ("KARAN'S BATH", '', mirror_poly(bath), bath_note, (D.M(3140), 7750)),
+        ('MASTER SUITE', 'KARAN', mirror_poly(suite_k), suite_note, (21300, 4400)),
+        ("PARENTS' BATH", '', bath_p, 'under the arch  ·  divider folds open',
+         (3440, 5600)),
+        ("GRANDMOTHER'S BATH", '', bath_g, 'her own  ·  off her zone',
+         (3350, 8330)),
+        ("KARAN'S BATH", '', mirror_poly(bath_k), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (16200, 9150)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         # not the mirror of the family room's anchor: that point is on the
@@ -206,6 +211,40 @@ def poly_rooms():
 
 
 # ------------------------------------------------ the master baths' sweep
+# The two sweeps are drawn from the same functions but are NOT mirrors: the
+# parents' crown is at 4350 and Karan's at 5950.  design.py holds the parents'
+# set in MB_CY, MB_YE, MB_BE, MB_YW, BATH_N, MB_SHELF_END, and Karan's in the
+# same names with _K.  Everything on Karan's side is drawn inside karan(),
+# which swaps his set in for the duration — see east() and east_polys().
+_MB_K = {'MB_CY': 'MB_CY_K', 'MB_YE': 'MB_YE_K', 'MB_BE': 'MB_BE_K',
+         'MB_YW': 'MB_YW_K', 'BATH_N': 'BATH_N_K', 'MB_SHELF_END': 'MB_SHELF_END_K'}
+
+
+@contextlib.contextmanager
+def karan():
+    """Karan's frame: his sweep's set-out in place of the parents'."""
+    saved = {k: getattr(D, k) for k in _MB_K}
+    for k, kk in _MB_K.items():
+        setattr(D, k, getattr(D, kk))
+    try:
+        yield
+    finally:
+        for k, v in saved.items():
+            setattr(D, k, v)
+
+
+def east(fn, *a, **k):
+    """`fn`'s prims in Karan's frame, mirrored on to his side."""
+    with karan():
+        return [mirror_prim(p) for p in fn(*a, **k)]
+
+
+def east_polys(fn, *a, **k):
+    """`fn`'s polygons in Karan's frame, mirrored on to his side."""
+    with karan():
+        return [mirror_poly(q) for q in fn(*a, **k)]
+
+
 def mb_pt(u, off=0.0):
     """A point on the master bath's sweep, offset normal to itself.
 
@@ -335,7 +374,7 @@ def mb_cabinet(door=55):
              + [mb_pt(u, h + mb_dep(u)) for u in reversed(us)], 'light')]
 
 
-def mb_shelves(y_end=7500, taper=33):
+def mb_shelves(y_end=None, taper=33):
     """The linen shelves at the pod-wall end, carrying the console on down.
 
     The console's end cut IS this unit's top, so the two read as one run of
@@ -343,6 +382,7 @@ def mb_shelves(y_end=7500, taper=33):
     easing to 400, 822 along the wall, and it stops 120 short of the pan.  It
     is the only piece here with a shelf in it: towels, bath mats, the things a
     bathroom has to keep and a vanity has nowhere for."""
+    y_end = D.MB_SHELF_END if y_end is None else y_end
     h = D.T_MB / 2
     u0 = mb_u_at_wall(h)
     back, front = mb_pt(u0, h), mb_pt(u0, h + mb_dep(u0))
@@ -436,34 +476,23 @@ def arch_console(dep=400, dep_end=250, n=140, over=900, over_d=250,
             ('rect', xb - over_d, ys - over, xb, ys, 'dash')]
 
 
-def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42,
-                     u_a=0.264, u_b=0.618):
-    """The parents' version of the same curl round the bath's arch — and it is
-    a FULL-HEIGHT CUPBOARD, not a console: the same footprint, struck the same
-    way, but carried to the ceiling, because the hanging cupboards that stood
-    on the partition are gone and this is where the parents' clothes hang now.
-    On plan it is the same solid; in section it is 2300 of doors on the curve.
+def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42, u_end=0.35):
+    """The parents' curl round the OUTSIDE of their bath's arch — and it is a
+    FULL-HEIGHT CUPBOARD, not a console: the same footprint as Karan's
+    console, struck the same way, carried to the ceiling, because the hanging
+    cupboards that stood on the partition are gone and this is where the
+    parents' clothes hang now.  On plan it is a solid; in section it is 2300
+    of doors on the curve.
 
-    Karan's runs the whole sweep and dies into his dressing screen at Y 7675.
-    This one is CUT BY THE SLIDING SCREEN that divides the parents from the
-    grandmother: the leaf shuts on the line Y 5875-5995 and the console crosses
-    that line, so a slot runs through it and the leaf slides into the slot and
-    stops against the arch.
+    It runs from the pod wall over the crown and a third of the way down the
+    west flank, and stops there at u_end in a radial cut.  Not the whole
+    flank: the sweep sits 1600 further north than Karan's, the bed's foot is
+    at X 1782, and a cupboard carried on round would put its doors within
+    400 of that foot.  Stopping at u_end keeps them 650 clear.
 
-    The two ends of the slot are found rather than guessed — u 0.264 and 0.618
-    are the first and last sections of the console whose 400 depth touches the
-    leaf's line with 20 of tolerance either side.  Between them there is nothing
-    but the leaf.
-
-    Everything else is Karan's: struck as an offset of the sweep's own outer
-    face, 400 deep, tapering to 250 at the pod wall and stopping there in a 431
-    face rather than a knife point.  No wall cabinet — that belongs on a
-    straight tail and this one has none.
-
-    THERE IS NO SOUTH PIECE.  The console stops at the slot.  A return below it
-    would sit in the grandmother's zone and narrow the way in past it to 525 by
-    the time the arch turns vertical, which is not a doorway.  So the curl runs
-    from the pod wall over the crown, meets the leaf, and ends."""
+    Struck as an offset of the sweep's own outer face, 400 deep, tapering to
+    250 at the pod wall and stopping there in a clean face rather than a
+    knife point — see arch_console for why."""
     h = D.T_MB / 2
     u0 = mb_u_at_wall(-h)
 
@@ -478,9 +507,40 @@ def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42,
             lo = m
         else:
             hi = m
-    back = [mb_pt(u, -h) for u in np.linspace(u0, u_a, n)]
-    front = [mb_pt(u, -h - d(u)) for u in np.linspace(hi, u_a, n)]
+    back = [mb_pt(u, -h) for u in np.linspace(u0, u_end, n)]
+    front = [mb_pt(u, -h - d(u)) for u in np.linspace(hi, u_end, n)]
     return [('poly', back + list(reversed(front)), 'solid')]
+
+
+def bath_divider(leaves=4):
+    """The folding wooden divider across the parents' cubicle, shown SHUT.
+
+    Four leaves of 482 on a top track, hinged in pairs, folding back against
+    the duct wall; 100 thick.  Shut, two baths — the parents' under the arch
+    and the grandmother's at the south end, each with its own door.  Open,
+    one bath the length of the cubicle."""
+    y0, y1 = D.MB_DIV
+    x0, x1 = D.MB_XW, D.MB_XE
+    out = [('poly', [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], 'wood')]
+    for k in range(1, leaves):
+        x = x0 + (x1 - x0) * k / leaves
+        out.append(('line', x, y0, x, y1, 'light'))
+    return out
+
+
+def clip_y(poly, y, north):
+    """The part of a polygon north (y <= y) or south of a horizontal line."""
+    out = []
+    for i in range(len(poly)):
+        a, b = poly[i], poly[(i + 1) % len(poly)]
+        ina = a[1] <= y if north else a[1] >= y
+        inb = b[1] <= y if north else b[1] >= y
+        if ina:
+            out.append(a)
+        if ina != inb:
+            t = (y - a[1]) / (b[1] - a[1])
+            out.append((a[0] + t * (b[0] - a[0]), y))
+    return out
 
 
 def suite_screen():
@@ -1699,23 +1759,29 @@ def suite_sliders(t=60):
     wall's own east face at 4529.  The deck's south glazing starts at 4650 for
     the same reason — the panels pass through that line.
     """
-    x0, mid = 4600, (2620 + 6175) / 2
+    # The parents' opening is the shorter one now — 2620 to 4575 — because
+    # their bath's sweep springs off this wall at 4950; Karan's is the full
+    # 2620 to 6175.  Each pair is two leaves of half its opening.
+    x0 = 4600
     out = []
-    for west, shut in ((True, True), (False, False)):
+    for west, shut, (y0, y1) in ((True, True, (2620, D.BATH_N - 475)),
+                                 (False, False, (2620, 6175))):
+        mid = (y0 + y1) / 2
+
         def X(v):
             return v if west else D.M(v)
 
-        def box(a, b, y0, y1, style):
-            return ('poly', [(X(a), y0), (X(b), y0), (X(b), y1), (X(a), y1)], style)
+        def box(a, b, ya, yb, style):
+            return ('poly', [(X(a), ya), (X(b), ya), (X(b), yb), (X(a), yb)], style)
 
-        leaves = [box(x0 - t, x0, 2620, mid, 'glass' if shut else 'dash'),
-                  box(x0 - t, x0, mid, 6175, 'glass' if shut else 'dash')]
-        # Parked: the two leaves stacked behind each other, 1778 of the deck.
+        leaves = [box(x0 - t, x0, y0, mid, 'glass' if shut else 'dash'),
+                  box(x0 - t, x0, mid, y1, 'glass' if shut else 'dash')]
+        # Parked: the two leaves stacked behind each other on the deck.
         # They stop as soon as they are clear of the opening — leading edge
         # flush with the pod's north face at 2620 — rather than running on to
         # the parapet.  They only have to get out of the way, and the deck
         # beyond them is deck, not a garage.
-        p1, p0 = 2620, 2620 - (6175 - mid)
+        p1, p0 = y0, y0 - (y1 - mid)
         park = [box(x0 - t, x0, p0, p1, 'dash' if shut else 'glass'),
                 box(x0, x0 + t, p0, p1, 'dash' if shut else 'glass')]
         out += leaves + park

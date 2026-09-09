@@ -58,7 +58,8 @@ POD_W0 = 4530           # wing wall / pod
 POD_W1 = 8195           # family-room bay, 3665
 LIV_W0 = 8320           # living bay, 3845
 DUCT_W0, DUCT_W1 = 4555, 5555       # main service duct - KEEP CLEAR
-BATH_N = 6650           # old dressing / bath split — superseded by the sweep
+# BATH_N — where each bath's east wall starts — is set with the sweep below;
+# the two sides differ now.
 
 
 # ------------------------------------------------- the master baths' sweep
@@ -76,18 +77,43 @@ BATH_N = 6650           # old dressing / bath split — superseded by the sweep
 # curve that is not a circular arc.
 T_MB = 150
 MB_XE = STRIP_W1                    # 4405 — east face, on the pod / duct line
-MB_CX, MB_CY = 3165, 5950           # the crown, on the centreline
-MB_YE = 6550                        # where the centreline meets the pod wall
+MB_CX = 3165                        # the crown's X, on the centreline
+#
+# THE TWO SWEEPS ARE NOT MIRRORS ANY MORE.  The parents' bath is TWO baths in
+# one cubicle — the grandmother has a urinary infection from time to time and
+# must not share a WC with the parents — so the parents' sweep has moved
+# 1600 NORTH, crown at 4350, to make the cubicle long enough for two: the
+# parents' half under the arch, entered from the bed zone, and the
+# grandmother's half at the south end, entered from her zone through the door
+# that was always there.  A folding wooden divider stands between them at
+# MB_DIV, and opens to make the whole cubicle one bath when she is away.
+# Karan's sweep stays exactly as first drawn (the _K set below); everything
+# on his side is drawn in that frame — see retrofit.karan().
+MB_CY = 4350                        # the parents' crown, on the centreline
+MB_YE = MB_CY + 600                 # 4950 — where the centreline meets the pod wall
 MB_AE = 1550                        # east flank, semi-axis along X
 MB_BE = (MB_YE - MB_CY) / (1 - _m.sqrt(1 - ((MB_XE - MB_CX) / MB_AE) ** 2))
 MB_RW = 765                         # west flank, a quarter circle
-MB_YW = MB_CY + MB_RW               # 6715 — where it has turned vertical
+MB_YW = MB_CY + MB_RW               # 5115 — where it has turned vertical
 MB_XW = MB_CX - MB_RW + T_MB / 2    # 2475 — the bath's west face below that
-MB_DOOR = (300, 1100)               # parents': the door, along the straight wall
+BATH_N = MB_YE + 100                # 5050 — the parents' bath's east wall starts here
+MB_SHELF_END = 6060                 # the linen shelves stop 120 short of the pan
+MB_DIV = (7150, 7250)               # the folding divider, north and south faces
+# The parents' door: on the straight tail, between the foot of the arch and the
+# glass partition — 700, Y 5130-5830, 45 above the partition's north face.
+MB_DOOR_P = (15, 715)
+# The grandmother's door: the door the bath always had, from the dressing zone,
+# 800, Y 7300-8100, into the south half.
+MB_DOOR = (2185, 2985)
+# Karan's sweep, as first drawn: crown 5950, meets the pod wall at 6550,
+# turns vertical at 6715, east wall from 6650, shelves to 7500.
+MB_CY_K, MB_YE_K = 5950, 6550
+MB_BE_K = (MB_YE_K - MB_CY_K) / (1 - _m.sqrt(1 - ((MB_XE - MB_CX) / MB_AE) ** 2))
+MB_YW_K = MB_CY_K + MB_RW           # 6715
+BATH_N_K = 6650
+MB_SHELF_END_K = 7500
 # Karan's door moves south so its far jamb lands flush on the shower screen at
-# Y 8595, which is also where the dressing screen below meets this wall.  His
-# side only — the parents' bath is as shipped, and without a screen to line up
-# with there is nothing there for the move to buy.
+# Y 8595, which is also where the dressing screen below meets this wall.
 MB_DOOR_E = (1080, 1880)            # Karan's: Y 7795 - 8595
 
 # ------------------------------------------- Karan's dressing screen
@@ -186,10 +212,6 @@ TAB_W, TAB_D, TAB_GAP = 550, 450, 50
 ROOMS = [
     ("TERRACE", "PARENTS", [(-350, 0, SUITE_W_E, 1200)],
      "real grass under a high glass roof", (1200, 1980)),
-    # The parents' corner WC: inside the two new walls, the shaft's south
-    # wall and the pod line.  The column at 4300-4405 is a pier in it.
-    ("PARENTS' WC", "", [(2900, 1350, 4405, 2495)],
-     "", (3600, 2230)),
     # Karan's terrace is furnished now — bench, two singles and a table — and
     # the middle of it is exactly where the table is.  The label drops into the
     # gap between the bench and the bed instead, and loses its note to fit.
@@ -326,31 +348,18 @@ NEW_WALLS = [
     # top of the west side, and this is only the straight tail of it, from
     # where the sweep has finished turning down to the outer wall.  The door is
     # a gap in that tail, hard against the curve.  See retrofit.mb_wall().
-    (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR]),
-    (M(MB_XW - T_MB / 2), MB_YW, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR_E]),
+    # The parents' tail carries TWO doors now: theirs at the top, into the
+    # north half, and the grandmother's lower down, into hers.
+    (MB_XW - T_MB / 2, MB_YW, MB_XW - T_MB / 2, WING_S, T_MB, [MB_DOOR_P, MB_DOOR]),
+    (M(MB_XW - T_MB / 2), MB_YW_K, M(MB_XW - T_MB / 2), WING_S, T_MB, [MB_DOOR_E]),
     # The bath's east side is the enclosure to the builder's main service duct.
     # It was never drawn — the shell arrives with the shaft simply open — and
     # the bath cannot be closed without it.  It picks up exactly where the pod
     # partition above it leaves off, so the two read as one line, and it is the
     # wall the pan sits on because the soil stack is directly behind it.
     (MB_XE + T_INT / 2, BATH_N, MB_XE + T_INT / 2, WING_S, T_INT, []),
-    (M(MB_XE + T_INT / 2), BATH_N, M(MB_XE + T_INT / 2), WING_S, T_INT, []),
+    (M(MB_XE + T_INT / 2), BATH_N_K, M(MB_XE + T_INT / 2), WING_S, T_INT, []),
 
-    # --- THE PARENTS' CORNER WC, where the study desk was.  Two new walls
-    #     close the suite's north-east corner.  The west wall stands on the
-    #     sealed shaft's west wall line (2750-2900) and runs from the shaft's
-    #     south wall down to the WC's south wall; the south wall runs from it
-    #     to the pod line with its SOUTH FACE on Y 2620 — the north jamb of the
-    #     pod's sliding partition — so the WC takes nothing off that opening.
-    #     The door is a 700 sliding leaf in the south wall, X 2950-3650,
-    #     running east along the wall's outside.  The builder's 230 x 1200
-    #     column at X 4300-4530 / Y 1200-2400 is the WC's east side above
-    #     2400, and the pan backs on to it.  The soil goes into the sealed
-    #     shaft directly north — a new drop, to be confirmed against the
-    #     plumbing drawings.  PARENTS' SIDE ONLY: Karan's corner keeps its
-    #     plant, and nothing here is mirrored.
-    (2825, 1275, 2825, 2557.5, T_INT, []),
-    (2750, 2557.5, STRIP_W1 + 62, 2557.5, 125, [(200, 900)]),
 
     # --- suite <-> pod, the 125 line between the two.  The 1050 slider is a
     #     gap left in this wall; it is not a hole cut in anything.
@@ -358,8 +367,11 @@ NEW_WALLS = [
     # and a sliding partition closes it.  What is left as wall is the 1420 north
     # of that (which is nearly all the builder's 230 x 1200 column) and the 475
     # south of it.  See retrofit.suite_sliders().
-    (STRIP_W1 + 62, 1200, STRIP_W1 + 62, BATH_N, 125, [(1420, 4975)]),
-    (M(STRIP_W1 + 62), 1200, M(STRIP_W1 + 62), BATH_N, 125, [(1420, 4975)]),
+    # The parents' opening is shorter now — 2620 to 4575, 1955 — because their
+    # bath's sweep springs off this wall at 4950 and the cupboard on the
+    # outside of the sweep wants the 475 above that; Karan's is the full 3555.
+    (STRIP_W1 + 62, 1200, STRIP_W1 + 62, BATH_N, 125, [(1420, BATH_N - 1200 - 475)]),
+    (M(STRIP_W1 + 62), 1200, M(STRIP_W1 + 62), BATH_N_K, 125, [(1420, 4975)]),
 
     # --- family-room / music-den pods: wall off the service duct
     (DUCT_W1 + 75, 6175, DUCT_W1 + 75, BODY_S, T_INT, []),
@@ -584,16 +596,25 @@ _ONCE = [
     # the parents' hanging space is the full-height cupboard on the bath's
     # arch (retrofit.arch_console_par), and the partition is glass end to end.
     #
-    # ------------------------- the CORNER WC, in the bedroom's north-east corner
-    # THE STUDY DESK IS GONE.  The corner it stood in — the sealed shaft's
-    # south wall above, the pod wall (and the builder's column in front of it)
-    # to the east, the terrace slider stopping at X 2750 and the pod's opening
-    # not starting until Y 2620 — is walled off as a small WC for the parents:
-    # 1400 x 1145 inside, pan and basin, nothing else.  See the two walls in
-    # NEW_WALLS.  The pan backs on to the column's face at X 4300 with 700 in
-    # front of it; the basin is on the shaft wall by the door, 450 x 350.
-    ('wc-e',      3620, 1730, 4300, 2120, ''),                  # 680 x 390
-    ('basin',     2900, 1350, 3350, 1700, "basin  ·  450 x 350"),
+    # ------------------------- the STUDY DESK, in the bedroom's north-east corner
+    # Karan's father's desk, in the one corner of the suite that has two solid
+    # walls and nothing else wanting them: the sealed shaft's south wall above
+    # it at Y 1350, and the pod wall on its east at X 4405.  Both are blank —
+    # the terrace slider stops at X 2750 and the pod's own opening does not
+    # start until Y 2620 — so an L of desk fits into the corner without taking
+    # a window, a door or a route.  (It went out for a corner WC once; the WC
+    # became the second bath in the cubicle instead, and the desk came back.)
+    #
+    # CABINETS OVER, drawn dashed because they are over and not in plan: 350
+    # deep, the full length of both legs, hung above the working surface.
+    #
+    # The east leg stops at Y 2620, dead on the north jamb of the pod's sliding
+    # partition, so the desk never stands in that opening.
+    ('counter',   3005, 1350, 4405, 1950, "study desk  ·  1400 x 600"),
+    ('counter',   3805, 1950, 4405, 2620, "study desk, return  ·  600 x 670"),
+    ('under',     3005, 1350, 4405, 1700, "cabinets over  ·  350 deep"),
+    ('under',     3805, 1950, 4155, 2620, "cabinets over  ·  350 deep"),
+    ('swivel',    3155, 2030, 3705, 2580, "desk chair  ·  550, swivel"),
 
     # THE PARENTS' BED IS KARAN'S BED MIRRORED — the same bed, the same
     # headboard treatment, the same side tables, handed the other way so the
@@ -628,25 +649,24 @@ _ONCE = [
     # the arch is BROWN TINTED GLASS, the same glass as Karan's dressing
     # screen and the serving hatch.
     #
-    # THE GLASS IS THE DOOR.  Two leaves of 1591 on a double track — one on
+    # THE GLASS IS THE DOOR.  Two leaves of 1388 on a double track — one on
     # the north track, one on the south — so either slides behind the other
     # and half the line is open at a time.  No pocket, because there is no
     # cupboard to pocket into; bypass leaves need none.  Nothing swings, so
-    # nothing can foul the arch.
+    # nothing can foul anything.
     #
     # Shut, the two zones are separately heatable, which is the whole reason
     # the partition exists.  Open, the suite reads as one room through the
     # tint.
     #
-    # The glass dies into the arch at X 2732, where the sweep's outer face
-    # comes back to the partition's own south face at Y 5995, and the south
-    # leaf shuts against the end of the arch cupboard there.  It is scribed to
-    # the curve; there is no gap to see or feel air through.  Tinted from the
-    # floor to the ceiling, the whole length.
-    ('tint',      -450, 5875, 1141, 5935,
-     "sliding screen  ·  brown tinted glass, leaf 1 of 2, 1591, north track"),
-    ('tint',      1141, 5935, 2732, 5995,
-     "sliding screen  ·  brown tinted glass, leaf 2 of 2, 1591, south track"),
+    # The glass runs from the west wall to the bath's straight west wall at
+    # X 2325 — the sweep is north of this line now, so the line meets a flat
+    # wall, not a curve.  2775 in all.  Tinted from the floor to the ceiling,
+    # the whole length.
+    ('tint',      -450, 5875, 937.5, 5935,
+     "sliding screen  ·  brown tinted glass, leaf 1 of 2, 1388, north track"),
+    ('tint',      937.5, 5935, 2325, 5995,
+     "sliding screen  ·  brown tinted glass, leaf 2 of 2, 1388, south track"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN
@@ -689,6 +709,36 @@ _ONCE = [
 
     ('sofa-e',   1750, 200, 2550, 1000,
      'single sofa  ·  800, facing west at the tree  ·  200 clear each side'),
+
+    # ------------------------- THE PARENTS' CUBICLE: TWO BATHS
+    # The vanities are NOT here — the parents' is a curved console struck off
+    # the sweep, see retrofit.mb_console().  The cubicle is 1930 clear and runs
+    # from the crown at 4350 to the outer wall at 9695; the folding wooden
+    # divider at 7150-7250 splits it.
+    #
+    # NORTH HALF, the parents': under the arch.  The pan goes on the duct
+    # wall, as far north as the duct allows — the builder's main duct starts
+    # at 6175, and the soil stack is in it — with 700 in front of it.  The
+    # shower is a 900 walk-in in the south-west corner against the divider,
+    # open, no screen: at 1930 clear its floor doubles as the standing room
+    # in front of the pan, which is what a wet room is.
+    ('wc-e',     3725, 6180, 4405, 6570, ''),   # 680 x 390, on the duct wall
+    ('shower',   2475, 6250, 3375, 7150, 'walk-in, 900 x 900, no screen'),
+    # SOUTH HALF, the grandmother's: the pan and the walk-in shower exactly
+    # where the bath always had them, and a wall-hung basin of her own on the
+    # west wall between her door and the shower.
+    ('wc-e',     3725, 7625, 4405, 8015, ''),   # 680 x 390      # 600 off the duct wall
+    # 4325, not the wall at 4405: the builder leaves a 230 x 1000 column on
+    # the duct's corner and 80 of it stands in this corner of the room.
+    ('shower',   2475, 8595, 4325, 9545, 'walk-in, 1850 x 950'),
+    ('basin',    2475, 8150, 2925, 8550, "basin  ·  450 x 400, wall hung"),
+
+    # ------------------------- KARAN'S BATH, as first drawn (in his own frame)
+    # The pan on the duct wall, the walk-in shower across the south end, and
+    # the bin on the 300 of straight wall between the arch's foot and the door.
+    ('wc-w',     20075, 7625, 20755, 8015, ''),  # 680 x 390
+    ('shower',   20155, 8595, 22005, 9545, 'walk-in, 1850 x 950'),
+    ('bin',      21705, 6715, 22005, 7015, ''),
 
     # ------------------------------- Karan's terrace: the conversation pod
     # Not chairs stood in the terrace.  A BENCH SOFA inside the room with its
@@ -1201,23 +1251,8 @@ _MIRROR = [
     # them.  It goes back when the joinery is settled.  The symbol and the
     # mirror rule stay, so it is one line to bring back:
     #   ('bed-e', 700, 6975, 2700, 8775, 'king 1800 x 2000, head on the bath wall'),
-    # ---------------------------------------------------------------- bath
-    # The vanity is NOT here.  It is a curved console struck off the sweep, so
-    # it sits on that wall for its whole length instead of touching it at one
-    # point — see retrofit.mb_console().  What is left is the pan and the
-    # shower, and both are set out off the two things that cannot move: the
-    # soil stack is in the builder's main service duct, so the pan goes on the
-    # duct wall, and the shower takes the whole south end because at 1930 clear
-    # a full-width wet zone is simpler than a cubicle with a gap beside it.
-    ('wc-e',     3725, 7625, 4405, 8015, ''),   # 680 x 390      # 600 off the duct wall
-    # 4325, not the wall at 4405: the builder leaves a 230 x 1000 column on
-    # the duct's corner and 80 of it stands in this corner of the room.
-    ('shower',   2475, 8595, 4325, 9545, 'walk-in, 1850 x 950'),
-    # The 300 of straight wall between the foot of the arch and the door jamb
-    # is too short for anything hung and too shallow for anything deep.  It is
-    # exactly a bin, and a bin has to go somewhere.
-    ('bin',      2475, 6715, 2775, 7015, ''),
-
+    # The baths are NOT mirrored any more — the parents' cubicle holds two
+    # baths and Karan's holds one — so both sets are in _ONCE.
 ]
 
 _FLIP = {'bed-e': 'bed-w', 'bed-w': 'bed-e', 'bed-n': 'bed-n', 'bed-s': 'bed-s',

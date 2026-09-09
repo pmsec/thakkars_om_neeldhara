@@ -316,6 +316,8 @@ function buildExteriorRuns(data: BuildingData): { runs: WallDef[]; centreline: P
         kind: 'glazing',
         openings: [],
         renderPane: sp.def.pane !== false,
+        parapet: sp.def.parapet,
+        rail: sp.def.rail,
         label: sp.def.label,
         notes: sp.def.notes,
       })

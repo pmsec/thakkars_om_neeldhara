@@ -625,6 +625,9 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
           break
         }
       }
+      // A balcony's railing line is enclosed to its balustrade and open above on
+      // purpose: a parapet is a wall to its own height, and the sky is not a gap.
+      if (!by && g.parapet) by = `a parapet to ${g.parapet} mm and a balustrade to ${g.rail ?? g.parapet} mm, open above by design`
       if (by) rows.push(`${g.id}: ${by}`)
       else problems.push(`${g.id} has no upright pane and no canopy over it — the envelope is open here`)
     }

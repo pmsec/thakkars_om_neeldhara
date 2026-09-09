@@ -27,6 +27,12 @@ export interface OpeningDef {
   sealed?: boolean
   /** Does not connect rooms for circulation purposes (all windows, plus the glazed screens). */
   nonCirculating?: boolean
+  /**
+   * A pane stands in the opening, sill to head: the brown tinted glass over the
+   * kitchen's timber dado, the clear glass of a window. Without it a window in a
+   * solid wall is a hole between its sill and its lintel.
+   */
+  glass?: 'clear' | 'tinted'
   label?: string
   notes?: string
 }
@@ -56,6 +62,9 @@ export interface WallDef {
    * ceiling in 3D and the walkthrough, and a slider in it is a glass leaf, not a gap.
    */
   glass?: 'clear' | 'tinted'
+  /** Carried from the envelope glazing it was derived from: a parapet under open air. */
+  parapet?: number
+  rail?: number
   label?: string
   notes?: string
 }
@@ -145,6 +154,12 @@ export interface EnvelopeGlazingDef {
    * line and IS the enclosure — a separate upright pane there is just doubled glass.
    */
   pane?: boolean
+  /**
+   * The edge is open above a parapet: solid to `parapet`, a glass balustrade to
+   * `rail`, and nothing over that. A balcony's railing line, not a wall.
+   */
+  parapet?: number
+  rail?: number
   notes?: string
 }
 

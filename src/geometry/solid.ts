@@ -251,6 +251,20 @@ export function buildSolids(model: BuiltModel): SolidModel {
     const wantsPane = w.def.renderPane !== false
     const solidThickness =
       w.thickness > 0 ? w.thickness : kind === 'glazing' && wantsPane ? 20 : 0
+    if (solidThickness === 0 && w.def.parapet) {
+      // An open edge over a parapet: a balcony's railing line. Solid to the
+      // parapet, set inside the line like a wall; a glass balustrade above it,
+      // set like a pane; and nothing over that.
+      const tExt = model.data.thickness.exterior
+      const wallPts = shiftInward(w.points, tExt / 2, model)
+      pushRun(prisms, w, wallPts, cumulative(wallPts), 0, total, 0, w.def.parapet, 'wall-exterior', tExt, false, ':parapet')
+      if (w.def.rail && w.def.rail > w.def.parapet) {
+        const railPts = shiftInward(w.points, 10, model)
+        pushRun(prisms, w, railPts, cumulative(railPts), 0, total, w.def.parapet, w.def.rail, 'glazing', 20, true, ':rail')
+        prisms[prisms.length - 1].glass = 'clear'
+      }
+      continue
+    }
     if (solidThickness === 0) continue
 
     // A glazed line has no authored thickness, so the pane is a rendering allowance. Set
@@ -330,6 +344,13 @@ export function buildSolids(model: BuiltModel): SolidModel {
       }
       if (head < ceiling) {
         pushRun(prisms, w, runPoints, accPts, from, to, head, ceiling, 'lintel', solidThickness, false, ':lintel')
+      }
+      if (op.glass && op.type !== 'door') {
+        // the pane the opening asks for, sill to head, a nominal 20 mm on the
+        // wall's centreline: tinted over the kitchen's dado, clear in a window
+        const before = prisms.length
+        pushRun(prisms, w, runPoints, accPts, from, to, sill, head, 'glazing', 20, true, ':pane')
+        if (prisms.length > before) prisms[prisms.length - 1].glass = op.glass
       }
       cursor = Math.max(cursor, to)
     }

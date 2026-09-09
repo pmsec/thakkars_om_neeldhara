@@ -43,9 +43,15 @@ import { isStrengthTrainer, strengthTrainer } from './gym'
 import { hedgeGroup } from './hedge'
 import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
 import { useStore } from '../ui/store'
+import { importedPiece } from './imported'
+import { activeHomeId } from '../homes/registry'
 
 const model = getModel()
 const solids = buildSolids(model)
+// Home 1's bespoke set pieces - the entry drum's painting and sconces, the
+// mandir idol, the petal pendant, the sweep art - are built to its plan's
+// coordinates and belong to it alone
+const HOME1 = activeHomeId === 'om-neeldhara'
 const pcx = ((polygonClipping as unknown as { default?: typeof polygonClipping }).default ??
   polygonClipping) as typeof polygonClipping
 
@@ -658,6 +664,11 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     m.receiveShadow = true
     return m
   }
+
+  // a piece the label names outright - a WC, a fridge, a shower tray, a lounge
+  // swivel, a daybed - drawn as that thing rather than as the nearest box
+  const named = importedPiece(f, { M, box, basePrism, place })
+  if (named) return named
 
   // The strength trainer is a cable machine, not a joinery slab.
   if (isStrengthTrainer(f)) {
@@ -1981,18 +1992,22 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const HANDLED = new Set(['SL-P-SUITE', 'SL-K-SUITE', 'SL-P-BATH-DIV'])
   for (const w of model.walls) {
     const glassy = w.kind === 'glazing' || !!w.def.glass
-    if (!glassy) continue
     for (const op of w.openings) {
       if (op.type !== 'slider' || HANDLED.has(op.id)) continue
+      // a slider in a solid partition is timber panels when its label says so
+      const wood = !glassy && /panel/i.test(op.label ?? '')
+      if (!glassy && !wood) continue
       const width = op.to - op.from
       if (width < 400) continue
       const L = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y) || 1
       const d = { x: (op.p2.x - op.p1.x) / L, y: (op.p2.y - op.p1.y) / L }
       const nx = -d.y, ny = d.x
-      const n = op.id === 'SL-P-DRESS' ? 3 : Math.max(2, Math.round(width / 1600))
+      const said = /\b(two|three|four|2|3|4)\b[^.]*\b(panels|leaves)\b/i.exec(op.label ?? '')
+      const count = said ? ({ two: 2, three: 3, four: 4 } as Record<string, number>)[said[1].toLowerCase()] ?? Number(said[1]) : 0
+      const n = op.id === 'SL-P-DRESS' ? 3 : count || Math.max(2, Math.round(width / 1600))
       const leaf = width / n
       const H = Math.min((op.head ?? ceiling) - 40, ceiling - 40)
-      const T = 12
+      const T = wood ? 40 : 12
       const glass = w.def.glass === 'tinted' ? M.tintGlass : M.glass
       const ang = -Math.atan2(d.y, d.x)
       const item = new THREE.Group()
@@ -2054,6 +2069,15 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
           at(c + leaf / 2 - ST / 2, track + FT / 2 + 2, 1000, box(24, 140, 6, M.brass))
           continue
         }
+        if (wood) {
+          // a timber panel: a walnut leaf with two recessed panel lines and a
+          // brass pull at the leading stile, on a top track
+          at(c, track, H / 2, box(leaf - 6, H - 30, T, M.wallWood))
+          for (const dy of [180, H / 2, H - 180]) at(c, track + T / 2 + 1, dy, box(leaf - 160, 6, 4, M.trunk))
+          for (const dy of [180, H / 2, H - 180]) at(c, track - T / 2 - 1, dy, box(leaf - 160, 6, 4, M.trunk))
+          at(c + leaf / 2 - 60, track + T / 2 + 3, 1000, box(24, 140, 6, M.brass))
+          continue
+        }
         at(c, track, H / 2, box(leaf - 6, H - 100, T, glass))
         at(c, track, 25, box(leaf, 50, T + 8, M.metal))                       // bottom rail
         at(c, track, H - 25, box(leaf, 50, T + 8, M.metal))                   // top rail
@@ -2061,7 +2085,7 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         at(c + leaf / 2 - 25, track, H / 2, box(50, H, T + 8, M.metal))
       }
       // the track itself, along the head of the opening
-      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, grid ? M.wallWood : M.metal))
+      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, grid || wood ? M.wallWood : M.metal))
     }
   }
   return g
@@ -2322,15 +2346,26 @@ function itemIcons(root: THREE.Object3D, extra: Array<{ id: string } & ItemAncho
  * Minimal abstract canvases on the blank walls, each under its own picture
  * light: a brass bar at the frame's head with a warm lamp in it.
  */
-function wallArt(M: Mats): THREE.Group {
-  const g = new THREE.Group()
-  // (x, y) on the wall's face, (nx, ny) into the room, the canvas's width and a seed
-  const spots: Array<{ x: number; y: number; nx: number; ny: number; w: number; seed: number }> = [
+type ArtSpot = { x: number; y: number; nx: number; ny: number; w: number; seed: number }
+// (x, y) on the wall's face, (nx, ny) into the room, the canvas's width and a seed - per home
+const ART_SPOTS: Record<string, ArtSpot[]> = {
+  'om-neeldhara': [
     { x: 5700, y: 8400, nx: 0, ny: -1, w: 900, seed: 11 },      // family room, south wall
     { x: 19000, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall, east of the kit
     { x: 20900, y: 1350, nx: 0, ny: 1, w: 800, seed: 37 },      // Karan's suite, over the plant table
     { x: 14450, y: 8400, nx: 0, ny: -1, w: 700, seed: 41 },     // great room, between the drum and the WC door
-  ]
+  ],
+  ekta: [
+    { x: 2295, y: 7600, nx: 1, ny: 0, w: 1000, seed: 5 },       // living, over the diwan on the west wall
+    { x: 11470, y: 1715, nx: -1, ny: 0, w: 1100, seed: 9 },     // the east room, over the bed's head
+    { x: 3050, y: 600, nx: -1, ny: 0, w: 640, seed: 13 },       // bedroom, over the desk
+    { x: 1380, y: 9700, nx: 0, ny: 1, w: 700, seed: 17 },       // the foyer, facing the front door
+    { x: 6800, y: 9200, nx: -1, ny: 0, w: 800, seed: 21 },      // living, east wall south of the bath
+  ],
+}
+function wallArt(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const spots = ART_SPOTS[activeHomeId] ?? []
   for (const sp of spots) {
     const cnv = abstractCanvas(sp.seed)
     if (!cnv) continue
@@ -2354,6 +2389,105 @@ function wallArt(M: Mats): THREE.Group {
     put(new THREE.Mesh(new THREE.BoxGeometry(40 * S, 16 * S, 120 * S), M.brass), 60, mid + PH / 2 + 130)
     const lamp = new THREE.PointLight(0xffd9a3, 0.5, 2.4, 2)
     put(lamp, 150, mid + PH / 2 + 60)
+  }
+  return g
+}
+
+/**
+ * What any home gets from its own data: a pair of pendants over an eating bar
+ * (a 'serving counter' table), a timber handrail on every balustrade, and sheer
+ * curtains either side of every glazed exterior window. Home 1 authors none of
+ * these, so it draws none.
+ */
+function homeDressing(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const ceiling = model.data.levels.ceiling
+  // ---- pendants over the eating bar: two brass drums on cords, a warm bulb in each
+  for (const f of furniture) {
+    if (f.kind !== 'table' || !/serving counter/i.test(f.label)) continue
+    const along = f.d >= f.w
+    const cx = f.x + f.w / 2, cy = f.y + f.d / 2
+    // over the room-side half of the slab: the part clear of the wall it passes through
+    const kit = model.roomById.get('R-KITCHEN')
+    const towardKitchen = kit ? Math.sign((kit.centroid.y - cy) * (along ? 1 : 0) + (kit.centroid.x - cx) * (along ? 0 : 1)) : -1
+    const L = along ? f.d : f.w
+    for (const t of [0.25, 0.55]) {
+      const off = -towardKitchen * L * t
+      const px = along ? cx : cx + off
+      const py = along ? cy + off : cy
+      const drop = ceiling - 1750
+      const cord = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 3 * S, drop * S, 6), M.graphite)
+      cord.position.set(px * S, (ceiling - drop / 2) * S, py * S)
+      g.add(cord)
+      const shade = new THREE.Mesh(new THREE.CylinderGeometry(120 * S, 150 * S, 220 * S, 24, 1, true), M.brass)
+      shade.position.set(px * S, (1750 - 110) * S, py * S)
+      shade.castShadow = true
+      g.add(shade)
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(28 * S, 10, 8), M.lamp)
+      bulb.position.set(px * S, (1750 - 170) * S, py * S)
+      g.add(bulb)
+      const light = new THREE.PointLight(0xffd9a3, 0.6, 3.0, 1.8)
+      light.position.set(px * S, (1750 - 200) * S, py * S)
+      g.add(light)
+    }
+  }
+  // ---- handrails: a walnut cap on every balustrade, on the parapet line
+  for (const w of model.walls) {
+    const rail = w.def.rail
+    if (!rail || !w.def.parapet) continue
+    for (let k = 1; k < w.points.length; k++) {
+      const a = w.points[k - 1], b = w.points[k]
+      const L = Math.hypot(b.x - a.x, b.y - a.y)
+      if (L < 50) continue
+      // inward of the line, over the pane's centre
+      const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L
+      const inX = -uy, inY = ux
+      const mx = (a.x + b.x) / 2 + inX * 20, my = (a.y + b.y) / 2 + inY * 20
+      const cap = box(L, 40, 70, M.walnut, 0, 0, 0)
+      cap.position.set(mx * S, (rail + 20) * S, my * S)
+      cap.rotation.y = -Math.atan2(uy, ux)
+      g.add(cap)
+    }
+  }
+  // ---- curtains: a rod over each glazed exterior window, a gathered sheer either side;
+  // not in a kitchen or a wet room, where a worktop or a shower stands under the sill
+  const sheer = new THREE.MeshStandardMaterial({ color: 0xf4eee4, roughness: 0.96, transparent: true, opacity: 0.82, side: THREE.DoubleSide })
+  for (const w of model.walls) {
+    if (!w.isExterior) continue
+    for (const op of w.openings) {
+      if (op.type !== 'window' || !op.glass) continue
+      const host = model.rooms.find((r) => pointInPolygon({ x: op.mid.x - op.dir.y * 300, y: op.mid.y + op.dir.x * 300 }, r.polygon))
+        ?? model.rooms.find((r) => pointInPolygon({ x: op.mid.x + op.dir.y * 300, y: op.mid.y - op.dir.x * 300 }, r.polygon))
+      if (host && (host.def.category === 'wet' || /kitchen/i.test(host.def.name))) continue
+      const width = op.to - op.from
+      if (width < 500) continue
+      const L = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y) || 1
+      const d = { x: (op.p2.x - op.p1.x) / L, y: (op.p2.y - op.p1.y) / L }
+      // the room side of the run: the normal that points at the room the opening serves
+      let nx = -d.y, ny = d.x
+      const inRoom = model.rooms.find((r) => pointInPolygon({ x: op.mid.x + nx * (w.thickness / 2 + 150), y: op.mid.y + ny * (w.thickness / 2 + 150) }, r.polygon))
+      if (!inRoom) { nx = -nx; ny = -ny }
+      const out = w.thickness / 2 + 90
+      const head = (op.head ?? 2400) + 150
+      const rodL = width + 500
+      const at = (along: number, o: number, h: number, m: THREE.Object3D) => {
+        m.position.set((op.mid.x + d.x * along + nx * o) * S, h * S, (op.mid.y + d.y * along + ny * o) * S)
+        m.rotation.y = -Math.atan2(d.y, d.x)
+        g.add(m)
+      }
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, rodL * S, 8), M.brass)
+      rod.rotation.z = Math.PI / 2
+      at(0, out, head, rod)
+      for (const e of [-1, 1]) {
+        const panelW = Math.min(420, width * 0.28)
+        const c = e * (width / 2 + 250 - panelW / 2)
+        // five soft folds read as a gathered sheer
+        for (let i = 0; i < 5; i++) {
+          const fx = c - panelW / 2 + (i + 0.5) * (panelW / 5)
+          at(fx, out - 20 + (i % 2) * 24, (head - 30) / 2 + 60, box(panelW / 5 + 8, head - 150, 14, sheer))
+        }
+      }
+    }
   }
   return g
 }
@@ -3735,18 +3869,21 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   const dots = itemIcons(root, extra)
   if (dots) root.add(dots)
   root.add(wallArt(M))
-  const idol = mandirIdol(M)
-  if (idol) root.add(idol)
   root.add(kitchenOverheads(M))
-  const painting = entryPainting(M)
-  if (painting) root.add(painting)
-  const sconces = entrySconces(M)
-  if (sconces) root.add(sconces)
   root.add(bathMirrors(M))
-  const petals = petalPendant(M)
-  if (petals) root.add(petals)
-  const art = sweepArt(M)
-  if (art) root.add(art)
+  root.add(homeDressing(M))
+  if (HOME1) {
+    const idol = mandirIdol(M)
+    if (idol) root.add(idol)
+    const painting = entryPainting(M)
+    if (painting) root.add(painting)
+    const sconces = entrySconces(M)
+    if (sconces) root.add(sconces)
+    const petals = petalPendant(M)
+    if (petals) root.add(petals)
+    const art = sweepArt(M)
+    if (art) root.add(art)
+  }
 
   // ---- glass roofs
   for (const roof of opts.roofs === false ? [] : solids.roofs) {

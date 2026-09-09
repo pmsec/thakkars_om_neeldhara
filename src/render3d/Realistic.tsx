@@ -1883,6 +1883,66 @@ function podPortalDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
  * lower half, open it sits up in front of the walnut panel and the counter
  * is clear to pass food through. Follows the Doors switch.
  */
+/**
+ * The folding wooden divider across the parents' cubicle: four walnut leaves
+ * on a top track. Shut, they close the line between the parents' bath and the
+ * grandmother's; open, they fold in pairs and stack against the duct wall on
+ * the parents' side, clear of both pans.
+ */
+function dividerPanels(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  for (const w of model.walls) {
+    for (const op of w.openings) {
+      if (op.id !== 'SL-P-BATH-DIV') continue
+      const head = op.head ?? 2100
+      const a = w.points[0], b = w.points[w.points.length - 1]
+      const L = Math.hypot(b.x - a.x, b.y - a.y) || 1
+      const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L
+      // the leaves fold back on to the parents' side of the line
+      const par = model.roomById.get('R-P-BATH')
+      let nx = -uy, ny = ux
+      if (par && (par.centroid.x - op.mid.x) * nx + (par.centroid.y - op.mid.y) * ny < 0) { nx = -nx; ny = -ny }
+      const ang = Math.atan2(ux, uy)
+      const at = (along: number, out: number, h: number, m: THREE.Object3D) => {
+        const px = a.x + ux * along + nx * out, py = a.y + uy * along + ny * out
+        m.position.set(px * S, h * S, py * S)
+        m.rotation.y = ang
+        g.add(m)
+      }
+      const width = op.to - op.from
+      const n = 4
+      const leaf = width / n
+      const T = 40
+      const H = head - 90
+      const hm = 10 + H / 2
+      // the top track, in the wall's thickness, always there
+      at((op.from + op.to) / 2, 0, head - 30, box(w.thickness, 60, width, M.walnut))
+      if (mode === 'shut') {
+        for (let k = 0; k < n; k++) {
+          const c = op.from + (k + 0.5) * leaf
+          at(c, 0, hm, box(T, H, leaf - 8, M.walnut))
+          // a hinge line between leaves, and a brass knob on each meeting stile
+          if (k) at(op.from + k * leaf, 0, hm, box(T + 6, H - 60, 6, M.trunk))
+          if (k === 1 || k === 2) {
+            const knob = new THREE.Mesh(new THREE.SphereGeometry(16 * S, 12, 8), M.brass)
+            at(c + (k === 1 ? leaf / 2 - 70 : -(leaf / 2 - 70)), (T / 2 + 14) * (k === 1 ? 1 : -1), 1000, knob)
+          }
+        }
+      } else {
+        // folded in pairs and stacked at the duct-wall end — whichever end of
+        // the run is further east — standing out from the line on the
+        // parents' side
+        const eastEnd = b.x >= a.x
+        for (let k = 0; k < n; k++) {
+          const along = eastEnd ? op.to - 30 - T / 2 - k * (T + 12) : op.from + 30 + T / 2 + k * (T + 12)
+          at(along, leaf / 2 + 10, hm, box(leaf - 8, H, T, M.walnut))
+        }
+      }
+    }
+  }
+  return g
+}
+
 function hatchSash(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   for (const w of model.walls) {
@@ -3286,6 +3346,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(hingedDoors(M, mode))
     set.add(podPortalDoors(M, mode))
     set.add(hatchSash(M, mode))
+    set.add(dividerPanels(M, mode))
     root.add(set)
   }
   const bedDown = wallBedDown(M)

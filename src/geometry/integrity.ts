@@ -483,8 +483,10 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
     // pair: the parents' partition lands on their bath sweep and its diagonal end
     // leaves a 40 mm notch in that bath's outline that Karan's, with no partition,
     // does not have — 0.03 m², nothing a builder would ever set out differently.
+    // The baths are no longer a pair at all: the parents' sweep sits 1600 mm
+    // north of Karan's so their cubicle holds two baths (theirs and the
+    // grandmother's) — see the asymmetry note below.
     const pairs: Array<[string, string, number, number]> = [
-      ['R-P-BATH', 'R-K-BATH', 50000, 10],
       ['R-SHAFT-W', 'R-SHAFT-E', 5000, 1],
       ['R-VOID-W', 'R-VOID-E', 5000, 1],
       ['R-P-TERRACE', 'R-K-TERRACE', 5000, 1],
@@ -511,10 +513,10 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       id: 'mirror',
       title: 'The two wings mirror about x = 12 240',
       requirement:
-        'Mirror-paired rooms match in area to 0.005 m² and in mirrored centroid to 1 mm (the baths to 0.05 m² / 10 mm, see the note in the code).',
+        'Mirror-paired rooms match in area to 0.005 m² and in mirrored centroid to 1 mm.',
       pass: rows.length === 0,
       actual: `worst area difference ${(worstArea / 1e6).toFixed(6)} m², worst centroid offset ${worstCentroid.toFixed(3)} mm, across ${pairs.length} pairs`,
-      tolerance: '0.005 m² / 1 mm (baths 0.05 m² / 10 mm)',
+      tolerance: '0.005 m² / 1 mm',
       detail: rows.length ? rows : undefined,
       severity: 'fail',
     })
@@ -533,6 +535,7 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
       actual: `family ${sqFt(fam.area).toFixed(1)} sq ft vs den ${sqFt(den.area).toFixed(1)} sq ft`,
       detail: [
         `The den gives up ${sqFt(fam.area - den.area).toFixed(1)} sq ft to the east service duct — the family room has no such notch.`,
+        'The parents’ bath sweep stands 1600 mm north of Karan’s: their cubicle is two baths — theirs under the arch and the grandmother’s at the south end — with a folding wooden divider between; Karan’s is one bath as first drawn.',
         'The pod portals sit at different heights on their curves: the den’s is pinned by Karan’s work console, the family room’s moved south so the parents land at the dining table.',
         'The kitchen bay and the entry drum are south-bay features with no mirror counterparts.',
       ],

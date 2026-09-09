@@ -4438,7 +4438,49 @@ export function buildFixtures(M: Mats): THREE.Group {
       g.add(plate)
       continue
     }
-    const mat = f.kind === 'counter' || f.kind === 'basin' ? M.timber
+    if (f.kind === 'basin') {
+      // a wall-hung ceramic basin, not a block: the bowl on the wall with a
+      // tap at its back, a chrome bottle trap under it, a mirror over it
+      const pseudo = { x: f.at.x - w / 2, y: f.at.y - d / 2, w, d } as unknown as FurnitureItem
+      const gaps = wallGaps(pseudo)
+      const side = (['N', 'S', 'E', 'W'] as const).reduce((b, k) => (gaps[k] < gaps[b] ? k : b), 'N' as 'N' | 'S' | 'E' | 'W')
+      const vx = side === 'E' ? 1 : side === 'W' ? -1 : 0
+      const vz = side === 'S' ? 1 : side === 'N' ? -1 : 0
+      const along = side === 'N' || side === 'S'                 // the wall runs along x
+      const cx = f.at.x, cy = f.at.y
+      const RIM = 850
+      const ell = (rx: number, rz: number, n = 28) => Array.from({ length: n }, (_, i) => ({ x: cx + rx * Math.cos((2 * Math.PI * i) / n), y: cy + rz * Math.sin((2 * Math.PI * i) / n) }))
+      const outer = ell(w / 2 - 6, d / 2 - 6), inner = ell(w / 2 - 50, d / 2 - 50)
+      const shell = new THREE.Mesh(prismGeometry(decimate(outer), RIM - 130, RIM, [decimate(inner)]), M.porcelain)
+      shell.castShadow = true
+      g.add(shell)
+      g.add(new THREE.Mesh(prismGeometry(decimate(outer), RIM - 150, RIM - 130), M.porcelain))      // the bowl's floor
+      g.add(new THREE.Mesh(prismGeometry(decimate(inner), RIM - 125, RIM - 118), M.water))          // a film of water in the bowl
+      // the tap on the back rim, the trap beneath, the mirror on the wall
+      const backX = cx + vx * (w / 2 - 60), backZ = cy + vz * (d / 2 - 60)
+      const tap = new THREE.Mesh(new THREE.CylinderGeometry(11 * S, 13 * S, 170 * S, 10), M.chrome)
+      tap.position.set(backX * S, (RIM + 85) * S, backZ * S)
+      g.add(tap)
+      const spout = box(along ? 16 : 110, 14, along ? 110 : 16, M.chrome)
+      spout.position.set((backX - vx * 50) * S, (RIM + 162) * S, (backZ - vz * 50) * S)
+      g.add(spout)
+      const trap = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 22 * S, 150 * S, 10), M.chrome)
+      trap.position.set(cx * S, (RIM - 240) * S, cy * S)
+      g.add(trap)
+      const pipe = box(along ? 18 : d / 2, 18, along ? d / 2 : 18, M.chrome)
+      pipe.position.set((cx + vx * d / 4) * S, (RIM - 310) * S, (cy + vz * d / 4) * S)
+      g.add(pipe)
+      const MW = w + 250, MH = 800
+      const mx = cx + vx * (w / 2 - 14), mz = cy + vz * (d / 2 - 14)
+      const frame = box(along ? MW + 50 : 26, MH + 50, along ? 26 : MW + 50, M.trunk)
+      frame.position.set(mx * S, 1500 * S, mz * S)
+      g.add(frame)
+      const mirror = box(along ? MW : 10, MH, along ? 10 : MW, M.mirror)
+      mirror.position.set((mx - vx * 10) * S, 1500 * S, (mz - vz * 10) * S)
+      g.add(mirror)
+      continue
+    }
+    const mat = f.kind === 'counter' ? M.timber
       : f.kind === 'washer' ? M.timber : M.appliance
     const m = box(w, h, d, mat, 0, h / 2, 0)
     place(m, f.at.x, f.at.y)
@@ -4453,7 +4495,7 @@ export function buildFixtures(M: Mats): THREE.Group {
       place(handle, f.at.x, f.at.y + front * (d / 2 + 12), 780)
       g.add(handle)
     }
-    if (f.kind === 'counter' || f.kind === 'basin') {
+    if (f.kind === 'counter') {
       const top = box(w, 40, d, M.marble, 0, 0, 0)
       place(top, f.at.x, f.at.y, 910)
       g.add(top)

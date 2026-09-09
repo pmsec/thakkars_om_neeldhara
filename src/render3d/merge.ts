@@ -34,8 +34,11 @@ export function mergeStatic(root: THREE.Object3D): { before: number; after: numb
     r.traverse((o) => {
       if (o !== r && named.includes(o)) return
       if (!(o instanceof THREE.Mesh) || o instanceof THREE.InstancedMesh) return
-      // skip anything inside a named set unless r is that set
-      if (r === root && isUnderNamed(o, root)) return
+      // a mesh belongs to the NEAREST named unit above it, and only that unit
+      // merges it: traverse() descends into a nested unit regardless of the
+      // callback, so without this a set swallowed every door inside it and a
+      // door's own group was left empty - switching it switched nothing
+      if (isUnderNamed(o, r)) return
       if (Array.isArray(o.material)) return
       const g = o.geometry as THREE.BufferGeometry
       if (!g.attributes.position) return
@@ -52,9 +55,15 @@ export function mergeStatic(root: THREE.Object3D): { before: number; after: numb
       doomed.push(o)
     })
     for (const m of doomed) m.parent?.remove(m)
+    // the merged geometry is in world space; a unit that carries its own
+    // transform (a door leaf turned on its hinge) would apply it a second time
+    // to anything added under it, so the geometry is brought back into the
+    // unit's own frame first
+    const back = new THREE.Matrix4().copy(r.matrixWorld).invert()
     for (const b of buckets.values()) {
       const geo = b.geos.length === 1 ? b.geos[0] : mergeGeometries(b.geos, false)
       if (!geo) continue
+      if (r !== root) geo.applyMatrix4(back)
       const mesh = new THREE.Mesh(geo, b.mat)
       mesh.castShadow = b.cast
       mesh.receiveShadow = b.receive

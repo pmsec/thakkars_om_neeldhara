@@ -754,8 +754,8 @@ export const building: BuildingData = {
     { id: 'R-DUCT-SE', name: 'Secondary duct / riser bay', anchor: { x: 18200, y: 9000 }, category: 'void', zone: 'core', carpet: false, finish: 'Riser', notes: 'Between help’s room’s store end and Karan’s bath.' },
     { id: 'R-KITCHEN', name: 'Kitchen', anchor: { x: 7800, y: 10000 }, category: 'wet', zone: 'service', carpet: true, finish: 'Stone', publishedSqFt: 126, notes: 'One working room, kitchen and utility together; hatch to the family room.' },
     { id: 'R-ENTRY', name: 'Entry gallery', anchor: { x: 12240, y: 10000 }, category: 'circulation', zone: 'shared', carpet: true, finish: 'Stone', publishedSqFt: 101, notes: 'The drum: a U of 230 walls on the two columns, curved doors sliding on the arc, console and two chairs, sconces at the arc centres.' },
-    { id: 'R-HELP', name: "Help's room", anchor: { x: 14700, y: 9200 }, category: 'habitable', zone: 'service', carpet: true, finish: 'Vinyl', publishedSqFt: 77, notes: 'Live-in, with the store as its east end: one room. Bunk under the duct, cupboard in the duct’s corner, its own door off the gallery.' },
-    { id: 'R-GUEST-BATH', name: 'Guest / service WC', anchor: { x: 16500, y: 9000 }, category: 'wet', zone: 'shared', carpet: true, finish: 'Stone', publishedSqFt: 29, notes: 'Behind the quarter-ellipse sweep: curved console, WC, 900 shower.' },
+    { id: 'R-HELP', name: "Help's room", anchor: { x: 14700, y: 9200 }, category: 'habitable', zone: 'service', carpet: true, finish: 'Vinyl', publishedSqFt: 77, notes: 'Live-in, with the store as its east end: one room. Bunk under the duct, full-height racks on three walls, a loft over the whole room at 2500, its own door off the gallery.' },
+    { id: 'R-GUEST-BATH', name: 'Guest / service WC', anchor: { x: 16500, y: 9000 }, category: 'wet', zone: 'shared', carpet: true, finish: 'Stone', publishedSqFt: 29, notes: 'Behind the quarter-ellipse sweep: curved console, WC, 900 shower; a loft over it at 2300.' },
   ],
 
   stacks: [

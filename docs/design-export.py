@@ -495,9 +495,10 @@ ROOMS = [
      'the arc, console and two chairs, sconces at the arc centres.'),
     ('R-HELP', "Help's room", (14700, 9200), 'habitable', 'service', True,
      'Vinyl', 'Live-in, with the store as its east end: one room. Bunk under the '
-     'duct, cupboard in the duct’s corner, its own door off the gallery.'),
+     'duct, full-height racks on three walls, a loft over the whole room at 2500, '
+     'its own door off the gallery.'),
     ('R-GUEST-BATH', 'Guest / service WC', (16500, 9000), 'wet', 'shared', True,
-     'Stone', 'Behind the quarter-ellipse sweep: curved console, WC, 900 shower.'),
+     'Stone', 'Behind the quarter-ellipse sweep: curved console, WC, 900 shower; a loft over it at 2300.'),
 ]
 
 # The sheet publishes the parents' suite as ONE figure, bed zone and dressing
@@ -1307,7 +1308,7 @@ def emit_furniture():
     # ---- the drawn pieces the bounding-box era never exported at all.
     # Each ships its TRUE outline; none of these is a guess.
     def add_outline(prims, kind, room, label, h, mirror=False,
-                    styles=('solid',)):
+                    styles=('solid',), lift=0):
         p = outline_of(prims, styles)
         if not p:
             return
@@ -1316,7 +1317,15 @@ def emit_furniture():
         xs = [q[0] for q in p]
         ys = [q[1] for q in p]
         add(kind, min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys),
-            room, label, h, poly=p)
+            room, label, h, poly=p, lift=lift)
+
+    # the lofts over help's room (2500 up, the bunk's top berth keeps its
+    # headroom) and the guest WC (2300 up): the rooms' own outlines, hung
+    lofts = R.lofts()
+    add_outline(lofts[:1], 'shelves', 'R-HELP', 'Loft, 2500 up', 900,
+                styles=('dash',), lift=2500)
+    add_outline(lofts[1:], 'shelves', 'R-GUEST-BATH', 'Loft, 2300 up', 1100,
+                styles=('dash',), lift=2300)
 
     # the curved full-height rack on the outside of the guest WC's apse
     add_outline(R.help_rack(), 'shelves', 'R-HELP',

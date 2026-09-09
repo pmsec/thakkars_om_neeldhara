@@ -5161,7 +5161,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
             title={verb}
             aria-label={verb}
             style={{
-              position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: 64,
+              // the right edge, in the column with the EYE rail above and Walk below
+              position: 'absolute', right: 14, bottom: 64,
               width: 56, height: 56, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: 'rgba(250,248,244,0.92)', color: '#1e1c18',
               border: '1px solid #d5cdbb', borderRadius: 28, cursor: 'pointer', zIndex: 6,

@@ -133,7 +133,8 @@ export function createTouchWalk(
     }
     return { el, knob, set }
   }
-  const eyeRail = rail('EYE', 54)
+  // above the touch button (bottom 64, 56 high) and the rail's own caption
+  const eyeRail = rail('EYE', 148)
   const eyeT = (): number => (eye - EYE_MIN) / (EYE_MAX - EYE_MIN)
   const railDrag = (r: { el: HTMLDivElement }, apply: (t: number) => void): void => {
     let id: number | null = null

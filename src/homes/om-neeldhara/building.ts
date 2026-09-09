@@ -377,7 +377,7 @@ export const building: BuildingData = {
       kind: 'partition',
       glass: 'tinted',
       openings: [
-        { id: 'SL-P-DRESS', type: 'slider', at: [150, 3000], head: 2100, label: 'Tinted glass end to end — two 1388 bypass leaves on a double track, no pocket' },
+        { id: 'SL-P-DRESS', type: 'slider', at: [150, 3000], head: 2100, label: 'Tinted glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line' },
       ],
       label: "Parents' dressing partition",
     },
@@ -734,7 +734,7 @@ export const building: BuildingData = {
     { id: 'R-VOID-W', name: 'Retained deck void (west)', anchor: { x: 8300, y: 1900 }, category: 'void', zone: 'core', carpet: false, finish: 'Open void', notes: 'Retained builder void, 1615 × 1420. The west deck recliner backs on to it.' },
     { id: 'R-VOID-E', name: 'Retained deck void (east)', anchor: { x: 16180, y: 1900 }, category: 'void', zone: 'core', carpet: false, finish: 'Open void', notes: 'Retained builder void, 1615 × 1420. The east deck recliner backs on to it.' },
     { id: 'R-P-SUITE', name: 'Master suite — parents', anchor: { x: 1500, y: 3500 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 206, notes: 'Bed zone north of the tinted-glass partition; opens full-width to the terrace. The bath’s arch stands in its south-east corner with a full-height cupboard curled round it; the study desk is back in the north-east corner.' },
-    { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 108, notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — behind a partition of brown tinted glass end to end, two bypass leaves.' },
+    { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 108, notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — behind a partition of brown tinted glass end to end, three bypass leaves that stack into a third of it.' },
     { id: 'R-P-BATH', name: "Parents' bath", anchor: { x: 3550, y: 5700 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 53, notes: 'The north half of the cubicle, under the arch: curved vanity, WC on the duct wall, 900 walk-in shower; its own door from the bed zone. The folding divider on its south side opens it into the grandmother’s bath.' },
     { id: 'R-G-BATH', name: "Grandmother's bath", anchor: { x: 3350, y: 8300 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 48, notes: 'The south half of the cubicle, off her zone: WC, walk-in shower, her own basin — not shared with the parents. One bath with theirs when the divider is folded.' },
     { id: 'R-K-SUITE', name: 'Master suite — Karan', anchor: { x: 22980, y: 3500 }, category: 'habitable', zone: 'karan', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'The king bed, headboard window-jamb to window-jamb; the dressing zone south of the screen, with two hanging wardrobes and the dresser.' },

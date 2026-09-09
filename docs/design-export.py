@@ -251,7 +251,7 @@ WALLS += [
 WALLS += [
     w('W-P-DRESS', [(-600, 5935), (2400, 5935)], 120, 'partition',
       [op('SL-P-DRESS', 'slider', 150, 3000, head=2100,
-          label='Tinted glass end to end — two 1388 bypass leaves on a double track, no pocket')],
+          label='Tinted glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line')],
       label="Parents' dressing partition", glass='tinted'),
     # Karan's side has NO partition on this line: his suite runs from the terrace
     # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on
@@ -449,7 +449,7 @@ ROOMS = [
      'cupboard curled round it; the study desk is back in the north-east corner.'),
     ('R-P-DRESSING', "Parents' dressing", (1200, 8000), 'circulation', 'parents', True,
      'Oak plank', 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — '
-     'behind a partition of brown tinted glass end to end, two bypass leaves.'),
+     'behind a partition of brown tinted glass end to end, three bypass leaves that stack into a third of it.'),
     ('R-P-BATH', "Parents' bath", (3550, 5700), 'wet', 'parents', True,
      'Stone', 'The north half of the cubicle, under the arch: curved vanity, WC on the '
      'duct wall, 900 walk-in shower; its own door from the bed zone. The folding '

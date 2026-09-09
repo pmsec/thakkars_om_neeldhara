@@ -933,18 +933,58 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // A loft is a built deck, not joinery: plastered like the ceiling it hangs
       // from, with a walnut fascia along its open edges
       const loft = /loft/i.test(f.label)
-      // a loft's fascia band and its body used to share the same outline over the
-      // same 120 mm of height: two faces on one plane, which flickered
-      const body = polyPiece(f.poly, loft ? lift + 120 : lift, lift + h, loft ? M.loftPlaster : M.timber, f.room)
-      if (body) g.add(body)
       if (loft) {
-        // the room's lights hang from the ceiling above the deck; in reality the
-        // loft carries its own lamps, so the deck must not shadow the room below
-        body?.traverse((o) => { o.castShadow = false })
-        const fascia = polyPiece(f.poly, lift - 2, lift + 120, M.walnut, f.room)
-        if (fascia) { fascia.traverse((o) => { o.castShadow = false }); g.add(fascia) }
+        // a storage loft is a run of cabinets up under the ceiling: a pale teak
+        // carcass, and on every edge of its outline that faces the room a row
+        // of doors with a brass pull low on each, where a hand on a step reaches
+        const body = polyPiece(f.poly, lift, lift + h, M.teak, f.room)
+        if (body) { body.traverse((o) => { o.castShadow = false }); g.add(body) }
+        const clear = (q: { x: number; y: number }): boolean => {
+          let best = Infinity
+          for (const wl of model.walls) {
+            if (wl.thickness < 60) continue
+            for (let i = 1; i < wl.points.length; i++) {
+              const a = wl.points[i - 1], b = wl.points[i]
+              const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+              const t = L2 ? Math.max(0, Math.min(1, ((q.x - a.x) * (b.x - a.x) + (q.y - a.y) * (b.y - a.y)) / L2)) : 0
+              best = Math.min(best, Math.hypot(q.x - (a.x + t * (b.x - a.x)), q.y - (a.y + t * (b.y - a.y))) - wl.thickness / 2)
+            }
+          }
+          return best > 90
+        }
+        const pts = f.poly
+        const pcx = pts.reduce((t, q) => t + q.x, 0) / pts.length, pcy = pts.reduce((t, q) => t + q.y, 0) / pts.length
+        const DT = 20, DH = h - 50
+        for (let i = 0; i < pts.length; i++) {
+          const a = pts[i], b = pts[(i + 1) % pts.length]
+          const L = Math.hypot(b.x - a.x, b.y - a.y)
+          if (L < 300) continue
+          const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+          if (!clear(mid)) continue
+          let nx = -(b.y - a.y) / L, ny = (b.x - a.x) / L
+          if ((pcx - mid.x) * nx + (pcy - mid.y) * ny > 0) { nx = -nx; ny = -ny }     // outward
+          const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L
+          const ang = -Math.atan2(uy, ux)
+          const n = Math.max(1, Math.round(L / 500))
+          const leaf = L / n
+          const put = (along: number, out: number, hh: number, m: THREE.Mesh) => {
+            m.position.set((a.x + ux * along + nx * out) * S, hh * S, (a.y + uy * along + ny * out) * S)
+            m.rotation.y = ang
+            g.add(m)
+          }
+          for (let k = 0; k < n; k++) {
+            const c = (k + 0.5) * leaf
+            put(c, 12, lift + 25 + DH / 2, box(leaf - 6, DH, DT, M.teak))
+            if (k) put(k * leaf, 14, lift + 25 + DH / 2, box(6, DH - 8, 8, M.trunk))
+            // the pull: a short brass bar low on the door, near its leading edge
+            put(c + (k % 2 ? -1 : 1) * (leaf / 2 - 90), 25, lift + 110, box(110, 12, 10, M.brass))
+          }
+          put(L / 2, 8, lift + 12, box(L, 14, 12, M.trunk))          // the shadow line under the doors
+        }
         return g
       }
+      const body = polyPiece(f.poly, lift, lift + h, M.timber, f.room)
+      if (body) g.add(body)
       const alongX = w >= d
       const n = Math.max(1, Math.round(Math.max(w, d) / 450))
       for (let i = 1; i < n; i++) {

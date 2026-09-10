@@ -598,14 +598,17 @@ NEW_WALLS = [
     # wall. Closed, the arm is a room; open, the whole 2700 (8'-10") of it is
     # living room again — there is nothing fixed left in the way.
     # A BI-FOLD, NOT A SLIDER (Karan's call, after the balcony door): three
-    # timber leaves of 900 (2'-11") to the ceiling, flush in one plane shut,
-    # folding back on to the living-room side and stacking at the SOUTH jamb
-    # - the wall on your left as you face the screen from the room. Still
-    # typed 'slider' so the sheet draws the line it always did.
+    # timber leaves of 900 (2'-11") to the ceiling, flush in one plane shut.
+    # Open, they fold INTO THE ROOM and stack at the SOUTH jamb, where the
+    # bath's north wall runs east from the corner - so the folded stack lies
+    # along that wall inside the room, and the living room's side of the line
+    # stays clear. Still typed 'slider' so the sheet draws the line it always
+    # did.
     (ARM_X, ARM_N, ARM_X, ARM_S, 125,
      [('slider', ARM_N + ARM_REVEAL, ARM_S - ARM_REVEAL, 0, 3050, +1,
        "folding screen — three timber leaves of 900 (2'-11\"), full height, "
-       'folding on to the living-room side and stacking at the south jamb')],
+       'folding on to the room side and stacking at the south jamb, flat '
+       'along the bath wall inside the room')],
      'partition', 'W-ARM', 'room | living — the sliding screen', 0),
 
     # --- the south-east bath: one wall, round the column

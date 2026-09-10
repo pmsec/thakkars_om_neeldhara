@@ -2784,7 +2784,6 @@ type ArtSpot = { x: number; y: number; nx: number; ny: number; w: number; seed: 
 // (x, y) on the wall's face, (nx, ny) into the room, the canvas's width and a seed - per home
 const ART_SPOTS: Record<string, ArtSpot[]> = {
   'om-neeldhara': [
-    { x: 5700, y: 8400, nx: 0, ny: -1, w: 900, seed: 11 },      // family room, south wall
     { x: 18300, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall over the kit; the guitars hang west of it
     { x: 20900, y: 1350, nx: 0, ny: 1, w: 800, seed: 37 },      // Karan's suite, over the plant table
     { x: 14450, y: 8400, nx: 0, ny: -1, w: 700, seed: 41 },     // great room, between the drum and the WC door

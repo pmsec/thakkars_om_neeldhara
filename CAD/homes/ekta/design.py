@@ -1296,6 +1296,11 @@ ARM_DRESS_TOP = _round_rect(*ARM_DRESS, (30, 30, 200, 200))
 # wardrobe door over a daybed opens onto the cushions.
 ARM_WARD = (11470.0 - 600.0, 5400.0, 11470.0, ARM_DAY_N)
 
+# A CONSOLE ON THE EAST WALL SOUTH OF THE BED (Karan's call): 1200 x 400 with
+# doors and a drawer, 200 (8") off the bed's foot-side edge at 2630 and well
+# short of the wardrobes at 5400. The bedside pendant hangs over its north end.
+CONSOLE_ROOM = (11470.0 - 400.0, 2830.0, 11470.0, 4030.0)
+
 # THE TIMBER FRAME OVER THE DAYBED (Karan's call). A teak frame the width of
 # the tail, wall to wall: a fin at the daybed's west end on the bath wall's
 # line, a matching panel on the east wall, and a slim band along the ceiling
@@ -1312,8 +1317,14 @@ ARCH_PANEL_E = (11470.0 - 40.0, 8355.0 - ARCH_D, 11470.0, 8355.0)
 FURNITURE += [
     ('bed', *ARM_BED,
      "king — 1830 x 2000 (6'-0\" x 6'-7\"), head on the blind party wall, "
-     "945 (3'-1\") at the foot and both sides open",
+     "945 (3'-1\") at the foot and both sides open; a hydraulic lift-up base "
+     'over storage, hinged at the head',
      'R-ROOM', 600, None, False, 'W'),      # the sleeper looks west, to the foot
+    ('console', *CONSOLE_ROOM,
+     f"console cabinet — {CONSOLE_ROOM[3] - CONSOLE_ROOM[1]:.0f} x 400 "
+     f"({_ft(CONSOLE_ROOM[3] - CONSOLE_ROOM[1])} x 1'-4\") on the east wall "
+     'south of the bed: two doors, a drawer across the top, things on it',
+     'R-ROOM', 800),
     ('wardrobe', *ARM_WARD,
      f"wardrobes — 600 x {ARM_WARD[3] - ARM_WARD[1]:.0f} (2'-0\" x "
      f"{_ft(ARM_WARD[3] - ARM_WARD[1])}) down the party wall, stopping where "

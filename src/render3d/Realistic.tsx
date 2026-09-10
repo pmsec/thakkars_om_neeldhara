@@ -5389,6 +5389,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   // the interactive pieces in front of you, each with where it sits on screen
   type NearPiece = { id: string; sx: number; sy: number; w: number; h: number }   // screen place, and the view's size then
   const [nearItems, setNearItems] = useState<NearPiece[]>([])
+  // the touch buttons are off until asked for (Karan's call): they get in the
+  // way of the room, so a small switch at the bottom right shows them
+  const [showTouch, setShowTouch] = useState(false)
   const nearRef = useRef<string>('')
   const touch = isTouchDevice()
   const touchRef = useRef<TouchWalk | null>(null)
@@ -6107,7 +6110,28 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           )}
         </div>
       )}
-      {nearItems.length > 0 && (() => {
+      <button
+        onClick={() => setShowTouch((v) => !v)}
+        title={showTouch ? 'Hide the touch buttons' : 'Show the touch buttons for the pieces in front of you'}
+        aria-label={showTouch ? 'Hide the touch buttons' : 'Show the touch buttons'}
+        aria-pressed={showTouch}
+        style={{
+          // the right edge, in the column with the EYE rail above and Walk below
+          position: 'absolute', right: 14, bottom: 64,
+          width: 44, height: 44, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: showTouch ? '#2b4a52' : 'rgba(250,248,244,0.92)', color: showTouch ? '#f3ecdd' : '#1e1c18',
+          border: '1px solid #d5cdbb', borderRadius: 22, cursor: 'pointer', zIndex: 6,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+        }}
+      >
+        {/* the fingertip, struck through while the buttons are hidden */}
+        <svg width="24" height="24" viewBox="0 0 30 30" aria-hidden="true">
+          <circle cx="12" cy="10" r="7.5" fill="none" stroke="currentColor" strokeWidth="1.4" opacity="0.45" />
+          <path d="M12 10.5v9.5l-2.6-2.2c-.9-.7-2.2-.5-2.8.5-.4.7-.3 1.5.3 2.1l4.2 4.6c.7.8 1.7 1.2 2.8 1.2h4.4c2 0 3.7-1.6 3.7-3.6v-4.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-1.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-.9c0-1-.8-1.8-1.8-1.8s-1.7.8-1.7 1.8V10.5c0-1-.7-1.8-1.6-1.8s-1.5.8-1.5 1.8z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+          {!showTouch && <path d="M4 26L26 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />}
+        </svg>
+      </button>
+      {showTouch && nearItems.length > 0 && (() => {
         // what each piece is, and which way it is
         const describe = (id: string) => {
           const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? (id.startsWith('liftbed') ? false : !doorsShut))
@@ -6138,19 +6162,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           border: '1px solid #d5cdbb', borderRadius: 28, cursor: 'pointer', zIndex: 6,
           boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
         } as const
-        if (nearItems.length === 1) {
-          // one piece: the button at the right edge, in the column with the EYE rail above and Walk below
-          const id = nearItems[0].id
-          const { verb } = describe(id)
-          return (
-            <button onClick={() => { diag.log(`button ${id}`); toggleItemRef.current(id) }} title={verb} aria-label={verb}
-              style={{ ...face, position: 'absolute', right: 14, bottom: 64 }}>
-              {icon}
-            </button>
-          )
-        }
-        // several: a button OVER each piece, with its name under it, so each
-        // works the one it sits on
+        // a button OVER each piece, with its name under it, so each works the
+        // one it sits on
         return nearItems.map((it) => {
           const { noun, verb } = describe(it.id)
           const left = Math.max(8, Math.min(it.w - 64, it.sx - 28))

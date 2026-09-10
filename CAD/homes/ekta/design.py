@@ -552,9 +552,15 @@ NEW_WALLS = [
 
     # --- the north-west quarter
     (BED_E, KTOP, BED_E, BED_S, 150,
-     # -1: the leaf swings into the BEDROOM. A 1180-wide bath has nowhere
-     # to put it.
-     [('door', BED_BATH_DOOR[0], BED_BATH_DOOR[1], 0, 2100, -1)],
+     # A SLIDER, NOT A LEAF. Swung into the bedroom the leaf's arc reached
+     # x 2300 and the Murphy bed, down, reaches 2460 - the door could not
+     # open with the bed out. Into the bath there is a WC in the way. So one
+     # timber panel slides on the BEDROOM face and parks south over the wall
+     # (the north is the desk's stretch), and neither room gives up anything.
+     [('slider', BED_BATH_DOOR[0], BED_BATH_DOOR[1], 0, 2100, -1,
+       'the bath door — one timber panel sliding on the bedroom face, '
+       'parking south over the wall: a leaf swinging into the room lands on '
+       'the Murphy bed when it is down')],
      'partition', 'W-BED-E',
      'bedroom | bath', 0),
     (NW_A[0], NW_A[1], NW_B[0], NW_B[1], 150,
@@ -1189,7 +1195,8 @@ _ty = [q[1] for q in BATH_SHOWER]
 FURNITURE += [
     ('screen', min(_tx), min(_ty), max(_tx), max(_ty),
      f"shower — triangular corner tray, {BATH_TRI:.0f} ({_ft(BATH_TRI)}) legs, "
-     "off column 3's east face and down to where it ends, under the window",
+     "off column 3's east face and down to where it ends, under the window; "
+     'no screen, the head on the west wall',
      'R-BATH', 2100, BATH_SHOWER),
     ('console', BATH_E - 200.0, BATH_WC[1], BATH_E, BATH_WC[3],
      f"WC cistern — {BATH_WC_W:.0f} ({_ft(BATH_WC_W)}) wide against the east "
@@ -1531,32 +1538,38 @@ FURNITURE += [
 # you cannot reach into it. On the wall it is 640 of floor instead, and the
 # route from the front door up the west side to the bedroom keeps its width.
 #
-# THE NORTH ARM CAN BE A CONVENTIONAL RECLINER, unlike the one on the bath
-# wall: its back is free-standing with the whole width of the room behind it,
-# so it has the 400 (1'-4") to lean into that a wall-hugger mechanism exists
-# to avoid needing.
+# THE NORTH ARM IS THE L'S CHAISE (Karan's call, after the Kivik): the diwan's
+# seat carried round the corner - back on the west wall in line with the
+# diwan's, an arm on its north side, open on the south where it meets the
+# diwan, and 1500 (4'-11") long to lie back on. It was a two-seater recliner
+# facing south, which in the walkthrough read as a loose cushion butted
+# against the diwan's end.
 LIV_W = 2145.0 + 150.0          # the west wall's inner face
 
-REC2_D = 950.0
-REC2 = (LIV_W, 5700.0, LIV_W + 1500.0, 5700.0 + REC2_D)
+CHAISE_D = 950.0
+CHAISE = (LIV_W, 5700.0, LIV_W + 1500.0, 5700.0 + CHAISE_D)
 DIWAN_D, DIWAN_L = 900.0, 1900.0
-DIWAN = (LIV_W, REC2[3], LIV_W + DIWAN_D, REC2[3] + DIWAN_L)
+DIWAN = (LIV_W, CHAISE[3], LIV_W + DIWAN_D, CHAISE[3] + DIWAN_L)
 
-_r2_x0, _r2_x1 = REC2[0] + SOFA2_ARM, REC2[2] - SOFA2_ARM
-_r2_y0, _r2_y1 = REC2[1] + SOFA2_BACK, REC2[3] - 60.0
-_r2_mid = (_r2_x0 + _r2_x1) / 2
+# THE CONSOLE at the diwan's south end, in place of the floor lamp (Karan's
+# call): 1000 x 400 (3'-3" x 1'-4") on the west wall between the diwan and
+# the foyer's corner at 9700, doors below and a drawer across the top, things
+# on it. 60 (2") off the diwan, 90 (4") short of the corner.
+CONSOLE_LIV = (LIV_W, DIWAN[3] + 60.0, LIV_W + 400.0, DIWAN[3] + 60.0 + 1000.0)
 
 FURNITURE += [
-    ('sofa', *REC2,
-     f"two-seater recliner — {REC2[2] - REC2[0]:.0f} x {REC2_D:.0f} "
-     f"({_ft(REC2[2] - REC2[0])} x {_ft(REC2_D)}), facing south. Its back is "
-     'free-standing, so this one can be a conventional action',
-     'R-LIVING-DINING', 850, _round_rect(*REC2, (50, 50, 140, 140))),
-] + [
-    ('sofa', a, _r2_y0, b, _r2_y1,
-     f"seat — {b - a:.0f} ({_ft(b - a)}) wide",
-     'R-LIVING-DINING', 420, _round_rect(a, _r2_y0, b, _r2_y1, (30, 30, 110, 110)))
-    for a, b in [(_r2_x0, _r2_mid - 18.0), (_r2_mid + 18.0, _r2_x1)]
+    ('sofa', *CHAISE,
+     f"chaise — {CHAISE[2] - CHAISE[0]:.0f} x {CHAISE_D:.0f} "
+     f"({_ft(CHAISE[2] - CHAISE[0])} x {_ft(CHAISE_D)}), the L's lounger at the "
+     "diwan's north end: back on the west wall, arm on the north side, open "
+     'to the south',
+     'R-LIVING-DINING', 850, _round_rect(*CHAISE, (50, 140, 140, 50))),
+    ('console', *CONSOLE_LIV,
+     f"console cabinet — {CONSOLE_LIV[3] - CONSOLE_LIV[1]:.0f} x 400 "
+     f"({_ft(CONSOLE_LIV[3] - CONSOLE_LIV[1])} x 1'-4\") on the west wall "
+     "between the diwan and the foyer: two doors, a drawer across the top, "
+     'things on it',
+     'R-LIVING-DINING', 800),
 ] + [
     ('daybed', *DIWAN,
      f"diwan — {DIWAN_L:.0f} x {DIWAN_D:.0f} ({_ft(DIWAN_L)} x "

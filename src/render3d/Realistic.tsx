@@ -1375,6 +1375,32 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         place(g, cx, cy)
         return g
       }
+      if (/lift-up/i.test(f.label)) {
+        // THE STORAGE BED: the frame is a box open at the top (the platform
+        // and mattress are the lid, drawn with the doors in both states), and
+        // in it the things a bedroom keeps under a bed
+        const T = 40, SIDE = 230
+        g.add(box(w, 60, d, M.timber, 0, 30, 0))                                     // the floor
+        g.add(box(w, SIDE, T, M.timber, 0, SIDE / 2, -d / 2 + T / 2))
+        g.add(box(w, SIDE, T, M.timber, 0, SIDE / 2, d / 2 - T / 2))
+        g.add(box(T, SIDE, d, M.timber, -w / 2 + T / 2, SIDE / 2, 0))
+        g.add(box(T, SIDE, d, M.timber, w / 2 - T / 2, SIDE / 2, 0))
+        const fl = 60
+        const ew = f.face === 'E' || f.face === 'W'
+        // folded duvets and blankets in a row, a suitcase, two baskets
+        for (const [i, m] of [M.duvet, M.pillow, M.throw, M.duvet].entries()) {
+          const u = -(ew ? w : d) / 2 + 260 + i * 330
+          g.add(box(ew ? 300 : 520, 120, ew ? 520 : 300, m, ew ? u : -180, fl + 60, ew ? -180 : u))
+        }
+        g.add(box(ew ? 520 : 360, 150, ew ? 360 : 520, M.graphite, ew ? (w / 2 - 420) : 0, fl + 75, ew ? 300 : (d / 2 - 420)))
+        for (const k of [0, 1]) {
+          const basket = new THREE.Mesh(new THREE.CylinderGeometry(150 * S, 130 * S, 140 * S, 16), M.fabric)
+          basket.position.set((ew ? -(w / 2) + 300 + k * 340 : 320) * S, (fl + 70) * S, (ew ? 320 : -(d / 2) + 300 + k * 340) * S)
+          g.add(basket)
+        }
+        place(g, cx, cy)
+        return g
+      }
       if (f.poly) {
         // the drawn silhouette — rounded foot corners survive to 3D
         g.add(basePrism(f.poly, 0, 260, M.timber))
@@ -2456,11 +2482,14 @@ function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
 function liftBeds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   for (const f of furniture) {
-    if (f.kind !== 'daybed' || !/lift-up/i.test(f.label)) continue
+    if ((f.kind !== 'daybed' && f.kind !== 'bed') || !/lift-up/i.test(f.label)) continue
+    const isBed = f.kind === 'bed'
     const w = f.w, d = f.d, cx = f.x + w / 2, cy = f.y + d / 2
-    const H = Math.min(f.height, 460)
+    const H = isBed ? 260 : Math.min(f.height, 460)                  // the top of the lid's timber
     const gaps = wallGaps(f)
-    const hinge = (['N', 'S', 'E', 'W'] as const).reduce((b, s) => (gaps[s] < gaps[b] ? s : b), 'S' as 'N' | 'S' | 'E' | 'W')
+    // a bed hinges at its head (the way the sleeper looks is toward the foot); a daybed on its wall side
+    const opp = (s: 'N' | 'S' | 'E' | 'W') => (s === 'N' ? 'S' : s === 'S' ? 'N' : s === 'E' ? 'W' : 'E')
+    const hinge = isBed && f.face ? opp(f.face) : (['N', 'S', 'E', 'W'] as const).reduce((b, s) => (gaps[s] < gaps[b] ? s : b), 'S' as 'N' | 'S' | 'E' | 'W')
     const hv = hinge === 'N' ? { x: 0, z: -1 } : hinge === 'S' ? { x: 0, z: 1 } : hinge === 'E' ? { x: 1, z: 0 } : { x: -1, z: 0 }
     const along = hinge === 'N' || hinge === 'S'            // the hinge runs along x
     const span = along ? w : d                              // the lid's length along the hinge
@@ -2472,9 +2501,23 @@ function liftBeds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       m.position.set((along ? u : -hv.x * out) * S, h * S, (along ? -hv.z * out : u) * S)
       lid.add(m)
     }
-    at(box(along ? span - 4 : reach - 4, 30, along ? reach - 4 : span - 4, M.wallWood), reach / 2, 15)          // the timber lid
-    at(box(along ? span - 140 : reach - 140, 70, along ? reach - 140 : span - 140, M.duvet), reach / 2, 65)   // the mattress
-    if (mode === 'shut') {
+    at(box(along ? span - 4 : reach - 4, 30, along ? reach - 4 : span - 4, isBed ? M.timber : M.wallWood), reach / 2, 15)   // the timber lid
+    if (isBed) {
+      at(box(along ? span - 60 : reach - 60, 210, along ? reach - 60 : span - 60, M.duvet), reach / 2, 30 + 105)       // mattress and duvet
+      at(box(along ? span - 200 : 380, 70, along ? 380 : span - 200, M.throw), reach - 330, 30 + 210 + 35)            // the throw at the foot
+      const pw = Math.min(560, span / 2 - 80)
+      for (const e of [-1, 1]) at(box(along ? pw : 420, 140, along ? 420 : pw, M.pillow), 260, 30 + 210 + 70, e * (pw / 2 + 40))
+    } else {
+      at(box(along ? span - 140 : reach - 140, 70, along ? reach - 140 : span - 140, M.duvet), reach / 2, 65)   // the mattress
+    }
+    if (isBed) {
+      if (mode === 'open') for (const u of [-span / 2 + 250, span / 2 - 250]) {
+        const rod = new THREE.Mesh(new THREE.CylinderGeometry(10 * S, 10 * S, (reach * 0.42) * S, 8), M.chrome)
+        rod.rotation.z = along ? 0 : -0.7
+        rod.rotation.x = along ? hv.z * 0.7 : 0
+        at(rod, reach * 0.22, -reach * 0.06, u)
+      }
+    } else if (mode === 'shut') {
       const n = Math.max(2, Math.round(span / 600))
       for (let i = 0; i < n; i++) {
         const u = -span / 2 + (i + 0.5) * (span / n)
@@ -2495,7 +2538,7 @@ function liftBeds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
     // the hinge line: the box's top edge on the wall side; up is the sign that
     // lifts the far edge (Rx turns -z up for a positive angle, Rz turns -x up)
     lid.position.set((cx + hv.x * (reach / 2)) * S, (H - 30) * S, (cy + hv.z * (reach / 2)) * S)
-    if (mode === 'open') lid.rotation[along ? 'x' : 'z'] = (along ? hv.z : -hv.x) * (65 * Math.PI / 180)
+    if (mode === 'open') lid.rotation[along ? 'x' : 'z'] = (along ? hv.z : -hv.x) * ((isBed ? 42 : 65) * Math.PI / 180)
     tagItem(lid, `liftbed:${f.id}`, mode, [
       { x: cx - hv.x * (reach / 2 + 350), y: cy - hv.z * (reach / 2 + 350), h: 900 },
     ])
@@ -5793,7 +5836,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
           : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
           : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
-          : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the toy store')
+          : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the storage')
           : `${open ? 'Shut' : 'Open'} this ${noun}`
         return (
           <button

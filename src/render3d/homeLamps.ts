@@ -55,6 +55,8 @@ export type LampSpot =
   | { kind: 'trellis'; x: number; y0: number; y1: number; nx: number; h0: number; h1: number }
   /** a wall-mounted microwave: its back on the face at (x, y), door toward (nx, ny), w wide, base at h0 */
   | { kind: 'microwave'; x: number; y: number; nx: number; ny: number; w: number; h0: number; depth: number }
+  /** a wall-mounted teak mandir: its back on the face at (x, y), open toward (nx, ny), w wide, its shelf at h0 */
+  | { kind: 'mandir'; x: number; y: number; nx: number; ny: number; w: number; h0: number }
 
 export const LAMP_SPOTS: Record<string, LampSpot[]> = {
   ekta: [
@@ -68,6 +70,9 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     { kind: 'pendant', x: 1380, y: 10300, h: 2100, r: 140 },
     // the kitchen: a walnut bar light over the worktop's north run
     { kind: 'bar', x: 6100, y: 920, h: 1950, len: 1400, alongX: true },
+    // the living room's east wall, between the small canvas and the balcony
+    // corner: a wall-mounted teak mandir (Karan's call), shelf at 1050
+    { kind: 'mandir', x: 6800, y: 10250, nx: -1, ny: 0, w: 600, h0: 1050 },
     // the living room's west wall: a sconce either side of the canvas over the diwan
     { kind: 'sconce', x: 2295, y: 6850, h: 1750, nx: 1, ny: 0 },
     { kind: 'sconce', x: 2295, y: 8350, h: 1750, nx: 1, ny: 0 },
@@ -439,6 +444,94 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
       at(-sp.w * 0.42, sp.depth + 12, sp.h0 + H / 2, box(10, H - 90, 12, M.chrome, 0, 0, 0))   // the handle
       // the bracket under it, on the wall
       at(0, 30, sp.h0 - 20, box(sp.w - 80, 40, 60, M.graphite, 0, 0, 0))
+      continue
+    }
+    if (sp.kind === 'mandir') {
+      // A WALL-MOUNTED TEAK MANDIR: a carved-look back panel on the wall, a
+      // shelf on two brackets, turned pillars either side carrying a stepped
+      // shikhara with a brass kalash, a bell on a chain, a diya and a thali
+      // on the shelf, and a small brass idol under a warm light
+      const yaw = Math.atan2(sp.nx, sp.ny)
+      const W = sp.w, D = 400, H0 = sp.h0
+      const ux = sp.ny, uy = -sp.nx
+      const at = (side: number, out: number, h: number, m: THREE.Object3D) => {
+        m.position.set((sp.x + ux * side + sp.nx * out) * S, h * S, (sp.y + uy * side + sp.ny * out) * S)
+        m.rotation.y = yaw
+        m.castShadow = true
+        g.add(m)
+      }
+      const brass = M.brass, teak = M.teak, walnut = M.walnut
+      // the back panel, with a walnut arch frame inlaid on it
+      at(0, 10, H0 + 480, box(W, 960, 20, teak, 0, 0, 0))
+      at(0, 22, H0 + 250, box(W - 120, 20, 6, walnut, 0, 0, 0))                    // the arch's springing rail
+      for (const e of [-1, 1]) at(e * (W / 2 - 60), 22, H0 + 470, box(20, 460, 6, walnut, 0, 0, 0))   // its two uprights
+      const arch = new THREE.Mesh(new THREE.TorusGeometry(((W - 120) / 2) * S, 10 * S, 8, 28, Math.PI), walnut)
+      at(0, 22, H0 + 700, arch)
+      // the shelf on two brackets, a lip along its front
+      at(0, D / 2, H0 + 25, box(W, 50, D, teak, 0, 0, 0))
+      at(0, D - 10, H0 + 62, box(W, 24, 20, walnut, 0, 0, 0))
+      for (const e of [-1, 1]) {
+        const br = box(40, 160, D - 60, walnut, 0, 0, 0)
+        at(e * (W / 2 - 40), (D - 60) / 2, H0 - 80, br)
+      }
+      // the pillars, turned: a shaft with a collar top and bottom
+      for (const e of [-1, 1]) {
+        const shaft = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 26 * S, 780 * S, 12), teak)
+        at(e * (W / 2 - 34), D - 50, H0 + 50 + 390, shaft)
+        for (const h of [H0 + 70, H0 + 810]) {
+          const collar = new THREE.Mesh(new THREE.CylinderGeometry(34 * S, 34 * S, 24 * S, 12), walnut)
+          at(e * (W / 2 - 34), D - 50, h, collar)
+        }
+      }
+      // the canopy: a cornice, then the shikhara's three tiers, a dome and a kalash
+      at(0, D / 2, H0 + 850, box(W + 40, 36, D + 20, walnut, 0, 0, 0))
+      at(0, D / 2, H0 + 895, box(W, 54, D, teak, 0, 0, 0))
+      at(0, D / 2, H0 + 945, box(W * 0.76, 46, D * 0.76, teak, 0, 0, 0))
+      at(0, D / 2, H0 + 988, box(W * 0.52, 40, D * 0.52, teak, 0, 0, 0))
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(95 * S, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2), teak)
+      at(0, D / 2, H0 + 1008, dome)
+      const kalash = new THREE.Mesh(new THREE.SphereGeometry(30 * S, 12, 10), brass)
+      at(0, D / 2, H0 + 1120, kalash)
+      const spire = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 12 * S, 70 * S, 8), brass)
+      at(0, D / 2, H0 + 1170, spire)
+      // the bell on its chain, to the right under the cornice
+      const chain = new THREE.Mesh(new THREE.CylinderGeometry(2.5 * S, 2.5 * S, 120 * S, 6), brass)
+      at(W / 2 - 100, D - 90, H0 + 772, chain)
+      const bell = new THREE.Mesh(new THREE.CylinderGeometry(18 * S, 42 * S, 64 * S, 14), brass)
+      at(W / 2 - 100, D - 90, H0 + 680, bell)
+      // on the shelf: a diya with its flame on the left, a thali on the right
+      const diya = new THREE.Mesh(new THREE.CylinderGeometry(26 * S, 20 * S, 14 * S, 12), brass)
+      at(-W / 2 + 110, D - 90, H0 + 57, diya)
+      const flame = new THREE.Mesh(new THREE.SphereGeometry(9 * S, 8, 6), M.lamp)
+      flame.scale.set(0.7, 1.6, 0.7)
+      at(-W / 2 + 110, D - 90, H0 + 78, flame)
+      const thali = new THREE.Mesh(new THREE.CylinderGeometry(62 * S, 62 * S, 6 * S, 20), brass)
+      at(W / 2 - 130, D - 110, H0 + 53, thali)
+      // the idol: a small seated brass figure on a lotus, under the arch
+      const idol = new THREE.Group()
+      const sph = (r: number, sx = 1, sy = 1, sz = 1, dx = 0, h = 0, dz = 0) => {
+        const m = new THREE.Mesh(new THREE.SphereGeometry(r * S, 14, 10), M.idol)
+        m.scale.set(sx, sy, sz); m.position.set(dx * S, h * S, dz * S); m.castShadow = true; idol.add(m)
+      }
+      const cyl = (r0: number, r1: number, h: number, dx: number, y: number, dz: number, seg = 14) => {
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r0 * S, r1 * S, h * S, seg), M.idol)
+        m.position.set(dx * S, y * S, dz * S); idol.add(m)
+      }
+      cyl(190, 210, 30, 0, 15, 0, 24)
+      cyl(150, 175, 40, 0, 50, 0, 24)
+      for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; sph(34, 1, 0.5, 1.6, Math.cos(a) * 170, 62, Math.sin(a) * 170) }
+      sph(150, 1, 0.42, 0.85, 0, 100, 0)
+      sph(95, 0.95, 1.25, 0.72, 0, 235, -10)
+      sph(60, 1.9, 0.55, 0.8, 0, 335, -10)
+      for (const sx of [-1, 1]) { sph(26, 1, 1, 1, sx * 60, 170, 105); sph(24, 1, 3.6, 1, sx * 105, 250, 35) }
+      sph(58, 0.9, 1, 0.9, 0, 425, -5)
+      cyl(28, 46, 80, 0, 500, -5, 12)
+      sph(22, 1, 1, 1, 0, 548, -5)
+      idol.scale.setScalar(0.42)
+      at(0, D / 2 + 10, H0 + 50, idol)
+      // a warm light under the canopy
+      const glow = new THREE.PointLight(0xffd9a0, 0.5, 1.6, 1.8)
+      at(0, D / 2, H0 + 800, glow)
       continue
     }
     if (sp.kind === 'headboard') {

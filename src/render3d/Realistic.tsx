@@ -5704,19 +5704,55 @@ export function buildFixtures(M: Mats): THREE.Group {
       const pipe = box(along ? 18 : d / 2, 18, along ? d / 2 : 18, M.chrome)
       pipe.position.set((cx + vx * d / 4) * S, (RIM - 310) * S, (cy + vz * d / 4) * S)
       g.add(pipe)
-      const MW = w + 250, MH = 800
+      // THE MIRROR keeps to the wall it hangs on: as wide as the basin and a
+      // bit, but never past a door or window jamb or the wall's end - the
+      // grandmother's ran 150 over her door. It may slide up to 120 along the
+      // wall to find room, and shrinks after that
       const mx = cx + vx * (w / 2 - 14), mz = cy + vz * (d / 2 - 14)
+      let MW = w + 250
+      const MH = 800
+      let mc = along ? cx : cy                                   // the mirror's centre along the wall
+      {
+        const bx = cx + vx * (w / 2 + 40), by = cy + vz * (d / 2 + 40)      // a point inside the wall behind
+        for (const wl of model.walls) {
+          if (wl.thickness < 60 || wl.points.length !== 2) continue
+          const a = wl.points[0], b = wl.points[1]
+          const L = Math.hypot(b.x - a.x, b.y - a.y)
+          if (L < 100) continue
+          const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L
+          const t = (bx - a.x) * ux + (by - a.y) * uy
+          const off = Math.abs((bx - a.x) * -uy + (by - a.y) * ux)
+          if (t < 0 || t > L || off > wl.thickness / 2 + 40) continue
+          // the free run along this wall about t: the wall's ends, and any opening's jambs
+          let lo = 0, hi = L
+          for (const op of wl.openings) {
+            if (op.to <= t) lo = Math.max(lo, op.to)
+            else if (op.from >= t) hi = Math.min(hi, op.from)
+          }
+          lo += 60; hi -= 60
+          if (hi - lo < 300) break
+          const tc = (cx - a.x) * ux + (cy - a.y) * uy                 // the basin's centre along the wall
+          MW = Math.min(MW, hi - lo)
+          let c = Math.max(lo + MW / 2, Math.min(hi - MW / 2, tc))
+          if (Math.abs(c - tc) > 120) { c = tc + Math.sign(c - tc) * 120; MW = 2 * Math.min(c - lo, hi - c) }
+          // back to plan: the centre's shift along the wall, in the axis the wall runs
+          const shift = c - tc
+          mc = (along ? cx : cy) + shift * (along ? ux : uy)
+          break
+        }
+      }
+      const fx = along ? mc : mx, fz = along ? mz : mc
       const frame = box(along ? MW + 50 : 26, MH + 50, along ? 26 : MW + 50, M.trunk)
-      frame.position.set(mx * S, 1500 * S, mz * S)
+      frame.position.set(fx * S, 1500 * S, fz * S)
       g.add(frame)
       const mirror = box(along ? MW : 10, MH, along ? 10 : MW, M.mirror)
-      mirror.position.set((mx - vx * 10) * S, 1500 * S, (mz - vz * 10) * S)
+      mirror.position.set((fx - vx * 10) * S, 1500 * S, (fz - vz * 10) * S)
       g.add(mirror)
       const lightBar = box(along ? MW * 0.7 : 60, 30, along ? 60 : MW * 0.7, M.brass)
-      lightBar.position.set((mx - vx * 40) * S, 1960 * S, (mz - vz * 40) * S)
+      lightBar.position.set((fx - vx * 40) * S, 1960 * S, (fz - vz * 40) * S)
       g.add(lightBar)
       const glow = new THREE.PointLight(0xfff0d8, 0.35, 2.0, 1.8)
-      glow.position.set((mx - vx * 120) * S, 1900 * S, (mz - vz * 120) * S)
+      glow.position.set((fx - vx * 120) * S, 1900 * S, (fz - vz * 120) * S)
       g.add(glow)
       const ring = new THREE.Mesh(new THREE.TorusGeometry(90 * S, 8 * S, 8, 24), M.chrome)
       ring.rotation.y = along ? 0 : Math.PI / 2

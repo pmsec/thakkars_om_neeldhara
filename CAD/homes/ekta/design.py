@@ -597,10 +597,15 @@ NEW_WALLS = [
     # (2'-11"), all three sliding, running north to stack against the kitchen
     # wall. Closed, the arm is a room; open, the whole 2700 (8'-10") of it is
     # living room again — there is nothing fixed left in the way.
+    # A BI-FOLD, NOT A SLIDER (Karan's call, after the balcony door): three
+    # timber leaves of 900 (2'-11") to the ceiling, flush in one plane shut,
+    # folding back on to the living-room side and stacking at the SOUTH jamb
+    # - the wall on your left as you face the screen from the room. Still
+    # typed 'slider' so the sheet draws the line it always did.
     (ARM_X, ARM_N, ARM_X, ARM_S, 125,
-     [('slider', ARM_N + ARM_REVEAL, ARM_S - ARM_REVEAL, 0, 2400, +1,
-       "sliding screen — three timber panels of 900 (2'-11\"), stacking "
-       'north against the kitchen wall')],
+     [('slider', ARM_N + ARM_REVEAL, ARM_S - ARM_REVEAL, 0, 3050, +1,
+       "folding screen — three timber leaves of 900 (2'-11\"), full height, "
+       'folding on to the living-room side and stacking at the south jamb')],
      'partition', 'W-ARM', 'room | living — the sliding screen', 0),
 
     # --- the south-east bath: one wall, round the column
@@ -992,11 +997,8 @@ FURNITURE += [
 
 # The three panels shown where they park: stacked against the kitchen wall's
 # east face, clear of the opening.
-FURNITURE.append(
-    ('screen', ARM_PARK[0][0], ARM_PARK[0][1], ARM_PARK[2][0], ARM_PARK[2][1],
-     "the sliding screen, parked — three panels of 900 (2'-11\") stacked "
-     "against the kitchen wall",
-     'R-ROOM', 2400, ARM_PARK))
+# (The parked stack of the old slider was a drawn piece against the kitchen
+# wall; the bi-fold's stack is the walkthrough's, at the south jamb.)
 
 # --------------------------------------------------------- the bedroom's three
 # A WARDROBE, A MURPHY BED AND A DESK — and between them they decide how big

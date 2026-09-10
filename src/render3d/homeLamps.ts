@@ -88,10 +88,11 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     { kind: 'loft', x: 8295, y: 970, ux: 0, uy: 1, nx: -1, ny: 0, len: 1530, h0: 2450, h1: 3000, depth: 350 },
     { kind: 'loft', x: 6435, y: 620, ux: 1, uy: 0, nx: 0, ny: 1, len: 800, h0: 1500, h1: 2440, depth: 350 },
     // the south-west corner's loft follows the curve, from the west leg's
-    // tangent round to the flat bottom's, and a wall cabinet hangs on the
-    // west leg's north pier under the loft (both Karan's call)
+    // tangent round to the flat bottom's, and a wall cabinet runs the whole
+    // straight west leg under the loft - that wall is the bath's, solid its
+    // full length (both Karan's call)
     { kind: 'loftArc', cx: 5395, cy: 2500, r: 785, a0: Math.PI / 2, a1: Math.PI, h0: 2450, h1: 3000, depth: 350, doors: 4 },
-    { kind: 'loft', x: 4610, y: 1420, ux: 0, uy: -1, nx: 1, ny: 0, len: 760, h0: 1500, h1: 2440, depth: 350 },
+    { kind: 'loft', x: 4610, y: 2460, ux: 0, uy: -1, nx: 1, ny: 0, len: 1800, h0: 1500, h1: 2440, depth: 350 },
     // and a wall-mounted microwave under that cabinet, 250 above the worktop
     { kind: 'microwave', x: 6835, y: 620, nx: 0, ny: 1, w: 520, h0: 1150, depth: 380 },
   ],

@@ -2785,7 +2785,7 @@ type ArtSpot = { x: number; y: number; nx: number; ny: number; w: number; seed: 
 const ART_SPOTS: Record<string, ArtSpot[]> = {
   'om-neeldhara': [
     { x: 5700, y: 8400, nx: 0, ny: -1, w: 900, seed: 11 },      // family room, south wall
-    { x: 18300, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall over the kit; the guitars hang east of it
+    { x: 18300, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall over the kit; the guitars hang west of it
     { x: 20900, y: 1350, nx: 0, ny: 1, w: 800, seed: 37 },      // Karan's suite, over the plant table
     { x: 14450, y: 8400, nx: 0, ny: -1, w: 700, seed: 41 },     // great room, between the drum and the WC door
   ],
@@ -3881,7 +3881,7 @@ function mossWall(M: Mats): THREE.Group | null {
 
 /**
  * THE GUITAR WALL in the den (Karan's call): three wall hangers on the south
- * wall east of the canvas, an electric, an acoustic and a ukulele hung by
+ * wall west of the canvas (east of it is the service duct), an electric, an acoustic and a ukulele hung by
  * their headstocks, each at its own height above the drum kit. Each is
  * built as the thing: an extruded body, a neck with frets and a headstock
  * with its tuners, strings from bridge to nut, pickups or a soundhole.
@@ -3989,7 +3989,7 @@ function guitarWall(M: Mats): THREE.Group {
       e.add(knob)
     }
     neckAndStrings(e, 640, 44, D, 6, -305, maple, maple)
-    hang(e, 18980, 1880, 640, D, 0.03)
+    hang(e, 16650, 1880, 640, D, 0.03)
   }
   // ---- the acoustic: a dreadnought, spruce top over mahogany, a soundhole and rosette
   {
@@ -4009,7 +4009,7 @@ function guitarWall(M: Mats): THREE.Group {
     a.add(box(150, 24, 10, rosewood, 0, -345, D + 6))                                  // the bridge
     a.add(box(80, 6, 5, cream, 0, -340, D + 12))                                       // the saddle
     neckAndStrings(a, 560, 46, D, 6, -340, mahogany, mahogany)
-    hang(a, 19420, 1900, 560, D, -0.03)
+    hang(a, 17080, 1900, 560, D, -0.03)
   }
   // ---- the ukulele: a soprano in koa, half the acoustic, four strings
   {
@@ -4022,7 +4022,7 @@ function guitarWall(M: Mats): THREE.Group {
     u.add(hole)
     u.add(box(70, 14, 8, rosewood, 0, -170, D + 5))
     neckAndStrings(u, 240, 36, D, 4, -170, koa, koa, 0.6)
-    hang(u, 19790, 1720, 240, D, 0.05)
+    hang(u, 17480, 1720, 240, D, 0.05)
   }
   return g
 }

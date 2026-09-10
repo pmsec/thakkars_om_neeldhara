@@ -169,11 +169,18 @@ WALLS += [
       notes="Family room's south wall, bath bay to the hatch wall."),
     w('W-DUCT-W-E', [(6900, 8462.5), (6900, 9395)], 150, 'interior'),
     w('W-DUCT-W-S', [(5630, 9395), (6900, 9395)], 150, 'interior'),
-    w('W-BAY-W', [(5630, 8462.5), (5630, 9620)], 150, 'interior',
-      notes='West cheek of the kitchen bay; ends on the envelope centreline mitre.'),
+    # THE MAIN SERVICE DUCTS are the builder's open shafts, 1000 x 4950, from
+    # 6175 all the way to the south face (immovables.py; the DWG shows them
+    # so). Each pod is walled off its duct for the duct's full length: the
+    # cheek runs from 6175 to the body's south wall, as design.py draws it.
+    # (This file once stopped the east cheek at 7650 and closed the duct
+    # there, leaving the den a niche that is really the shaft; and left the
+    # west cheek out above 8462, so the family room ran over the shaft.)
+    w('W-DUCT-W-N', [(4467, 6175), (5630, 6175)], 150, 'interior'),
+    w('W-BAY-W', [(5630, 6175), (5630, 9620)], 150, 'interior',
+      notes='East cheek of the main service duct and west cheek of the kitchen bay; ends on the envelope centreline mitre.'),
     w('W-DUCT-E-N', [(18850, 6175), (20013, 6175)], 150, 'interior'),
-    w('W-DUCT-E-W', [(18850, 6175), (18850, 7650)], 150, 'interior'),
-    w('W-DUCT-E-S', [(18850, 7650), (20013, 7650)], 150, 'interior'),
+    w('W-DUCT-E-W', [(18850, 6175), (18850, 8462.5)], 150, 'interior'),
     w('W-BAY-S', [(17505, 9545), (20013, 9545)], 150, 'interior',
       notes='Closes the suite bay off the store zone.'),
     w('W-KIT-HATCH', [(6900, 8462.5), (8725, 8462.5)], 125, 'interior',
@@ -488,7 +495,9 @@ ROOMS = [
      'Oak plank', 'The heart. Party wall gone; one floor with the deck through 6250 of '
      'sliding glass; the apse and its two sconces at the south.'),
 
-    ('R-DUCT-W', 'Main service duct (west)', (6265, 8900), 'void', 'core', False,
+    ('R-DUCT-WM', 'Main service duct (west)', (5050, 7300), 'void', 'core', False,
+     'Riser', 'The builder’s open shaft, 1000 x 4950, walled off the family room for its full length; the parents’ bath backs on to it.'),
+    ('R-DUCT-W', 'Secondary duct (west)', (6265, 8900), 'void', 'core', False,
      'Riser', 'The kitchen’s wet wall backs on to it.'),
     ('R-DEAD-W', 'Dead slab behind the bath', (5050, 9100), 'void', 'core', False,
      'Inaccessible', 'Between the bath bay and the kitchen bay; no door, no use.'),

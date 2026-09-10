@@ -4151,9 +4151,11 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(bathMirrors(M))
   root.add(homeDressing(M))
   // the lamps and set pieces a home lists for itself (homeLamps.ts); Home 1's are below
+  const lampPaper = petalPaper()
   root.add(homeLamps(activeHomeId, {
     M, ceiling: model.data.levels.ceiling, box, sconce: (w) => sconceLamp(M, w),
     flower: (n, L, W, droop, spin) => flowerBloom(n, L, W, droop, spin, petalPaper(), new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.85 }), 1.1, 4.5),
+    leaf: (L, W) => new THREE.Mesh(petalGeometry(L, W), lampPaper),
   }))
   if (HOME1) {
     const idol = mandirIdol(M)

@@ -20,10 +20,15 @@ export interface LampKit {
   sconce: (withLight?: boolean) => THREE.Group
   /** a lit paper flower: n petals of L x W, drooping by `droop` radians, spun by `spin` */
   flower: (n: number, L: number, W: number, droop: number, spin: number) => THREE.Group
+  /** one lit paper leaf of L x W, base at the origin, pointing +y, veins fanning from the base */
+  leaf: (L: number, W: number) => THREE.Mesh
 }
 
 export type LampSpot =
   | { kind: 'constellation'; x: number; y: number; spread: number; n: number }
+  /** a leaf chandelier: one dark branch swooping under the ceiling across `spread`,
+   *  n lit paper leaves hanging off it on twigs at staggered heights, a few buds */
+  | { kind: 'leaves'; x: number; y: number; spread: number; n: number; along: number }
   | { kind: 'pendant'; x: number; y: number; h: number; r?: number }
   | { kind: 'bar'; x: number; y: number; h: number; len: number; alongX: boolean }
   | { kind: 'sconce'; x: number; y: number; h: number; nx: number; ny: number }
@@ -41,11 +46,12 @@ export type LampSpot =
 
 export const LAMP_SPOTS: Record<string, LampSpot[]> = {
   ekta: [
-    // the living room's piece: a constellation of nine frosted globes hung at
-    // staggered heights from one walnut disc, over the rug between the diwan
-    // and the recliner - the room's middle, which the swivels and the bar
-    // both look toward
-    { kind: 'constellation', x: 4500, y: 7300, spread: 1300, n: 9 },
+    // the living room's piece: a leaf chandelier - one dark branch swooping
+    // under the ceiling over the rug between the diwan and the recliner, with
+    // fourteen lit paper leaves hanging off it at staggered heights, the way
+    // Home 1's great room has its flower and buds. It runs north-south, the
+    // long way of the room, over the middle the swivels and the bar look toward
+    { kind: 'leaves', x: 4500, y: 7300, spread: 2600, n: 14, along: Math.PI / 2 },
     // the foyer: one brass drum inside the door
     { kind: 'pendant', x: 1380, y: 10300, h: 2100, r: 140 },
     // the kitchen: a linear brass bar over the worktop's north run
@@ -118,6 +124,62 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
           light.position.set(px * S, (h - 20) * S, py * S)
           g.add(light)
         }
+      }
+      continue
+    }
+    if (sp.kind === 'leaves') {
+      const vine = new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.85 })
+      const dx = Math.cos(sp.along), dy = Math.sin(sp.along)          // the branch's run in plan
+      const sx = -dy, sy = dx                                          // and the side it wanders to
+      const half = sp.spread / 2
+      // the branch: anchored at both ends and the middle, swinging side to side
+      // and dipping between the anchors
+      const P = (t: number, side: number, drop: number) => new THREE.Vector3(
+        (sp.x + dx * t * half + sx * side) * S, (ceiling - drop) * S, (sp.y + dy * t * half + sy * side) * S)
+      const curve = new THREE.CatmullRomCurve3([
+        P(-1, 120, 30), P(-0.7, -160, 380), P(-0.35, 200, 520), P(0, -60, 300),
+        P(0.35, 220, 560), P(0.7, -180, 400), P(1, 80, 30),
+      ])
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 15 * S, 8, false), vine))
+      for (const t of [-1, 0, 1]) {
+        const rose = new THREE.Mesh(new THREE.CylinderGeometry(t === 0 ? 170 * S : 55 * S, t === 0 ? 170 * S : 55 * S, 22 * S, 20), t === 0 ? M.walnut : vine)
+        rose.position.set((sp.x + dx * t * half) * S, (ceiling - 11) * S, (sp.y + dy * t * half) * S)
+        g.add(rose)
+      }
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(8 * S, 8 * S, 300 * S, 6), vine)
+      stem.position.set(sp.x * S, (ceiling - 160) * S, sp.y * S)
+      g.add(stem)
+      // the leaves: a twig drops from the branch, a leaf hangs from its end,
+      // pointing down and out, spun round so no two face the same way
+      for (let i = 0; i < sp.n; i++) {
+        const t = -0.92 + (i + 0.5) * (1.84 / sp.n)
+        const u = (t + 1) / 2
+        const at = curve.getPointAt(u)
+        const twig = 90 + ((i * 7) % 5) * 55                          // 90..310
+        const L = 380 + ((i * 5) % 4) * 55                            // 380..545
+        const W = L * 0.42
+        const a = i * 2.399 + 0.6                                     // the golden angle: every leaf its own way
+        const tw = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 6 * S, twig * S, 6), vine)
+        tw.position.set(at.x, at.y - (twig / 2) * S, at.z)
+        g.add(tw)
+        const leaf = k.leaf(L, W)
+        leaf.position.set(at.x, at.y - twig * S, at.z)
+        leaf.rotation.set(Math.PI - 0.55 - ((i * 3) % 4) * 0.1, a, 0, 'YXZ')
+        g.add(leaf)
+        if (i % 3 === 1) {
+          const light = new THREE.PointLight(0xffc98a, 0.5, 3.6, 1.8)
+          light.position.set(at.x, at.y - (twig + L * 0.45) * S, at.z)
+          g.add(light)
+        }
+      }
+      // three buds trailing on cords between the leaves
+      for (const [t, len] of [[-0.55, 950], [0.15, 1150], [0.8, 850]] as const) {
+        const at = curve.getPointAt((t + 1) / 2)
+        cord(at.x / S, at.z / S, at.y / S, ceiling - len)
+        const bud = k.leaf(150, 90)
+        bud.position.set(at.x, (ceiling - len) * S, at.z)
+        bud.rotation.set(Math.PI - 0.15, t * 3, 0, 'YXZ')
+        g.add(bud)
       }
       continue
     }

@@ -72,5 +72,4 @@ export const furniture: FurnitureItem[] = [
   { id: 'F-46', kind: 'rug', x: 8900, y: 2900, w: 2400, d: 2000, room: 'R-ROOM', label: 'rug — 2400 x 2000 (7\'-10" x 6\'-7") at the foot of the bed', height: 12 },
   { id: 'F-47', kind: 'planter', x: 3850, y: 11950, w: 350, d: 350, room: 'R-BALCONY', label: 'planter — 350 (1\'-2") square, the balcony\'s west end', height: 450 },
   { id: 'F-48', kind: 'planter', x: 6450, y: 11950, w: 350, d: 350, room: 'R-BALCONY', label: 'planter — 350 (1\'-2") square, the balcony\'s east end', height: 450 },
-  { id: 'F-49', kind: 'planter', x: 4250, y: 12020, w: 2150, d: 300, room: 'R-BALCONY', label: 'flower bed — 2150 x 300 (7\'-1" x 1\'-0") along the south parapet between the two planters: flowers in front, tall grasses behind, a guard for a small child', height: 450 },
 ]

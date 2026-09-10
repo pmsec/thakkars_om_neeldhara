@@ -1201,87 +1201,6 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return m
     }
     case 'planter': {
-      if (/flower bed/i.test(f.label)) {
-        // THE BALCONY'S FLOWER BED along the parapet (Karan's call: a four-
-        // year-old lives here): a trough the height drawn, flowers along its
-        // room side, and behind them clumps of tall grasses standing well
-        // above the balustrade, so the parapet is no step for a small child
-        const H = f.height || 450
-        const alongX = w >= d
-        const long = alongX ? w : d, across = alongX ? d : w
-        // the front row faces the room: the side its room's anchor is on
-        const anchor = model.rooms.find((r) => r.id === f.room)?.centroid ?? { x: cx, y: cy - 1 }
-        const frontSign = alongX ? (anchor.y < cy ? -1 : 1) : (anchor.x < cx ? -1 : 1)
-        const at = (u: number, v: number) => alongX
-          ? { x: f.x + u, y: cy + v * frontSign }
-          : { x: cx + v * frontSign, y: f.y + u }
-        const trough = box(w, H, d, M.pot)
-        place(trough, cx, cy, H / 2)
-        g.add(trough)
-        const soil = box(w - 40, 30, d - 40, M.soil)
-        place(soil, cx, cy, H - 22)
-        g.add(soil)
-        let sd = 4242
-        const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280 }
-        const petal = [0xe0506a, 0xf2b53d, 0xf4f0e8, 0xd8689a, 0xf2853d].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 }))
-        const plume = new THREE.MeshStandardMaterial({ color: 0xd9c7a0, roughness: 0.9 })
-        // the front row: leafy mounds with flower heads on stalks
-        const nf = Math.max(2, Math.round(long / 300))
-        for (let i = 0; i < nf; i++) {
-          const u = (i + 0.5) * (long / nf), v = -across * 0.15 + (rnd() - 0.5) * 40
-          const r = Math.min(100, across / 2 - 60)
-          const p = at(u, v)
-          const mound = new THREE.Mesh(new THREE.SphereGeometry(r * S, 10, 8), i % 2 ? M.leaf : M.leafDark)
-          mound.scale.set(1.15, 0.8, 1)
-          mound.position.set(p.x * S, (H + r * 0.5) * S, p.y * S)
-          mound.castShadow = true
-          g.add(mound)
-          for (let j = 0; j < 3 + (i % 2); j++) {
-            const q = at(u + (rnd() - 0.5) * 140, v + (rnd() - 0.5) * 60)
-            const hgt = 180 + rnd() * 160
-            const stalk = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 4 * S, hgt * S, 5), M.leafDark)
-            stalk.position.set(q.x * S, (H + 30 + hgt / 2) * S, q.y * S)
-            g.add(stalk)
-            const head = new THREE.Mesh(new THREE.SphereGeometry((20 + rnd() * 14) * S, 8, 6), petal[(i + j) % petal.length])
-            head.scale.set(1, 0.7, 1)
-            head.position.set(q.x * S, (H + 30 + hgt) * S, q.y * S)
-            g.add(head)
-          }
-        }
-        // the back row: clumps of tall grass, a dozen blades each leaning
-        // out from the clump, a tan plume on some, 800-1000 above the soil
-        const ng = Math.max(2, Math.round(long / 330))
-        const bladeGeo = new THREE.BoxGeometry(14 * S, 1, 3 * S)
-        for (let i = 0; i < ng; i++) {
-          const u = (i + 0.5) * (long / ng), v = across * 0.15
-          const blades = 11 + (i % 3)
-          for (let j = 0; j < blades; j++) {
-            // the lean is slight, so the tallest blade stays over the bed
-            const a = rnd() * Math.PI * 2, lean = 0.02 + rnd() * 0.06
-            const hgt = 780 + rnd() * 240
-            const base = at(u + (rnd() - 0.5) * 90, v + (rnd() - 0.5) * 50)
-            const blade = new THREE.Mesh(bladeGeo, j % 3 ? M.leaf : M.leafDark)
-            blade.scale.y = hgt * S
-            // stood on the soil, leaning out at `lean` toward plan angle `a`
-            blade.position.set(base.x * S, H * S, base.y * S)
-            blade.rotation.order = 'YXZ'
-            blade.rotation.y = -a
-            blade.rotation.x = lean
-            // the box is centred: shift it up its own half-length along its lean
-            blade.translateY(hgt * S / 2)
-            blade.castShadow = true
-            g.add(blade)
-            if (j % 4 === 0) {
-              const pl = new THREE.Mesh(new THREE.SphereGeometry(16 * S, 7, 5), plume)
-              pl.scale.set(1, 3.2, 1)
-              pl.position.copy(blade.position)
-              pl.translateY((hgt / 2 - 10) * S)
-              g.add(pl)
-            }
-          }
-        }
-        return g
-      }
       const bed = f.poly ? polyPiece(f.poly, 0, 300, M.pot, f.room) : box(w, 300, d, M.pot)
       if (bed && !f.poly) place(bed, cx, cy, 150)
       if (/parapet/i.test(f.label)) {
@@ -3001,6 +2920,117 @@ function windowBoxes(M: Mats): THREE.Group {
     bx.position.set((op.mid.x + ox * (w.thickness / 2 + depth / 2 + 10)) * S, 0, (op.mid.y + oy * (w.thickness / 2 + depth / 2 + 10)) * S)
     bx.rotation.y = Math.atan2(-ox, -oy) + Math.PI
     g.add(bx)
+  }
+  return g
+}
+
+/**
+ * The planting of a flower bed: leafy mounds with flower heads on stalks
+ * along one edge (v < 0), and behind them clumps of tall grass with tan
+ * plumes standing 800-1000 above the soil. `at(u, v)` maps the bed's own
+ * frame - u along it from 0 to `long`, v across it, 0 on the centre line -
+ * to plan mm; `top` is the soil's height.
+ */
+function plantBed(g: THREE.Group, M: Mats, at: (u: number, v: number) => { x: number; y: number }, long: number, across: number, top: number): void {
+  let sd = 4242
+  const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280 }
+  const petal = [0xe0506a, 0xf2b53d, 0xf4f0e8, 0xd8689a, 0xf2853d].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 }))
+  const plume = new THREE.MeshStandardMaterial({ color: 0xd9c7a0, roughness: 0.9 })
+  const nf = Math.max(2, Math.round(long / 300))
+  for (let i = 0; i < nf; i++) {
+    const u = (i + 0.5) * (long / nf), v = -across * 0.15 + (rnd() - 0.5) * 40
+    const r = Math.min(100, across / 2 - 60)
+    const p = at(u, v)
+    const mound = new THREE.Mesh(new THREE.SphereGeometry(r * S, 10, 8), i % 2 ? M.leaf : M.leafDark)
+    mound.scale.set(1.15, 0.8, 1)
+    mound.position.set(p.x * S, (top + r * 0.5) * S, p.y * S)
+    mound.castShadow = true
+    g.add(mound)
+    for (let j = 0; j < 3 + (i % 2); j++) {
+      const q = at(u + (rnd() - 0.5) * 140, v + (rnd() - 0.5) * 60)
+      const hgt = 180 + rnd() * 160
+      const stalk = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 4 * S, hgt * S, 5), M.leafDark)
+      stalk.position.set(q.x * S, (top + 30 + hgt / 2) * S, q.y * S)
+      g.add(stalk)
+      const head = new THREE.Mesh(new THREE.SphereGeometry((20 + rnd() * 14) * S, 8, 6), petal[(i + j) % petal.length])
+      head.scale.set(1, 0.7, 1)
+      head.position.set(q.x * S, (top + 30 + hgt) * S, q.y * S)
+      g.add(head)
+    }
+  }
+  const ng = Math.max(2, Math.round(long / 330))
+  const bladeGeo = new THREE.BoxGeometry(14 * S, 1, 3 * S)
+  for (let i = 0; i < ng; i++) {
+    const u = (i + 0.5) * (long / ng), v = across * 0.15
+    const blades = 11 + (i % 3)
+    for (let j = 0; j < blades; j++) {
+      // the lean is slight, so the tallest blade stays over the bed
+      const a = rnd() * Math.PI * 2, lean = 0.02 + rnd() * 0.06
+      const hgt = 780 + rnd() * 240
+      const base = at(u + (rnd() - 0.5) * 90, v + (rnd() - 0.5) * 50)
+      const blade = new THREE.Mesh(bladeGeo, j % 3 ? M.leaf : M.leafDark)
+      blade.scale.y = hgt * S
+      blade.position.set(base.x * S, top * S, base.y * S)
+      blade.rotation.order = 'YXZ'
+      blade.rotation.y = -a
+      blade.rotation.x = lean
+      blade.translateY(hgt * S / 2)
+      blade.castShadow = true
+      g.add(blade)
+      if (j % 4 === 0) {
+        const pl = new THREE.Mesh(new THREE.SphereGeometry(16 * S, 7, 5), plume)
+        pl.scale.set(1, 3.2, 1)
+        pl.position.copy(blade.position)
+        pl.translateY((hgt / 2 - 10) * S)
+        g.add(pl)
+      }
+    }
+  }
+}
+
+/**
+ * A FLOWER BED HUNG OUTSIDE A PARAPET (Karan's call, Ekta's balcony): a
+ * parapet line whose label asks for a flower bed carries a trough on its
+ * OUTER face, the way the window boxes hang under the windows - its rim at
+ * the parapet's top on two brackets, flowers along its outer edge, and
+ * clumps of tall grass along the rail standing well above the balustrade,
+ * so a small child has no step up on to the rail and nothing to lean over.
+ */
+function parapetBeds(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const trough = new THREE.MeshStandardMaterial({ color: 0x9a9891, roughness: 0.85 })
+  for (const w of model.walls) {
+    if (!w.def.parapet || !/flower bed/i.test(w.def.label ?? '')) continue
+    for (let k = 1; k < w.points.length; k++) {
+      const a = w.points[k - 1], b = w.points[k]
+      const L = Math.hypot(b.x - a.x, b.y - a.y)
+      if (L < 800) continue
+      const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L
+      // outward: the side no room is on
+      let nx = -uy, ny = ux
+      const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+      if (model.rooms.some((r) => pointInPolygon({ x: mid.x + nx * 300, y: mid.y + ny * 300 }, r.polygon))) { nx = -nx; ny = -ny }
+      const run = L - 500, depth = 350, H = 400
+      const rim = w.def.parapet
+      const yaw = -Math.atan2(uy, ux)
+      // the bed's frame: u along the line from a, v across it with the
+      // outer edge at v < 0 (where the flowers go), 0 on the trough's centre
+      const off = depth / 2 + 10
+      const at = (u: number, v: number) => ({ x: a.x + ux * u + nx * (off - v), y: a.y + uy * u + ny * (off - v) })
+      const put = (m: THREE.Mesh, u: number, v: number, h: number) => {
+        const p = at(u, v)
+        m.position.set(p.x * S, h * S, p.y * S)
+        m.rotation.y = yaw
+        g.add(m)
+      }
+      put(box(run, H, depth, trough), L / 2, 0, rim - H / 2)
+      put(box(run - 40, 30, depth - 40, M.soil), L / 2, 0, rim - 30)
+      for (const e of [-0.35, 0.35]) {
+        put(box(40, 30, depth - 20, M.graphite), L / 2 + e * run, 0, rim - H - 15)
+        put(box(40, 300, 30, M.graphite), L / 2 + e * run, off - 15, rim - H - 150)
+      }
+      plantBed(g, M, (u, v) => at(L / 2 - run / 2 + u, v), run, depth, rim)
+    }
   }
   return g
 }
@@ -4931,6 +4961,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(bathMirrors(M))
   root.add(homeDressing(M))
   root.add(windowBoxes(M))
+  root.add(parapetBeds(M))
   // the lamps and set pieces a home lists for itself (homeLamps.ts); Home 1's are below
   const lampPaper = petalPaper()
   root.add(homeLamps(activeHomeId, {

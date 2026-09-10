@@ -33,7 +33,7 @@ export const building: BuildingData = {
   ],
   envelopeGlazing: [
     { id: 'EO-BALC-W', p1: { x: 3650, y: 11070 }, p2: { x: 3650, y: 12470 }, pane: false, parapet: 900, rail: 1200, label: 'balcony, west edge — parapet and glass balustrade, open above' },
-    { id: 'EO-BALC-S', p1: { x: 3650, y: 12470 }, p2: { x: 6950, y: 12470 }, pane: false, parapet: 900, rail: 1200, label: 'balcony, south edge — parapet and glass balustrade, open above' },
+    { id: 'EO-BALC-S', p1: { x: 3650, y: 12470 }, p2: { x: 6950, y: 12470 }, pane: false, parapet: 900, rail: 1200, label: 'balcony, south edge — parapet and glass balustrade, open above; a flower bed hung on the outside of the parapet, flowers in front and tall grasses behind' },
     { id: 'EO-BALC-E', p1: { x: 6950, y: 12470 }, p2: { x: 6950, y: 11070 }, pane: false, parapet: 900, rail: 1200, label: 'balcony, east edge — parapet and glass balustrade, open above' },
   ],
   walls: [

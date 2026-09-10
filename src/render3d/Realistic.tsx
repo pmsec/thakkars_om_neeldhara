@@ -5520,12 +5520,14 @@ export function buildFixtures(M: Mats): THREE.Group {
       continue
     }
     if (f.kind === 'wc') {
-      // a wall-hung pan with its cistern plate on the wall behind
-      const room = model.roomById.get(f.room)
-      const dx = f.at.x - (room?.centroid.x ?? f.at.x)
-      const dy = f.at.y - (room?.centroid.y ?? f.at.y)
-      const alongX = Math.abs(dx) >= Math.abs(dy)
-      const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
+      // a wall-hung pan with its cistern plate on the wall behind: the pan's
+      // long side runs out from that wall, and the wall is the nearest one
+      // across the long side. (Judged from the room's centroid this once put
+      // the grandmother's cistern free-standing in her bath, a quarter turn
+      // from its wall - her centroid lies further off along the other axis.)
+      const alongX = w >= d
+      const gaps = wallGaps({ x: f.at.x - w / 2, y: f.at.y - d / 2, w, d } as unknown as FurnitureItem)
+      const sgn = alongX ? (gaps.E <= gaps.W ? 1 : -1) : (gaps.S <= gaps.N ? 1 : -1)
       const pan = new THREE.Mesh(new THREE.CylinderGeometry(Math.min(w, d) * 0.46 * S, Math.min(w, d) * 0.36 * S, 240 * S, 20), M.marble)
       pan.scale.set(alongX ? 1.35 : 1, 1, alongX ? 1 : 1.35)
       pan.position.set((f.at.x - (alongX ? sgn * 40 : 0)) * S, 320 * S, (f.at.y - (alongX ? 0 : sgn * 40)) * S)

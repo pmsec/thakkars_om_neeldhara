@@ -609,14 +609,19 @@ NEW_WALLS = [
     (2220, 9625, 2220, 10995, 125, [('cased', 9875, 10725)], 'partition', 'W-FOYER-E',
      'foyer | living', 0),
 
-    # --- the balcony line: glass end to end, and the sliding door in it
+    # --- the balcony line: glass end to end, and the folding door in it
     # Zero thickness, so the plan still draws it as the dashed line it always
     # was and the floor runs out to the glass. The KIND is glazing, not
-    # threshold: the app stands a pane on a glazing line, and the slider on it
-    # is drawn as three glass leaves that open and shut.
+    # threshold: the app stands a pane on a glazing line. THE DOOR IS A
+    # FULL-HEIGHT BI-FOLD (Karan's call, after Home 1's bath divider): three
+    # glazed leaves in timber frames, head at the ceiling so nothing sits over
+    # it, folding OUT on to the balcony and stacking at the west jamb. Still
+    # typed 'slider' so the sheet draws the line it always did; the label is
+    # what the walkthrough reads.
     (3725, 10995, 6875, 10995, 0,
-     [('slider', 3885, 6720, 0, 2400, 0,
-       'the balcony slider — glass, three leaves on a track')],
+     [('slider', 3885, 6720, 0, 3050, 0,
+       'the balcony door — three glazed leaves in timber frames, full height, '
+       'folding out on to the balcony and stacking at the west jamb')],
      'glazing', 'T-BALC', 'living | balcony — glass end to end, the sliding '
      'door in it', 0, None, 'clear'),
 ]

@@ -57,7 +57,7 @@ export const building: BuildingData = {
     { id: 'R-BATH-EAST-ROOM', name: 'Bath', anchor: { x: 7900, y: 5900 }, category: 'wet', zone: 'flat', carpet: true, finish: 'Stone', notes: 'cut back off column 4\'s north face: 2425 (7\'-11") wide and 1220 (4\'-0") deep across the top, with the shower reaching south beside the column. Its one door opens east, into the room — it was never common, whatever the old label said. The builder had his second toilet here, on the only other stack in the flat' },
     { id: 'R-ROOM', name: 'Room', anchor: { x: 10100, y: 3200 }, category: 'habitable', zone: 'flat', carpet: true, finish: 'Oak plank', notes: 'the east arm: 3025 (9\'-11") wide, windows north and south, the party wall blind down one side. Shut off from the living room by a sliding screen on the kitchen’s line' },
     { id: 'R-FOYER', name: 'Foyer', anchor: { x: 1375, y: 10300 }, category: 'circulation', zone: 'flat', carpet: true, finish: 'Stone', notes: 'the way in' },
-    { id: 'R-BALCONY', name: 'Balcony', anchor: { x: 5300, y: 11700 }, category: 'outdoor', zone: 'flat', carpet: false, finish: 'Stone', notes: 'off the living room' },
+    { id: 'R-BALCONY', name: 'Balcony', anchor: { x: 5300, y: 11700 }, category: 'outdoor', zone: 'flat', carpet: false, finish: 'Oak plank', finishFollows: 'R-LIVING-DINING', notes: 'off the living room' },
   ],
   stacks: [],
   glassRoofs: [],

@@ -41,15 +41,14 @@ export interface FanSpot {
 
 export const FAN_SPOTS: Record<string, FanSpot[]> = {
   ekta: [
-    // THE LIVING ROOM: four. One on the west wall north of the chaise, blowing
-    // south-east along the wall over the chaise and the diwan; one on the
-    // curved bedroom wall between its two doors, over the eating bar's chairs;
-    // and one either side of the two swivels at the balcony - on the foyer
-    // partition and on the east wall
-    { id: 'fan:ekta-diwan', x: 2295, y: 5000, h: 2150, nx: 1, ny: 0, tx: 3000, ty: 7200, th: 600, where: 'the chaise and the diwan' },
-    { id: 'fan:ekta-bar', x: 3163, y: 3087, h: 2150, nx: 0.597, ny: 0.802, tx: 5400, ty: 4200, th: 750, where: 'the eating bar' },
-    { id: 'fan:ekta-swivel-w', x: 2283, y: 10300, h: 2150, nx: 1, ny: 0, tx: 4400, ty: 10400, th: 600, where: 'the west swivel chair' },
-    { id: 'fan:ekta-swivel-e', x: 6800, y: 9300, h: 2150, nx: -1, ny: 0, tx: 5900, ty: 10300, th: 600, where: 'the east swivel chair' },
+    // THE LIVING ROOM: three. One on the west wall north of the chaise, blowing
+    // south-east over the chaise and the diwan; one high on the kitchen's
+    // south face over the hatch, down the length of the eating bar; and one
+    // on the foyer partition for the two swivels at the balcony (Karan took
+    // the east-wall one off the canvas)
+    { id: 'fan:ekta-diwan', x: 2295, y: 5000, h: 2150, nx: 1, ny: 0, tx: 3400, ty: 7000, th: 600, where: 'the chaise and the diwan' },
+    { id: 'fan:ekta-bar', x: 5795, y: 3515, h: 2620, nx: 0, ny: 1, tx: 5795, ty: 4500, th: 750, where: 'the eating bar' },
+    { id: 'fan:ekta-swivel-w', x: 2283, y: 10300, h: 2150, nx: 1, ny: 0, tx: 4900, ty: 10400, th: 600, where: 'the two swivel chairs' },
     // THE ROOM: one each side of the king bed's head on the party wall, clear
     // of the two pendants, blowing along each side of the bed; and one for
     // the daybed on the bath's east face across its alcove (the party wall
@@ -191,6 +190,13 @@ export function wallFans(homeId: string, kit: FanKit, mode: 'open' | 'shut', flo
     const target = new THREE.Vector3(dx * sp.ny - dz * sp.nx, dy, dx * sp.nx + dz * sp.ny)
     const ballP = new THREE.Vector3(0, 0, BALL)
     const aim = target.clone().sub(ballP).normalize()
+    // the head turns no more than 60 degrees off the wall's normal: past that
+    // the back of the blade disc swings into the wall behind it
+    const MAX_TURN = Math.PI / 3
+    if (Math.acos(Math.max(-1, Math.min(1, aim.z))) > MAX_TURN) {
+      const side = new THREE.Vector2(aim.x, aim.y).normalize()
+      aim.set(side.x * Math.sin(MAX_TURN), side.y * Math.sin(MAX_TURN), Math.cos(MAX_TURN))
+    }
     const head = new THREE.Group()
     head.position.copy(ballP)
     head.quaternion.setFromUnitVectors(Z, aim)

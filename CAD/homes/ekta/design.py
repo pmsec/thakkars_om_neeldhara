@@ -1296,18 +1296,18 @@ ARM_DRESS_TOP = _round_rect(*ARM_DRESS, (30, 30, 200, 200))
 # wardrobe door over a daybed opens onto the cushions.
 ARM_WARD = (11470.0 - 600.0, 5400.0, 11470.0, ARM_DAY_N)
 
-# THE TIMBER ARCH OVER THE DAYBED (Karan's call). A curved teak panel frames
-# the south window from inside the room: a fin at the daybed's west end, a
-# soffit band along the ceiling, and a column of four lit shelves at the east
-# end against the east wall - the two corners turned on a 500 (1'-8") cove so
-# the whole reads as one arch. A flower pendant hangs from the soffit over the
-# middle of the seat. The two legs stand ON the seat, from 520 (above the
-# mattress) up, 350 (1'-2") deep off the window wall; they are on the plan
-# because they are there at eye level, and the soffit and coves are the
-# walkthrough's.
+# THE TIMBER FRAME OVER THE DAYBED (Karan's call). A teak frame the width of
+# the tail, wall to wall: a fin at the daybed's west end on the bath wall's
+# line, a matching panel on the east wall, and a slim band along the ceiling
+# between them, with a flower pendant hung from the band over the middle of
+# the seat - the bed sits inside the frame. (It was an arch with 500 coves and
+# a shelf column; both went, the coves as too much wood over the lamp.) The
+# two legs stand ON the seat, from 520 (above the mattress) up, 350 (1'-2")
+# deep off the window wall; they are on the plan because they are there at
+# eye level, and the band is the walkthrough's.
 ARCH_D = 350.0
 ARCH_FIN = (ARM_DAY[0], 8355.0 - ARCH_D, ARM_DAY[0] + 40.0, 8355.0)
-ARCH_SHELF = (11470.0 - ARCH_D, 8355.0 - ARCH_D, 11470.0, 8355.0)
+ARCH_PANEL_E = (11470.0 - 40.0, 8355.0 - ARCH_D, 11470.0, 8355.0)
 
 FURNITURE += [
     ('bed', *ARM_BED,
@@ -1322,20 +1322,22 @@ FURNITURE += [
     ('daybed', *ARM_DAY,
      f"daybed — {ARM_DAY[2] - ARM_DAY[0]:.0f} x {ARM_DAY_D:.0f} "
      f"({_ft(ARM_DAY[2] - ARM_DAY[0])} x {_ft(ARM_DAY_D)}), built in flush to "
-     'the south window, with drawers under the seat',
+     'the south window; a lift-up seat on gas struts over the toy store, '
+     'hinged along the window side',
      'R-ROOM', 450, ARM_DAY_TOP),
     ('daybed', ARM_DAY[0] + 70, ARM_DAY[1] + 70, ARM_DAY[2] - 70,
      ARM_DAY[3] - 130,
-     "the mattress — 900 (2'-11\") wide, which is what set the depth",
+     "the mattress — 900 (2'-11\") wide, which is what set the depth; it "
+     'lifts with the seat',
      'R-ROOM', 500, ARM_DAY_MAT),
     ('screen', *ARCH_FIN,
      "arch fin — the timber arch's west leg: 40 thick, 350 (1'-2\") deep, "
      'from the daybed seat to the ceiling',
      'R-ROOM', 3050),
-    ('shelves', *ARCH_SHELF,
-     "arch shelves — the timber arch's east leg: 350 x 350 (1'-2\" x 1'-2\"), "
-     'four lit shelves over the daybed, against the east wall',
-     'R-ROOM', 2600),
+    ('screen', *ARCH_PANEL_E,
+     "arch panel — the timber frame's east leg: 40 thick, 350 (1'-2\") deep, "
+     'on the east wall from the daybed seat to the ceiling',
+     'R-ROOM', 3050),
     ('console', *ARM_DRESS,
      f"dressing console — {ARM_DRESS[2] - ARM_DRESS[0]:.0f} x 400 "
      f"({_ft(ARM_DRESS[2] - ARM_DRESS[0])} x 1'-4\") with a bowed front, on "

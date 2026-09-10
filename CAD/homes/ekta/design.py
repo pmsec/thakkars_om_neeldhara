@@ -657,8 +657,13 @@ NEW_WALLS = [
 ENVELOPE_OPEN = [
     (3650, 11070, 3650, 12470, 'EO-BALC-W', 900, 1200,
      'balcony, west edge — parapet and glass balustrade, open above'),
+    # THE FLOWER BED (Karan's call) hangs on the OUTSIDE of this parapet, the
+    # way the window boxes hang under the windows: its rim at the parapet's
+    # top, flowers in front, tall grasses behind standing well above the
+    # balustrade - a guard for the four-year-old, so the rail is no step
     (3650, 12470, 6950, 12470, 'EO-BALC-S', 900, 1200,
-     'balcony, south edge — parapet and glass balustrade, open above'),
+     'balcony, south edge — parapet and glass balustrade, open above; '
+     'a flower bed hung on the outside of the parapet, flowers in front and tall grasses behind'),
     (6950, 12470, 6950, 11070, 'EO-BALC-E', 900, 1200,
      'balcony, east edge — parapet and glass balustrade, open above'),
 ]
@@ -1737,10 +1742,4 @@ FURNITURE += [
      "planter — 350 (1'-2\") square, the balcony's west end", 'R-BALCONY', 450),
     ('planter', 6450, 11950, 6800, 12300,
      "planter — 350 (1'-2\") square, the balcony's east end", 'R-BALCONY', 450),
-    # THE FLOWER BED along the south parapet (Karan's call): a four-year-old
-    # lives here, so the bed keeps her off the rail - flowers in front, tall
-    # grasses behind, standing well above the balustrade
-    ('planter', 4250, 12020, 6400, 12320,
-     "flower bed — 2150 x 300 (7'-1\" x 1'-0\") along the south parapet between the two planters: "
-     "flowers in front, tall grasses behind, a guard for a small child", 'R-BALCONY', 450),
 ]

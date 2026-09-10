@@ -307,6 +307,9 @@ export function outsideEnvelope(): Crossing[] {
     ...fixtures.map((f) => ({ id: f.id, label: f.label ?? f.kind, fp: fixtureFootprint(f) })),
   ]
   for (const it of items) {
+    // a window box hangs OUTSIDE the facade by design - it is the one piece
+    // whose footprint is meant to be off the envelope
+    if (/^window box/i.test(it.label)) continue
     const fpGeom = [[closeRing(it.fp)]] as unknown as polygonClipping.Geom
     const outside = multiArea(pc.difference(fpGeom, env) as unknown as PcMulti)
     if (outside > EPS_AREA) {

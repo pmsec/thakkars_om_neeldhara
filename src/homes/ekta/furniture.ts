@@ -74,6 +74,7 @@ export const furniture: FurnitureItem[] = [
   { id: 'F-48', kind: 'plant', x: 8580, y: 120, w: 650, d: 650, room: 'R-ROOM', label: 'floor plant — 650 (2\'-2") spread in the room\'s north-west corner', height: 1400 },
   { id: 'F-49', kind: 'rug', x: 1100, y: 1300, w: 1600, d: 2000, room: 'R-BEDROOM', label: 'rug — 1600 x 2000 (5\'-3" x 6\'-7") beside the sofa; the bed comes down over it', height: 12 },
   { id: 'F-50', kind: 'rug', x: 8900, y: 2900, w: 2400, d: 2000, room: 'R-ROOM', label: 'rug — 2400 x 2000 (7\'-10" x 6\'-7") at the foot of the bed', height: 12 },
-  { id: 'F-51', kind: 'planter', x: 3850, y: 11950, w: 350, d: 350, room: 'R-BALCONY', label: 'planter — 350 (1\'-2") square, the balcony\'s west end', height: 450 },
-  { id: 'F-52', kind: 'planter', x: 6450, y: 11950, w: 350, d: 350, room: 'R-BALCONY', label: 'planter — 350 (1\'-2") square, the balcony\'s east end', height: 450 },
+  { id: 'F-51', kind: 'planter', x: 8600, y: 8460, w: 2800, d: 400, room: 'R-ROOM', label: 'window box — 2800 x 400 (9\'-2" x 1\'-4") hung outside the south window on brackets, rim at the sill, flowering plants in it', height: 750 },
+  { id: 'F-52', kind: 'planter', x: 3850, y: 11950, w: 350, d: 350, room: 'R-BALCONY', label: 'planter — 350 (1\'-2") square, the balcony\'s west end', height: 450 },
+  { id: 'F-53', kind: 'planter', x: 6450, y: 11950, w: 350, d: 350, room: 'R-BALCONY', label: 'planter — 350 (1\'-2") square, the balcony\'s east end', height: 450 },
 ]

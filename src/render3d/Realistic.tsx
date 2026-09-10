@@ -3526,6 +3526,73 @@ function flowerBloom(n: number, L: number, W: number, droop: number, spin: numbe
   return hub
 }
 
+/** Mottled moss, painted once: a deep green ground with hundreds of soft blotches in five greens. */
+function mossTexture(): THREE.CanvasTexture {
+  const c = document.createElement('canvas')
+  c.width = 512
+  c.height = 512
+  const ctx = c.getContext('2d')!
+  ctx.fillStyle = '#35592a'
+  ctx.fillRect(0, 0, 512, 512)
+  let sd = 41
+  const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280 }
+  const greens = ['#4a7a35', '#5d8f3e', '#3e6a2c', '#6f9c47', '#2f4f24', '#86a94f']
+  for (let i = 0; i < 2600; i++) {
+    ctx.fillStyle = greens[i % greens.length]
+    ctx.globalAlpha = 0.25 + rnd() * 0.5
+    const r = 3 + rnd() * 14
+    ctx.beginPath()
+    ctx.arc(rnd() * 512, rnd() * 512, r, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.globalAlpha = 1
+  const tex = new THREE.CanvasTexture(c)
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
+/**
+ * THE LIVE MOSS WALL over the spa (Karan's call): the east shaft's west face,
+ * which stands behind the spa on the deck, carries a preserved-moss panel in
+ * a slim black tray, 40 off the plaster, from above the spa's rim to just
+ * under the ceiling and jamb to jamb - a mottled green ground with tufts
+ * standing proud of it.
+ */
+function mossWall(M: Mats): THREE.Group | null {
+  const wall = model.walls.find((w) => w.id === 'W-SHAFT-E-W')
+  if (!wall) return null
+  const a = wall.points[0], b = wall.points[wall.points.length - 1]
+  const faceX = Math.min(a.x, b.x) - wall.thickness / 2         // the deck side is the west face
+  const y0 = Math.min(a.y, b.y) + 40, y1 = Math.max(a.y, b.y) - 40
+  const h0 = 1000, h1 = model.data.levels.ceiling - 120
+  const g = new THREE.Group()
+  const tex = mossTexture()
+  tex.repeat.set((y1 - y0) / 600, (h1 - h0) / 600)
+  const moss = new THREE.MeshStandardMaterial({ map: tex, bumpMap: tex, bumpScale: 0.02, roughness: 1.0, metalness: 0 })
+  const cy = (y0 + y1) / 2, ch = (h0 + h1) / 2
+  const tray = box(40, h1 - h0 + 40, y1 - y0 + 40, M.graphite)
+  tray.position.set((faceX - 20) * S, ch * S, cy * S)
+  g.add(tray)
+  const bed = new THREE.Mesh(new THREE.BoxGeometry(50 * S, (h1 - h0) * S, (y1 - y0) * S), moss)
+  bed.position.set((faceX - 65) * S, ch * S, cy * S)
+  bed.receiveShadow = true
+  g.add(bed)
+  // tufts: mounds of two greens standing proud of the bed, thicker low down
+  let sd = 17
+  const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280 }
+  for (let i = 0; i < 90; i++) {
+    const r = 35 + rnd() * 55
+    const py = y0 + 60 + rnd() * (y1 - y0 - 120)
+    const ph = h0 + 60 + Math.pow(rnd(), 1.4) * (h1 - h0 - 120)
+    const tuft = new THREE.Mesh(new THREE.SphereGeometry(r * S, 8, 6), i % 3 ? M.leafDark : M.leaf)
+    tuft.scale.set(0.55, 1, 1)
+    tuft.position.set((faceX - 90) * S, ph * S, py * S)
+    g.add(tuft)
+  }
+  return g
+}
+
 function petalPendant(_M: Mats): THREE.Group | null {
   const room = model.roomById.get('R-GREAT')
   if (!room) return null
@@ -4446,6 +4513,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     if (sconces) root.add(sconces)
     const petals = petalPendant(M)
     if (petals) root.add(petals)
+    const moss = mossWall(M)
+    if (moss) root.add(moss)
     const art = sweepArt(M)
     if (art) root.add(art)
   }

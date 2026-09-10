@@ -273,13 +273,15 @@ def _col_face(name, i):
 
 
 # COLUMN 3 STANDS IN THIS WALL. It is 3050-3280 x 770-1670, so it straddles
-# x 3125 for 900 (2'-11") of the wall's length, and the door was sitting with
-# its top 270 (11") inside it. It goes south of the column instead, 100 (4")
-# clear of its face — which also takes the leaf's swing further from the desk
-# and the Murphy bed, both of which it was crowding.
+# x 3125 for 900 (2'-11") of the wall's length, and the door cannot be in it.
+# THE DOOR IS AT THE WALL'S SOUTH END, 100 (4") short of where the wall meets
+# the curve, because it is a slider now and the panel has to park somewhere:
+# south of the old position (1770-2520) the wall had only 500 (1'-8") left
+# before the curve, less than a leaf, so the panel was parking NORTH over the
+# desk and the painting. From the south end it parks north over the 750
+# between it and the desk's stretch, which is blank wall.
 BED_BATH_W = 750.0
-BED_BATH_DOOR = (_col_face('column 3', 4) + 100.0,
-                 _col_face('column 3', 4) + 100.0 + BED_BATH_W)
+BED_BATH_DOOR = (BED_S - 100.0 - BED_BATH_W, BED_S - 100.0)
 
 # BOTH DOORS GO AT THE ENDS, not in the middle of their stretch. Centre them
 # and the wall comes out as three short fragments with nothing between; push
@@ -1001,10 +1003,10 @@ FURNITURE.append(
 # 2000. 1900 clears it by 104 (4") and still gives 1900 x 600 (6'-3" x 2'-0"),
 # which is three bays.
 #
-# THE DESK IS FLUSH IN THE CORNER, against the north wall at y 0 and the east
-# wall at x 3050. It was standing 100 (4") off the north wall for no reason.
-# It ends at y 1200, and the bath door — which swings west into the bedroom
-# from y 1770 since it moved clear of column 3 — is 570 (1'-10") below that.
+# THE DESK STANDS 100 (4") OFF THE NORTH WALL, which is glass from sill height
+# up: flush, its top ran into the window's reveal. 1050 (3'-5") long on the
+# east wall, a pedestal of drawers and a cupboard at its north end, and the
+# bath's sliding panel parks on the wall south of it without touching it.
 WARD = (0.0, 3520.0, 1900.0, 4120.0)          # 1900 x 600
 # THE MURPHY IS TWO PIECES, as the grandmother's in Home 1 is: a cabinet on
 # the wall that the mattress folds up into, and a sofa in front of it that the
@@ -1018,7 +1020,7 @@ MURPHY_L = 2000.0                              # the mattress: queen, 1500 x 200
 # 2000 = 2460, which leaves 590 (1'-11") to the east wall and clears the desk
 # chair, whose seat ends at y 925.
 MURPHY = (80.0, 1050.0, 80.0 + MURPHY_CAB + MURPHY_L, 2550.0)   # folded DOWN
-DESK = (2450.0, 0.0, 3050.0, 1200.0)          # 600 x 1200, flush in the corner
+DESK = (2450.0, 100.0, 3050.0, 1150.0)        # 600 x 1050, 100 off the window
 DESK_CHAIR = (1950.0, 475.0, 2400.0, 925.0)
 
 FURNITURE += [
@@ -1047,7 +1049,9 @@ FURNITURE += [
      'the cabinet: the footprint it takes, not a bed standing there',
      'R-BEDROOM', 600, None, True),
     ('table', *DESK,
-     "desk — 1200 x 600 (3'-11\" x 2'-0\") on the east wall, window to the left",
+     "desk — 1050 x 600 (3'-5\" x 2'-0\") on the east wall, window to the left; "
+     'a pedestal of two drawers over a cupboard at the north end, a pencil '
+     'drawer under the top',
      'R-BEDROOM', 750),
     ('chair', *DESK_CHAIR, 'desk chair', 'R-BEDROOM', 850),
 ]

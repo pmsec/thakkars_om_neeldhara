@@ -4838,10 +4838,9 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
         // kitchen's south light from the sill to 2100)
         const cuts: Array<[number, number, number]> = []          // lo, hi, tiles below this height
         for (const wl of model.walls) for (const op of wl.openings) {
-          // the serving hatch is typed as a window but is not one: its band
-          // stays as it always was (Karan's call - the shut hatch reads as a
-          // tiled wall with the sash on it from the kitchen)
-          if (op.type === 'window' && /hatch/i.test(op.label ?? '')) continue
+          // (the serving hatch is cut like any window: tiles under its sill,
+          // the opening clear above - a band across it walled the hatch up
+          // from the kitchen, open or shut)
           const dm = Math.abs((op.mid.x - a.x) * nx + (op.mid.y - a.y) * ny)
           if (dm > 200) continue
           const t1 = (op.p1.x - a.x) * ux + (op.p1.y - a.y) * uy, t2 = (op.p2.x - a.x) * ux + (op.p2.y - a.y) * uy

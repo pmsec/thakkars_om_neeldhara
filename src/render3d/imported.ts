@@ -409,9 +409,10 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     const along = front === 'N' || front === 'S'         // the front runs along x
     const run = along ? w : d                              // the front's length
     const depth = along ? d : w
-    g.add(box(along ? w - 60 : depth - 60, 90, along ? depth - 60 : w - 60, M.trunk, -fv.x * 30, 45, -fv.z * 30))
-    g.add(box(along ? w : depth - 20, top - 90 - 20, along ? depth - 20 : w, M.walnut, -fv.x * 10, 90 + (top - 110) / 2, -fv.z * 10))
-    g.add(box(along ? w + 10 : depth, 20, along ? depth : w + 10, M.marble, 0, top - 10, 0))
+    // the carcass runs `run` along the front and `depth` back from it, on either axis
+    g.add(box(along ? run - 60 : depth - 60, 90, along ? depth - 60 : run - 60, M.trunk, -fv.x * 30, 45, -fv.z * 30))
+    g.add(box(along ? run : depth - 20, top - 90 - 20, along ? depth - 20 : run, M.walnut, -fv.x * 10, 90 + (top - 110) / 2, -fv.z * 10))
+    g.add(box(along ? run + 10 : depth, 20, along ? depth : run + 10, M.marble, 0, top - 10, 0))
     // the front: a drawer across the top, two doors under, all with slim brass pulls
     const face = depth / 2 - 4
     const putFront = (u: number, h: number, lw: number, lh: number) => {

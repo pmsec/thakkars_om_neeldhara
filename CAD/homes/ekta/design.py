@@ -755,6 +755,24 @@ ROOMS = [
 # the room it follows.
 FLOOR_FOLLOWS = {'BALCONY': 'R-LIVING-DINING'}
 
+# THE BELLY GLASS OVER THE BALCONY (Karan's call, after Home 1's deck): one
+# retractable bellied vault the width of the balcony, parapet to parapet.
+# Its section runs across the balcony in (plan y, height): it springs from
+# the south parapet line at the floor, bellies about 400 (1'-4") out past the
+# parapet, peaks near 3300 (10'-10") over the balcony's middle and lands on
+# the living room's face at the ceiling. The two ends are glazed gables, so
+# the balcony is enclosed; the Roof switch telescopes it open to the sky.
+# (id, name, kind, extent, section, gable ends, retractable, glazing, note)
+GLASS_ROOFS = [
+    ('ROOF-BALC', 'A retractable bellied glass vault over the balcony', 'barrel',
+     (3650, 11070, 6950, 12470),
+     {'p0': (12470, 0), 'p1': (13400, 1900), 'p1b': (12500, 4100), 'p2': (11070, 3050)},
+     ('x0', 'x1'), True, 'Laminated glass',
+     "Springs from the balcony's south parapet, bellies out over the street, "
+     'peaks above the ceiling and lands on the living room face; glazed '
+     'gables close the two sides'),
+]
+
 
 def _taper(f):
     """Full depth through the middle, smoothstepped away at both ends, so a

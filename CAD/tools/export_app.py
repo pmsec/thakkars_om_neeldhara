@@ -381,7 +381,15 @@ def main():
           + f' notes: {full!r} }},')
     A('  ],')
     A('  stacks: [],')
-    A('  glassRoofs: [],')
+    A('  glassRoofs: [')
+    for gr in getattr(D, 'GLASS_ROOFS', []):
+        rid, name, kind, ext, sec, gables, retract, glazing, note = gr
+        secs = ', '.join(f'{k}: {pt(*v)}' for k, v in sec.items())
+        A(f"    {{ id: {rid!r}, name: {name!r}, kind: {kind!r}, "
+          f"extent: [{ext[0]}, {ext[1]}, {ext[2]}, {ext[3]}], section: {{ {secs} }}, "
+          f"gableEnds: [{', '.join(repr(g) for g in gables)}], retractable: {str(bool(retract)).lower()}, "
+          f"glazing: {glazing!r}, notes: {note!r} }},")
+    A('  ],')
     A('  portals: [],')
     A('  screens: [')
     for sc in getattr(D, 'SCREENS', []):

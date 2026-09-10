@@ -1737,4 +1737,10 @@ FURNITURE += [
      "planter — 350 (1'-2\") square, the balcony's west end", 'R-BALCONY', 450),
     ('planter', 6450, 11950, 6800, 12300,
      "planter — 350 (1'-2\") square, the balcony's east end", 'R-BALCONY', 450),
+    # THE FLOWER BED along the south parapet (Karan's call): a four-year-old
+    # lives here, so the bed keeps her off the rail - flowers in front, tall
+    # grasses behind, standing well above the balustrade
+    ('planter', 4250, 12020, 6400, 12320,
+     "flower bed — 2150 x 300 (7'-1\" x 1'-0\") along the south parapet between the two planters: "
+     "flowers in front, tall grasses behind, a guard for a small child", 'R-BALCONY', 450),
 ]

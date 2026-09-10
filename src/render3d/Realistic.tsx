@@ -43,7 +43,7 @@ import { isStrengthTrainer, strengthTrainer } from './gym'
 import { hedgeGroup } from './hedge'
 import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
 import { useStore } from '../ui/store'
-import { importedPiece, wallGaps } from './imported'
+import { importedPiece, wallGaps, windowBoxGroup } from './imported'
 import { homeLamps } from './homeLamps'
 import { activeHomeId } from '../homes/registry'
 
@@ -2847,6 +2847,48 @@ export function ceramicPendant(M: Mats, x: number, y: number, h: number, ceiling
   return g
 }
 
+/**
+ * WINDOW BOXES OUTSIDE EVERY WINDOW (Karan's call, both homes): a planter of
+ * flowering plants hung on the facade under each glazed window in an exterior
+ * wall, its rim at the sill, so the plants stand in sun, rain and wind and are
+ * seen from inside. A window is left out only where its outside is not the
+ * open air: it looks on to an enclosed outdoor room (a deck, a terrace, a
+ * balcony), it sits under a glass roof, or it is too narrow for a box.
+ */
+function windowBoxes(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const kit = { M, box, basePrism: () => new THREE.Mesh(), place: () => {} }
+  let seed = 3
+  for (const w of model.walls) {
+    if (!w.isExterior) continue
+    for (const op of w.openings) {
+      if (op.type !== 'window') continue                    // Home 1's windows carry no glass field; a window in an exterior wall is glazed
+      const width = op.to - op.from
+      if (width < 600) continue
+      const L = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y) || 1
+      const d = { x: (op.p2.x - op.p1.x) / L, y: (op.p2.y - op.p1.y) / L }
+      // the room side is where a room polygon is; outside is the other way
+      let nx = -d.y, ny = d.x
+      const roomAt = (s: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + nx * s * (w.thickness / 2 + 150), y: op.mid.y + ny * s * (w.thickness / 2 + 150) }, r.polygon))
+      const inside = roomAt(1) ? 1 : roomAt(-1) ? -1 : 0
+      if (!inside) continue
+      const ox = -nx * inside, oy = -ny * inside                    // outward
+      const probe = { x: op.mid.x + ox * (w.thickness / 2 + 500), y: op.mid.y + oy * (w.thickness / 2 + 500) }
+      if (model.rooms.some((r) => pointInPolygon(probe, r.polygon))) continue          // faces a deck, terrace or balcony
+      if (solids.roofs.some((r) => probe.x >= r.extent[0] && probe.x <= r.extent[2] && probe.y >= r.extent[1] && probe.y <= r.extent[3])) continue   // under a glass roof
+      const run = Math.min(width - 160, 3000)
+      const depth = 400
+      const sill = op.sill ?? model.data.levels.windowSill
+      const bx = windowBoxGroup(kit, run, depth, sill, seed += 7)
+      // local x along the wall, local -z toward the wall: yaw so that -z maps on to (-ox, -oy)
+      bx.position.set((op.mid.x + ox * (w.thickness / 2 + depth / 2 + 10)) * S, 0, (op.mid.y + oy * (w.thickness / 2 + depth / 2 + 10)) * S)
+      bx.rotation.y = Math.atan2(-ox, -oy) + Math.PI
+      g.add(bx)
+    }
+  }
+  return g
+}
+
 function homeDressing(M: Mats): THREE.Group {
   const g = new THREE.Group()
   const ceiling = model.data.levels.ceiling
@@ -4367,6 +4409,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(kitchenOverheads(M))
   root.add(bathMirrors(M))
   root.add(homeDressing(M))
+  root.add(windowBoxes(M))
   // the lamps and set pieces a home lists for itself (homeLamps.ts); Home 1's are below
   const lampPaper = petalPaper()
   root.add(homeLamps(activeHomeId, {

@@ -105,6 +105,52 @@ function mirrorOn(k: PieceKit, f: FurnitureItem, side: Side, width: number, h0 =
   return g
 }
 
+/**
+ * A window box in its own frame: the trough runs along local x for `run`,
+ * `depth` deep along local z with the wall at -z (the brackets reach back to
+ * it), its rim at height `rim`. A fibre-cement trough on two brackets, soil,
+ * and a row of leafy mounds with flower heads on stalks standing up past the
+ * sill so they read from inside. Deterministic per `seed`.
+ */
+export function windowBoxGroup(k: PieceKit, run: number, depth: number, rim: number, seed = 11): THREE.Group {
+  const { M, box } = k
+  const g = new THREE.Group()
+  const TH = 340
+  const trough = new THREE.MeshStandardMaterial({ color: 0x9a9891, roughness: 0.85 })
+  g.add(box(run, TH, depth, trough, 0, rim - TH / 2, 0))
+  g.add(box(run - 40, 30, depth - 40, M.soil, 0, rim - 30, 0))
+  for (const e of [-0.35, 0.35]) {
+    const u = e * run
+    g.add(box(40, 30, depth - 20, M.graphite, u, rim - TH - 15, 0))
+    g.add(box(40, 260, 30, M.graphite, u, rim - TH - 130, -(depth / 2 - 15)))
+  }
+  const petal = [0xe0506a, 0xf2b53d, 0xf4f0e8, 0xd8689a, 0xf2853d].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 }))
+  const n = Math.max(2, Math.round(run / 380))
+  let sd = seed
+  const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280 }
+  for (let i = 0; i < n; i++) {
+    const px = -run / 2 + (i + 0.5) * (run / n), pz = (rnd() - 0.5) * (depth - 220)
+    const r = Math.min(150, depth / 2 - 50, run / n / 2 - 10)
+    const mound = new THREE.Mesh(new THREE.SphereGeometry(r * S, 10, 8), i % 2 ? M.leaf : M.leafDark)
+    mound.scale.set(1.15, 0.8, 1)
+    mound.position.set(px * S, (rim + r * 0.55) * S, pz * S)
+    g.add(mound)
+    const stalks = 3 + (i % 2)
+    for (let j = 0; j < stalks; j++) {
+      const sx = px + (rnd() - 0.5) * Math.min(160, run / n - 60), sz = pz + (rnd() - 0.5) * 120
+      const hgt = 200 + rnd() * 180
+      const stalk = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 4 * S, hgt * S, 5), M.leafDark)
+      stalk.position.set(sx * S, (rim + 40 + hgt / 2) * S, sz * S)
+      g.add(stalk)
+      const head = new THREE.Mesh(new THREE.SphereGeometry((22 + rnd() * 14) * S, 8, 6), petal[(i + j) % petal.length])
+      head.scale.set(1, 0.7, 1)
+      head.position.set(sx * S, (rim + 40 + hgt) * S, sz * S)
+      g.add(head)
+    }
+  }
+  return g
+}
+
 export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | null {
   const { M, box, basePrism, place } = k
   const g = new THREE.Group()
@@ -410,55 +456,6 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
       const lx = alongY ? e * (depth / 2 - 30) : -ev.x * (run / 2 - 30)
       const lz = alongY ? -ev.z * (run / 2 - 30) : e * (depth / 2 - 30)
       g.add(box(40, top - 30, 40, M.trunk, lx, (top - 30) / 2, lz))
-    }
-    place(g, cx, cy)
-    return g
-  }
-
-  // ---- a window box: a fibre-cement trough hung outside a window on two
-  // brackets, its rim at the sill (the piece's height), soil in it and a row
-  // of flowering plants standing up past the sill so they read from inside
-  if (f.kind === 'planter' && /^window box/i.test(label)) {
-    const rim = Math.min(f.height, 900)
-    const TH = 340
-    const wall = wallSide(f)                                  // the face it hangs on
-    const bv = vec(wall)
-    const along = wall === 'N' || wall === 'S'
-    const run = along ? w : d, depth = along ? d : w
-    const trough = new THREE.MeshStandardMaterial({ color: 0x9a9891, roughness: 0.85 })
-    const bracket = M.graphite
-    g.add(box(along ? run : depth, TH, along ? depth : run, trough, 0, rim - TH / 2, 0))
-    g.add(box(along ? run - 40 : depth - 40, 30, along ? depth - 40 : run - 40, M.soil, 0, rim - 30, 0))
-    for (const e of [-0.35, 0.35]) {
-      const u = e * run
-      g.add(box(along ? 40 : depth - 20, 30, along ? depth - 20 : 40, bracket, along ? u : bv.x * 0, rim - TH - 15, along ? bv.z * 0 : u))
-      g.add(box(along ? 40 : 30, 260, along ? 30 : 40, bracket, along ? u : bv.x * (depth / 2 - 15), rim - TH - 130, along ? bv.z * (depth / 2 - 15) : u))
-    }
-    // the plants: leafy mounds along the box with flower heads on stalks
-    const petal = [0xe0506a, 0xf2b53d, 0xf4f0e8, 0xd8689a, 0xf2853d].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 }))
-    const n = Math.max(3, Math.round(run / 380))
-    let seed = 11
-    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 }
-    for (let i = 0; i < n; i++) {
-      const u = -run / 2 + (i + 0.5) * (run / n)
-      const px = along ? u : (rnd() - 0.5) * (depth - 220), pz = along ? (rnd() - 0.5) * (depth - 220) : u
-      const r = Math.min(150, depth / 2 - 50)
-      const mound = new THREE.Mesh(new THREE.SphereGeometry(r * S, 10, 8), i % 2 ? M.leaf : M.leafDark)
-      mound.scale.set(1.15, 0.8, 1)
-      mound.position.set(px * S, (rim + r * 0.55) * S, pz * S)
-      g.add(mound)
-      const stalks = 3 + (i % 2)
-      for (let k = 0; k < stalks; k++) {
-        const sx = px + (rnd() - 0.5) * 160, sz = pz + (rnd() - 0.5) * 120
-        const hgt = 200 + rnd() * 180
-        const stalk = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 4 * S, hgt * S, 5), M.leafDark)
-        stalk.position.set(sx * S, (rim + 40 + hgt / 2) * S, sz * S)
-        g.add(stalk)
-        const head = new THREE.Mesh(new THREE.SphereGeometry((22 + rnd() * 14) * S, 8, 6), petal[(i + k) % petal.length])
-        head.scale.set(1, 0.7, 1)
-        head.position.set(sx * S, (rim + 40 + hgt) * S, sz * S)
-        g.add(head)
-      }
     }
     place(g, cx, cy)
     return g

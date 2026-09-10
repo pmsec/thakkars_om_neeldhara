@@ -4906,6 +4906,23 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   if (cab) extra.push({ id: 'wallbed', x: cab.x + cab.w / 2 + (cab.w >= cab.d ? 0 : 500), y: cab.y + cab.d / 2 + (cab.w >= cab.d ? 500 : 0), h: 1250 })
   const dry = furniture.find((f) => /clothes dryer/i.test(f.label))
   if (dry) extra.push({ id: 'dryer', x: dry.x + dry.w / 2, y: dry.y + dry.d / 2, h: 1550 })
+  // the retractable glass roof: a button wherever you stand under it, and a
+  // row outside the parapet under its belly, so it can be worked from the
+  // walk as well as from the top bar
+  for (const roof of opts.roofs === false ? [] : solids.roofs) {
+    if (!roof.retractable) continue
+    // the extent is the vault's oversail: the belly reaches y0, well past the
+    // parapet at -150, and the wall head is y1. One row down the middle of
+    // the deck itself, one under the belly outside the parapet
+    const [x0, y0, x1, y1] = roof.extent
+    const yIn = (Math.max(y0, -150) + y1) / 2
+    const n = Math.max(1, Math.round((x1 - x0) / 2500))
+    for (let i = 0; i < n; i++) {
+      const x = x0 + (i + 0.5) * ((x1 - x0) / n)
+      extra.push({ id: 'roof', x, y: yIn, h: 2300 })
+      if (y0 < -600) extra.push({ id: 'roof', x, y: y0 + 300, h: 2000 })
+    }
+  }
   root.userData.anchors = pieceAnchors(root, extra)
   ;(window as any).__omRoot = root            // the scene, for the headless probes
   root.add(wallArt(M))
@@ -5812,6 +5829,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const s3 = st.show3d
     if (id === 'wallbed') return { ...st, show3d: { ...s3, wallBedDown: !s3.wallBedDown } }
     if (id === 'dryer') return { ...st, show3d: { ...s3, dryerDown: !s3.dryerDown } }
+    if (id === 'roof') return { ...st, show3d: { ...s3, roofOpen: !s3.roofOpen } }
     const open = s3.itemOpen[id] ?? (startsShut(id) ? false : !s3.doorsShut)
     return { ...st, show3d: { ...s3, itemOpen: { ...s3.itemOpen, [id]: !open } } }
   })
@@ -6248,23 +6266,15 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       for (const t of flows) t.offset.x -= dt * 0.9
       // the piece dots: within 4.5 m, the nearer of a piece's two, the rest parked under the floor
       if (dotList.length && frame % 4 === 0) {
-        const nearest = new Map<string, { d: number; i: number }>()
-        for (let i = 0; i < dotList.length; i++) {
-          const dt = dotList[i]
-          dt.shown = false
-          const d = (dt.x - camera.position.x) ** 2 + (dt.y - camera.position.y) ** 2 + (dt.z - camera.position.z) ** 2
-          if (d > 4.5 * 4.5) continue
-          const cur = nearest.get(dt.id)
-          if (!cur || d < cur.d) nearest.set(dt.id, { d, i })
-        }
-        for (const { i } of nearest.values()) dotList[i].shown = true
-        // THE PIECES IN FRONT OF YOU: every shown piece ahead of the camera and
-        // within its field, with where it lands on the screen - one button
-        // each, so two doors in view get two buttons and each works its own
+        // THE PIECES IN FRONT OF YOU: for each piece, the nearest of its anchors
+        // that is within reach, ahead of the camera and within its field, and
+        // not behind a wall - one button each, so two doors in view get two
+        // buttons and each works its own. A piece with many anchors (the glass
+        // roof) is judged on the nearest one that qualifies, not on the nearest
+        // full stop, which may be behind you
         const fwd = new THREE.Vector3()
         camera.getWorldDirection(fwd)
         const W = renderer.domElement.clientWidth || 1, Hh = renderer.domElement.clientHeight || 1
-        const found: Array<NearPiece & { c: number }> = []
         const pv = new THREE.Vector3()
         // a piece behind a wall gets no button: the line from you to its anchor,
         // in plan, must cross no solid wall
@@ -6281,13 +6291,27 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           }
           return false
         }
-        for (const dt of dotList) {
-          if (!dt.shown) continue
+        const nearest = new Map<string, { d: number; i: number }>()
+        for (let i = 0; i < dotList.length; i++) {
+          const dt = dotList[i]
+          dt.shown = false
           const vx = dt.x - camera.position.x, vy = dt.y - camera.position.y, vz = dt.z - camera.position.z
-          const L = Math.hypot(vx, vy, vz) || 1
+          const d = vx * vx + vy * vy + vz * vz
+          if (d > 4.5 * 4.5) continue
+          const cur = nearest.get(dt.id)
+          if (cur && cur.d <= d) continue
+          const L = Math.sqrt(d) || 1
           const c = (vx * fwd.x + vy * fwd.y + vz * fwd.z) / L
           if (c < 0.55) continue                  // cos of the widest angle that still counts as "in front"
           if (crossesWall(dt.x / S, dt.z / S)) continue
+          nearest.set(dt.id, { d, i })
+        }
+        const found: Array<NearPiece & { c: number }> = []
+        for (const { i } of nearest.values()) {
+          const dt = dotList[i]
+          dt.shown = true
+          const vx = dt.x - camera.position.x, vy = dt.y - camera.position.y, vz = dt.z - camera.position.z
+          const c = (vx * fwd.x + vy * fwd.y + vz * fwd.z) / (Math.hypot(vx, vy, vz) || 1)
           pv.set(dt.x, dt.y, dt.z).project(camera)
           if (pv.z > 1) continue
           found.push({ id: dt.id, c, sx: ((pv.x + 1) / 2) * W, sy: ((1 - pv.y) / 2) * Hh, w: W, h: Hh })
@@ -6465,12 +6489,12 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       {showTouch && nearItems.length > 0 && (() => {
         // what each piece is, and which way it is
         const describe = (id: string) => {
-          const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? (startsShut(id) ? false : !doorsShut))
+          const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : id === 'roof' ? roofOpen : (itemOpen[id] ?? (startsShut(id) ? false : !doorsShut))
           const kind = id.split(':')[0]
           const noun =
             kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
             : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : kind === 'mesh' ? 'mesh' : kind === 'fan' ? 'wall fan' : 'door'
+            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : kind === 'mesh' ? 'mesh' : kind === 'fan' ? 'wall fan' : kind === 'roof' ? 'glass roof' : 'door'
           const verb =
             kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
             : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
@@ -6478,6 +6502,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
             : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the storage')
             : kind === 'mesh' ? (open ? 'Draw the mosquito mesh' : 'Pleat the mesh back')
             : kind === 'fan' ? (open ? 'Turn the fan off' : 'Turn the fan on')
+            : kind === 'roof' ? (open ? 'Close the glass roof' : 'Open the glass roof')
             : `${open ? 'Shut' : 'Open'} this ${noun}`
           return { noun, verb }
         }

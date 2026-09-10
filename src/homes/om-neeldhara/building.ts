@@ -357,7 +357,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-FAM-DECK', type: 'slider', at: [0, 2850], head: 3505, label: 'Family room sliders to the deck' },
+        { id: 'O-FAM-DECK', type: 'arch', at: [0, 2850], head: 3505, label: 'Family room open to the deck — no doors, floor to ceiling' },
       ],
     },
     {
@@ -367,7 +367,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-GREAT-DECK', type: 'slider', at: [0, 6250], head: 3505, label: 'Great room sliders to the deck — 6250 clear' },
+        { id: 'O-GREAT-DECK', type: 'arch', at: [0, 6250], head: 3505, label: 'Great room open to the deck — 6250 clear, no doors, floor to ceiling' },
       ],
     },
     {
@@ -377,7 +377,7 @@ export const building: BuildingData = {
       kind: 'glazing',
       renderPane: true,
       openings: [
-        { id: 'SL-DEN-DECK', type: 'slider', at: [0, 2850], head: 3505, label: 'Den sliders to the deck' },
+        { id: 'O-DEN-DECK', type: 'arch', at: [0, 2850], head: 3505, label: 'Den open to the deck — no doors, floor to ceiling' },
       ],
     },
     {
@@ -763,7 +763,7 @@ export const building: BuildingData = {
     { id: 'R-K-BATH', name: "Karan's bath", anchor: { x: 21080, y: 8000 }, category: 'wet', zone: 'karan', carpet: true, finish: 'Stone', publishedSqFt: 69, notes: 'Mirror of the parents’ bath.' },
     { id: 'R-P-FAMILY', name: 'Family room', anchor: { x: 6550, y: 5000 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 230, notes: 'The west pod: six-seat dining behind the curved glass screen, serving hatch straight from the kitchen.' },
     { id: 'R-K-DEN', name: 'Music + work den', anchor: { x: 18000, y: 5000 }, category: 'habitable', zone: 'karan', carpet: true, finish: 'Oak plank', publishedSqFt: 230, notes: 'The east pod: Karan’s work console on the screen, e-drums in the corner, two recliners facing the deck.' },
-    { id: 'R-GREAT', name: 'Great room', anchor: { x: 12240, y: 5000 }, category: 'habitable', zone: 'shared', carpet: true, finish: 'Oak plank', publishedSqFt: 407, notes: 'The heart. Party wall gone; one floor with the deck through 6250 of sliding glass; the apse and its two sconces at the south.' },
+    { id: 'R-GREAT', name: 'Great room', anchor: { x: 12240, y: 5000 }, category: 'habitable', zone: 'shared', carpet: true, finish: 'Oak plank', publishedSqFt: 407, notes: 'The heart. Party wall gone; one floor with the deck through a 6250 opening with no doors; the apse and its two sconces at the south.' },
     { id: 'R-DUCT-WM', name: 'Main service duct (west)', anchor: { x: 5050, y: 7300 }, category: 'void', zone: 'core', carpet: false, finish: 'Riser', notes: 'The builder’s open shaft, 1000 x 4950, walled off the family room for its full length; the parents’ bath backs on to it.' },
     { id: 'R-DUCT-W', name: 'Secondary duct (west)', anchor: { x: 6265, y: 8900 }, category: 'void', zone: 'core', carpet: false, finish: 'Riser', notes: 'The kitchen’s wet wall backs on to it.' },
     { id: 'R-DEAD-W', name: 'Dead slab behind the bath', anchor: { x: 5050, y: 9100 }, category: 'void', zone: 'core', carpet: false, finish: 'Inaccessible', notes: 'Between the bath bay and the kitchen bay; no door, no use.' },

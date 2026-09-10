@@ -251,17 +251,19 @@ WALLS += [
     w('W-K-TERR-STUB', [(24830, 1275), (25080, 1275)], 150, 'interior'),
 ]
 
-# --- deck <-> rooms glazing lines: floor to ceiling, the ceiling stops at them
+# --- deck <-> rooms lines: OPEN floor to ceiling, no doors (Karan's call - the
+#     deck is glazed and cooled, so it is one space with the rooms); the ceiling
+#     still stops at them
 WALLS += [
     w('G-FAMILY-DECK', [(4650, 2545), (7500, 2545)], 0, 'glazing',
-      [op('SL-FAM-DECK', 'slider', 0, 2850, head=CEIL,
-          label='Family room sliders to the deck')], pane=True),
+      [op('O-FAM-DECK', 'arch', 0, 2850, head=CEIL,
+          label='Family room open to the deck — no doors, floor to ceiling')], pane=True),
     w('G-GREAT-DECK', [(9115, 2545), (15365, 2545)], 0, 'glazing',
-      [op('SL-GREAT-DECK', 'slider', 0, 6250, head=CEIL,
-          label='Great room sliders to the deck — 6250 clear')], pane=True),
+      [op('O-GREAT-DECK', 'arch', 0, 6250, head=CEIL,
+          label='Great room open to the deck — 6250 clear, no doors, floor to ceiling')], pane=True),
     w('G-DEN-DECK', [(16980, 2545), (19830, 2545)], 0, 'glazing',
-      [op('SL-DEN-DECK', 'slider', 0, 2850, head=CEIL,
-          label='Den sliders to the deck')], pane=True),
+      [op('O-DEN-DECK', 'arch', 0, 2850, head=CEIL,
+          label='Den open to the deck — no doors, floor to ceiling')], pane=True),
     w('W-DECK-W-STUB', [(4467, 2545), (4650, 2545)], 150, 'interior'),
     w('W-DECK-E-STUB', [(19830, 2545), (20013, 2545)], 150, 'interior'),
 ]
@@ -492,8 +494,8 @@ ROOMS = [
      'Oak plank', 'The east pod: Karan’s work console on the screen, e-drums in the '
      'corner, two recliners facing the deck.'),
     ('R-GREAT', 'Great room', (12240, 5000), 'habitable', 'shared', True,
-     'Oak plank', 'The heart. Party wall gone; one floor with the deck through 6250 of '
-     'sliding glass; the apse and its two sconces at the south.'),
+     'Oak plank', 'The heart. Party wall gone; one floor with the deck through a 6250 '
+     'opening with no doors; the apse and its two sconces at the south.'),
 
     ('R-DUCT-WM', 'Main service duct (west)', (5050, 7300), 'void', 'core', False,
      'Riser', 'The builder’s open shaft, 1000 x 4950, walled off the family room for its full length; the parents’ bath backs on to it.'),

@@ -539,8 +539,11 @@ NEW_WALLS = [
        'brown tinted glass over the timber dado', 'tinted'),
       ('door', KDOOR[0], KDOOR[1], 0, 2100, -1,
        'the kitchen door — swings out into the living room'),     # the way in
+      # THE EAST LEG LOOKS INTO THE FAMILY ROOM, so this stretch carries a
+      # timber slat blind on the room side that lifts to open (Karan's call).
       ('window', KDOOR[1], _arc_d(0.896), 1050, 2400, 0,
-       'brown tinted glass over the timber dado', 'tinted')],
+       'brown tinted glass over the timber dado — a timber slat blind on the '
+       'room side, lifts to open', 'tinted')],
      'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),
 
     # --- 40 mm of nothing, so the kitchen closes. See ENV_NE above.
@@ -1256,6 +1259,19 @@ ARM_DRESS_TOP = _round_rect(*ARM_DRESS, (30, 30, 200, 200))
 # wardrobe door over a daybed opens onto the cushions.
 ARM_WARD = (11470.0 - 600.0, 5400.0, 11470.0, ARM_DAY_N)
 
+# THE TIMBER ARCH OVER THE DAYBED (Karan's call). A curved teak panel frames
+# the south window from inside the room: a fin at the daybed's west end, a
+# soffit band along the ceiling, and a column of four lit shelves at the east
+# end against the east wall - the two corners turned on a 500 (1'-8") cove so
+# the whole reads as one arch. A flower pendant hangs from the soffit over the
+# middle of the seat. The two legs stand ON the seat, from 520 (above the
+# mattress) up, 350 (1'-2") deep off the window wall; they are on the plan
+# because they are there at eye level, and the soffit and coves are the
+# walkthrough's.
+ARCH_D = 350.0
+ARCH_FIN = (ARM_DAY[0], 8355.0 - ARCH_D, ARM_DAY[0] + 40.0, 8355.0)
+ARCH_SHELF = (11470.0 - ARCH_D, 8355.0 - ARCH_D, 11470.0, 8355.0)
+
 FURNITURE += [
     ('bed', *ARM_BED,
      "king — 1830 x 2000 (6'-0\" x 6'-7\"), head on the blind party wall, "
@@ -1275,6 +1291,14 @@ FURNITURE += [
      ARM_DAY[3] - 130,
      "the mattress — 900 (2'-11\") wide, which is what set the depth",
      'R-ROOM', 500, ARM_DAY_MAT),
+    ('screen', *ARCH_FIN,
+     "arch fin — the timber arch's west leg: 40 thick, 350 (1'-2\") deep, "
+     'from the daybed seat to the ceiling',
+     'R-ROOM', 3050),
+    ('shelves', *ARCH_SHELF,
+     "arch shelves — the timber arch's east leg: 350 x 350 (1'-2\" x 1'-2\"), "
+     'four lit shelves over the daybed, against the east wall',
+     'R-ROOM', 2600),
     ('console', *ARM_DRESS,
      f"dressing console — {ARM_DRESS[2] - ARM_DRESS[0]:.0f} x 400 "
      f"({_ft(ARM_DRESS[2] - ARM_DRESS[0])} x 1'-4\") with a bowed front, on "
@@ -1620,11 +1644,14 @@ FURNITURE += [
     ('rug', 3600, 9350, 6700, 10950,
      "rug — 3100 x 1600 (10'-2\" x 5'-3\") flatweave, under the swivels at the balcony",
      'R-LIVING-DINING', 12),
-    ('plant', 6350, 8300, 6800, 8750,
-     "floor plant — 450 (1'-6\") pot on the east wall, between the recliner and the swivels",
+    # THE PLANT'S FOOTPRINT IS ITS SPREAD, NOT ITS POT: an areca in a 400 pot
+    # is 650 (2'-2") across at the leaves, and the walkthrough keeps every leaf
+    # inside the ring, so the ring is drawn at the spread.
+    ('plant', 6150, 8150, 6800, 8800,
+     "floor plant — 650 (2'-2\") spread on the east wall, between the recliner and the swivels",
      'R-LIVING-DINING', 1600),
-    ('plant', 8600, 300, 9000, 700,
-     "floor plant — 400 (1'-4\") pot in the room's north-west corner",
+    ('plant', 8580, 120, 9230, 770,
+     "floor plant — 650 (2'-2\") spread in the room's north-west corner",
      'R-ROOM', 1400),
     ('rug', 1100, 1300, 2700, 3300,
      "rug — 1600 x 2000 (5'-3\" x 6'-7\") beside the sofa; the bed comes down over it",

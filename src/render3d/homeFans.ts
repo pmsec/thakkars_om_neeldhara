@@ -70,9 +70,13 @@ export const FAN_SPOTS: Record<string, FanSpot[]> = {
     // the drum kit
     { id: 'fan:h1-den', x: 19400, y: 6100, h: 2150, nx: 0, ny: -1, tx: 18000, ty: 3900, th: 650, where: 'the two recliners' },
     { id: 'fan:h1-drums', x: 18775, y: 6900, h: 2150, nx: -1, ny: 0, tx: 17700, ty: 7300, th: 700, where: 'the drum kit' },
-    // THE GREAT ROOM: on the kitchen's north wall, up the room to the sofa and
-    // the recliner
-    { id: 'fan:h1-great', x: 9600, y: 7800, h: 2200, nx: 0, ny: -1, tx: 10300, ty: 4500, th: 650, where: 'the sofa and the recliner' },
+    // THE GREAT ROOM: three, on the solid wall at its south - everything else
+    // round it is glass. Two on the kitchen's north wall, one for the recliner
+    // and one for the two-seat sofa; one on the help's-room wall east of the
+    // drum, beside the canvas, for the rocking chair and the armchair
+    { id: 'fan:h1-great', x: 9600, y: 7800, h: 2200, nx: 0, ny: -1, tx: 10100, ty: 3950, th: 650, where: 'the recliner' },
+    { id: 'fan:h1-great-2', x: 10900, y: 7800, h: 2200, nx: 0, ny: -1, tx: 11680, ty: 5050, th: 650, where: 'the sofa' },
+    { id: 'fan:h1-great-3', x: 13900, y: 8400, h: 2200, nx: 0, ny: -1, tx: 13500, ty: 4300, th: 650, where: 'the rocking chair and the armchair' },
     // THE PARENTS' BED: one each side, on the west wall above the headboard's
     // two ends, clear of the window north of it
     { id: 'fan:h1-pbed-n', x: -450, y: 2015, h: 2150, nx: 1, ny: 0, tx: 900, ty: 2500, th: 700, patchH: 720, dia: 360, where: "the parents' bed, north side" },

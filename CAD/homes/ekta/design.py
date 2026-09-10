@@ -480,6 +480,8 @@ HATCH = (_kit_bot_arc(BAR_X0), _kit_bot_arc(BAR_X1))
 KDOOR_W = 850.0
 # where the east leg goes straight: the U's total arc less the straight leg
 KIT_E_LEG = ARC - (KBOT - KR - KTOP)                # 6897.2
+# and where the west leg stops being straight: the corner begins here
+KIT_W_LEG = KBOT - KR - KTOP                        # 1955
 KDOOR = (_kit_bot_arc(KX1 - KR), _kit_bot_arc(KX1 - KR) + KDOOR_W)
 
 _BAR_N = KBOT - KT / 2 - BAR_IN     # 2885
@@ -533,8 +535,14 @@ NEW_WALLS = [
      # glass travel to the app: 'tinted' is the brown glass the walkthrough
      # sets in the opening, and a label with 'hatch' in it is drawn there as
      # Home 1's lifting sash over its counter.
-     [('window', _arc_d(0.104), HATCH[0], 1050, 2400, 0,
-       'brown tinted glass over the timber dado', 'tinted'),
+     # THE WEST LEG IS THE BATH'S WALL. The small bath sits against it from
+     # the north wall down to where the curve begins at y 2500, so tinted
+     # glass on the straight leg looked from the worktop straight into the
+     # shower. The leg is solid its whole length now, with the wall cabinet
+     # on it, and the glass starts where the corner does - that stretch looks
+     # into the living room. (Karan's call.)
+     [('window', KIT_W_LEG, HATCH[0], 1050, 2400, 0,
+       'brown tinted glass over the timber dado, round the corner', 'tinted'),
       ('cased', HATCH[0], HATCH[1], BAR_TOP, 2100, 0,
        'serving hatch — a lifting sash over the counter'),        # the hatch
       ('window', HATCH[1], KDOOR[0], 1050, 2400, 0,

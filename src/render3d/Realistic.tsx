@@ -3048,7 +3048,7 @@ function meshScreens(_M: Mats, mode: 'open' | 'shut'): THREE.Group {
   // unlit and mostly see-through: a lit material shows its unlit room-side
   // face against the daylight behind it and reads black, cutting the light
   const gauze = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false })
-  const alu = new THREE.MeshStandardMaterial({ color: 0xf1f1ee, roughness: 0.35, metalness: 0.25 })   // white powder-coated aluminium
+  const alu = new THREE.MeshStandardMaterial({ color: 0x2b2d31, roughness: 0.4, metalness: 0.3 })    // black powder-coated aluminium (Karan's call: the frame black, only the gauze pale)
   let idx = 0
   for (const ew of exteriorWindows()) {
     const { w, op, ux, uy, ox, oy, width, sill, head } = ew
@@ -4847,7 +4847,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   for (const ew of exteriorWindows()) sashPanes.add(`${ew.w.id.replace(/#\d+$/, '')}|${ew.sill}|${ew.head}`)
   for (const p of solids.prisms) {
     if (p.kind === 'lintel' && p.top - p.base < 60) continue
-    if (p.id.endsWith(':pane') && p.wallId && sashPanes.has(`${p.wallId.replace(/#\d+$/, '')}|${p.base}|${p.top}`)) continue
+    // (the id carries the run offset after the suffix: 'EXT-3:pane@360')
+    if (/:pane(@|$)/.test(p.id) && p.wallId && sashPanes.has(`${p.wallId.replace(/#\d+$/, '')}|${p.base}|${p.top}`)) continue
     // The entry drum and the gallery legs are wood, both faces. (They used to be a
     // second mesh scaled by 0.1 % about the scene origin, which shifted the copy a
     // dozen millimetres east and left the drum's east half showing plaster.)

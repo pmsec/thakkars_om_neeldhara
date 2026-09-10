@@ -1574,6 +1574,11 @@ DIWAN = (LIV_W, CHAISE[3], LIV_W + DIWAN_D, CHAISE[3] + DIWAN_L)
 # the foyer's corner at 9700, doors below and a drawer across the top, things
 # on it. 60 (2") off the diwan, 90 (4") short of the corner.
 CONSOLE_LIV = (LIV_W, DIWAN[3] + 60.0, LIV_W + 400.0, DIWAN[3] + 60.0 + 1000.0)
+# AND A SECOND ONE NORTH OF THE CHAISE (Karan's call): the west wall runs
+# 1505 (4'-11") clear from the curve's end at 4195 to the chaise's arm at
+# 5700, and a 1300 x 400 console with doors and a drawer sits in it, 105 (4")
+# off the corner and 100 (4") off the chaise.
+CONSOLE_LIV_N = (LIV_W, 4300.0, LIV_W + 400.0, 5600.0)
 
 FURNITURE += [
     ('sofa', *CHAISE,
@@ -1582,6 +1587,12 @@ FURNITURE += [
      "diwan's north end: back on the west wall, arm on the north side, open "
      'to the south',
      'R-LIVING-DINING', 850, _round_rect(*CHAISE, (50, 140, 140, 50))),
+    ('console', *CONSOLE_LIV_N,
+     f"console cabinet — {CONSOLE_LIV_N[3] - CONSOLE_LIV_N[1]:.0f} x 400 "
+     f"({_ft(CONSOLE_LIV_N[3] - CONSOLE_LIV_N[1])} x 1'-4\") on the west wall "
+     "between the bedroom door and the chaise: two doors, a drawer across the "
+     'top, things on it',
+     'R-LIVING-DINING', 800),
     ('console', *CONSOLE_LIV,
      f"console cabinet — {CONSOLE_LIV[3] - CONSOLE_LIV[1]:.0f} x 400 "
      f"({_ft(CONSOLE_LIV[3] - CONSOLE_LIV[1])} x 1'-4\") on the west wall "

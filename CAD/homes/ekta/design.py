@@ -739,6 +739,13 @@ ROOMS = [
     ('BALCONY', '', (5300, 11700), 'off the living room'),
 ]
 
+# THE BALCONY'S FLOOR IS THE LIVING ROOM'S, carried out through the folding
+# door: oak, not stone, so with the leaves stacked the two read as one floor
+# (Karan's call). The name here is the room's, the value the id the app gives
+# the room it follows.
+FLOOR_FOLLOWS = {'BALCONY': 'R-LIVING-DINING'}
+
+
 def _taper(f):
     """Full depth through the middle, smoothstepped away at both ends, so a
     slab dies into the wall instead of stopping against it with a cut end."""
@@ -1686,9 +1693,6 @@ FURNITURE += [
      "rug — 1700 x 2300 (5'-7\" x 7'-7\") wool centrepiece, an oval with a live "
      'edge, under the leaf chandelier',
      'R-LIVING-DINING', 12, RUG_LIV),
-    ('rug', 3600, 9350, 6700, 10950,
-     "rug — 3100 x 1600 (10'-2\" x 5'-3\") flatweave, under the swivels at the balcony",
-     'R-LIVING-DINING', 12),
     # THE PLANT'S FOOTPRINT IS ITS SPREAD, NOT ITS POT: an areca in a 400 pot
     # is 650 (2'-2") across at the leaves, and the walkthrough keeps every leaf
     # inside the ring, so the ring is drawn at the spread.

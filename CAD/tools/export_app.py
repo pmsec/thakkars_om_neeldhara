@@ -367,10 +367,16 @@ def main():
                 cat = v
         rid = slug(name if not sub else f'{name}-{sub}', used)
         fin = FINISH.get(cat, 'Oak plank')
+        # a room whose floor runs on from another's (FLOOR_FOLLOWS in the
+        # design): it takes that room's finish and tells the app to follow it
+        follows = getattr(D, 'FLOOR_FOLLOWS', {}).get(name.upper())
+        if follows:
+            fin = 'Oak plank'
         full = ' · '.join(x for x in (text, note) if x)
         A(f"    {{ id: {rid!r}, name: {name.title()!r}, anchor: {pt(ax, ay)}, "
           f"category: {cat!r}, zone: 'flat', carpet: {str(cat != 'outdoor').lower()}, "
           f"finish: {fin!r},"
+          + (f' finishFollows: {follows!r},' if follows else '')
           + (f' publishedSqFt: {sq},' if sq else '')
           + f' notes: {full!r} }},')
     A('  ],')

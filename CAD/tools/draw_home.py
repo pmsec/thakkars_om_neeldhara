@@ -393,6 +393,24 @@ def main():
                     for i in range(24)]
             s.poly(ring, fill='#dfe8cf', stroke='#7a8a60', sw=1.0)
             continue
+        # A SINK IS A BOWL AND A HOB IS FOUR RINGS: the two kitchen fittings are
+        # furniture with a label, drawn with the symbol a plan reader expects
+        # rather than as the blank box their footprint would give.
+        if f[0] == 'console' and f[5].startswith(('sink —', 'hob —')):
+            a, b, c, d = f[1:5]
+            cx, cy = (a + c) / 2, (b + d) / 2
+            s.rect(a, b, c, d, fill='#ffffff', stroke='#8a8378', sw=1.0)
+            if f[5].startswith('sink'):
+                rx, ry = (c - a) / 2 - 45, (d - b) / 2 - 45
+                bowl = [(cx + rx * math.cos(2 * math.pi * i / 28), cy + ry * math.sin(2 * math.pi * i / 28))
+                        for i in range(28)]
+                s.poly(bowl, fill='none', stroke='#8a8378', sw=0.8)
+            else:
+                for i, j in ((-1, -1), (1, -1), (-1, 1), (1, 1)):
+                    ring = [(cx + i * 145 + 85 * math.cos(2 * math.pi * k / 20),
+                             cy + j * 120 + 85 * math.sin(2 * math.pi * k / 20)) for k in range(20)]
+                    s.poly(ring, fill='none', stroke='#8a8378', sw=0.8)
+            continue
         # A GHOST IS A PIECE THAT IS NOT THERE YET — the footprint a Murphy bed
         # takes when it comes down, a door leaf's clearance, a fridge's swing.
         # It is drawn as a dashed outline and nothing else, because it is a

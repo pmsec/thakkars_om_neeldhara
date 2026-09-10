@@ -971,8 +971,18 @@ FURNITURE.append(
 # It ends at y 1200, and the bath door — which swings west into the bedroom
 # from y 1770 since it moved clear of column 3 — is 570 (1'-10") below that.
 WARD = (0.0, 3520.0, 1900.0, 4120.0)          # 1900 x 600
-MURPHY = (80.0, 1050.0, 2080.0, 2550.0)       # queen, folded DOWN
-MURPHY_FOLDED = 900.0                          # cabinet + sofa, off the wall
+# THE MURPHY IS TWO PIECES, as the grandmother's in Home 1 is: a cabinet on
+# the wall that the mattress folds up into, and a sofa in front of it that the
+# bed comes down OVER. The walkthrough draws exactly these two and folds the
+# bed down from the cabinet's face, so what it shows is what the plan says.
+MURPHY_CAB = 380.0                             # the cabinet, off the wall
+MURPHY_SOFA = 520.0                            # the sofa in front of it
+MURPHY_FOLDED = MURPHY_CAB + MURPHY_SOFA        # 900: cabinet + sofa, off the wall
+MURPHY_L = 2000.0                              # the mattress: queen, 1500 x 2000
+# Down, the mattress reaches MURPHY_L past the cabinet's face — 80 + 380 +
+# 2000 = 2460, which leaves 590 (1'-11") to the east wall and clears the desk
+# chair, whose seat ends at y 925.
+MURPHY = (80.0, 1050.0, 80.0 + MURPHY_CAB + MURPHY_L, 2550.0)   # folded DOWN
 DESK = (2450.0, 0.0, 3050.0, 1200.0)          # 600 x 1200, flush in the corner
 DESK_CHAIR = (1950.0, 475.0, 2400.0, 925.0)
 
@@ -985,15 +995,21 @@ FURNITURE += [
     # sofa is drawn solid and the bed's footprint dashed around it — the plan
     # shows the everyday state and says what happens to it, rather than showing
     # a bed that is up against the wall for twenty-three hours a day.
-    ('sofa', MURPHY[0], MURPHY[1], MURPHY[0] + MURPHY_FOLDED, MURPHY[3],
-     "sofa — 1500 x 900 (4'-11\" x 2'-11\") over the Murphy cabinet, facing "
-     'east; the bed folds down inside the dashed line',
-     'R-BEDROOM', 800, _round_rect(MURPHY[0], MURPHY[1],
+    ('wardrobe', MURPHY[0], MURPHY[1], MURPHY[0] + MURPHY_CAB, MURPHY[3],
+     f"wall bed cabinet — queen 1500 x {MURPHY_L:.0f} folds down over the "
+     f"sofa; {MURPHY_CAB:.0f} ({_ft(MURPHY_CAB)}) deep on the west wall",
+     'R-BEDROOM', 2200),
+    ('sofa', MURPHY[0] + MURPHY_CAB, MURPHY[1], MURPHY[0] + MURPHY_FOLDED,
+     MURPHY[3],
+     f"sofa in front of the wall bed — 1500 x {MURPHY_SOFA:.0f} (4'-11\" x "
+     f"{_ft(MURPHY_SOFA)}), facing east; the bed folds down over it inside "
+     'the dashed line',
+     'R-BEDROOM', 800, _round_rect(MURPHY[0] + MURPHY_CAB, MURPHY[1],
                                    MURPHY[0] + MURPHY_FOLDED, MURPHY[3],
-                                   (40, 200, 200, 40))),
+                                   (40, 200, 200, 40)), False, 'E'),
     ('bed', *MURPHY,
-     "Murphy bed DOWN — queen, 1500 x 2000 (4'-11\" x 6'-7\"): the footprint "
-     'it takes, not a bed standing there',
+     f"Murphy bed DOWN — queen, 1500 x {MURPHY_L:.0f} (4'-11\" x 6'-7\") past "
+     'the cabinet: the footprint it takes, not a bed standing there',
      'R-BEDROOM', 600, None, True),
     ('table', *DESK,
      "desk — 1200 x 600 (3'-11\" x 2'-0\") on the east wall, window to the left",
@@ -1035,26 +1051,24 @@ def _counter(fx, n=24):
     return [(round(a, 1), round(b, 1)) for a, b in out]
 
 
-# THE FRIDGE IS OFF THE WINDOW. The north wall has two windows — 5035-6435 and
-# 7235-7985 — which leaves three solid piers: 425, 800 and 310. A fridge is
-# 1800-2000 tall, so anywhere in a window band it blocks it, and the corner
-# pier is only 310 (1'-0") wide. Standing it hard in the north-east corner, as
-# first marked, cost 440 (1'-5") of the 750 (2'-6") window.
+# THE FRIDGE IS IN THE NORTH-EAST CORNER, its back on the north wall and its
+# door facing south — straight down the east leg at the kitchen door, so it
+# opens toward whoever has just walked in rather than onto the worktop.
+# (Karan's call: the corner was 750 (2'-6") of worktop nobody could reach
+# round, and the fridge below it on the east leg had its door on the run.)
 #
-# It is now on the east wall directly BELOW the worktop's north run, which
-# ends at y 1220. Both windows stay clear, the worktop goes the full length of
-# the north wall instead of stopping short, and the fridge closes the corner
-# rather than leaving a slot: worktop and fridge meet on the same line. What
-# it stands in front of there is the tinted glass on the east leg, which now
-# looks into a bedroom — the price, and it is worth 750 (2'-6") of worktop and
-# a window back.
+# WHAT IT COSTS is the corner window. The north wall's windows are 5035-6435
+# and 7235-7985, and a 900 fridge ending on the east face at 8295 starts at
+# 7395 — so it stands in front of 590 (1'-11") of the 750 (2'-6") window, at
+# 1900 tall. The worktop now stops at the fridge's west side, 7395, and the
+# corner is the fridge, not a counter.
 FRIDGE_W, FRIDGE_D = 900.0, 750.0
-FRIDGE_Y = KTOP + 75 + CTOP_D           # 1220 — under the end of the worktop
-FRIDGE = (KX1 - KT / 2 - FRIDGE_D, FRIDGE_Y,
-          KX1 - KT / 2, FRIDGE_Y + FRIDGE_W)
+FRIDGE_Y = KTOP + 75                    # 620 — hard on the north wall
+FRIDGE = (KX1 - KT / 2 - FRIDGE_W, FRIDGE_Y,
+          KX1 - KT / 2, FRIDGE_Y + FRIDGE_D)
 
-# The run stops at the fridge only when the fridge is in the corner; dropped
-# south it clears the north wall and the worktop goes the whole way.
+# The run stops at the fridge when the fridge is in the corner; dropped south
+# it would clear the north wall and the worktop would go the whole way.
 COUNTER = _counter(FRIDGE[0] if FRIDGE_Y < KTOP + 75 + CTOP_D else KX1 - KT / 2)
 _CTOP_FX = FRIDGE[0] if FRIDGE_Y < KTOP + 75 + CTOP_D else KX1 - KT / 2
 
@@ -1074,9 +1088,34 @@ FURNITURE += [
      'one run from the serving counter round the corner to the fridge',
      'R-KITCHEN', 900, COUNTER),
     ('shelves', *FRIDGE,
-     "fridge — 900 x 750 (2'-11\" x 2'-6\") on the east wall, under the end "
-     'of the worktop and clear of both north windows',
-     'R-KITCHEN', 1900),
+     "fridge — 900 x 750 (2'-11\" x 2'-6\") in the north-east corner, back to "
+     'the north wall, door facing the kitchen door',
+     'R-KITCHEN', 1900, None, False, 'S'),
+]
+
+# ------------------------------------------------- the sink and the hob
+# THE SINK IS UNDER THE HATCH, on the kitchen side of the serving slab: whoever
+# is washing up faces the living room through the open sash, which is what the
+# hatch is for. The tap stands at the back, 75 (3") off the wall's face, so the
+# sash comes down past it. THE HOB IS ON THE NORTH RUN under the big window,
+# centred on it, where the sink was. (Karan's call, both.)
+SINK_W, SINK_D = 520.0, 420.0
+SINK_C = ((BAR_X0 + BAR_X1) / 2, KBOT - KT / 2 - 75.0 - SINK_D / 2)   # (5795, 3000)
+SINK = (SINK_C[0] - SINK_W / 2, SINK_C[1] - SINK_D / 2,
+        SINK_C[0] + SINK_W / 2, SINK_C[1] + SINK_D / 2)
+HOB_W, HOB_D = 580.0, 500.0
+HOB_C = ((5035.0 + 6435.0) / 2, KTOP + 75 + CTOP_D / 2)               # (5735, 920)
+HOB = (HOB_C[0] - HOB_W / 2, HOB_C[1] - HOB_D / 2,
+       HOB_C[0] + HOB_W / 2, HOB_C[1] + HOB_D / 2)
+FURNITURE += [
+    ('console', *SINK,
+     f"sink — {SINK_W:.0f} x {SINK_D:.0f} ({_ft(SINK_W)} x {_ft(SINK_D)}) under "
+     'the serving hatch, tap at the back',
+     'R-KITCHEN', 900, _round_rect(*SINK, 40)),
+    ('console', *HOB,
+     f"hob — {HOB_W:.0f} x {HOB_D:.0f} ({_ft(HOB_W)} x {_ft(HOB_D)}), four "
+     'burners, on the north run centred under the window',
+     'R-KITCHEN', 900),
 ]
 
 # --------------------------------------------------- what goes in the north bath

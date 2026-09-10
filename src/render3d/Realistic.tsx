@@ -4996,6 +4996,12 @@ export function buildFixtures(M: Mats): THREE.Group {
       pan.position.set((f.at.x - (alongX ? sgn * 40 : 0)) * S, 320 * S, (f.at.y - (alongX ? 0 : sgn * 40)) * S)
       pan.castShadow = true
       g.add(pan)
+      // a back-to-wall pan stands on the floor: a ceramic base under the bowl,
+      // so it does not hang in the air when seen from above
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(Math.min(w, d) * 0.37 * S, Math.min(w, d) * 0.33 * S, 210 * S, 20), M.marble)
+      base.scale.copy(pan.scale)
+      base.position.set(pan.position.x, 105 * S, pan.position.z)
+      g.add(base)
       const seat = new THREE.Mesh(new THREE.CylinderGeometry(Math.min(w, d) * 0.47 * S, Math.min(w, d) * 0.47 * S, 24 * S, 20), M.appliance)
       seat.scale.copy(pan.scale)
       seat.position.set(pan.position.x, 452 * S, pan.position.z)
@@ -5146,8 +5152,18 @@ export function buildFixtures(M: Mats): THREE.Group {
       const spout = box(along ? 16 : 110, 14, along ? 110 : 16, M.chrome)
       spout.position.set((backX - vx * 50) * S, (RIM + 162) * S, (backZ - vz * 50) * S)
       g.add(spout)
+      // a teak shelf on two brackets carries the bowl off the wall, so it is a
+      // basin on a shelf and not a bowl in the air; the trap drops under it
+      const shelf = box(along ? w + 140 : d + 60, 30, along ? d + 60 : w + 140, M.teak)
+      shelf.position.set((cx - vx * 30) * S, (RIM - 165) * S, (cy - vz * 30) * S)
+      g.add(shelf)
+      for (const e of [-1, 1]) {
+        const br = box(along ? 30 : d - 60, 220, along ? d - 60 : 30, M.trunk)
+        br.position.set((cx + (along ? e * (w / 2 + 20) : vx * 10)) * S, (RIM - 290) * S, (cy + (along ? vz * 10 : e * (w / 2 + 20))) * S)
+        g.add(br)
+      }
       const trap = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 22 * S, 150 * S, 10), M.chrome)
-      trap.position.set(cx * S, (RIM - 240) * S, cy * S)
+      trap.position.set(cx * S, (RIM - 260) * S, cy * S)
       g.add(trap)
       const pipe = box(along ? 18 : d / 2, 18, along ? d / 2 : 18, M.chrome)
       pipe.position.set((cx + vx * d / 4) * S, (RIM - 310) * S, (cy + vz * d / 4) * S)

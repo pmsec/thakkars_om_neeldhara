@@ -45,6 +45,10 @@ export type LampSpot =
   /** a run of teak overhead cabinets on a wall face: from (x, y) along (ux, uy) for len,
    *  standing `depth` off the face into the room along (nx, ny), from h0 to h1 */
   | { kind: 'loft'; x: number; y: number; ux: number; uy: number; nx: number; ny: number; len: number; h0: number; h1: number; depth: number }
+  /** a curved run of overhead cabinets on a curved wall face: the annular sector between
+   *  radius r (the face) and r - depth about (cx, cy), from plan angle a0 to a1, from h0 to h1,
+   *  with faceted doors on its inner face */
+  | { kind: 'loftArc'; cx: number; cy: number; r: number; a0: number; a1: number; h0: number; h1: number; depth: number; doors: number }
   /** a wall-mounted microwave: its back on the face at (x, y), door toward (nx, ny), w wide, base at h0 */
   | { kind: 'microwave'; x: number; y: number; nx: number; ny: number; w: number; h0: number; depth: number }
 
@@ -83,6 +87,11 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     { kind: 'loft', x: 4610, y: 620, ux: 1, uy: 0, nx: 0, ny: 1, len: 3685, h0: 2450, h1: 3000, depth: 350 },
     { kind: 'loft', x: 8295, y: 970, ux: 0, uy: 1, nx: -1, ny: 0, len: 1530, h0: 2450, h1: 3000, depth: 350 },
     { kind: 'loft', x: 6435, y: 620, ux: 1, uy: 0, nx: 0, ny: 1, len: 800, h0: 1500, h1: 2440, depth: 350 },
+    // the south-west corner's loft follows the curve, from the west leg's
+    // tangent round to the flat bottom's, and a wall cabinet hangs on the
+    // west leg's north pier under the loft (both Karan's call)
+    { kind: 'loftArc', cx: 5395, cy: 2500, r: 785, a0: Math.PI / 2, a1: Math.PI, h0: 2450, h1: 3000, depth: 350, doors: 4 },
+    { kind: 'loft', x: 4610, y: 1420, ux: 0, uy: -1, nx: 1, ny: 0, len: 760, h0: 1500, h1: 2440, depth: 350 },
     // and a wall-mounted microwave under that cabinet, 250 above the worktop
     { kind: 'microwave', x: 6835, y: 620, nx: 0, ny: 1, w: 520, h0: 1150, depth: 380 },
   ],
@@ -312,6 +321,38 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
         at(c + (i % 2 ? -1 : 1) * (leaf / 2 - 90), sp.depth + 14, sp.h0 + 70, bar)
       }
       at(sp.len / 2, sp.depth - 4, sp.h1 - 6, box(sp.len, 8, 12, M.trunk, 0, 0, 0))
+      continue
+    }
+    if (sp.kind === 'loftArc') {
+      // the carcass: an annular sector in plan, extruded down from h1 to h0
+      const sh = new THREE.Shape()
+      sh.absarc(sp.cx, sp.cy, sp.r - 10, sp.a0, sp.a1, false)
+      sh.absarc(sp.cx, sp.cy, sp.r - sp.depth + 20, sp.a1, sp.a0, true)
+      sh.closePath()
+      const geo = new THREE.ExtrudeGeometry(sh, { depth: sp.h1 - sp.h0, bevelEnabled: false, curveSegments: 24 })
+      geo.scale(S, S, S)
+      const carcass = new THREE.Mesh(geo, M.teak)
+      carcass.rotation.x = Math.PI / 2                     // shape y -> plan y; extrusion -> down from h1
+      carcass.position.y = sp.h1 * S
+      g.add(carcass)
+      // the doors: flat slabs on chords of the inner face, one per facet, a bar low on each
+      const ri = sp.r - sp.depth
+      const H = sp.h1 - sp.h0
+      const da = (sp.a1 - sp.a0) / sp.doors
+      for (let i = 0; i < sp.doors; i++) {
+        const am = sp.a0 + (i + 0.5) * da
+        const chord = 2 * ri * Math.sin(da / 2)
+        const px = sp.cx + Math.cos(am) * (ri + 2), py = sp.cy + Math.sin(am) * (ri + 2)
+        const door = box(chord - 4, H - 24, 18, M.teak, 0, 0, 0)
+        door.position.set(px * S, (sp.h0 + 12 + (H - 24) / 2) * S, py * S)
+        door.rotation.y = -am + Math.PI / 2                 // the slab's face square to the radius
+        g.add(door)
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, Math.min(140, chord * 0.5) * S, 8), M.brass)
+        bar.rotation.z = Math.PI / 2
+        bar.rotation.y = -am + Math.PI / 2
+        bar.position.set((sp.cx + Math.cos(am) * (ri - 14)) * S, (sp.h0 + 70) * S, (sp.cy + Math.sin(am) * (ri - 14)) * S)
+        g.add(bar)
+      }
       continue
     }
     if (sp.kind === 'microwave') {

@@ -41,7 +41,7 @@ export type LampSpot =
   /** a teak arch framing a window from inside: a soffit along the ceiling between x0 and x1
    *  (the inner faces of its two legs, which are drawn pieces), coves of radius r at the
    *  corners, and a flower pendant hung from the soffit */
-  | { kind: 'arch'; x0: number; x1: number; y0: number; y1: number; r: number; pendant: { x: number; y: number; h: number } }
+  | { kind: 'arch'; x0: number; x1: number; y0: number; y1: number; r: number; band: number; pendant: { x: number; y: number; h: number } }
   /** a run of teak overhead cabinets on a wall face: from (x, y) along (ux, uy) for len,
    *  standing `depth` off the face into the room along (nx, ny), from h0 to h1 */
   | { kind: 'loft'; x: number; y: number; ux: number; uy: number; nx: number; ny: number; len: number; h0: number; h1: number; depth: number }
@@ -76,10 +76,10 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     { kind: 'desk', x: 2900, y: 250, top: 750 },
     // the balcony: a lantern on its west wall
     { kind: 'lantern', x: 3800, y: 11700, h: 1800, nx: 1, ny: 0 },
-    // the east room: the teak arch over the daybed - the fin and the shelf
-    // column are on the plan (arch fin, arch shelves); this is the soffit, the
-    // two coves and the flower pendant over the middle of the seat
-    { kind: 'arch', x0: 9490, x1: 11120, y0: 8005, y1: 8355, r: 500, pendant: { x: 10305, y: 8180, h: 2050 } },
+    // the east room: the teak frame over the daybed, wall to wall - the fin
+    // and the panel are on the plan (arch fin, arch panel); this is the band
+    // along the ceiling between them and the flower pendant over the seat
+    { kind: 'arch', x0: 9450, x1: 11470, y0: 8005, y1: 8355, r: 0, band: 220, pendant: { x: 10460, y: 8180, h: 2050 } },
     // the kitchen's lofts: teak overheads from 2450 to 3000 on the west leg,
     // the north wall and the east leg (the corners left to the curves), and a
     // wall cabinet on the 800 pier between the two north windows
@@ -270,11 +270,11 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
       continue
     }
     if (sp.kind === 'arch') {
-      const top = ceiling - 60                                   // the soffit's underside
+      const top = ceiling - sp.band                              // the band's underside
       const depth = sp.y1 - sp.y0
       const cz = (sp.y0 + sp.y1) / 2
-      const soffit = box(sp.x1 - sp.x0 + 80, 60, depth, M.teak, 0, 0, 0)
-      soffit.position.set(((sp.x0 + sp.x1) / 2) * S, (top + 30) * S, cz * S)
+      const soffit = box(sp.x1 - sp.x0, sp.band, depth, M.teak, 0, 0, 0)
+      soffit.position.set(((sp.x0 + sp.x1) / 2) * S, (top + sp.band / 2) * S, cz * S)
       g.add(soffit)
       // the coves: the square corner between a leg and the soffit, less a quarter circle
       const cove = (x: number, dir: 1 | -1): THREE.Mesh => {
@@ -289,8 +289,7 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
         m.position.z = sp.y0 * S
         return m
       }
-      g.add(cove(sp.x0, 1))
-      g.add(cove(sp.x1, -1))
+      if (sp.r > 0) { g.add(cove(sp.x0, 1)); g.add(cove(sp.x1, -1)) }
       // the pendant: a cord from the soffit, one bloom over the seat
       cord(sp.pendant.x, sp.pendant.y, top, sp.pendant.h + 40)
       const rose = new THREE.Mesh(new THREE.CylinderGeometry(40 * S, 40 * S, 16 * S, 14), M.brass)

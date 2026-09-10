@@ -496,73 +496,15 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     return g
   }
 
-  // ---- the timber arch's legs over the daybed: a fin at the west end, a
-  // column of four lit shelves at the east end. Both stand on the seat, above
-  // the mattress; the soffit and coves that join them are in homeLamps.ts.
-  if (f.kind === 'screen' && /^arch fin/i.test(label)) {
-    const base = 520, top = Math.min(f.height, getModel().data.levels.ceiling)
+  // ---- the timber frame's legs over the daybed: a fin at the west end and a
+  // panel on the east wall, both standing on the seat above the mattress; the
+  // band that joins them along the ceiling is in homeLamps.ts.
+  if (f.kind === 'screen' && /^arch (fin|panel)/i.test(label)) {
+    const base = 540, top = Math.min(f.height, getModel().data.levels.ceiling)   // clear of the lid's mattress
     g.add(box(w - 2, top - base, d - 2, M.teak, 0, (base + top) / 2, 0))
     place(g, cx, cy)
     return g
   }
-  if (f.kind === 'shelves' && /^arch shelves/i.test(label)) {
-    const base = 520, top = Math.min(f.height, 2600)
-    const back = wallSide(f)                       // the wall the column backs on
-    const bv = vec(back)
-    const along = back === 'N' || back === 'S'   // the shelves face across the piece's short axis
-    const T = 24
-    // back panel on the wall, the two side cheeks, a top
-    g.add(box(along ? w : T, top - base, along ? T : d, M.teak, bv.x * ((w - T) / 2), (base + top) / 2, bv.z * ((d - T) / 2)))
-    for (const e of [-1, 1]) g.add(box(along ? T : w, top - base, along ? d : T, M.teak, along ? e * (w - T) / 2 : 0, (base + top) / 2, along ? 0 : e * (d - T) / 2))
-    g.add(box(w, T, d, M.teak, 0, top - T / 2, 0))
-    const boards = [base + 380, base + 830, base + 1280, base + 1730]
-    const led = new THREE.MeshStandardMaterial({ color: 0xfff1d8, emissive: 0xffc98a, emissiveIntensity: 1.2, roughness: 0.6 })
-    const front = opposite(back)
-    const fv = vec(front)
-    for (const [i, h] of boards.entries()) {
-      g.add(box(w - 2 * T, T, d - 2 * T, M.teak, 0, h, 0))
-      // a light strip under the board's front edge, throwing down on the shelf below
-      g.add(box(along ? w - 2 * T - 40 : 8, 5, along ? 8 : d - 2 * T - 40, led, fv.x * (w / 2 - T - 24), h - T / 2 - 3, fv.z * (d / 2 - T - 24)))
-      const light = new THREE.PointLight(0xffd6a6, 0.28, 1.4, 1.8)
-      light.position.set(fv.x * (w / 2 - T - 40) * S, (h - 40) * S, fv.z * (d / 2 - T - 40) * S)
-      g.add(light)
-      // what stands on each shelf, 30 above the board so nothing z-fights
-      const s0 = h + T / 2
-      if (i === 0) {
-        const vase = new THREE.Mesh(new THREE.CylinderGeometry(52 * S, 38 * S, 250 * S, 14), M.pot)
-        vase.position.set(-60 * S, (s0 + 125) * S, 20 * S)
-        g.add(vase)
-        const sprig = new THREE.Mesh(new THREE.SphereGeometry(70 * S, 8, 6), M.leafDark)
-        sprig.scale.set(1, 0.7, 1); sprig.position.set(-60 * S, (s0 + 280) * S, 20 * S)
-        g.add(sprig)
-        g.add(box(120, 34, 90, M.walnut, 80, s0 + 17, -30))
-      } else if (i === 1) {
-        for (const [k, col] of [M.fabricDark, M.fabric, M.trunk].entries()) g.add(box(150 - k * 12, 26, 210 - k * 20, col, -40, s0 + 13 + k * 26, 10))
-        const bowl = new THREE.Mesh(new THREE.CylinderGeometry(60 * S, 40 * S, 50 * S, 14, 1, true), M.brass)
-        bowl.position.set(95 * S, (s0 + 25) * S, -30 * S)
-        g.add(bowl)
-      } else if (i === 2) {
-        const fig = new THREE.Mesh(new THREE.CylinderGeometry(24 * S, 34 * S, 150 * S, 10), M.brass)
-        fig.position.set(60 * S, (s0 + 75) * S, 0)
-        g.add(fig)
-        const head = new THREE.Mesh(new THREE.SphereGeometry(30 * S, 10, 8), M.brass)
-        head.position.set(60 * S, (s0 + 175) * S, 0)
-        g.add(head)
-        const frame = box(110, 140, 12, M.walnut, -70, s0 + 70, -20)
-        frame.rotation.y = 0.35
-        g.add(frame)
-      } else {
-        const candle = new THREE.Mesh(new THREE.CylinderGeometry(30 * S, 30 * S, 110 * S, 12), M.porcelain)
-        candle.position.set(-70 * S, (s0 + 55) * S, 30 * S)
-        g.add(candle)
-        const box2 = box(140, 70, 100, M.fabricDark, 60, s0 + 35, -20)
-        g.add(box2)
-      }
-    }
-    place(g, cx, cy)
-    return g
-  }
-
   // ---- the serving counter: one stone slab through the hatch, a base under it
   // in the kitchen and a pedestal at its far end in the living room
   if (f.kind === 'table' && /serving counter/i.test(label)) {
@@ -607,6 +549,7 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
   // ---- daybeds: the built seat, its mattress, the diwan and its bolster
   if (f.kind === 'daybed') {
     const ring = poly ?? localRect
+    if (/lifts with the seat/i.test(label)) return g            // drawn with the lid, in both states
     if (/mattress/i.test(label)) {
       const top = Math.min(f.height, 520)
       g.add(basePrism(ring, top - 70, top, M.duvet))
@@ -636,6 +579,65 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
       bol.position.y = (base + r) * S
       g.add(bol)
       void top
+      place(g, cx, cy)
+      return g
+    }
+    if (/lift-up/i.test(label)) {
+      // THE TOY STORE: the seat is a lid (drawn with the doors, in both
+      // states); what stands here is the box - a timber carcass open at the
+      // top - and the toys in it, which show when the lid is up
+      const H = Math.min(f.height, 460)
+      const T = 40
+      g.add(basePrism(ring, 0, 80, M.wallWood))                                  // the floor
+      const SIDE = H - 30                                                          // the lid's 30 sits on top
+      g.add(box(w, SIDE, T, M.wallWood, 0, SIDE / 2, -d / 2 + T / 2))              // the four sides
+      g.add(box(w, SIDE, T, M.wallWood, 0, SIDE / 2, d / 2 - T / 2))
+      g.add(box(T, SIDE, d, M.wallWood, -w / 2 + T / 2, SIDE / 2, 0))
+      g.add(box(T, SIDE, d, M.wallWood, w / 2 - T / 2, SIDE / 2, 0))
+      const toy = (hex: number) => new THREE.MeshStandardMaterial({ color: hex, roughness: 0.55 })
+      const red = toy(0xd94b3a), blue = toy(0x3a6fd9), yellow = toy(0xf2c53d), green = toy(0x4caf6a), brown = toy(0x8d6748)
+      const fl = 80
+      // building blocks in a loose heap
+      for (const [i, [bx, bz, sz, m]] of ([[-760, -180, 110, red], [-640, -60, 100, blue], [-700, 120, 90, yellow], [-560, 200, 110, green], [-680, -260, 80, blue], [-820, 60, 95, yellow]] as const).entries()) {
+        const b = box(sz, sz, sz, m, bx, fl + sz / 2 + (i === 1 ? 100 : 0), bz)
+        b.rotation.y = i * 0.5
+        g.add(b)
+      }
+      // a ball
+      const ball = new THREE.Mesh(new THREE.SphereGeometry(95 * S, 16, 12), red)
+      ball.position.set(-300 * S, (fl + 95) * S, 120 * S)
+      g.add(ball)
+      // a toy car: body, cab, four wheels
+      g.add(box(260, 70, 130, yellow, 80, fl + 60, -150))
+      g.add(box(130, 60, 110, blue, 60, fl + 125, -150))
+      for (const [ox, oz] of [[-90, -70], [90, -70], [-90, 70], [90, 70]] as const) {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(30 * S, 30 * S, 22 * S, 12), M.graphite)
+        wh.rotation.x = Math.PI / 2
+        wh.position.set((80 + ox) * S, (fl + 30) * S, (-150 + oz) * S)
+        g.add(wh)
+      }
+      // a teddy sitting against the far side
+      const body = new THREE.Mesh(new THREE.SphereGeometry(110 * S, 14, 10), brown)
+      body.scale.set(1, 1.15, 0.9); body.position.set(520 * S, (fl + 115) * S, 180 * S)
+      g.add(body)
+      const head = new THREE.Mesh(new THREE.SphereGeometry(80 * S, 14, 10), brown)
+      head.position.set(520 * S, (fl + 265) * S, 190 * S)
+      g.add(head)
+      for (const e of [-1, 1]) {
+        const ear = new THREE.Mesh(new THREE.SphereGeometry(28 * S, 8, 6), brown)
+        ear.position.set((520 + e * 62) * S, (fl + 325) * S, 190 * S)
+        g.add(ear)
+      }
+      // a stacking-ring tower
+      for (const [i, m] of [red, yellow, green, blue].entries()) {
+        const ring2 = new THREE.Mesh(new THREE.TorusGeometry((80 - i * 14) * S, 22 * S, 8, 20), m)
+        ring2.rotation.x = Math.PI / 2
+        ring2.position.set(780 * S, (fl + 22 + i * 44) * S, -120 * S)
+        g.add(ring2)
+      }
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 12 * S, 230 * S, 8), M.walnut)
+      post.position.set(780 * S, (fl + 115) * S, -120 * S)
+      g.add(post)
       place(g, cx, cy)
       return g
     }

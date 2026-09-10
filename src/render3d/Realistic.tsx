@@ -2446,6 +2446,64 @@ function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   return g
 }
 
+/**
+ * A lift-up storage bed: a daybed whose label says lift-up. The seat and the
+ * mattress are one lid hinged along the wall side of the box; shut, it lies
+ * on the box with its cushions and a throw; open, it stands up 65 degrees on
+ * its struts and the box (drawn with the piece) shows what is kept in it.
+ * Starts shut, and has its own touch button.
+ */
+function liftBeds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  for (const f of furniture) {
+    if (f.kind !== 'daybed' || !/lift-up/i.test(f.label)) continue
+    const w = f.w, d = f.d, cx = f.x + w / 2, cy = f.y + d / 2
+    const H = Math.min(f.height, 460)
+    const gaps = wallGaps(f)
+    const hinge = (['N', 'S', 'E', 'W'] as const).reduce((b, s) => (gaps[s] < gaps[b] ? s : b), 'S' as 'N' | 'S' | 'E' | 'W')
+    const hv = hinge === 'N' ? { x: 0, z: -1 } : hinge === 'S' ? { x: 0, z: 1 } : hinge === 'E' ? { x: 1, z: 0 } : { x: -1, z: 0 }
+    const along = hinge === 'N' || hinge === 'S'            // the hinge runs along x
+    const span = along ? w : d                              // the lid's length along the hinge
+    const reach = along ? d : w                             // and its depth away from it
+    // the lid, built in a frame whose origin is the hinge line at the seat's top
+    const lid = new THREE.Group()
+    const at = (m: THREE.Object3D, out: number, h: number, u = 0) => {
+      // out: away from the hinge into the room; h: above the hinge line; u: along the hinge
+      m.position.set((along ? u : -hv.x * out) * S, h * S, (along ? -hv.z * out : u) * S)
+      lid.add(m)
+    }
+    at(box(along ? span - 4 : reach - 4, 30, along ? reach - 4 : span - 4, M.wallWood), reach / 2, 15)          // the timber lid
+    at(box(along ? span - 140 : reach - 140, 70, along ? reach - 140 : span - 140, M.duvet), reach / 2, 65)   // the mattress
+    if (mode === 'shut') {
+      const n = Math.max(2, Math.round(span / 600))
+      for (let i = 0; i < n; i++) {
+        const u = -span / 2 + (i + 0.5) * (span / n)
+        const c = box(along ? span / n - 80 : 150, 320, along ? 150 : span / n - 80, M.pillow)
+        c.rotation[along ? 'x' : 'z'] = (along ? hv.z : -hv.x) * 0.18
+        at(c, 115, 260, u)
+      }
+      at(box(along ? 420 : reach - 120, 50, along ? reach - 120 : 420, M.throw), reach / 2, 125, span / 2 - 300)
+    } else {
+      // two gas struts, drawn as chrome rods from the box's floor to the lid
+      for (const u of [-span / 2 + 200, span / 2 - 200]) {
+        const rod = new THREE.Mesh(new THREE.CylinderGeometry(8 * S, 8 * S, (reach * 0.55) * S, 8), M.chrome)
+        rod.rotation.z = along ? 0 : -0.9
+        rod.rotation.x = along ? hv.z * 0.9 : 0
+        at(rod, reach * 0.2, -reach * 0.08, u)
+      }
+    }
+    // the hinge line: the box's top edge on the wall side; up is the sign that
+    // lifts the far edge (Rx turns -z up for a positive angle, Rz turns -x up)
+    lid.position.set((cx + hv.x * (reach / 2)) * S, (H - 30) * S, (cy + hv.z * (reach / 2)) * S)
+    if (mode === 'open') lid.rotation[along ? 'x' : 'z'] = (along ? hv.z : -hv.x) * (65 * Math.PI / 180)
+    tagItem(lid, `liftbed:${f.id}`, mode, [
+      { x: cx - hv.x * (reach / 2 + 350), y: cy - hv.z * (reach / 2 + 350), h: 900 },
+    ])
+    g.add(lid)
+  }
+  return g
+}
+
 function hatchSash(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   for (const w of model.walls) {
@@ -4238,6 +4296,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(hatchSash(M, mode))
     set.add(timberBlinds(M, mode))
     set.add(foldingDoors(M, mode))
+    set.add(liftBeds(M, mode))
     set.add(dividerPanels(M, mode))
     set.add(slidingGlass(M, mode))
     root.add(set)
@@ -5110,7 +5169,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       // each movable piece follows its own switch if it has one, else the Doors switch
       const id = o.userData.item as string | undefined
       if (id && o.userData.mode) {
-        const open = items[id] ?? !shut
+        // a lift-up bed starts shut whatever the Doors switch says
+        const open = items[id] ?? (id.startsWith('liftbed') ? false : !shut)
         o.visible = (o.userData.mode === 'open') === open
         pieces++
       }
@@ -5723,16 +5783,17 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       {nearItem && (() => {
         // what the piece is, and which way it is
         const id = nearItem
-        const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? !doorsShut)
+        const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? (id.startsWith('liftbed') ? false : !doorsShut))
         const kind = id.split(':')[0]
         const noun =
           kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
           : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : 'door'
+          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : 'door'
         const verb =
           kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
           : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
           : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
+          : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the toy store')
           : `${open ? 'Shut' : 'Open'} this ${noun}`
         return (
           <button

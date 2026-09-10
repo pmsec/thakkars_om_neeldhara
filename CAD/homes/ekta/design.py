@@ -478,6 +478,8 @@ HATCH = (_kit_bot_arc(BAR_X0), _kit_bot_arc(BAR_X1))
 # into the living room, because everything on the inside of that corner is
 # counter.
 KDOOR_W = 850.0
+# where the east leg goes straight: the U's total arc less the straight leg
+KIT_E_LEG = ARC - (KBOT - KR - KTOP)                # 6897.2
 KDOOR = (_kit_bot_arc(KX1 - KR), _kit_bot_arc(KX1 - KR) + KDOOR_W)
 
 _BAR_N = KBOT - KT / 2 - BAR_IN     # 2885
@@ -541,7 +543,11 @@ NEW_WALLS = [
        'the kitchen door — swings out into the living room'),     # the way in
       # THE EAST LEG LOOKS INTO THE FAMILY ROOM, so this stretch carries a
       # timber slat blind on the room side that lifts to open (Karan's call).
-      ('window', KDOOR[1], _arc_d(0.896), 1050, 2400, 0,
+      # It starts where the leg goes straight, not at the door's jamb: the
+      # 564 (1'-10") of curve left between the door and the tangent is solid
+      # wall, because glass bent round a 900 radius beside a door read as a
+      # sliver of brown nobody asked for.
+      ('window', KIT_E_LEG, _arc_d(0.896), 1050, 2400, 0,
        'brown tinted glass over the timber dado — a timber slat blind on the '
        'room side, lifts to open', 'tinted')],
      'partition', 'W-KIT', 'kitchen | living', 0, KITCHEN_LINE),

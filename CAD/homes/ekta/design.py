@@ -1605,6 +1605,7 @@ FURNITURE += [
      'R-LIVING-DINING', 850, _round_rect(*CHAISE, (50, 140, 140, 50))),
     ('console', *CONSOLE_LIV_N,
      f"console cabinet — {CONSOLE_LIV_N[3] - CONSOLE_LIV_N[1]:.0f} x 400 "
+     "with a teak mandir standing on it (Karan's call) — "
      f"({_ft(CONSOLE_LIV_N[3] - CONSOLE_LIV_N[1])} x 1'-4\") on the west wall "
      "between the bedroom door and the chaise: two doors, a drawer across the "
      'top, things on it',

@@ -730,7 +730,9 @@ function teakWardrobe(f: FurnitureItem, M: Mats): THREE.Group {
     const PL = 80, DT = 20
     const carcW = alongX ? w - DT : w, carcD = alongX ? d : d - DT
     const carcX = alongX ? -sgn * DT / 2 : 0, carcZ = alongX ? 0 : -sgn * DT / 2
-    g.add(box(carcW - (alongX ? 0 : 60), PL, carcD - (alongX ? 60 : 0), M.trunk, carcX + (alongX ? -sgn * 30 : 0), PL / 2, carcZ + (alongX ? 0 : -sgn * 30)))
+    // the plinth is recessed 60 at the FRONT and flush at the back - it was
+    // recessed on the side axis and shifted back, which put 30 of it in the wall
+    g.add(box(carcW - (alongX ? 60 : 0), PL, carcD - (alongX ? 0 : 60), M.trunk, carcX + (alongX ? -sgn * 30 : 0), PL / 2, carcZ + (alongX ? 0 : -sgn * 30)))
     g.add(box(carcW, H - PL, carcD, M.teak, carcX, PL + (H - PL) / 2, carcZ))
     const faceLen = alongX ? d : w
     const n = wallBed ? 1 : Math.max(1, Math.round(faceLen / 500))
@@ -2324,9 +2326,11 @@ function hatchSash(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const sill = op.sill ?? 900
       const head = op.head ?? 2100
       const half = (head - sill) / 2
-      const a = w.points[0], b = w.points[w.points.length - 1]
-      const L = Math.hypot(b.x - a.x, b.y - a.y) || 1
-      const ux = (b.x - a.x) / L, uy = (b.y - a.y) / L
+      // the opening's own ends and tangent, so a hatch in a wall drawn as a
+      // polyline (Ekta's U) is set out along the wall where it is, not on the
+      // chord between the wall's two ends
+      const ux = op.dir.x, uy = op.dir.y
+      const a = { x: op.p1.x - ux * op.from, y: op.p1.y - uy * op.from }
       // the kitchen face: the wall's normal that points at the kitchen
       const kit = model.roomById.get('R-KITCHEN')
       let nx = -uy, ny = ux
@@ -2684,7 +2688,10 @@ function wallBedDown(M: Mats): THREE.Group | null {
   const sy = sofa ? sofa.y + sofa.d / 2 : cy
   const alongX = Math.abs(sx - cx) >= Math.abs(sy - cy)
   const sgn = alongX ? Math.sign(sx - cx) || 1 : Math.sign(sy - cy) || 1
-  const L = 1905                                   // the Indian queen, 60 x 75 in
+  // the mattress length is in the cabinet's label - "queen 1500 x 1905" is
+  // Home 1's Indian queen, Ekta's is 1500 x 2000
+  const dims = /(\d{4})\s*x\s*(\d{4})/.exec(cab.label)
+  const L = dims ? Number(dims[2]) : 1905
   const W = alongX ? cab.d : cab.w
   const faceX = alongX ? (sgn > 0 ? cab.x + cab.w : cab.x) : cx
   const faceY = alongX ? cy : (sgn > 0 ? cab.y + cab.d : cab.y)
@@ -5458,7 +5465,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           </button>
           <button
             onClick={() => uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, wallBedDown: !st.show3d.wallBedDown } }))}
-            title="The grandmother's wall bed"
+            title="The wall bed: down over its sofa, or folded up into its cabinet"
           >
             Wall bed: {wallBed ? 'down' : 'up'}
           </button>

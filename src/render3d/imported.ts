@@ -51,6 +51,36 @@ export function wallGaps(f: FurnitureItem): Record<Side, number> {
   }
   return out
 }
+/**
+ * The nearest wall face to a point: the foot on the face, the unit tangent
+ * along it and the unit normal from the face toward the point. A piece on a
+ * curved wall has its back in THIS frame, not on a side of its bounding box -
+ * the wash basin on Ekta's curve had its mirror standing on the box's north
+ * edge, at 40 degrees to the wall it was meant to hang on.
+ */
+export function wallFrameAt(x: number, y: number): { px: number; py: number; ux: number; uy: number; nx: number; ny: number; dist: number } | null {
+  const model = getModel()
+  let best: { px: number; py: number; ux: number; uy: number; nx: number; ny: number; dist: number } | null = null
+  for (const w of model.walls) {
+    if (w.thickness < 60) continue
+    for (let k = 1; k < w.points.length; k++) {
+      const a = w.points[k - 1], b = w.points[k]
+      const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+      if (!L2) continue
+      const t = Math.max(0, Math.min(1, ((x - a.x) * (b.x - a.x) + (y - a.y) * (b.y - a.y)) / L2))
+      const fx = a.x + t * (b.x - a.x), fy = a.y + t * (b.y - a.y)
+      const dx = x - fx, dy = y - fy
+      const dc = Math.hypot(dx, dy)
+      const dist = dc - w.thickness / 2
+      if (!best || dist < best.dist) {
+        const L = Math.sqrt(L2)
+        const nx = dc ? dx / dc : 0, ny = dc ? dy / dc : 0
+        best = { px: fx + nx * w.thickness / 2, py: fy + ny * w.thickness / 2, ux: (b.x - a.x) / L, uy: (b.y - a.y) / L, nx, ny, dist }
+      }
+    }
+  }
+  return best
+}
 function wallSide(f: FurnitureItem): Side {
   const g = wallGaps(f)
   return SIDES.reduce((best, s) => (g[s] < g[best] ? s : best), 'N' as Side)
@@ -125,7 +155,7 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
   if (f.kind === 'shelves' && /fridge/i.test(label)) {
     const H = Math.min(f.height, 1900)
     g.add(box(w - 8, H, d - 8, M.appliance, 0, H / 2, 0))
-    const front = opposite(wallSide(f))
+    const front = f.face ?? opposite(wallSide(f))
     const v = vec(front)
     const along = front === 'N' || front === 'S'
     const out = (along ? d : w) / 2 - 2
@@ -169,18 +199,31 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     g.add(poly ? basePrism(poly, 0, top - 30, M.walnut) : box(w, top - 30, d, M.walnut, 0, (top - 30) / 2, 0))
     g.add(poly ? basePrism(poly, top - 30, top, M.marble) : box(w, 30, d, M.marble, 0, top - 15, 0))
     const wall = wallSide(f)
-    g.add(mirrorOn(k, f, wall, Math.min(900, (wall === 'N' || wall === 'S' ? w : d) - 80)))
-    // the tap: a chrome stem rising off the back of the top
-    const v = vec(wall)
-    const back = (wall === 'N' || wall === 'S' ? d : w) / 2 - 70
-    const tap = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 14 * S, 180 * S, 10), M.chrome)
-    tap.position.set(v.x * back * S, (top + 90) * S, v.z * back * S)
-    g.add(tap)
-    const spout = box(wall === 'N' || wall === 'S' ? 16 : 120, 14, wall === 'N' || wall === 'S' ? 120 : 16, M.chrome, v.x * (back - 55), top + 172, v.z * (back - 55))
-    g.add(spout)
-    const towel = box(wall === 'N' || wall === 'S' ? 160 : 120, 40, wall === 'N' || wall === 'S' ? 120 : 160, M.pillow,
-      wall === 'N' || wall === 'S' ? w / 2 - 110 : v.x * (back - 120), top + 20, wall === 'N' || wall === 'S' ? v.z * (back - 120) : d / 2 - 110)
-    g.add(towel)
+    const along = wall === 'N' || wall === 'S'
+    const half = (along ? d : w) / 2
+    const fr = wallFrameAt(cx, cy)
+    if (fr && fr.dist < half + 400) {
+      // everything on the back of the piece is set out from the wall's face
+      // along its tangent, so a console on a curve carries its mirror flat on
+      // the curve. `out` is measured from the face; the piece's own back edge
+      // is `gap` off it.
+      const gap = Math.max(0, fr.dist - half)
+      const yaw = -Math.atan2(fr.uy, fr.ux)
+      const at = (u: number, out: number, h: number, m: THREE.Object3D) => {
+        m.position.set((fr.px + fr.nx * out + fr.ux * u - cx) * S, h * S, (fr.py + fr.ny * out + fr.uy * u - cy) * S)
+        m.rotation.y = yaw
+        g.add(m)
+      }
+      const span = Math.min(700, (along ? w : d) - 200)
+      at(0, gap + 27, 1550, box(span + 60, 960, 26, M.trunk))
+      at(0, gap + 44, 1550, box(span, 900, 10, M.mirror))
+      const tap = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 14 * S, 180 * S, 10), M.chrome)
+      at(0, gap + 70, top + 90, tap)
+      at(0, gap + 125, top + 172, box(16, 14, 120, M.chrome))
+      at(span / 2 - 60, gap + 120, top + 20, box(120, 40, 160, M.pillow))
+    } else {
+      g.add(mirrorOn(k, f, wall, Math.min(900, (along ? w : d) - 80)))
+    }
     place(g, cx, cy)
     return g
   }
@@ -252,30 +295,68 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     if (north.length) {
       const xs = north.map((q) => q.x)
       const x0 = Math.min(...xs), x1 = Math.max(...xs)
+      // the hob and the sink are on the plan as their own pieces (see below);
+      // what stands on the run is a kettle at its far end, a board, and two
+      // jars against the wall at the corner end
       const runY = f.y + 300                                   // the middle of a 600 worktop
-      const hobX = x0 + (x1 - x0) * 0.72
-      const sinkX = x0 + (x1 - x0) * 0.32
-      g.add(box(580, 8, 500, M.hob, hobX - cx, top + 4, runY - cy))
-      for (let i = 0; i < 4; i++) g.add(box(190, 3, 190, M.metal, hobX - cx + (i % 2 ? 140 : -140), top + 9, runY - cy + (i < 2 ? -120 : 120)))
-      g.add(box(520, 6, 420, M.steel, sinkX - cx, top + 3, runY - cy))
-      g.add(box(440, 30, 340, M.graphite, sinkX - cx, top - 14, runY - cy))
-      const tap = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 14 * S, 260 * S, 10), M.chrome)
-      tap.position.set((sinkX - cx) * S, (top + 130) * S, (runY - cy - 250) * S)
-      g.add(tap)
-      g.add(box(16, 14, 180, M.chrome, sinkX - cx, top + 252, runY - cy - 165))
-      // what stands on a worktop: a kettle by the hob, a board, two jars by the wall
       const kettle = new THREE.Mesh(new THREE.CylinderGeometry(75 * S, 85 * S, 190 * S, 16), M.steel)
-      kettle.position.set((hobX - cx + 420) * S, (top + 95) * S, (runY - cy + 60) * S)
+      kettle.position.set((x1 - 350 - cx) * S, (top + 95) * S, (runY - cy + 60) * S)
       g.add(kettle)
-      g.add(box(360, 18, 240, M.walnut, hobX - cx - 460, top + 9, runY - cy + 40))
-      for (const [ox, hh] of [[-120, 170], [-30, 130]] as const) {
+      g.add(box(360, 18, 240, M.walnut, x0 + 1500 - cx, top + 9, runY - cy + 40))
+      for (const [ox, hh] of [[260, 170], [350, 130]] as const) {
         const jar = new THREE.Mesh(new THREE.CylinderGeometry(48 * S, 48 * S, hh * S, 14), M.acrylic)
-        jar.position.set((sinkX - cx + 560 + ox) * S, (top + hh / 2) * S, (runY - cy - 200) * S)
+        jar.position.set((x0 + ox - cx) * S, (top + hh / 2) * S, (runY - cy - 200) * S)
         g.add(jar)
-        g.add(box(96, 12, 96, M.walnut, sinkX - cx + 560 + ox, top + hh + 6, runY - cy - 200))
+        g.add(box(96, 12, 96, M.walnut, x0 + ox - cx, top + hh + 6, runY - cy - 200))
       }
     }
     // door lines on the front: a groove every 600 along the outline's inner edge
+    place(g, cx, cy)
+    return g
+  }
+
+  // ---- the sink: a steel rim flush with the top, the dark bowl inside it, a
+  // tap at the back on the wall side
+  if (f.kind === 'console' && /^sink —/i.test(label)) {
+    const top = Math.min(f.height, 900)
+    const R = 44
+    g.add(box(w, 6, R, M.steel, 0, top + 3, -d / 2 + R / 2))
+    g.add(box(w, 6, R, M.steel, 0, top + 3, d / 2 - R / 2))
+    g.add(box(R, 6, d, M.steel, -w / 2 + R / 2, top + 3, 0))
+    g.add(box(R, 6, d, M.steel, w / 2 - R / 2, top + 3, 0))
+    g.add(box(w - 2 * R, 4, d - 2 * R, M.graphite, 0, top + 2, 0))
+    const back = wallSide(f)
+    const v = vec(back)
+    const along = back === 'N' || back === 'S'
+    const b = (along ? d : w) / 2 - 40
+    const tap = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 14 * S, 260 * S, 10), M.chrome)
+    tap.position.set(v.x * b * S, (top + 130) * S, v.z * b * S)
+    g.add(tap)
+    g.add(box(along ? 16 : 180, 14, along ? 180 : 16, M.chrome, v.x * (b - 85), top + 252, v.z * (b - 85)))
+    place(g, cx, cy)
+    return g
+  }
+  // ---- the hob: a black glass plate, four burner rings, the knobs on its front edge
+  if (f.kind === 'console' && /^hob —/i.test(label)) {
+    const top = Math.min(f.height, 900)
+    g.add(box(w, 8, d, M.hob, 0, top + 4, 0))
+    for (const [i, j] of [[-1, -1], [1, -1], [-1, 1], [1, 1]] as const) {
+      const ring = new THREE.Mesh(new THREE.CylinderGeometry(85 * S, 85 * S, 5 * S, 20), M.metal)
+      ring.position.set(i * 145 * S, (top + 10) * S, j * 120 * S)
+      g.add(ring)
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(32 * S, 32 * S, 8 * S, 12), M.graphite)
+      cap.position.set(i * 145 * S, (top + 14) * S, j * 120 * S)
+      g.add(cap)
+    }
+    const front = opposite(wallSide(f))
+    const v = vec(front)
+    const along = front === 'N' || front === 'S'
+    const e = (along ? d : w) / 2 - 30
+    for (const u of [-150, -50, 50, 150]) {
+      const knob = new THREE.Mesh(new THREE.CylinderGeometry(14 * S, 14 * S, 14 * S, 10), M.chrome)
+      knob.position.set((along ? u : v.x * e) * S, (top + 15) * S, (along ? v.z * e : u) * S)
+      g.add(knob)
+    }
     place(g, cx, cy)
     return g
   }

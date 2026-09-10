@@ -2432,9 +2432,17 @@ function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         m.rotation.y = ang + yaw
         item.add(m)
       }
-      // a leaf: a timber frame round a pane, its own group so it can be turned as one
+      // a leaf, its own group so it can be turned as one: a timber frame round a
+      // pane, or - when the label says timber leaves - a solid timber panel with
+      // two recessed lines, like the sliders' panels
+      const solid = /timber leaves|timber panels/i.test(label)
       const leafGroup = (): THREE.Group => {
         const lg = new THREE.Group()
+        if (solid) {
+          lg.add(box(T, H - 8, leaf - 8, M.wallWood))
+          for (const dy of [-H / 2 + 180, 0, H / 2 - 180]) for (const face of [-1, 1]) lg.add(box(4, 6, leaf - 160, M.trunk, face * (T / 2 + 1), dy, 0))
+          return lg
+        }
         const pane = box(10, H - 2 * FR, leaf - 2 * FR - 8, M.glass)
         lg.add(pane)
         for (const e of [-1, 1]) {
@@ -2445,9 +2453,10 @@ function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       }
       // the track along the head, always there
       at((op.from + op.to) / 2, 0, head - 30, box(Math.max(w.thickness, 60), 60, width, M.wallWood))
-      // the jamb it stacks at: named, else the first
-      const westish = /west|north/i.test(/stack\w* at the (\w+)/i.exec(label)?.[1] ?? '')
-      const stackAtFrom = westish ? (ux > 0 || uy > 0) : true
+      // the jamb it stacks at, by compass name; the opening's `from` end is the
+      // one the wall's direction runs away from
+      const jamb = (/stack\w* at the (north|south|east|west)/i.exec(label)?.[1] ?? '').toLowerCase()
+      const stackAtFrom = jamb === 'north' ? uy > 0 : jamb === 'south' ? uy < 0 : jamb === 'west' ? ux > 0 : jamb === 'east' ? ux < 0 : true
       if (mode === 'shut') {
         for (let k = 0; k < n; k++) {
           at(op.from + (k + 0.5) * leaf, 0, hm, leafGroup())

@@ -1201,6 +1201,87 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return m
     }
     case 'planter': {
+      if (/flower bed/i.test(f.label)) {
+        // THE BALCONY'S FLOWER BED along the parapet (Karan's call: a four-
+        // year-old lives here): a trough the height drawn, flowers along its
+        // room side, and behind them clumps of tall grasses standing well
+        // above the balustrade, so the parapet is no step for a small child
+        const H = f.height || 450
+        const alongX = w >= d
+        const long = alongX ? w : d, across = alongX ? d : w
+        // the front row faces the room: the side its room's anchor is on
+        const anchor = model.rooms.find((r) => r.id === f.room)?.centroid ?? { x: cx, y: cy - 1 }
+        const frontSign = alongX ? (anchor.y < cy ? -1 : 1) : (anchor.x < cx ? -1 : 1)
+        const at = (u: number, v: number) => alongX
+          ? { x: f.x + u, y: cy + v * frontSign }
+          : { x: cx + v * frontSign, y: f.y + u }
+        const trough = box(w, H, d, M.pot)
+        place(trough, cx, cy, H / 2)
+        g.add(trough)
+        const soil = box(w - 40, 30, d - 40, M.soil)
+        place(soil, cx, cy, H - 22)
+        g.add(soil)
+        let sd = 4242
+        const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280 }
+        const petal = [0xe0506a, 0xf2b53d, 0xf4f0e8, 0xd8689a, 0xf2853d].map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 }))
+        const plume = new THREE.MeshStandardMaterial({ color: 0xd9c7a0, roughness: 0.9 })
+        // the front row: leafy mounds with flower heads on stalks
+        const nf = Math.max(2, Math.round(long / 300))
+        for (let i = 0; i < nf; i++) {
+          const u = (i + 0.5) * (long / nf), v = -across * 0.15 + (rnd() - 0.5) * 40
+          const r = Math.min(100, across / 2 - 60)
+          const p = at(u, v)
+          const mound = new THREE.Mesh(new THREE.SphereGeometry(r * S, 10, 8), i % 2 ? M.leaf : M.leafDark)
+          mound.scale.set(1.15, 0.8, 1)
+          mound.position.set(p.x * S, (H + r * 0.5) * S, p.y * S)
+          mound.castShadow = true
+          g.add(mound)
+          for (let j = 0; j < 3 + (i % 2); j++) {
+            const q = at(u + (rnd() - 0.5) * 140, v + (rnd() - 0.5) * 60)
+            const hgt = 180 + rnd() * 160
+            const stalk = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 4 * S, hgt * S, 5), M.leafDark)
+            stalk.position.set(q.x * S, (H + 30 + hgt / 2) * S, q.y * S)
+            g.add(stalk)
+            const head = new THREE.Mesh(new THREE.SphereGeometry((20 + rnd() * 14) * S, 8, 6), petal[(i + j) % petal.length])
+            head.scale.set(1, 0.7, 1)
+            head.position.set(q.x * S, (H + 30 + hgt) * S, q.y * S)
+            g.add(head)
+          }
+        }
+        // the back row: clumps of tall grass, a dozen blades each leaning
+        // out from the clump, a tan plume on some, 800-1000 above the soil
+        const ng = Math.max(2, Math.round(long / 330))
+        const bladeGeo = new THREE.BoxGeometry(14 * S, 1, 3 * S)
+        for (let i = 0; i < ng; i++) {
+          const u = (i + 0.5) * (long / ng), v = across * 0.15
+          const blades = 11 + (i % 3)
+          for (let j = 0; j < blades; j++) {
+            // the lean is slight, so the tallest blade stays over the bed
+            const a = rnd() * Math.PI * 2, lean = 0.02 + rnd() * 0.06
+            const hgt = 780 + rnd() * 240
+            const base = at(u + (rnd() - 0.5) * 90, v + (rnd() - 0.5) * 50)
+            const blade = new THREE.Mesh(bladeGeo, j % 3 ? M.leaf : M.leafDark)
+            blade.scale.y = hgt * S
+            // stood on the soil, leaning out at `lean` toward plan angle `a`
+            blade.position.set(base.x * S, H * S, base.y * S)
+            blade.rotation.order = 'YXZ'
+            blade.rotation.y = -a
+            blade.rotation.x = lean
+            // the box is centred: shift it up its own half-length along its lean
+            blade.translateY(hgt * S / 2)
+            blade.castShadow = true
+            g.add(blade)
+            if (j % 4 === 0) {
+              const pl = new THREE.Mesh(new THREE.SphereGeometry(16 * S, 7, 5), plume)
+              pl.scale.set(1, 3.2, 1)
+              pl.position.copy(blade.position)
+              pl.translateY((hgt / 2 - 10) * S)
+              g.add(pl)
+            }
+          }
+        }
+        return g
+      }
       const bed = f.poly ? polyPiece(f.poly, 0, 300, M.pot, f.room) : box(w, 300, d, M.pot)
       if (bed && !f.poly) place(bed, cx, cy, 150)
       if (/parapet/i.test(f.label)) {

@@ -526,8 +526,77 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
       stem.rotation.set((i % 2 ? 0.16 : -0.12) * (i % 3 ? 1 : -1), i * 1.3, 0.14 * ((i % 2) - 0.5) * 2)
       g.add(stem)
     }
-    for (const [k, col] of [M.fabricDark, M.trunk, M.fabric].entries()) {
-      g.add(box(along ? 220 - k * 16 : 160 - k * 10, 26, along ? 160 - k * 10 : 220 - k * 16, col, along ? 40 : -fv.x * 20, t0 + 13 + k * 26, along ? -fv.z * 20 : 40))
+    const mandir = /mandir/i.test(label)
+    if (!mandir) {
+      for (const [k, col] of [M.fabricDark, M.trunk, M.fabric].entries()) {
+        g.add(box(along ? 220 - k * 16 : 160 - k * 10, 26, along ? 160 - k * 10 : 220 - k * 16, col, along ? 40 : -fv.x * 20, t0 + 13 + k * 26, along ? -fv.z * 20 : 40))
+      }
+    } else {
+      // A TEAK MANDIR STANDING ON THE CONSOLE (Karan's call): a plinth, a
+      // teak shrine open at the front with a pillar at each front corner, a
+      // cornice and a stepped pyramid roof with a dome and a brass kalash;
+      // inside, a small seated idol on a lotus under a warm light, a diya
+      // and a bell. It stands beside the vase, in the books' place
+      const W = 480, D = 300, H = 520
+      const u0 = -run / 2 + 170 + 55 + 80 + W / 2                // along the run, clear of the vase
+      const mg = new THREE.Group()
+      const at = (u: number, v: number, h: number, m: THREE.Object3D) => {
+        // u along the front, v back from the console's centre line toward the wall
+        m.position.set((along ? u : -fv.x * v) * S, h * S, (along ? -fv.z * v : u) * S)
+        m.castShadow = true
+        mg.add(m)
+      }
+      const bx = (a: number, h: number, b: number, mat: THREE.Material) => box(along ? a : b, h, along ? b : a, mat, 0, 0, 0)
+      const teak = M.teak, walnut = M.walnut, brass = M.brass
+      const vc = 20                                              // the shrine sits 20 toward the wall
+      at(u0, vc, t0 + 20, bx(W + 60, 40, D + 60, walnut))         // the plinth
+      at(u0, vc, t0 + 50, bx(W, 20, D, teak))                     // its floor
+      at(u0, vc + D / 2 - 8, t0 + 60 + H / 2, bx(W, H, 16, teak))  // the back
+      for (const e of [-1, 1]) at(u0 + e * (W / 2 - 8), vc, t0 + 60 + H / 2, bx(16, H, D, teak))   // the sides
+      for (const e of [-1, 1]) {
+        const pillar = new THREE.Mesh(new THREE.CylinderGeometry(14 * S, 17 * S, H * S, 10), walnut)
+        at(u0 + e * (W / 2 - 40), vc - D / 2 + 30, t0 + 60 + H / 2, pillar)
+      }
+      at(u0, vc, t0 + 60 + H + 20, bx(W + 60, 40, D + 60, walnut))          // the cornice
+      at(u0, vc, t0 + 60 + H + 70, bx(W * 0.9, 60, D * 0.9, teak))          // the roof's three steps
+      at(u0, vc, t0 + 60 + H + 125, bx(W * 0.64, 50, D * 0.64, teak))
+      at(u0, vc, t0 + 60 + H + 170, bx(W * 0.4, 40, D * 0.4, teak))
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(62 * S, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), teak)
+      at(u0, vc, t0 + 60 + H + 190, dome)
+      const kalash = new THREE.Mesh(new THREE.SphereGeometry(20 * S, 10, 8), brass)
+      at(u0, vc, t0 + 60 + H + 265, kalash)
+      const spire = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 8 * S, 46 * S, 8), brass)
+      at(u0, vc, t0 + 60 + H + 300, spire)
+      // inside: the idol on its lotus, a diya, a bell
+      const idol = new THREE.Group()
+      const sph = (r: number, sx: number, sy: number, sz: number, dx: number, h: number, dz: number) => {
+        const m = new THREE.Mesh(new THREE.SphereGeometry(r * S, 12, 9), M.idol)
+        m.scale.set(sx, sy, sz); m.position.set(dx * S, h * S, dz * S); idol.add(m)
+      }
+      const cyl = (r0: number, r1: number, h: number, y: number, seg: number) => {
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r0 * S, r1 * S, h * S, seg), M.idol)
+        m.position.y = y * S; idol.add(m)
+      }
+      cyl(190, 210, 30, 15, 24); cyl(150, 175, 40, 50, 24)
+      for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; sph(34, 1, 0.5, 1.6, Math.cos(a) * 170, 62, Math.sin(a) * 170) }
+      sph(150, 1, 0.42, 0.85, 0, 100, 0); sph(95, 0.95, 1.25, 0.72, 0, 235, -10); sph(60, 1.9, 0.55, 0.8, 0, 335, -10)
+      for (const sx of [-1, 1]) { sph(26, 1, 1, 1, sx * 60, 170, 105); sph(24, 1, 3.6, 1, sx * 105, 250, 35) }
+      sph(58, 0.9, 1, 0.9, 0, 425, -5); cyl(28, 46, 80, 500, 12); sph(22, 1, 1, 1, 0, 548, -5)
+      idol.scale.setScalar(0.3)
+      idol.rotation.y = along ? 0 : (fv.x > 0 ? Math.PI / 2 : -Math.PI / 2)  // facing the front
+      at(u0, vc + 20, t0 + 60, idol)
+      const diya = new THREE.Mesh(new THREE.CylinderGeometry(20 * S, 15 * S, 12 * S, 12), brass)
+      at(u0 - W / 2 + 70, vc - D / 2 + 60, t0 + 66, diya)
+      const flame = new THREE.Mesh(new THREE.SphereGeometry(7 * S, 8, 6), M.lamp)
+      flame.scale.set(0.7, 1.6, 0.7)
+      at(u0 - W / 2 + 70, vc - D / 2 + 60, t0 + 84, flame)
+      const chain = new THREE.Mesh(new THREE.CylinderGeometry(2 * S, 2 * S, 80 * S, 6), brass)
+      at(u0 + W / 2 - 70, vc - D / 2 + 50, t0 + 60 + H - 40, chain)
+      const bell = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 28 * S, 44 * S, 12), brass)
+      at(u0 + W / 2 - 70, vc - D / 2 + 50, t0 + 60 + H - 100, bell)
+      const glow = new THREE.PointLight(0xffd9a0, 0.4, 1.2, 1.8)
+      at(u0, vc, t0 + 60 + H - 60, glow)
+      g.add(mg)
     }
     const bowl = new THREE.Mesh(new THREE.CylinderGeometry(95 * S, 60 * S, 60 * S, 18, 1, true), M.porcelain)
     bowl.position.set((along ? run / 2 - 170 : fv.x * 60) * S, (t0 + 30) * S, (along ? fv.z * 60 : run / 2 - 170) * S)

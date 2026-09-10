@@ -260,11 +260,12 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
       return best > 90
     }
     const H = Math.min(f.height, 2000)
+    const noScreen = /no screen|curtain/i.test(label)
     let door = 0
     for (let i = 0; i < ring.length; i++) {
       const a = ring[i], b = ring[(i + 1) % ring.length]
       const L = Math.hypot(b.x - a.x, b.y - a.y)
-      if (L < 30) continue
+      if (L < 30 || noScreen) continue
       const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
       if (!clear(mid)) continue
       const pane = box(L, H - 45, 12, M.glass, mid.x - cx, 45 + (H - 45) / 2, mid.y - cy)
@@ -272,12 +273,25 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
       g.add(pane)
       door += L
     }
-    // a chrome rail along the top of the screen line, and the shower head on the wall side
-    const head = new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 70 * S, 10 * S, 18), M.chrome)
-    const ws = wallSide(f)
+    // the shower head on its arm off the wall the label names (else the nearest
+    // wall), the mixer below it
+    const said = /head on the (north|south|east|west) wall/i.exec(label)
+    const ws: Side = said ? (said[1][0].toUpperCase() as Side) : wallSide(f)
     const v = vec(ws)
-    head.position.set(v.x * ((ws === 'E' || ws === 'W' ? w : 0) / 2 - 160) * S, 2050 * S, v.z * ((ws === 'N' || ws === 'S' ? d : 0) / 2 - 160) * S)
+    const along = ws === 'N' || ws === 'S'
+    const edge = (along ? d : w) / 2                          // the footprint's edge on that side
+    const headOut = 200
+    const head = new THREE.Mesh(new THREE.CylinderGeometry(90 * S, 90 * S, 10 * S, 20), M.chrome)
+    head.position.set(v.x * (edge - headOut) * S, 2050 * S, v.z * (edge - headOut) * S)
     g.add(head)
+    const arm = box(along ? 16 : headOut, 16, along ? headOut : 16, M.chrome, v.x * (edge - headOut / 2), 2060, v.z * (edge - headOut / 2))
+    g.add(arm)
+    const mixer = new THREE.Mesh(new THREE.CylinderGeometry(40 * S, 40 * S, 30 * S, 14), M.chrome)
+    mixer.rotation[along ? 'x' : 'z'] = Math.PI / 2
+    mixer.position.set(v.x * (edge - 25) * S, 1100 * S, v.z * (edge - 25) * S)
+    g.add(mixer)
+    const lever = box(along ? 90 : 12, 12, along ? 12 : 90, M.chrome, v.x * (edge - 45), 1100, v.z * (edge - 45))
+    g.add(lever)
     void door
     place(g, cx, cy)
     return g
@@ -357,6 +371,86 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
       knob.position.set((along ? u : v.x * e) * S, (top + 15) * S, (along ? v.z * e : u) * S)
       g.add(knob)
     }
+    place(g, cx, cy)
+    return g
+  }
+
+  // ---- the L's chaise: the diwan's seat carried round the corner - a
+  // fabric base, a seat cushion, two back cushions on the wall side, an arm
+  // on the side the label names, open on the other
+  if (f.kind === 'sofa' && /^chaise/i.test(label)) {
+    const ring = poly ?? localRect
+    const back = wallSide(f)
+    const bv = vec(back)
+    const armSaid = /arm on the (north|south|east|west)/i.exec(label)
+    const arm: Side = armSaid ? (armSaid[1][0].toUpperCase() as Side) : (back === 'N' || back === 'S' ? 'E' : 'N')
+    const av = vec(arm)
+    const BACK = 250, ARM = 180, SEAT = 420
+    g.add(basePrism(ring, 0, 90, M.trunk))
+    g.add(basePrism(ring, 90, SEAT, M.fabric))
+    // the seat cushion: the footprint less the back and the arm, inset 20
+    const sw = w - (bv.x ? BACK : 0) - (av.x ? ARM : 0) - 40
+    const sd = d - (bv.z ? BACK : 0) - (av.z ? ARM : 0) - 40
+    const scx = -bv.x * BACK / 2 - av.x * ARM / 2, scz = -bv.z * BACK / 2 - av.z * ARM / 2
+    g.add(box(sw, 130, sd, M.duvet, scx, SEAT + 65, scz))
+    // the arm, full length, and the back cushions along the wall side
+    g.add(box(av.x ? ARM : w - 10, 620, av.z ? ARM : d - 10, M.fabric, av.x * (w - ARM) / 2, 310, av.z * (d - ARM) / 2))
+    const backLen = (bv.x ? d : w) - (av.x || av.z ? ARM : 0) - 40
+    for (const e of [-0.5, 0.5]) {
+      const t = e * backLen / 2 - (bv.x ? av.z : av.x) * ARM / 2
+      const c = box(bv.x ? BACK - 40 : backLen / 2 - 30, 340, bv.x ? backLen / 2 - 30 : BACK - 40, M.pillow,
+        bv.x ? bv.x * (w / 2 - BACK / 2 - 10) : t, SEAT + 130 + 170, bv.z ? bv.z * (d / 2 - BACK / 2 - 10) : t)
+      c.rotation[bv.x ? 'z' : 'x'] = (bv.x ? bv.x : -bv.z) * 0.16
+      g.add(c)
+    }
+    place(g, cx, cy)
+    return g
+  }
+  if (f.kind === 'console' && /^console cabinet/i.test(label)) {
+    const top = Math.min(f.height, 800)
+    const back = wallSide(f)
+    const front = opposite(back)
+    const fv = vec(front)
+    const along = front === 'N' || front === 'S'         // the front runs along x
+    const run = along ? w : d                              // the front's length
+    const depth = along ? d : w
+    g.add(box(along ? w - 60 : depth - 60, 90, along ? depth - 60 : w - 60, M.trunk, -fv.x * 30, 45, -fv.z * 30))
+    g.add(box(along ? w : depth - 20, top - 90 - 20, along ? depth - 20 : w, M.walnut, -fv.x * 10, 90 + (top - 110) / 2, -fv.z * 10))
+    g.add(box(along ? w + 10 : depth, 20, along ? depth : w + 10, M.marble, 0, top - 10, 0))
+    // the front: a drawer across the top, two doors under, all with slim brass pulls
+    const face = depth / 2 - 4
+    const putFront = (u: number, h: number, lw: number, lh: number) => {
+      g.add(box(along ? lw : 10, lh, along ? 10 : lw, M.walnut, along ? u : fv.x * face, h, along ? fv.z * face : u))
+    }
+    putFront(0, top - 110, run - 24, 150)
+    for (const e of [-1, 1]) putFront(e * (run / 4), 90 + (top - 290) / 2, run / 2 - 20, top - 290)
+    for (const [u, h] of [[0, top - 110], [-run / 4 + run / 8, 460], [run / 4 - run / 8, 460]] as const) {
+      g.add(box(along ? 120 : 8, 8, along ? 8 : 120, M.brass, along ? u : fv.x * (face + 8), h, along ? fv.z * (face + 8) : u))
+    }
+    // things on it: a tall vase with dry stems, a stack of books, a bowl, a small figure
+    const t0 = top
+    const vase = new THREE.Mesh(new THREE.CylinderGeometry(55 * S, 40 * S, 300 * S, 16), M.pot)
+    vase.position.set((along ? -run / 2 + 170 : -fv.x * 40) * S, (t0 + 150) * S, (along ? -fv.z * 40 : -run / 2 + 170) * S)
+    g.add(vase)
+    for (let i = 0; i < 5; i++) {
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 4 * S, 420 * S, 5), M.trunk)
+      stem.position.copy(vase.position)
+      stem.position.y += (150 + 190) * S
+      stem.rotation.set((i % 2 ? 0.16 : -0.12) * (i % 3 ? 1 : -1), i * 1.3, 0.14 * ((i % 2) - 0.5) * 2)
+      g.add(stem)
+    }
+    for (const [k, col] of [M.fabricDark, M.trunk, M.fabric].entries()) {
+      g.add(box(along ? 220 - k * 16 : 160 - k * 10, 26, along ? 160 - k * 10 : 220 - k * 16, col, along ? 40 : -fv.x * 20, t0 + 13 + k * 26, along ? -fv.z * 20 : 40))
+    }
+    const bowl = new THREE.Mesh(new THREE.CylinderGeometry(95 * S, 60 * S, 60 * S, 18, 1, true), M.porcelain)
+    bowl.position.set((along ? run / 2 - 170 : fv.x * 60) * S, (t0 + 30) * S, (along ? fv.z * 60 : run / 2 - 170) * S)
+    g.add(bowl)
+    const fig = new THREE.Mesh(new THREE.SphereGeometry(48 * S, 12, 10), M.stone)
+    fig.position.set((along ? run / 2 - 330 : -fv.x * 90) * S, (t0 + 110) * S, (along ? -fv.z * 90 : run / 2 - 330) * S)
+    g.add(fig)
+    const figBase = new THREE.Mesh(new THREE.CylinderGeometry(22 * S, 30 * S, 70 * S, 10), M.stone)
+    figBase.position.set(fig.position.x, (t0 + 35) * S, fig.position.z)
+    g.add(figBase)
     place(g, cx, cy)
     return g
   }

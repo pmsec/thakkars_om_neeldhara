@@ -22,6 +22,8 @@ export interface LampKit {
   flower: (n: number, L: number, W: number, droop: number, spin: number) => THREE.Group
   /** one lit paper leaf of L x W, base at the origin, pointing +y, veins fanning from the base */
   leaf: (L: number, W: number) => THREE.Mesh
+  /** the house's pendant: walnut canopy and cap, a ceramic bell of radius r, a warm bulb, its lip at h */
+  pendant: (x: number, y: number, h: number, r: number) => THREE.Group
 }
 
 export type LampSpot =
@@ -52,15 +54,13 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     // Home 1's great room has its flower and buds. It runs north-south, the
     // long way of the room, over the middle the swivels and the bar look toward
     { kind: 'leaves', x: 4500, y: 7300, spread: 2600, n: 14, along: Math.PI / 2 },
-    // the foyer: one brass drum inside the door
+    // the foyer: one ceramic bell inside the door
     { kind: 'pendant', x: 1380, y: 10300, h: 2100, r: 140 },
-    // the kitchen: a linear brass bar over the worktop's north run
+    // the kitchen: a walnut bar light over the worktop's north run
     { kind: 'bar', x: 6100, y: 920, h: 1950, len: 1400, alongX: true },
     // the living room's west wall: a sconce either side of the canvas over the diwan
     { kind: 'sconce', x: 2295, y: 6850, h: 1750, nx: 1, ny: 0 },
     { kind: 'sconce', x: 2295, y: 8350, h: 1750, nx: 1, ny: 0 },
-    // a floor lamp at the diwan's south end
-    { kind: 'floor', x: 3400, y: 8850 },
     // the east room: a pendant at each side of the bed's head, and a teak
     // panel behind it
     { kind: 'pendant', x: 11150, y: 560, h: 1450, r: 90 },
@@ -184,23 +184,12 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
       continue
     }
     if (sp.kind === 'pendant') {
-      const r = sp.r ?? 120
-      cord(sp.x, sp.y, ceiling - 10, sp.h + r * 0.9)
-      const drum = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * 1.15 * S, r * 1.6 * S, 28, 1, true), M.brass)
-      drum.position.set(sp.x * S, sp.h * S, sp.y * S)
-      drum.castShadow = true
-      g.add(drum)
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(r * 0.28 * S, 12, 10), frosted)
-      bulb.position.set(sp.x * S, (sp.h - r * 0.4) * S, sp.y * S)
-      g.add(bulb)
-      const light = new THREE.PointLight(0xffd2a0, 0.6, 3.2, 1.8)
-      light.position.set(sp.x * S, (sp.h - r * 0.7) * S, sp.y * S)
-      g.add(light)
+      g.add(k.pendant(sp.x, sp.y, sp.h + (sp.r ?? 120) * 0.6, sp.r ?? 120))
       continue
     }
     if (sp.kind === 'bar') {
       for (const e of [-0.35, 0.35]) cord(sp.x + (sp.alongX ? e * sp.len : 0), sp.y + (sp.alongX ? 0 : e * sp.len), ceiling - 10, sp.h + 30)
-      const body = box(sp.alongX ? sp.len : 60, 60, sp.alongX ? 60 : sp.len, M.brass, 0, 0, 0)
+      const body = box(sp.alongX ? sp.len : 60, 60, sp.alongX ? 60 : sp.len, M.walnut, 0, 0, 0)
       body.position.set(sp.x * S, sp.h * S, sp.y * S)
       g.add(body)
       const glow = box(sp.alongX ? sp.len - 60 : 30, 6, sp.alongX ? 30 : sp.len - 60, frosted, 0, 0, 0)

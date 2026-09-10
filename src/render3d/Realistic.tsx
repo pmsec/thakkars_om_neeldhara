@@ -2204,10 +2204,18 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const nx = -d.y, ny = d.x
       const said = /\b(two|three|four|2|3|4)\b[^.]*\b(panels|leaves)\b/i.exec(op.label ?? '')
       const count = said ? ({ two: 2, three: 3, four: 4 } as Record<string, number>)[said[1].toLowerCase()] ?? Number(said[1]) : 0
-      const n = op.id === 'SL-P-DRESS' ? 3 : count || Math.max(2, Math.round(width / 1600))
-      const leaf = width / n
+      // ONE PANEL: a door-sized slider that rides on the dry room's face and
+      // parks over the wall beyond the opening, at whichever end has the wall
+      const one = /\bone\b[^.]*\bpanel\b/i.test(op.label ?? '')
+      const n = one ? 1 : op.id === 'SL-P-DRESS' ? 3 : count || Math.max(2, Math.round(width / 1600))
+      const leaf = one ? width + 60 : width / n
       const H = Math.min((op.head ?? ceiling) - 40, ceiling - 40)
       const T = wood ? 40 : 12
+      const wallLen = w.points.reduce((t, q, i) => (i ? t + Math.hypot(q.x - w.points[i - 1].x, q.y - w.points[i - 1].y) : 0), 0)
+      const parkSign = wallLen - op.to >= op.from ? 1 : -1
+      const roomAt = (sgn: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + nx * sgn * (w.thickness / 2 + 200), y: op.mid.y + ny * sgn * (w.thickness / 2 + 200) }, r.polygon))
+      const drySide = one ? (roomAt(1)?.def.category === 'wet' ? -1 : 1) : 0
+      const oneTrack = drySide * (w.thickness / 2 + T / 2 + 8)
       const glass = w.def.glass === 'tinted' ? M.tintGlass : M.glass
       const ang = -Math.atan2(d.y, d.x)
       const item = new THREE.Group()
@@ -2224,8 +2232,10 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       // where each leaf's centre sits, and which track it rides
       const places: Array<[number, number]> = []
       for (let k = 0; k < n; k++) {
-        const track = (k % 2 ? 1 : -1) * ((op.id === 'SL-P-DRESS' ? T + 30 : T) + 6) / 2 * (n === 3 ? (k - 1) : 1)
-        if (mode === 'shut') {
+        const track = one ? oneTrack : (k % 2 ? 1 : -1) * ((op.id === 'SL-P-DRESS' ? T + 30 : T) + 6) / 2 * (n === 3 ? (k - 1) : 1)
+        if (one) {
+          places.push([mode === 'shut' ? (op.from + op.to) / 2 : (op.from + op.to) / 2 + parkSign * (leaf + 20), track])
+        } else if (mode === 'shut') {
           places.push([op.from + (k + 0.5) * leaf, track])
         } else if (n >= 4 && k >= n / 2) {
           places.push([op.to - leaf / 2, track])
@@ -2284,8 +2294,10 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         at(c - leaf / 2 + 25, track, H / 2, box(50, H, T + 8, M.metal))       // stiles
         at(c + leaf / 2 - 25, track, H / 2, box(50, H, T + 8, M.metal))
       }
-      // the track itself, along the head of the opening
-      at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, grid || wood ? M.wallWood : M.metal))
+      // the track itself, along the head of the opening - and over the parking
+      // stretch of wall for a one-panel slider, on its face
+      if (one) at((op.from + op.to) / 2 + parkSign * (leaf + 20) / 2, oneTrack, H + 15, box(2 * leaf + 60, 30, T + 24, M.wallWood))
+      else at((op.from + op.to) / 2, 0, H + 15, box(width, 30, 60, grid || wood ? M.wallWood : M.metal))
     }
   }
   return g
@@ -2621,10 +2633,42 @@ function wallArt(M: Mats): THREE.Group {
  * curtains either side of every glazed exterior window. Home 1 authors none of
  * these, so it draws none.
  */
+/**
+ * A pendant in wood and ceramic: a turned walnut canopy on the ceiling, a
+ * cord, a walnut cap and a matt ceramic bell under it, a warm yellow bulb
+ * inside. The house's one pendant, at whatever size; no brass anywhere in it.
+ */
+export function ceramicPendant(M: Mats, x: number, y: number, h: number, ceiling: number, r = 130, intensity = 0.6): THREE.Group {
+  const g = new THREE.Group()
+  const bell = (M.porcelain as THREE.MeshStandardMaterial).clone()
+  bell.side = THREE.DoubleSide
+  const canopy = new THREE.Mesh(new THREE.CylinderGeometry(42 * S, 48 * S, 26 * S, 18), M.walnut)
+  canopy.position.set(x * S, (ceiling - 13) * S, y * S)
+  g.add(canopy)
+  const capH = r * 0.5
+  const cord = new THREE.Mesh(new THREE.CylinderGeometry(2.5 * S, 2.5 * S, (ceiling - 26 - (h + capH)) * S, 6), M.graphite)
+  cord.position.set(x * S, ((ceiling - 26 + h + capH) / 2) * S, y * S)
+  g.add(cord)
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.32 * S, r * 0.46 * S, capH * S, 20), M.walnut)
+  cap.position.set(x * S, (h + capH / 2) * S, y * S)
+  g.add(cap)
+  const shade = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.46 * S, r * S, r * 1.25 * S, 28, 1, true), bell)
+  shade.position.set(x * S, (h - r * 0.62) * S, y * S)
+  shade.castShadow = true
+  g.add(shade)
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(r * 0.22 * S, 12, 10), M.lamp)
+  bulb.position.set(x * S, (h - r * 0.7) * S, y * S)
+  g.add(bulb)
+  const light = new THREE.PointLight(0xffd070, intensity, 3.2, 1.8)
+  light.position.set(x * S, (h - r * 0.95) * S, y * S)
+  g.add(light)
+  return g
+}
+
 function homeDressing(M: Mats): THREE.Group {
   const g = new THREE.Group()
   const ceiling = model.data.levels.ceiling
-  // ---- pendants over the eating bar: two brass drums on cords, a warm bulb in each
+  // ---- pendants over the eating bar: two wood-and-ceramic bells on cords, a warm bulb in each
   for (const f of furniture) {
     if (f.kind !== 'table' || !/serving counter/i.test(f.label)) continue
     const along = f.d >= f.w
@@ -2637,20 +2681,7 @@ function homeDressing(M: Mats): THREE.Group {
       const off = -towardKitchen * L * t
       const px = along ? cx : cx + off
       const py = along ? cy + off : cy
-      const drop = ceiling - 1750
-      const cord = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 3 * S, drop * S, 6), M.graphite)
-      cord.position.set(px * S, (ceiling - drop / 2) * S, py * S)
-      g.add(cord)
-      const shade = new THREE.Mesh(new THREE.CylinderGeometry(120 * S, 150 * S, 220 * S, 24, 1, true), M.brass)
-      shade.position.set(px * S, (1750 - 110) * S, py * S)
-      shade.castShadow = true
-      g.add(shade)
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(28 * S, 10, 8), M.lamp)
-      bulb.position.set(px * S, (1750 - 170) * S, py * S)
-      g.add(bulb)
-      const light = new THREE.PointLight(0xffd9a3, 0.6, 3.0, 1.8)
-      light.position.set(px * S, (1750 - 200) * S, py * S)
-      g.add(light)
+      g.add(ceramicPendant(M, px, py, 1850, ceiling, 130))
     }
   }
   // ---- handrails: a walnut cap on every balustrade, on the parapet line
@@ -4156,6 +4187,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     M, ceiling: model.data.levels.ceiling, box, sconce: (w) => sconceLamp(M, w),
     flower: (n, L, W, droop, spin) => flowerBloom(n, L, W, droop, spin, petalPaper(), new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.85 }), 1.1, 4.5),
     leaf: (L, W) => new THREE.Mesh(petalGeometry(L, W), lampPaper),
+    pendant: (x, y, h, r) => ceramicPendant(M, x, y, h, model.data.levels.ceiling, r),
   }))
   if (HOME1) {
     const idol = mandirIdol(M)

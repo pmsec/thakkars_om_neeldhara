@@ -381,10 +381,13 @@ def main():
     for f in getattr(D, 'FURNITURE', []):
         poly = f[8] if len(f) > 8 else None
         if f[0] == 'rug':
-            # a rug lies under the furniture: a dashed outline, no fill
+            # a rug lies under the furniture: a dashed outline, no fill - its
+            # own outline when it has one, else its rectangle
             a, b, c, d = f[1:5]
-            for (x1, y1, x2, y2) in ((a, b, c, b), (c, b, c, d), (c, d, a, d), (a, d, a, b)):
-                s.line(x1, y1, x2, y2, '#a89d8a', 1.0, dash='9 7')
+            ring = poly or [(a, b), (c, b), (c, d), (a, d)]
+            for k in range(len(ring)):
+                p1, p2 = ring[k], ring[(k + 1) % len(ring)]
+                s.line(p1[0], p1[1], p2[0], p2[1], '#a89d8a', 1.0, dash='9 7')
             continue
         if f[0] == 'plant':
             cx, cy = (f[1] + f[3]) / 2, (f[2] + f[4]) / 2

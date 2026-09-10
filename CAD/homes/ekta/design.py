@@ -1656,10 +1656,31 @@ FURNITURE += [
 # the dead corner between the recliner and the swivels on the east wall, and
 # the balcony planters sit at its two ends, clear of the way out between the
 # chairs.
+# THE LIVING RUG IS A CENTREPIECE, not a floor: 1700 x 2300 (5'-7" x 7'-7")
+# under the leaf chandelier, an oval with a live edge - the outline wanders
+# in and out of the ellipse by up to 60 (2"), the way a hand-cut felt or a
+# hide does - rather than the 2400 x 2800 rectangle that filled the room.
+# (Karan's call.) Deterministic: the same edge every build.
+def _live_oval(cx, cy, rx, ry, n=40, wobble=60.0):
+    out = []
+    for i in range(n):
+        a = 2 * math.pi * i / n
+        w = (math.sin(3 * a + 0.8) * 0.55 + math.sin(5 * a + 2.1) * 0.3
+             + math.sin(8 * a + 0.3) * 0.15) * wobble
+        r = 1.0 + w / min(rx, ry)
+        out.append((round(cx + rx * r * math.cos(a), 1), round(cy + ry * r * math.sin(a), 1)))
+    return out
+
+
+RUG_LIV = _live_oval(4500.0, 7300.0, 850.0, 1150.0)
+_rl_x = [q[0] for q in RUG_LIV]
+_rl_y = [q[1] for q in RUG_LIV]
+
 FURNITURE += [
-    ('rug', 3300, 5900, 5700, 8700,
-     "rug — 2400 x 2800 (7'-10\" x 9'-2\") wool, under the west seating group",
-     'R-LIVING-DINING', 12),
+    ('rug', min(_rl_x), min(_rl_y), max(_rl_x), max(_rl_y),
+     "rug — 1700 x 2300 (5'-7\" x 7'-7\") wool centrepiece, an oval with a live "
+     'edge, under the leaf chandelier',
+     'R-LIVING-DINING', 12, RUG_LIV),
     ('rug', 3600, 9350, 6700, 10950,
      "rug — 3100 x 1600 (10'-2\" x 5'-3\") flatweave, under the swivels at the balcony",
      'R-LIVING-DINING', 12),

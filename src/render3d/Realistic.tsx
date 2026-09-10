@@ -4117,7 +4117,9 @@ function telescopingVault(M: Mats, roof: (typeof solids.roofs)[number], mode: 's
   const [x0, y0, x1, y1] = roof.extent
   const sec = roof.section!
   const mid = (x0 + x1) / 2
-  const BAYS = 6                                  // per half
+  // per half: a bay about every 2 m, six at most - Home 1's 25 m front keeps
+  // its six, a 3.3 m balcony gets two, so the ribs are not a cage
+  const BAYS = Math.max(2, Math.min(6, Math.round((mid - x0) / 2000)))
   const NEST = 0.014                              // each bay this much smaller than the last
   const STACK = 45                                // mm between stacked bays' ribs
   const landZ = sec.p2.x                          // the landing line, the pivot the bays nest about

@@ -60,7 +60,9 @@ export const building: BuildingData = {
     { id: 'R-BALCONY', name: 'Balcony', anchor: { x: 5300, y: 11700 }, category: 'outdoor', zone: 'flat', carpet: false, finish: 'Oak plank', finishFollows: 'R-LIVING-DINING', notes: 'off the living room' },
   ],
   stacks: [],
-  glassRoofs: [],
+  glassRoofs: [
+    { id: 'ROOF-BALC', name: 'A retractable bellied glass vault over the balcony', kind: 'barrel', extent: [3650, 11070, 6950, 12470], section: { p0: { x: 12470, y: 0 }, p1: { x: 13400, y: 1900 }, p1b: { x: 12500, y: 4100 }, p2: { x: 11070, y: 3050 } }, gableEnds: ['x0', 'x1'], retractable: true, glazing: 'Laminated glass', notes: "Springs from the balcony's south parapet, bellies out over the street, peaks above the ceiling and lands on the living room face; glazed gables close the two sides" },
+  ],
   portals: [],
   screens: [
   ],

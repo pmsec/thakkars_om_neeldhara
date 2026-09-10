@@ -2938,12 +2938,13 @@ function pleatTexture(): THREE.CanvasTexture {
   c.width = 64
   c.height = 4
   const ctx = c.getContext('2d')!
-  // one pleat per 64 px: a pale crest, a dark fold - the grey pleated gauze of
-  // a sliding mosquito net (SIPKO-type), read at 18 mm a pleat
+  // one pleat per 64 px: a white crest, a faintly greyer fold - the pleated
+  // gauze of a sliding mosquito net (SIPKO-type), read at 18 mm a pleat. Pale
+  // all the way: the mesh must not read as a dark blind on the window
   for (let x = 0; x < 64; x++) {
     const t = Math.abs((x / 64) * 2 - 1)
-    const v = Math.round(120 + 110 * (1 - t) ** 1.6)
-    ctx.fillStyle = `rgb(${v},${v + 2},${v + 4})`
+    const v = Math.round(214 + 41 * (1 - t) ** 1.6)
+    ctx.fillStyle = `rgb(${v},${v},${v})`
     ctx.fillRect(x, 0, 1, 4)
   }
   const tex = new THREE.CanvasTexture(c)
@@ -2963,7 +2964,9 @@ function pleatTexture(): THREE.CanvasTexture {
 function meshScreens(_M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   const tex = pleatTexture()
-  const gauze = new THREE.MeshStandardMaterial({ map: tex, color: 0xd8dadc, transparent: true, opacity: 0.5, roughness: 0.95, side: THREE.DoubleSide, depthWrite: false })
+  // unlit and mostly see-through: a lit material shows its unlit room-side
+  // face against the daylight behind it and reads black, cutting the light
+  const gauze = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false })
   const alu = new THREE.MeshStandardMaterial({ color: 0xf1f1ee, roughness: 0.35, metalness: 0.25 })   // white powder-coated aluminium
   let idx = 0
   for (const ew of exteriorWindows()) {
@@ -2992,9 +2995,9 @@ function meshScreens(_M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const jamb = mid + e * (inner / 2)
       const half = mode === 'shut' ? inner / 2 - 10 : 60         // drawn across, or pleated at the jamb
       const panel = new THREE.Mesh(new THREE.BoxGeometry(6 * S, gh * S, half * S), gauze.clone())
-      ;(panel.material as THREE.MeshStandardMaterial).map = tex.clone()
-      ;(panel.material as THREE.MeshStandardMaterial).map!.repeat.set(mode === 'shut' ? Math.max(4, half / 18) : 14, 1)
-      ;(panel.material as THREE.MeshStandardMaterial).map!.needsUpdate = true
+      ;(panel.material as THREE.MeshBasicMaterial).map = tex.clone()
+      ;(panel.material as THREE.MeshBasicMaterial).map!.repeat.set(mode === 'shut' ? Math.max(4, half / 18) : 14, 1)
+      ;(panel.material as THREE.MeshBasicMaterial).map!.needsUpdate = true
       at(jamb - e * half / 2, out, gc, panel)
       at(jamb - e * (half - 8), out, gc, box(22, gh, 18, alu))                 // the leading stile
     }

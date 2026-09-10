@@ -49,6 +49,10 @@ export type LampSpot =
    *  radius r (the face) and r - depth about (cx, cy), from plan angle a0 to a1, from h0 to h1,
    *  with faceted doors on its inner face */
   | { kind: 'loftArc'; cx: number; cy: number; r: number; a0: number; a1: number; h0: number; h1: number; depth: number; doors: number }
+  /** a vertical garden: a teak grid standing on a parapet along a plan line from (x, y0) to
+   *  (x, y1) (a north-south edge; nx is the side the room is on), from h0 to h1, planters
+   *  hung in its cells with trailing plants, and small spots along its head washing it */
+  | { kind: 'trellis'; x: number; y0: number; y1: number; nx: number; h0: number; h1: number }
   /** a wall-mounted microwave: its back on the face at (x, y), door toward (nx, ny), w wide, base at h0 */
   | { kind: 'microwave'; x: number; y: number; nx: number; ny: number; w: number; h0: number; depth: number }
 
@@ -77,8 +81,11 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     { kind: 'headboard', x: 11470, y: 1715, nx: -1, ny: 0, w: 2500, h0: 250, h1: 1500 },
     // the bedroom desk
     { kind: 'desk', x: 2900, y: 250, top: 750 },
-    // the balcony: a lantern on its west wall
+    // the balcony: a lantern on its west wall, and the vertical garden - a
+    // teak grid on the west parapet's rail, planters in its cells, three
+    // spots along its head (Karan's call)
     { kind: 'lantern', x: 3800, y: 11700, h: 1800, nx: 1, ny: 0 },
+    { kind: 'trellis', x: 3740, y0: 11130, y1: 12410, nx: 1, h0: 1220, h1: 2900 },
     // the east room: the teak frame over the daybed, wall to wall - the fin
     // and the panel are on the plan (arch fin, arch panel); this is the band
     // along the ceiling between them and the flower pendant over the seat
@@ -355,6 +362,60 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
         bar.rotation.y = -am + Math.PI / 2
         bar.position.set((sp.cx + Math.cos(am) * (ri - 14)) * S, (sp.h0 + 70) * S, (sp.cy + Math.sin(am) * (ri - 14)) * S)
         g.add(bar)
+      }
+      continue
+    }
+    if (sp.kind === 'trellis') {
+      const L = sp.y1 - sp.y0, H = sp.h1 - sp.h0
+      const cy = (sp.y0 + sp.y1) / 2, ch = (sp.h0 + sp.h1) / 2
+      // the grid: 40 x 40 teak battens at 300 centres both ways, on two posts
+      const nV = Math.max(2, Math.round(L / 300)), nH = Math.max(2, Math.round(H / 300))
+      for (let i = 0; i <= nV; i++) {
+        const y = sp.y0 + (i / nV) * L
+        const m = box(40, H, 40, M.teak, 0, 0, 0)
+        m.position.set(sp.x * S, ch * S, y * S)
+        g.add(m)
+      }
+      for (let j = 0; j <= nH; j++) {
+        const h = sp.h0 + (j / nH) * H
+        const m = box(40, 40, L + 40, M.teak, 0, 0, 0)
+        m.position.set((sp.x + sp.nx * 20) * S, h * S, cy * S)
+        g.add(m)
+      }
+      // planters hung in a scatter of cells, on the room side, each with a
+      // mound of leaves and a trail hanging under it
+      const pot = new THREE.MeshStandardMaterial({ color: 0x3b3a37, roughness: 0.8 })
+      let sd = 5
+      const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280 }
+      const cells: Array<[number, number]> = []
+      for (let i = 0; i < nV; i++) for (let j = 0; j < nH; j++) if ((i * 7 + j * 3) % 5 < 3) cells.push([i, j])
+      for (const [i, j] of cells) {
+        const y = sp.y0 + (i + 0.5) * (L / nV), h = sp.h0 + (j + 0.55) * (H / nH)
+        const px = sp.x + sp.nx * 120
+        const p = box(150, 130, 190, pot, 0, 0, 0)
+        p.position.set(px * S, h * S, y * S)
+        g.add(p)
+        const leaf = new THREE.Mesh(new THREE.SphereGeometry((95 + rnd() * 35) * S, 9, 7), (i + j) % 2 ? M.leaf : M.leafDark)
+        leaf.scale.set(1.2, 0.75, 1.1)
+        leaf.position.set((px + sp.nx * 30) * S, (h + 90) * S, y * S)
+        g.add(leaf)
+        const trail = box(60, 220 + rnd() * 160, 40, M.leafDark, 0, 0, 0)
+        trail.position.set((px + sp.nx * 60) * S, (h - 65 - (220 + rnd() * 160) / 2) * S, (y + (rnd() - 0.5) * 80) * S)
+        g.add(trail)
+      }
+      // three small black spots along the head, washing the grid from above
+      for (const t of [0.2, 0.5, 0.8]) {
+        const y = sp.y0 + t * L
+        const arm = box(80, 20, 20, M.graphite, 0, 0, 0)
+        arm.position.set((sp.x + sp.nx * 60) * S, (sp.h1 + 30) * S, y * S)
+        g.add(arm)
+        const head = new THREE.Mesh(new THREE.CylinderGeometry(28 * S, 34 * S, 70 * S, 12), M.graphite)
+        head.rotation.z = -sp.nx * 0.5
+        head.position.set((sp.x + sp.nx * 90) * S, (sp.h1 - 10) * S, y * S)
+        g.add(head)
+        const light = new THREE.PointLight(0xffd8a8, 0.45, 2.2, 1.8)
+        light.position.set((sp.x + sp.nx * 110) * S, (sp.h1 - 60) * S, y * S)
+        g.add(light)
       }
       continue
     }

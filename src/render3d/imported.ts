@@ -308,15 +308,10 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     const north = ring.filter((q) => q.y < f.y + 700)
     if (north.length) {
       const xs = north.map((q) => q.x)
-      const x0 = Math.min(...xs), x1 = Math.max(...xs)
+      const x0 = Math.min(...xs)
       // the hob and the sink are on the plan as their own pieces (see below);
-      // what stands on the run is a kettle at its far end, a board, and two
-      // jars against the wall at the corner end
+      // what stands on the run is two jars against the wall at the corner end
       const runY = f.y + 300                                   // the middle of a 600 worktop
-      const kettle = new THREE.Mesh(new THREE.CylinderGeometry(75 * S, 85 * S, 190 * S, 16), M.steel)
-      kettle.position.set((x1 - 350 - cx) * S, (top + 95) * S, (runY - cy + 60) * S)
-      g.add(kettle)
-      g.add(box(360, 18, 240, M.walnut, x0 + 1500 - cx, top + 9, runY - cy + 40))
       for (const [ox, hh] of [[260, 170], [350, 130]] as const) {
         const jar = new THREE.Mesh(new THREE.CylinderGeometry(48 * S, 48 * S, hh * S, 14), M.acrylic)
         jar.position.set((x0 + ox - cx) * S, (top + hh / 2) * S, (runY - cy - 200) * S)

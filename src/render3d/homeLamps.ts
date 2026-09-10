@@ -45,6 +45,8 @@ export type LampSpot =
   /** a run of teak overhead cabinets on a wall face: from (x, y) along (ux, uy) for len,
    *  standing `depth` off the face into the room along (nx, ny), from h0 to h1 */
   | { kind: 'loft'; x: number; y: number; ux: number; uy: number; nx: number; ny: number; len: number; h0: number; h1: number; depth: number }
+  /** a wall-mounted microwave: its back on the face at (x, y), door toward (nx, ny), w wide, base at h0 */
+  | { kind: 'microwave'; x: number; y: number; nx: number; ny: number; w: number; h0: number; depth: number }
 
 export const LAMP_SPOTS: Record<string, LampSpot[]> = {
   ekta: [
@@ -81,6 +83,8 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     { kind: 'loft', x: 4610, y: 620, ux: 1, uy: 0, nx: 0, ny: 1, len: 3685, h0: 2450, h1: 3000, depth: 350 },
     { kind: 'loft', x: 8295, y: 970, ux: 0, uy: 1, nx: -1, ny: 0, len: 1530, h0: 2450, h1: 3000, depth: 350 },
     { kind: 'loft', x: 6435, y: 620, ux: 1, uy: 0, nx: 0, ny: 1, len: 800, h0: 1500, h1: 2440, depth: 350 },
+    // and a wall-mounted microwave under that cabinet, 250 above the worktop
+    { kind: 'microwave', x: 6835, y: 620, nx: 0, ny: 1, w: 520, h0: 1150, depth: 380 },
   ],
 }
 
@@ -308,6 +312,28 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
         at(c + (i % 2 ? -1 : 1) * (leaf / 2 - 90), sp.depth + 14, sp.h0 + 70, bar)
       }
       at(sp.len / 2, sp.depth - 4, sp.h1 - 6, box(sp.len, 8, 12, M.trunk, 0, 0, 0))
+      continue
+    }
+    if (sp.kind === 'microwave') {
+      const yaw = Math.atan2(sp.nx, sp.ny)                 // local +z toward (nx, ny)
+      const H = 300
+      const at = (side: number, out: number, h: number, m: THREE.Object3D) => {
+        const ux = sp.ny, uy = -sp.nx                     // along the wall
+        m.position.set((sp.x + ux * side + sp.nx * out) * S, h * S, (sp.y + uy * side + sp.ny * out) * S)
+        m.rotation.y = yaw
+        g.add(m)
+      }
+      const steel = M.appliance
+      at(0, sp.depth / 2, sp.h0 + H / 2, box(sp.w, H, sp.depth, steel, 0, 0, 0))              // the body
+      at(-sp.w * 0.12, sp.depth + 3, sp.h0 + H / 2, box(sp.w * 0.66, H - 40, 6, M.hob, 0, 0, 0))   // the glass door
+      at(sp.w * 0.36, sp.depth + 3, sp.h0 + H / 2, box(sp.w * 0.24, H - 40, 6, M.graphite, 0, 0, 0)) // the panel
+      at(sp.w * 0.36, sp.depth + 8, sp.h0 + H * 0.62, box(sp.w * 0.12, 3, 4, M.chrome, 0, 0, 0))
+      const knob = new THREE.Mesh(new THREE.CylinderGeometry(16 * S, 16 * S, 10 * S, 12), M.chrome)
+      knob.rotation.x = Math.PI / 2
+      at(sp.w * 0.36, sp.depth + 10, sp.h0 + H * 0.36, knob)
+      at(-sp.w * 0.42, sp.depth + 12, sp.h0 + H / 2, box(10, H - 90, 12, M.chrome, 0, 0, 0))   // the handle
+      // the bracket under it, on the wall
+      at(0, 30, sp.h0 - 20, box(sp.w - 80, 40, 60, M.graphite, 0, 0, 0))
       continue
     }
     if (sp.kind === 'headboard') {

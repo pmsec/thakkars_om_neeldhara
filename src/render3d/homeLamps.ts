@@ -18,6 +18,8 @@ export interface LampKit {
   ceiling: number
   box: (w: number, h: number, d: number, mat: Mat, x?: number, y?: number, z?: number) => THREE.Mesh
   sconce: (withLight?: boolean) => THREE.Group
+  /** a lit paper flower: n petals of L x W, drooping by `droop` radians, spun by `spin` */
+  flower: (n: number, L: number, W: number, droop: number, spin: number) => THREE.Group
 }
 
 export type LampSpot =
@@ -29,6 +31,13 @@ export type LampSpot =
   | { kind: 'lantern'; x: number; y: number; h: number; nx: number; ny: number }
   | { kind: 'desk'; x: number; y: number; top: number }
   | { kind: 'headboard'; x: number; y: number; nx: number; ny: number; w: number; h0: number; h1: number }
+  /** a teak arch framing a window from inside: a soffit along the ceiling between x0 and x1
+   *  (the inner faces of its two legs, which are drawn pieces), coves of radius r at the
+   *  corners, and a flower pendant hung from the soffit */
+  | { kind: 'arch'; x0: number; x1: number; y0: number; y1: number; r: number; pendant: { x: number; y: number; h: number } }
+  /** a run of teak overhead cabinets on a wall face: from (x, y) along (ux, uy) for len,
+   *  standing `depth` off the face into the room along (nx, ny), from h0 to h1 */
+  | { kind: 'loft'; x: number; y: number; ux: number; uy: number; nx: number; ny: number; len: number; h0: number; h1: number; depth: number }
 
 export const LAMP_SPOTS: Record<string, LampSpot[]> = {
   ekta: [
@@ -55,6 +64,17 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     { kind: 'desk', x: 2900, y: 250, top: 750 },
     // the balcony: a lantern on its west wall
     { kind: 'lantern', x: 3800, y: 11700, h: 1800, nx: 1, ny: 0 },
+    // the east room: the teak arch over the daybed - the fin and the shelf
+    // column are on the plan (arch fin, arch shelves); this is the soffit, the
+    // two coves and the flower pendant over the middle of the seat
+    { kind: 'arch', x0: 9490, x1: 11120, y0: 8005, y1: 8355, r: 500, pendant: { x: 10305, y: 8180, h: 2050 } },
+    // the kitchen's lofts: teak overheads from 2450 to 3000 on the west leg,
+    // the north wall and the east leg (the corners left to the curves), and a
+    // wall cabinet on the 800 pier between the two north windows
+    { kind: 'loft', x: 4610, y: 2500, ux: 0, uy: -1, nx: 1, ny: 0, len: 1530, h0: 2450, h1: 3000, depth: 350 },
+    { kind: 'loft', x: 4610, y: 620, ux: 1, uy: 0, nx: 0, ny: 1, len: 3685, h0: 2450, h1: 3000, depth: 350 },
+    { kind: 'loft', x: 8295, y: 970, ux: 0, uy: 1, nx: -1, ny: 0, len: 1530, h0: 2450, h1: 3000, depth: 350 },
+    { kind: 'loft', x: 6435, y: 620, ux: 1, uy: 0, nx: 0, ny: 1, len: 800, h0: 1500, h1: 2440, depth: 350 },
   ],
 }
 
@@ -182,6 +202,61 @@ export function homeLamps(homeId: string, k: LampKit): THREE.Group {
       const light = new THREE.PointLight(0xffd9a3, 0.35, 2.0, 1.8)
       light.position.set(sp.x * S, (sp.top + 380) * S, sp.y * S)
       g.add(light)
+      continue
+    }
+    if (sp.kind === 'arch') {
+      const top = ceiling - 60                                   // the soffit's underside
+      const depth = sp.y1 - sp.y0
+      const cz = (sp.y0 + sp.y1) / 2
+      const soffit = box(sp.x1 - sp.x0 + 80, 60, depth, M.teak, 0, 0, 0)
+      soffit.position.set(((sp.x0 + sp.x1) / 2) * S, (top + 30) * S, cz * S)
+      g.add(soffit)
+      // the coves: the square corner between a leg and the soffit, less a quarter circle
+      const cove = (x: number, dir: 1 | -1): THREE.Mesh => {
+        const sh = new THREE.Shape()
+        sh.moveTo(x, top)
+        sh.lineTo(x + dir * sp.r, top)
+        sh.absarc(x + dir * sp.r, top - sp.r, sp.r, Math.PI / 2, dir > 0 ? Math.PI : 0, dir > 0)
+        sh.lineTo(x, top)
+        const geo = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: false, curveSegments: 24 })
+        geo.scale(S, S, S)
+        const m = new THREE.Mesh(geo, M.teak)
+        m.position.z = sp.y0 * S
+        return m
+      }
+      g.add(cove(sp.x0, 1))
+      g.add(cove(sp.x1, -1))
+      // the pendant: a cord from the soffit, one bloom over the seat
+      cord(sp.pendant.x, sp.pendant.y, top, sp.pendant.h + 40)
+      const rose = new THREE.Mesh(new THREE.CylinderGeometry(40 * S, 40 * S, 16 * S, 14), M.brass)
+      rose.position.set(sp.pendant.x * S, (top - 8) * S, sp.pendant.y * S)
+      g.add(rose)
+      const bloom = k.flower(7, 420, 220, 0.9, 0.25)
+      bloom.position.set(sp.pendant.x * S, sp.pendant.h * S, sp.pendant.y * S)
+      g.add(bloom)
+      continue
+    }
+    if (sp.kind === 'loft') {
+      // one carcass, door slabs on the face at 450 centres with a brass bar
+      // low on each, a shadow gap under the top
+      const yaw = -Math.atan2(sp.uy, sp.ux)
+      const H = sp.h1 - sp.h0
+      const at = (u: number, out: number, h: number, m: THREE.Object3D) => {
+        m.position.set((sp.x + sp.ux * u + sp.nx * out) * S, h * S, (sp.y + sp.uy * u + sp.ny * out) * S)
+        m.rotation.y = yaw
+        g.add(m)
+      }
+      at(sp.len / 2, sp.depth / 2 - 10, sp.h0 + H / 2, box(sp.len, H, sp.depth - 20, M.teak, 0, 0, 0))
+      const nDoors = Math.max(1, Math.round(sp.len / 450))
+      const leaf = sp.len / nDoors
+      for (let i = 0; i < nDoors; i++) {
+        const c = (i + 0.5) * leaf
+        at(c, sp.depth - 9, sp.h0 + 12 + (H - 24) / 2, box(leaf - 4, H - 24, 18, M.teak, 0, 0, 0))
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, 140 * S, 8), M.brass)
+        bar.rotation.z = Math.PI / 2
+        at(c + (i % 2 ? -1 : 1) * (leaf / 2 - 90), sp.depth + 14, sp.h0 + 70, bar)
+      }
+      at(sp.len / 2, sp.depth - 4, sp.h1 - 6, box(sp.len, 8, 12, M.trunk, 0, 0, 0))
       continue
     }
     if (sp.kind === 'headboard') {

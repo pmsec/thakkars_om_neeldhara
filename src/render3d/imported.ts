@@ -361,6 +361,73 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     return g
   }
 
+  // ---- the timber arch's legs over the daybed: a fin at the west end, a
+  // column of four lit shelves at the east end. Both stand on the seat, above
+  // the mattress; the soffit and coves that join them are in homeLamps.ts.
+  if (f.kind === 'screen' && /^arch fin/i.test(label)) {
+    const base = 520, top = Math.min(f.height, getModel().data.levels.ceiling)
+    g.add(box(w - 2, top - base, d - 2, M.teak, 0, (base + top) / 2, 0))
+    place(g, cx, cy)
+    return g
+  }
+  if (f.kind === 'shelves' && /^arch shelves/i.test(label)) {
+    const base = 520, top = Math.min(f.height, 2600)
+    const back = wallSide(f)                       // the wall the column backs on
+    const bv = vec(back)
+    const along = back === 'N' || back === 'S'   // the shelves face across the piece's short axis
+    const T = 24
+    // back panel on the wall, the two side cheeks, a top
+    g.add(box(along ? w : T, top - base, along ? T : d, M.teak, bv.x * ((w - T) / 2), (base + top) / 2, bv.z * ((d - T) / 2)))
+    for (const e of [-1, 1]) g.add(box(along ? T : w, top - base, along ? d : T, M.teak, along ? e * (w - T) / 2 : 0, (base + top) / 2, along ? 0 : e * (d - T) / 2))
+    g.add(box(w, T, d, M.teak, 0, top - T / 2, 0))
+    const boards = [base + 380, base + 830, base + 1280, base + 1730]
+    const led = new THREE.MeshStandardMaterial({ color: 0xfff1d8, emissive: 0xffc98a, emissiveIntensity: 1.2, roughness: 0.6 })
+    const front = opposite(back)
+    const fv = vec(front)
+    for (const [i, h] of boards.entries()) {
+      g.add(box(w - 2 * T, T, d - 2 * T, M.teak, 0, h, 0))
+      // a light strip under the board's front edge, throwing down on the shelf below
+      g.add(box(along ? w - 2 * T - 40 : 8, 5, along ? 8 : d - 2 * T - 40, led, fv.x * (w / 2 - T - 24), h - T / 2 - 3, fv.z * (d / 2 - T - 24)))
+      const light = new THREE.PointLight(0xffd6a6, 0.28, 1.4, 1.8)
+      light.position.set(fv.x * (w / 2 - T - 40) * S, (h - 40) * S, fv.z * (d / 2 - T - 40) * S)
+      g.add(light)
+      // what stands on each shelf, 30 above the board so nothing z-fights
+      const s0 = h + T / 2
+      if (i === 0) {
+        const vase = new THREE.Mesh(new THREE.CylinderGeometry(52 * S, 38 * S, 250 * S, 14), M.pot)
+        vase.position.set(-60 * S, (s0 + 125) * S, 20 * S)
+        g.add(vase)
+        const sprig = new THREE.Mesh(new THREE.SphereGeometry(70 * S, 8, 6), M.leafDark)
+        sprig.scale.set(1, 0.7, 1); sprig.position.set(-60 * S, (s0 + 280) * S, 20 * S)
+        g.add(sprig)
+        g.add(box(120, 34, 90, M.walnut, 80, s0 + 17, -30))
+      } else if (i === 1) {
+        for (const [k, col] of [M.fabricDark, M.fabric, M.trunk].entries()) g.add(box(150 - k * 12, 26, 210 - k * 20, col, -40, s0 + 13 + k * 26, 10))
+        const bowl = new THREE.Mesh(new THREE.CylinderGeometry(60 * S, 40 * S, 50 * S, 14, 1, true), M.brass)
+        bowl.position.set(95 * S, (s0 + 25) * S, -30 * S)
+        g.add(bowl)
+      } else if (i === 2) {
+        const fig = new THREE.Mesh(new THREE.CylinderGeometry(24 * S, 34 * S, 150 * S, 10), M.brass)
+        fig.position.set(60 * S, (s0 + 75) * S, 0)
+        g.add(fig)
+        const head = new THREE.Mesh(new THREE.SphereGeometry(30 * S, 10, 8), M.brass)
+        head.position.set(60 * S, (s0 + 175) * S, 0)
+        g.add(head)
+        const frame = box(110, 140, 12, M.walnut, -70, s0 + 70, -20)
+        frame.rotation.y = 0.35
+        g.add(frame)
+      } else {
+        const candle = new THREE.Mesh(new THREE.CylinderGeometry(30 * S, 30 * S, 110 * S, 12), M.porcelain)
+        candle.position.set(-70 * S, (s0 + 55) * S, 30 * S)
+        g.add(candle)
+        const box2 = box(140, 70, 100, M.fabricDark, 60, s0 + 35, -20)
+        g.add(box2)
+      }
+    }
+    place(g, cx, cy)
+    return g
+  }
+
   // ---- the serving counter: one stone slab through the hatch, a base under it
   // in the kitchen and a pedestal at its far end in the living room
   if (f.kind === 'table' && /serving counter/i.test(label)) {

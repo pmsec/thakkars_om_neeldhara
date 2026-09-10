@@ -1794,32 +1794,67 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         place(g, cx, cy)
         return g
       }
-      const pot = new THREE.Mesh(
-        new THREE.CylinderGeometry(Math.min(w, d) * 0.32 * S, Math.min(w, d) * 0.26 * S, 340 * S, 12),
-        M.pot,
-      )
-      pot.position.y = 170 * S
+      // A FLOOR PLANT THAT READS AS ONE: a tapered ceramic pot with a rim and
+      // soil, three canes leaning out from it, and along each cane a run of
+      // long pointed leaves that arch out and droop - an areca rather than
+      // eleven flat cards on a stick. Every leaf tip stays inside the drawn
+      // footprint. Deterministic: the same plant every build.
+      const R = Math.min(w, d) / 2
+      const potR = R * 0.62
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(potR * S, potR * 0.78 * S, 360 * S, 20), M.pot)
+      pot.position.y = 180 * S
       pot.castShadow = true
       g.add(pot)
-      // a fiddle-leaf: a slim stem and big paddle leaves fanned round it, every
-      // leaf inside the drawn footprint
-      const reach = Math.min(w, d) / 2 - 20
-      const stem = new THREE.Mesh(new THREE.CylinderGeometry(14 * S, 22 * S, (f.height - 340) * S, 8), M.trunk)
-      stem.position.y = (340 + (f.height - 340) / 2) * S
-      g.add(stem)
-      const leafGeo = new THREE.PlaneGeometry(1, 1)
-      for (let i = 0; i < 11; i++) {
-        const a = i * 2.4
-        const h = 620 + i * ((f.height - 700) / 11)
-        const len = Math.min(reach, 420) * (0.75 + (i % 3) * 0.12)
-        const leafMat = (i % 2 ? M.leaf : M.leafDark).clone()
-        leafMat.side = THREE.DoubleSide
-        const leaf = new THREE.Mesh(leafGeo, leafMat)
-        leaf.scale.set(len * 0.62 * S, len * S, 1)
-        leaf.position.set(Math.cos(a) * (len * 0.5) * S, (h + len * 0.25) * S, Math.sin(a) * (len * 0.5) * S)
-        leaf.rotation.set(-0.35, -a + Math.PI / 2, 0.15, 'YXZ')
-        leaf.castShadow = true
-        g.add(leaf)
+      const rim = new THREE.Mesh(new THREE.CylinderGeometry((potR + 8) * S, (potR + 8) * S, 34 * S, 20), M.pot)
+      rim.position.y = 343 * S
+      g.add(rim)
+      const soil = new THREE.Mesh(new THREE.CylinderGeometry((potR - 10) * S, (potR - 10) * S, 10 * S, 20), M.soil)
+      soil.position.y = 356 * S
+      g.add(soil)
+      const leafShape = new THREE.Shape()
+      leafShape.moveTo(0, 0)
+      leafShape.bezierCurveTo(0.16, 0.25, 0.14, 0.75, 0, 1)
+      leafShape.bezierCurveTo(-0.14, 0.75, -0.16, 0.25, 0, 0)
+      const leafGeo = new THREE.ShapeGeometry(leafShape, 10)
+      const lp = leafGeo.attributes.position
+      for (let i = 0; i < lp.count; i++) lp.setZ(i, -(lp.getY(i) ** 2) * 0.35)      // arched: the tip droops
+      leafGeo.computeVertexNormals()
+      const mats = [M.leaf, M.leafDark].map((m) => { const c = (m as THREE.MeshStandardMaterial).clone(); c.side = THREE.DoubleSide; return c })
+      const H = Math.max(900, f.height)
+      let seed = 7
+      const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 }
+      const canes = 5
+      for (let c = 0; c < canes; c++) {
+        const ca = (c / canes) * Math.PI * 2 + 0.7
+        const lean = 0.14 + rnd() * 0.1
+        const caneH = H * (0.38 + rnd() * 0.24) - 360
+        const cane = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 11 * S, caneH * S, 6), M.trunk)
+        cane.position.set(Math.cos(ca) * (R * 0.1 + Math.sin(lean) * caneH / 2) * S, (360 + caneH / 2) * S, Math.sin(ca) * (R * 0.1 + Math.sin(lean) * caneH / 2) * S)
+        cane.rotation.set(Math.sin(ca) * lean, 0, -Math.cos(ca) * lean, 'YXZ')
+        g.add(cane)
+        const nLeaves = 9
+        for (let i = 0; i < nLeaves; i++) {
+          const t = 0.3 + (i / (nLeaves - 1)) * 0.7                     // where on the cane it springs
+          const bx = Math.cos(ca) * (R * 0.1 + Math.sin(lean) * caneH * t), bz = Math.sin(ca) * (R * 0.1 + Math.sin(lean) * caneH * t)
+          const bh = 360 + caneH * t
+          const la = ca + (i - (nLeaves - 1) / 2) * 0.7 + (rnd() - 0.5) * 0.5   // fanned round the cane, mostly outward
+          const lift = 0.55 + (rnd() - 0.5) * 0.5
+          // as long a leaf as the ring allows in this direction: the tip lands
+          // at base + cos(lift) * len along the leaf, and it is 0.15 len wide
+          let len = (140 + H * 0.22) * (0.8 + rnd() * 0.3)
+          // the leaf points AWAY from la in plan (the shape's +y lands on -z, then
+          // spins), and its droop carries the tip a little further out
+          const hz = Math.cos(lift) + 0.35 * Math.sin(lift)
+          const tipR = (L: number) => Math.hypot(bx - Math.cos(la) * hz * L, bz - Math.sin(la) * hz * L) + 0.15 * L
+          while (len > 90 && tipR(len) > R - 22) len *= 0.92
+          const leaf = new THREE.Mesh(leafGeo, mats[(i + c) % 2])
+          leaf.scale.set(len * 0.9 * S, len * S, len * S)
+          leaf.position.set(bx * S, bh * S, bz * S)
+          // laid out from the cane, lifted, spun to its angle round it
+          leaf.rotation.set(-Math.PI / 2 + lift, -la + Math.PI / 2, 0, 'YXZ')
+          leaf.castShadow = true
+          g.add(leaf)
+        }
       }
       place(g, cx, cy)
       return g
@@ -2369,6 +2404,61 @@ function hatchSash(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   }
   const hop = model.walls.flatMap((w) => w.openings).find((o) => /hatch/i.test(o.label ?? '') && o.type === 'window')
   if (hop) wrapItems(g, mode, () => 'hatch', { hatch: [{ x: hop.mid.x, y: hop.mid.y + 260, h: 1500 }, { x: hop.mid.x, y: hop.mid.y - 260, h: 1500 }] })
+  return g
+}
+
+/**
+ * A timber slat blind on the room side of any glazed opening whose label asks
+ * for one: a teak head box, the slats on two ladder tapes, a pull cord. Shut,
+ * the slats cover sill to head, tilted; open, they are drawn up into a stack
+ * under the head box. Follows the Doors switch and has its own touch button.
+ */
+function timberBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  let n = 0
+  for (const w of model.walls) {
+    for (const op of w.openings) {
+      if (!/blind/i.test(op.label ?? '') || op.type !== 'window') continue
+      const sill = op.sill ?? 1050, head = op.head ?? 2400
+      const ux = op.dir.x, uy = op.dir.y
+      const a = { x: op.p1.x - ux * op.from, y: op.p1.y - uy * op.from }
+      // the room side: away from the kitchen when the wall bounds one
+      const kit = model.roomById.get('R-KITCHEN')
+      let nx = -uy, ny = ux
+      if (kit && (kit.centroid.x - op.mid.x) * nx + (kit.centroid.y - op.mid.y) * ny > 0) { nx = -nx; ny = -ny }
+      const ang = Math.atan2(ux, uy)
+      const item = new THREE.Group()
+      const at = (along: number, out: number, h: number, m: THREE.Object3D, tilt = 0) => {
+        m.position.set((a.x + ux * along + nx * out) * S, h * S, (a.y + uy * along + ny * out) * S)
+        m.rotation.set(0, ang, tilt, 'YXZ')
+        item.add(m)
+      }
+      const mid = (op.from + op.to) / 2
+      const width = op.to - op.from
+      const out = w.thickness / 2 + 48
+      at(mid, out, head + 45, box(76, 90, width + 60, M.teak))                        // the head box
+      const slatW = 46, pitch = mode === 'shut' ? 50 : 9
+      const bottom = mode === 'shut' ? sill + 30 : head - 170
+      let h = head - 30
+      const tilt = mode === 'shut' ? 0.5 : 0.08
+      for (; h > bottom; h -= pitch) at(mid, out, h, box(6, slatW, width - 70, M.teak), tilt)
+      at(mid, out, h + pitch - 30, box(12, 28, width - 60, M.teak))                    // the bottom rail
+      for (const e of [-0.32, 0.32]) {                                                // the ladder tapes, front and back
+        at(mid + e * width, out - 22, (head + h) / 2, box(3, head - h + 20, 16, M.trunk))
+        at(mid + e * width, out + 22, (head + h) / 2, box(3, head - h + 20, 16, M.trunk))
+      }
+      const cordL = mode === 'shut' ? 700 : Math.min(1300, head - sill - 100)
+      const cord = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 3 * S, cordL * S, 6), M.trunk)
+      at(op.to - 40, out + 30, head - cordL / 2, cord)
+      const pull = new THREE.Mesh(new THREE.CylinderGeometry(10 * S, 8 * S, 60 * S, 8), M.teak)
+      at(op.to - 40, out + 30, head - cordL - 25, pull)
+      tagItem(item, `blind:${w.id}:${n++}`, mode, [
+        { x: op.mid.x + nx * 350, y: op.mid.y + ny * 350, h: 1500 },
+        { x: op.mid.x - nx * 350, y: op.mid.y - ny * 350, h: 1500 },
+      ])
+      g.add(item)
+    }
+  }
   return g
 }
 
@@ -3125,53 +3215,62 @@ function petalTexture(): THREE.CanvasTexture {
  * a pair of buds trailing on cords - after the paper-sculpture pendants the
  * reference shows. Each bloom carries its own warm light.
  */
+/** the paper of the petal pendants: veined, warm, lit from inside */
+function petalPaper(): THREE.MeshStandardMaterial {
+  const tex = petalTexture()
+  return new THREE.MeshStandardMaterial({
+    map: tex, color: 0xfff2dc, emissive: 0xffc27a, emissiveMap: tex, emissiveIntensity: 0.75,
+    roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity: 0.94,
+  })
+}
+/** a petal: a pointed leaf outline, cupped along its length so it curls up at the tip */
+function petalGeometry(L: number, W: number): THREE.BufferGeometry {
+  const shape = new THREE.Shape()
+  shape.moveTo(0, 0)
+  shape.bezierCurveTo(W * 0.55, L * 0.15, W * 0.62, L * 0.62, 0, L)
+  shape.bezierCurveTo(-W * 0.62, L * 0.62, -W * 0.55, L * 0.15, 0, 0)
+  const geo = new THREE.ShapeGeometry(shape, 18)
+  const pos = geo.attributes.position
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i)
+    // cupped across, and lifting toward the tip
+    pos.setZ(i, (x * x) / (W * 0.55) + (y * y) / (L * 1.4))
+  }
+  geo.computeVertexNormals()
+  // uv: u across, v along, so the veins fan from the base
+  const uv = geo.attributes.uv
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, 0.5 + pos.getX(i) / W, pos.getY(i) / L)
+  geo.scale(S, S, S)
+  return geo
+}
+/** one bloom at the origin: n petals laid out from a dark core and drooping, a warm light under it */
+function flowerBloom(n: number, L: number, W: number, droop: number, spin: number, paper: THREE.Material, vine: THREE.Material, intensity = 1.6, reach = 6.5): THREE.Group {
+  const hub = new THREE.Group()
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + spin
+    const petal = new THREE.Mesh(petalGeometry(L * (0.85 + (i % 2) * 0.3), W), paper)
+    // lay the petal out from the hub and let it droop, its cup opening upward
+    petal.rotation.set(-Math.PI / 2 - droop, a, 0, 'YXZ')
+    petal.castShadow = false
+    hub.add(petal)
+  }
+  const core = new THREE.Mesh(new THREE.SphereGeometry(45 * S, 12, 10), vine)
+  hub.add(core)
+  const light = new THREE.PointLight(0xffc27a, intensity, reach, 1.7)
+  light.position.y = -60 * S
+  hub.add(light)
+  return hub
+}
+
 function petalPendant(_M: Mats): THREE.Group | null {
   const room = model.roomById.get('R-GREAT')
   if (!room) return null
   const g = new THREE.Group()
   const ceiling = model.data.levels.ceiling
-  const tex = petalTexture()
-  const paper = new THREE.MeshStandardMaterial({
-    map: tex, color: 0xfff2dc, emissive: 0xffc27a, emissiveMap: tex, emissiveIntensity: 0.75,
-    roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity: 0.94,
-  })
+  const paper = petalPaper()
   const vine = new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.85 })
-  // a petal: a pointed leaf outline, cupped along its length so it curls up at the tip
-  const petalGeo = (L: number, W: number): THREE.BufferGeometry => {
-    const shape = new THREE.Shape()
-    shape.moveTo(0, 0)
-    shape.bezierCurveTo(W * 0.55, L * 0.15, W * 0.62, L * 0.62, 0, L)
-    shape.bezierCurveTo(-W * 0.62, L * 0.62, -W * 0.55, L * 0.15, 0, 0)
-    const geo = new THREE.ShapeGeometry(shape, 18)
-    const pos = geo.attributes.position
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i), y = pos.getY(i)
-      // cupped across, and lifting toward the tip
-      pos.setZ(i, (x * x) / (W * 0.55) + (y * y) / (L * 1.4))
-    }
-    geo.computeVertexNormals()
-    // uv: u across, v along, so the veins fan from the base
-    const uv = geo.attributes.uv
-    for (let i = 0; i < uv.count; i++) uv.setXY(i, 0.5 + pos.getX(i) / W, pos.getY(i) / L)
-    geo.scale(S, S, S)
-    return geo
-  }
   const bloom = (cx: number, cy: number, h: number, n: number, L: number, W: number, droop: number, spin: number) => {
-    const hub = new THREE.Group()
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2 + spin
-      const petal = new THREE.Mesh(petalGeo(L * (0.85 + (i % 2) * 0.3), W), paper)
-      // stand the petal on its base at the hub, leaning out and drooping
-      // lay the petal out from the hub and let it droop, its cup opening upward
-      petal.rotation.set(-Math.PI / 2 - droop, a, 0, 'YXZ')
-      petal.castShadow = false
-      hub.add(petal)
-    }
-    const core = new THREE.Mesh(new THREE.SphereGeometry(45 * S, 12, 10), vine)
-    hub.add(core)
-    const light = new THREE.PointLight(0xffc27a, 1.6, 6.5, 1.7)
-    light.position.y = -60 * S
-    hub.add(light)
+    const hub = flowerBloom(n, L, W, droop, spin, paper, vine)
     hub.position.set(cx * S, h * S, cy * S)
     g.add(hub)
   }
@@ -4025,6 +4124,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(hingedDoors(M, mode))
     set.add(podPortalDoors(M, mode))
     set.add(hatchSash(M, mode))
+    set.add(timberBlinds(M, mode))
     set.add(dividerPanels(M, mode))
     set.add(slidingGlass(M, mode))
     root.add(set)
@@ -4045,12 +4145,16 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   const dry = furniture.find((f) => /clothes dryer/i.test(f.label))
   if (dry) extra.push({ id: 'dryer', x: dry.x + dry.w / 2, y: dry.y + dry.d / 2, h: 1550 })
   root.userData.anchors = pieceAnchors(root, extra)
+  ;(window as any).__omRoot = root            // the scene, for the headless probes
   root.add(wallArt(M))
   root.add(kitchenOverheads(M))
   root.add(bathMirrors(M))
   root.add(homeDressing(M))
   // the lamps and set pieces a home lists for itself (homeLamps.ts); Home 1's are below
-  root.add(homeLamps(activeHomeId, { M, ceiling: model.data.levels.ceiling, box, sconce: (w) => sconceLamp(M, w) }))
+  root.add(homeLamps(activeHomeId, {
+    M, ceiling: model.data.levels.ceiling, box, sconce: (w) => sconceLamp(M, w),
+    flower: (n, L, W, droop, spin) => flowerBloom(n, L, W, droop, spin, petalPaper(), new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.85 }), 1.1, 4.5),
+  }))
   if (HOME1) {
     const idol = mandirIdol(M)
     if (idol) root.add(idol)
@@ -5508,10 +5612,11 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         const noun =
           kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
           : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : 'door'
+          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : 'door'
         const verb =
           kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
           : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
+          : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
           : `${open ? 'Shut' : 'Open'} this ${noun}`
         return (
           <button

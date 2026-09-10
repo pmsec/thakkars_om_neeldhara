@@ -370,6 +370,51 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     return g
   }
 
+  // ---- a desk: a walnut top on a pedestal of two drawers over a cupboard at
+  // one end, a pencil drawer under the top, a slim leg frame at the other end.
+  // The pedestal goes at the end nearer the wall the desk's short side backs on
+  // (its label says "north end"); the knee space is the rest.
+  if (f.kind === 'table' && /^desk/i.test(label)) {
+    const top = Math.min(f.height, 750)
+    const back = wallSide(f)                                   // the long side on the wall
+    const bv = vec(back)
+    const alongY = back === 'E' || back === 'W'                // the desk runs along y
+    const run = alongY ? d : w
+    const depth = alongY ? w : d
+    const endSaid = /(north|south|east|west) end/i.exec(label)?.[1]?.toUpperCase()[0] as Side | undefined
+    const end: Side = endSaid ?? (alongY ? 'N' : 'W')
+    const ev = vec(end)
+    const PED = 420
+    g.add(box(alongY ? depth : run, 30, alongY ? run : depth, M.walnut, 0, top - 15, 0))
+    // the pedestal: carcass, two drawer fronts, a door, on a recessed plinth
+    const pc = { x: ev.x * (run / 2 - PED / 2), z: ev.z * (run / 2 - PED / 2) }
+    g.add(box(alongY ? depth - 40 : PED - 40, 60, alongY ? PED - 40 : depth - 40, M.trunk, pc.x + bv.x * 10, 30, pc.z + bv.z * 10))
+    g.add(box(alongY ? depth - 20 : PED, top - 30 - 60, alongY ? PED : depth - 20, M.walnut, pc.x + bv.x * 10, 60 + (top - 90) / 2, pc.z + bv.z * 10))
+    const front = opposite(back)
+    const fv = vec(front)
+    const face = depth / 2 - 10 + 5
+    const slab = (h: number, hh: number) => {
+      g.add(box(alongY ? 10 : PED - 16, hh, alongY ? PED - 16 : 10, M.walnut, alongY ? fv.x * face : pc.x, h, alongY ? pc.z : fv.z * face))
+      g.add(box(alongY ? 8 : 110, 8, alongY ? 110 : 8, M.brass, alongY ? fv.x * (face + 8) : pc.x, h, alongY ? pc.z : fv.z * (face + 8)))
+    }
+    slab(top - 30 - 90, 150)                                   // two drawers
+    slab(top - 30 - 250, 150)
+    slab(60 + (top - 30 - 340 - 60) / 2, top - 30 - 340 - 60 - 10)   // the cupboard door
+    // the pencil drawer under the top, across the knee space
+    const kneeC = { x: -ev.x * PED / 2, z: -ev.z * PED / 2 }
+    const kneeL = run - PED - 40
+    g.add(box(alongY ? depth - 60 : kneeL, 90, alongY ? kneeL : depth - 60, M.walnut, kneeC.x + bv.x * 20, top - 30 - 45, kneeC.z + bv.z * 20))
+    g.add(box(alongY ? 8 : 140, 8, alongY ? 140 : 8, M.brass, alongY ? fv.x * (depth / 2 - 30 + 4) : kneeC.x, top - 75, alongY ? kneeC.z : fv.z * (depth / 2 - 30 + 4)))
+    // the far end: a slim leg frame
+    for (const e of [-1, 1]) {
+      const lx = alongY ? e * (depth / 2 - 30) : -ev.x * (run / 2 - 30)
+      const lz = alongY ? -ev.z * (run / 2 - 30) : e * (depth / 2 - 30)
+      g.add(box(40, top - 30, 40, M.trunk, lx, (top - 30) / 2, lz))
+    }
+    place(g, cx, cy)
+    return g
+  }
+
   // ---- the L's chaise: the diwan's seat carried round the corner - a
   // fabric base, a seat cushion, two back cushions on the wall side, an arm
   // on the side the label names, open on the other

@@ -1562,46 +1562,12 @@ FURNITURE += [
 ]
 
 
-# ------------------------------------- the two-seater, against the bath wall
-# BACK TO THE BATH WALL, FACING WEST across the room. Both its ends are read
-# off something rather than chosen: the north end sits below where that wall's
-# curve dies into its straight run — the tangent is (6875, 6300) — so the whole
-# back is against straight wall, and the south end stops on column 5's north
-# face, because the column projects to 6720 and the sofa is 6800 wide. What is
-# left between them is 1495 (4'-11"), which is the sofa.
-#
-# IT HAS TO BE A WALL-HUGGER. There is nothing behind the back: a conventional
-# recliner needs 400 (1'-4") to lean into and would have to stand that far off
-# the wall, which puts its front where the room walks. The mechanism that
-# slides the seat forward instead needs 75-100 (3-4"), which the 1495 gives it
-# without moving anything.
-SOFA2_D = 950.0                             # depth
-SOFA2_E = SEB_WX - SEB_T / 2                # 6800 — the bath's west face
-SOFA2_N = SEB_NY + SEB_RW + 100.0           # 6400, clear of the wall's tangent
-SOFA2_S = _col_face('column 5', 2)          # 7895, where the column begins
-SOFA2 = (SOFA2_E - SOFA2_D, SOFA2_N, SOFA2_E, SOFA2_S)
-
-SOFA2_ARM = 180.0
-SOFA2_BACK = 250.0
-_s2_x0, _s2_x1 = SOFA2[0] + 60.0, SOFA2_E - SOFA2_BACK
-_s2_y0, _s2_y1 = SOFA2_N + SOFA2_ARM, SOFA2_S - SOFA2_ARM
-_s2_mid = (_s2_y0 + _s2_y1) / 2
-
-FURNITURE += [
-    ('sofa', *SOFA2,
-     f"two-seater recliner — {SOFA2_S - SOFA2_N:.0f} x {SOFA2_D:.0f} "
-     f"({_ft(SOFA2_S - SOFA2_N)} x {_ft(SOFA2_D)}), back to the bath wall, "
-     'facing west. Wall-hugger action: there is nothing behind it to lean into',
-     'R-LIVING-DINING', 850, _round_rect(*SOFA2, (140, 50, 50, 140))),
-] + [
-    ('sofa', _s2_x0, a, _s2_x1, b,
-     f"seat — {b - a:.0f} ({_ft(b - a)}) wide, footrest out to "
-     f"{_ft(SOFA2_D + 500.0)} from the wall",
-     'R-LIVING-DINING', 420, _round_rect(_s2_x0, a, _s2_x1, b, (110, 30, 30, 110)))
-    for a, b in [(_s2_y0, _s2_mid - 18.0), (_s2_mid + 18.0, _s2_y1)]
-]
-
-
+# ------------------------------------- the bath wall: art and light, no sofa
+# THE TWO-SEATER THAT STOOD HERE IS GONE (Karan's call): the straight run of
+# the bath's west wall, from the curve's tangent at 6400 to column 5 at 7895,
+# is a wall for a big canvas with a sconce either side, and the floor in
+# front of it stays open between the L and the swivels. The canvas and the
+# sconces are the walkthrough's (its art and lamp tables).
 # ------------------------------- the diwan and the second recliner, west side
 # AN L IN THE NORTH-WEST, closing the living room's other half: a two-seater
 # across the top facing south, and a diwan down the west side facing east.

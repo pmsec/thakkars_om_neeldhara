@@ -2193,7 +2193,7 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   for (const w of model.walls) {
     const glassy = w.kind === 'glazing' || !!w.def.glass
     for (const op of w.openings) {
-      if (op.type !== 'slider' || HANDLED.has(op.id)) continue
+      if (op.type !== 'slider' || HANDLED.has(op.id) || /fold/i.test(op.label ?? '')) continue
       // a slider in a solid partition is timber panels when its label says so
       const wood = !glassy && /panel/i.test(op.label ?? '')
       if (!glassy && !wood) continue
@@ -2362,6 +2362,87 @@ function dividerPanels(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   }
   const dop = model.walls.flatMap((w) => w.openings).find((o) => o.id === 'SL-P-BATH-DIV')
   if (dop) wrapItems(g, mode, () => 'divider', { divider: [{ x: dop.mid.x, y: dop.mid.y + 260, h: 1350 }, { x: dop.mid.x, y: dop.mid.y - 260, h: 1350 }] })
+  return g
+}
+
+/**
+ * A folding door: a slider whose label says it folds. Glazed leaves in slim
+ * timber frames on a top track, full height to the opening's head. Shut,
+ * they stand in line with a hinge line between each pair; open, they fold
+ * flat against one another and stack at one jamb (the one the label names,
+ * else the first), standing out on the side the label says they fold to
+ * (the room named after "on to", else away from the room they serve).
+ * Follows the Doors switch and has its own touch button.
+ */
+function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  let idx = 0
+  for (const w of model.walls) {
+    for (const op of w.openings) {
+      if (op.type !== 'slider' || !/fold/i.test(op.label ?? '')) continue
+      const label = op.label ?? ''
+      const head = Math.min(op.head ?? 2400, model.data.levels.ceiling)
+      const ux = op.dir.x, uy = op.dir.y
+      const a = { x: op.p1.x - ux * op.from, y: op.p1.y - uy * op.from }
+      // the side the leaves fold out to: the room the label names after "on to"
+      const outName = /on ?to the (\w+)/i.exec(label)?.[1]
+      let nx = -uy, ny = ux
+      const probe = (sgn: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + nx * sgn * 300, y: op.mid.y + ny * sgn * 300 }, r.polygon))
+      if (outName) {
+        const r1 = probe(1)
+        if (!r1 || !new RegExp(outName, 'i').test(r1.name)) { nx = -nx; ny = -ny }
+      }
+      const said = /\b(two|three|four|five|2|3|4|5)\b[^.]*\bleaves\b/i.exec(label)
+      const n = said ? ({ two: 2, three: 3, four: 4, five: 5 } as Record<string, number>)[said[1].toLowerCase()] ?? Number(said[1]) : 3
+      const width = op.to - op.from
+      const leaf = width / n
+      const T = 44, FR = 60
+      const H = head - 70
+      const hm = 10 + H / 2
+      const ang = Math.atan2(ux, uy)
+      const item = new THREE.Group()
+      const at = (along: number, out: number, h: number, m: THREE.Object3D, yaw = 0) => {
+        m.position.set((a.x + ux * along + nx * out) * S, h * S, (a.y + uy * along + ny * out) * S)
+        m.rotation.y = ang + yaw
+        item.add(m)
+      }
+      // a leaf: a timber frame round a pane, its own group so it can be turned as one
+      const leafGroup = (): THREE.Group => {
+        const lg = new THREE.Group()
+        const pane = box(10, H - 2 * FR, leaf - 2 * FR - 8, M.glass)
+        lg.add(pane)
+        for (const e of [-1, 1]) {
+          lg.add(box(T, FR, leaf - 8, M.wallWood, 0, e * (H / 2 - FR / 2), 0))        // rails
+          lg.add(box(T, H, FR, M.wallWood, 0, 0, e * (leaf / 2 - 4 - FR / 2)))          // stiles
+        }
+        return lg
+      }
+      // the track along the head, always there
+      at((op.from + op.to) / 2, 0, head - 30, box(Math.max(w.thickness, 60), 60, width, M.wallWood))
+      // the jamb it stacks at: named, else the first
+      const westish = /west|north/i.test(/stack\w* at the (\w+)/i.exec(label)?.[1] ?? '')
+      const stackAtFrom = westish ? (ux > 0 || uy > 0) : true
+      if (mode === 'shut') {
+        for (let k = 0; k < n; k++) {
+          at(op.from + (k + 0.5) * leaf, 0, hm, leafGroup())
+          if (k) at(op.from + k * leaf, 0, hm, box(T + 6, H - 40, 8, M.trunk))          // the hinge line
+        }
+        const pull = box(14, 160, 14, M.chrome)
+        at(stackAtFrom ? op.to - FR / 2 : op.from + FR / 2, T / 2 + 12, 1000, pull)
+      } else {
+        // folded flat against one another, square to the line, stacked at the jamb
+        for (let k = 0; k < n; k++) {
+          const along = stackAtFrom ? op.from + 40 + T / 2 + k * (T + 14) : op.to - 40 - T / 2 - k * (T + 14)
+          at(along, leaf / 2 + 20, hm, leafGroup(), Math.PI / 2)
+        }
+      }
+      tagItem(item, `fold:${op.id}:${idx++}`, mode, [
+        { x: op.mid.x + nx * 350, y: op.mid.y + ny * 350, h: 1450 },
+        { x: op.mid.x - nx * 350, y: op.mid.y - ny * 350, h: 1450 },
+      ])
+      g.add(item)
+    }
+  }
   return g
 }
 
@@ -4156,6 +4237,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(podPortalDoors(M, mode))
     set.add(hatchSash(M, mode))
     set.add(timberBlinds(M, mode))
+    set.add(foldingDoors(M, mode))
     set.add(dividerPanels(M, mode))
     set.add(slidingGlass(M, mode))
     root.add(set)
@@ -5646,7 +5728,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
         const noun =
           kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
           : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : 'door'
+          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : 'door'
         const verb =
           kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
           : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')

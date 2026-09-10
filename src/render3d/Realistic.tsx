@@ -2455,7 +2455,7 @@ function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       at((op.from + op.to) / 2, 0, head - 30, box(Math.max(w.thickness, 60), 60, width, M.wallWood))
       // the jamb it stacks at, by compass name; the opening's `from` end is the
       // one the wall's direction runs away from
-      const jamb = (/stack\w* at the (north|south|east|west)/i.exec(label)?.[1] ?? '').toLowerCase()
+      const jamb = (/stack\w* at the (north|south|east|west) jamb/i.exec(label)?.[1] ?? '').toLowerCase()
       const stackAtFrom = jamb === 'north' ? uy > 0 : jamb === 'south' ? uy < 0 : jamb === 'west' ? ux > 0 : jamb === 'east' ? ux < 0 : true
       if (mode === 'shut') {
         for (let k = 0; k < n; k++) {
@@ -2465,9 +2465,11 @@ function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         const pull = box(14, 160, 14, M.chrome)
         at(stackAtFrom ? op.to - FR / 2 : op.from + FR / 2, T / 2 + 12, 1000, pull)
       } else {
-        // folded flat against one another, square to the line, stacked at the jamb
+        // folded flat against one another, square to the line, stacked at the
+        // jamb on the fold side - where a wall runs on from the jamb into that
+        // room, the stack lies along it
         for (let k = 0; k < n; k++) {
-          const along = stackAtFrom ? op.from + 40 + T / 2 + k * (T + 14) : op.to - 40 - T / 2 - k * (T + 14)
+          const along = stackAtFrom ? op.from + 30 + T / 2 + k * (T + 12) : op.to - 30 - T / 2 - k * (T + 12)
           at(along, leaf / 2 + 20, hm, leafGroup(), Math.PI / 2)
         }
       }

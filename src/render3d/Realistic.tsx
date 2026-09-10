@@ -4331,26 +4331,32 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
         let nx = -uy, ny = ux
         const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2
         if ((room.centroid.x - mx) * nx + (room.centroid.y - my) * ny < 0) { nx = -nx; ny = -ny }
-        // the openings on this edge, as spans along it
-        const cuts: Array<[number, number]> = []
+        // the openings on this edge, as spans along it: a door cuts the band
+        // through; a window cuts it above its sill and leaves the tiles below
+        // (the band used to run straight across a window, which walled up the
+        // kitchen's south light from the sill to 2100)
+        const cuts: Array<[number, number, number]> = []          // lo, hi, tiles below this height
         for (const wl of model.walls) for (const op of wl.openings) {
-          if (op.type === 'window') continue
           const dm = Math.abs((op.mid.x - a.x) * nx + (op.mid.y - a.y) * ny)
           if (dm > 200) continue
           const t1 = (op.p1.x - a.x) * ux + (op.p1.y - a.y) * uy, t2 = (op.p2.x - a.x) * ux + (op.p2.y - a.y) * uy
           const lo = Math.min(t1, t2) - 20, hi = Math.max(t1, t2) + 20
           if (hi <= 0 || lo >= len) continue
-          cuts.push([Math.max(0, lo), Math.min(len, hi)])
+          cuts.push([Math.max(0, lo), Math.min(len, hi), op.type === 'window' ? Math.min(TH, op.sill ?? model.data.levels.windowSill) : 0])
         }
         cuts.sort((p, q) => p[0] - q[0])
         let at = 0
-        const spans: Array<[number, number]> = []
-        for (const [lo, hi] of cuts) { if (lo > at) spans.push([at, lo]); at = Math.max(at, hi) }
-        if (at < len) spans.push([at, len])
-        for (const [s0, s1] of spans) {
+        const spans: Array<[number, number, number]> = []          // s0, s1, height
+        for (const [lo, hi, below] of cuts) {
+          if (lo > at) spans.push([at, lo, TH])
+          if (below > 40) spans.push([Math.max(at, lo), hi, below])
+          at = Math.max(at, hi)
+        }
+        if (at < len) spans.push([at, len, TH])
+        for (const [s0, s1, h] of spans) {
           if (s1 - s0 < 40) continue
-          const tile = new THREE.Mesh(new THREE.BoxGeometry((s1 - s0) * S, TH * S, 10 * S), M.tile)
-          tile.position.set((a.x + ux * (s0 + s1) / 2 + nx * 6) * S, (TH / 2) * S, (a.y + uy * (s0 + s1) / 2 + ny * 6) * S)
+          const tile = new THREE.Mesh(new THREE.BoxGeometry((s1 - s0) * S, h * S, 10 * S), M.tile)
+          tile.position.set((a.x + ux * (s0 + s1) / 2 + nx * 6) * S, (h / 2) * S, (a.y + uy * (s0 + s1) / 2 + ny * 6) * S)
           tile.rotation.y = -Math.atan2(uy, ux)
           tile.receiveShadow = true
           root.add(tile)

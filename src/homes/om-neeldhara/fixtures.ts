@@ -7,7 +7,7 @@ import type { FixtureDef } from '../../data/schema'
 
 export const fixtures: FixtureDef[] = [
   { id: 'FX-WC-0', kind: 'wc', at: { x: 4065, y: 5895 }, size: [680, 390], room: 'R-P-BATH', stack: 'STK-P-BATH', label: 'WC' },
-  { id: 'FX-SH-1', kind: 'shower', at: { x: 2925, y: 6700 }, size: [900, 900], room: 'R-P-BATH', stack: 'STK-P-BATH', label: 'Shower — walk-in, 900 x 900, glass screen north and east, door on the east' },
+  { id: 'FX-SH-1', kind: 'shower', at: { x: 2925, y: 6515 }, size: [900, 1270], room: 'R-P-BATH', stack: 'STK-P-BATH', label: 'Shower — walk-in, 1270 x 900 the full wall, glass screen north and east, door on the east' },
   { id: 'FX-WC-2', kind: 'wc', at: { x: 4065, y: 7820 }, size: [680, 390], room: 'R-G-BATH', stack: 'STK-G-BATH', label: 'WC' },
   { id: 'FX-SH-3', kind: 'shower', at: { x: 3603, y: 9070 }, size: [1444, 950], room: 'R-G-BATH', stack: 'STK-G-BATH', label: 'Shower — walk-in, 1457 x 950, curtain on a bowed rail, no screen' },
   { id: 'FX-BASIN-4', kind: 'basin', at: { x: 3156, y: 8350 }, size: [550, 400], room: 'R-G-BATH', stack: 'STK-G-BATH', label: 'Basin, 550 × 400' },

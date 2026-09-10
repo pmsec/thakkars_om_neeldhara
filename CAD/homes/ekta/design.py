@@ -1762,15 +1762,9 @@ FURNITURE += [
     ('rug', 8900, 2900, 11300, 4900,
      "rug — 2400 x 2000 (7'-10\" x 6'-7\") at the foot of the bed",
      'R-ROOM', 12),
-    # THE WINDOW BOX (Karan's call): a long planter hung OUTSIDE the east
-    # room's south window, its rim at the sill, so flowering plants stand in
-    # the sun, rain and wind and are seen from the daybed through the glass.
-    # It is outside the envelope on purpose - it hangs off the facade on
-    # brackets - and the app's envelope check lets a window box out.
-    ('planter', 8600, 8460, 11400, 8860,
-     "window box — 2800 x 400 (9'-2\" x 1'-4\") hung outside the south window "
-     'on brackets, rim at the sill, flowering plants in it',
-     'R-ROOM', 750),
+    # WINDOW BOXES are outside every window of the house (Karan's call) and
+    # are a RULE in the walkthrough, not pieces here: the app hangs one under
+    # each glazed window in an exterior wall whose outside is the open air.
     ('planter', 3850, 11950, 4200, 12300,
      "planter — 350 (1'-2\") square, the balcony's west end", 'R-BALCONY', 450),
     ('planter', 6450, 11950, 6800, 12300,

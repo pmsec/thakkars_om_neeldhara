@@ -570,10 +570,12 @@ GLAZING = [
     # suite <-> terrace, full-height sliding
     (-350, 1275, SUITE_W_E, 1275, 'slider'),
     (M(SUITE_W_E), 1275, M(-350), 1275, 'slider'),
-    # deck <-> great room and pods: the old 150 partition comes out
-    (4650, DECK_S + 75, 7500, DECK_S + 75, 'slider'),
-    (9115, DECK_S + 75, 15365, DECK_S + 75, 'slider'),
-    (M(7500), DECK_S + 75, M(4650), DECK_S + 75, 'slider'),
+    # deck <-> great room and pods: the old 150 partition comes out, and so
+    # do the sliders (Karan's call): the deck is glazed and cooled, so these
+    # three lines are OPEN, floor to ceiling, no doors - one space
+    (4650, DECK_S + 75, 7500, DECK_S + 75, 'open'),
+    (9115, DECK_S + 75, 15365, DECK_S + 75, 'open'),
+    (M(7500), DECK_S + 75, M(4650), DECK_S + 75, 'open'),
     # windows in the external walls
     # These are the builder's OWN openings, read off the source drawing's
     # DA_WINDOW layer, not invented and NOT mirrored.  The two wing ends are

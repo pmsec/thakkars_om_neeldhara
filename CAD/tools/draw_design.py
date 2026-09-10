@@ -229,6 +229,8 @@ def main():
             nx, ny = (0, 60) if y1 == y2 else (60, 0)
             for k in (-1, 1):
                 s.line(x1 + nx * k, y1 + ny * k, x2 + nx * k, y2 + ny * k, GLAS, 2.0)
+        elif kind == 'open':             # an open threshold, nothing in it: a dashed line
+            s.line(x1, y1, x2, y2, GLAS, 1.6, dash='9 7')
         else:
             s.line(x1, y1, x2, y2, GLAS, 4.0)
 

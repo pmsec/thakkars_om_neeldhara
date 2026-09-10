@@ -785,8 +785,15 @@ _ONCE = [
     # waste runs ~500 to the stack under the floor — ordinary in a sunken bath
     # slab; the plumber has to say yes.  Fixed glass on the shower's north and
     # east edges, the door on the east, into the 1017 x 900 dry strip.
+    #
+    # THE SHOWER RUNS THE FULL WALL (Karan's call): from the bath door's south
+    # jamb at 5830, 50 clear of its architrave, to the divider - 1270 along
+    # the west wall, 900 deep - so no strip of bare wall is left between the
+    # door and the screen.  Its north screen at 5880 clips the south end of
+    # the standing room in front of the pan by 350 x 210; the pan itself is
+    # untouched.
     ('wc-e',     3725, 5700, 4405, 6090, 'pan 85 north of the duct: 500 waste run'),
-    ('shower',   2475, 6250, 3375, 7150, 'walk-in, 900 x 900, glass screen north and east, door on the east'),
+    ('shower',   2475, 5880, 3375, 7150, 'walk-in, 1270 x 900 the full wall, glass screen north and east, door on the east'),
     # SOUTH HALF, the grandmother's: the pan and the walk-in shower exactly
     # where the bath always had them, and a wall-hung basin of her own on the
     # west wall between her door and the shower.

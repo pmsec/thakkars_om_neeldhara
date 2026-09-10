@@ -1340,6 +1340,15 @@ FURNITURE += [
      "945 (3'-1\") at the foot and both sides open; a hydraulic lift-up base "
      'over storage, hinged at the head',
      'R-ROOM', 600, None, False, 'W'),      # the sleeper looks west, to the foot
+    # THE OTTOMAN (Karan's call): a 700 square in the pocket between the
+    # dressing console and the daybed's west end, flush against the daybed
+    # and level with its mattress at 530 - a footrest for the daybed, and
+    # pulled 335 (1'-1") north it is the console's seat.
+    ('stool', ARM_DAY[0] - 700.0, 7580.0, ARM_DAY[0], 8280.0,
+     "ottoman — 700 x 700 (2'-4\" x 2'-4\"), flush against the daybed's west "
+     'end and level with its mattress: a footrest for the daybed and the seat '
+     'for the dressing console',
+     'R-ROOM', 530, _round_rect(ARM_DAY[0] - 700.0, 7580.0, ARM_DAY[0], 8280.0, 60)),
     ('console', *CONSOLE_ROOM,
      f"console cabinet — {CONSOLE_ROOM[3] - CONSOLE_ROOM[1]:.0f} x 400 "
      f"({_ft(CONSOLE_ROOM[3] - CONSOLE_ROOM[1])} x 1'-4\") on the east wall "

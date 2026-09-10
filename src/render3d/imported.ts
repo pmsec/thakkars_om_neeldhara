@@ -546,7 +546,9 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
   // panel on the east wall, both standing on the seat above the mattress; the
   // band that joins them along the ceiling is in homeLamps.ts.
   if (f.kind === 'screen' && /^arch (fin|panel)/i.test(label)) {
-    const base = 540, top = Math.min(f.height, getModel().data.levels.ceiling)   // clear of the lid's mattress
+    // a leg on the seat starts above the lid's mattress; one the label says
+    // runs from the floor starts on it
+    const base = /from the floor/i.test(label) ? 0 : 540, top = Math.min(f.height, getModel().data.levels.ceiling)
     g.add(box(w - 2, top - base, d - 2, M.teak, 0, (base + top) / 2, 0))
     place(g, cx, cy)
     return g

@@ -79,7 +79,7 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     // the east room: the teak frame over the daybed, wall to wall - the fin
     // and the panel are on the plan (arch fin, arch panel); this is the band
     // along the ceiling between them and the flower pendant over the seat
-    { kind: 'arch', x0: 9450, x1: 11470, y0: 8005, y1: 8355, r: 0, band: 220, pendant: { x: 10460, y: 8180, h: 2050 } },
+    { kind: 'arch', x0: 8525, x1: 11470, y0: 8005, y1: 8355, r: 0, band: 220, pendant: { x: 10460, y: 8180, h: 2050 } },
     // the kitchen's lofts: teak overheads from 2450 to 3000 on the west leg,
     // the north wall and the east leg (the corners left to the curves), and a
     // wall cabinet on the 800 pier between the two north windows

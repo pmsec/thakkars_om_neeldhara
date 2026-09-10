@@ -134,8 +134,8 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     g.add(box(along ? span : 6, 6, along ? 6 : span, M.graphite, v.x * out, H * 0.66, v.z * out))
     for (const [h0, h1] of [[H * 0.7, H - 120], [140, H * 0.62]] as const) {
       const hh = h1 - h0
-      const px = along ? span / 2 - 90 : v.x * (out + 18)
-      const pz = along ? v.z * (out + 18) : span / 2 - 90
+      const px = along ? span / 2 - 90 : v.x * (out + 10)
+      const pz = along ? v.z * (out + 10) : span / 2 - 90
       g.add(box(along ? 22 : 30, hh, along ? 30 : 22, M.chrome, along ? px * (front === 'S' ? 1 : -1) : px, (h0 + h1) / 2, along ? pz : pz * (front === 'E' ? 1 : -1)))
     }
     place(g, cx, cy)
@@ -178,6 +178,9 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     g.add(tap)
     const spout = box(wall === 'N' || wall === 'S' ? 16 : 120, 14, wall === 'N' || wall === 'S' ? 120 : 16, M.chrome, v.x * (back - 55), top + 172, v.z * (back - 55))
     g.add(spout)
+    const towel = box(wall === 'N' || wall === 'S' ? 160 : 120, 40, wall === 'N' || wall === 'S' ? 120 : 160, M.pillow,
+      wall === 'N' || wall === 'S' ? w / 2 - 110 : v.x * (back - 120), top + 20, wall === 'N' || wall === 'S' ? v.z * (back - 120) : d / 2 - 110)
+    g.add(towel)
     place(g, cx, cy)
     return g
   }
@@ -260,6 +263,17 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
       tap.position.set((sinkX - cx) * S, (top + 130) * S, (runY - cy - 250) * S)
       g.add(tap)
       g.add(box(16, 14, 180, M.chrome, sinkX - cx, top + 252, runY - cy - 165))
+      // what stands on a worktop: a kettle by the hob, a board, two jars by the wall
+      const kettle = new THREE.Mesh(new THREE.CylinderGeometry(75 * S, 85 * S, 190 * S, 16), M.steel)
+      kettle.position.set((hobX - cx + 420) * S, (top + 95) * S, (runY - cy + 60) * S)
+      g.add(kettle)
+      g.add(box(360, 18, 240, M.walnut, hobX - cx - 460, top + 9, runY - cy + 40))
+      for (const [ox, hh] of [[-120, 170], [-30, 130]] as const) {
+        const jar = new THREE.Mesh(new THREE.CylinderGeometry(48 * S, 48 * S, hh * S, 14), M.acrylic)
+        jar.position.set((sinkX - cx + 560 + ox) * S, (top + hh / 2) * S, (runY - cy - 200) * S)
+        g.add(jar)
+        g.add(box(96, 12, 96, M.walnut, sinkX - cx + 560 + ox, top + hh + 6, runY - cy - 200))
+      }
     }
     // door lines on the front: a groove every 600 along the outline's inner edge
     place(g, cx, cy)
@@ -280,6 +294,14 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     g.add(box(w - 60, 100, 540, M.graphite, 0, 50, -d / 2 + 300))
     // the living side: a pedestal at the far end and a slim leg midway
     g.add(box(w - 200, top - 40, 260, M.wallWood, 0, (top - 40) / 2, d / 2 - 150))
+    const bowl = new THREE.Mesh(new THREE.CylinderGeometry(150 * S, 100 * S, 70 * S, 20, 1, true), M.porcelain)
+    bowl.position.set(0, (top + 35) * S, (d / 2 - 480) * S)
+    g.add(bowl)
+    for (let i = 0; i < 5; i++) {
+      const fruit = new THREE.Mesh(new THREE.SphereGeometry(38 * S, 10, 8), i % 2 ? M.leaf : M.brass)
+      fruit.position.set(((i % 3) - 1) * 55 * S, (top + 60 + (i > 2 ? 40 : 0)) * S, (d / 2 - 480 + (i > 2 ? -30 : 30 * ((i % 2) - 0.5))) * S)
+      g.add(fruit)
+    }
     place(g, cx, cy)
     return g
   }
@@ -339,6 +361,7 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     const H = Math.min(f.height, 460)
     g.add(basePrism(ring, 0, H - 90, M.wallWood))
     g.add(basePrism(ring, H - 90, H, M.fabric))
+    g.add(box(w >= d ? 420 : w - 120, 50, w >= d ? d - 120 : 420, M.throw, w >= d ? w / 2 - 300 : 0, H + 25, w >= d ? 0 : d / 2 - 300))
     if (/diwan/i.test(label)) {
       // a row of loose cushions against the wall it backs onto
       const ws = wallSide(f)
@@ -376,6 +399,12 @@ export function importedPiece(f: FurnitureItem, k: PieceKit): THREE.Object3D | n
     frame.rotation[along ? 'x' : 'z'] = Math.PI / 2
     frame.position.set(v.x * (off + 2) * S, 1450 * S, v.z * (off + 2) * S)
     g.add(frame)
+    g.add(box(along ? 260 : 160, 14, along ? 160 : 260, M.brass, -w * 0.2, top + 7, v.z * 40))
+    for (const [ox, hh, rr] of [[-w * 0.26, 120, 22], [-w * 0.15, 90, 30]] as const) {
+      const bottle = new THREE.Mesh(new THREE.CylinderGeometry(rr * S, rr * S, hh * S, 12), M.acrylic)
+      bottle.position.set(ox * S, (top + 14 + hh / 2) * S, v.z * 40 * S)
+      g.add(bottle)
+    }
     place(g, cx, cy)
     return g
   }

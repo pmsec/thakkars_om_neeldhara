@@ -44,6 +44,7 @@ import { hedgeGroup } from './hedge'
 import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
 import { useStore } from '../ui/store'
 import { importedPiece, wallGaps } from './imported'
+import { homeLamps } from './homeLamps'
 import { activeHomeId } from '../homes/registry'
 
 const model = getModel()
@@ -1234,7 +1235,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       if (stoneBed) g.add(stoneBed)
       const long = Math.max(w, d)
       const n = Math.max(2, Math.round(long / 420))
-      const r = Math.min(230, Math.min(w, d) / 2 - 30)
+      // no shrub past the box: each is at most half its own pitch across
+      const r = Math.min(230, Math.min(w, d) / 2 - 30, long / (2 * n) - 4)
       for (let i = 0; i < n; i++) {
         const t = (i + 0.5) / n
         const sx = w >= d ? f.x + t * w : cx
@@ -4040,6 +4042,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(kitchenOverheads(M))
   root.add(bathMirrors(M))
   root.add(homeDressing(M))
+  // the lamps and set pieces a home lists for itself (homeLamps.ts); Home 1's are below
+  root.add(homeLamps(activeHomeId, { M, ceiling: model.data.levels.ceiling, box, sconce: (w) => sconceLamp(M, w) }))
   if (HOME1) {
     const idol = mandirIdol(M)
     if (idol) root.add(idol)

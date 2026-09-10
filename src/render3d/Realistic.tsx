@@ -2926,6 +2926,77 @@ function windowBoxes(M: Mats): THREE.Group {
  * the Doors switch and has its own button. The static pane the opening used
  * to carry is dropped where a sash sits.
  */
+/** The pleated gauze, painted once: fine white mesh with a soft pleat shading every pleat. */
+function pleatTexture(): THREE.CanvasTexture {
+  const c = document.createElement('canvas')
+  c.width = 64
+  c.height = 4
+  const ctx = c.getContext('2d')!
+  // one pleat per 64 px: bright on the crest, dimmer in the fold
+  for (let x = 0; x < 64; x++) {
+    const t = Math.abs((x / 64) * 2 - 1)
+    const v = Math.round(214 + 36 * (1 - t))
+    ctx.fillStyle = `rgb(${v},${v},${v - 6})`
+    ctx.fillRect(x, 0, 1, 4)
+  }
+  const tex = new THREE.CanvasTexture(c)
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
+/**
+ * A PLEATED MOSQUITO MESH IN EVERY WINDOW (Karan's call, both homes): on the
+ * room side of the frame, a thin white gauze in two halves on a slim top
+ * and bottom track. Drawn, the halves meet at the middle and the window can
+ * stay open behind them; pleated back, each half stacks against its jamb
+ * and the view is clear. Its own piece, with its own button, apart from
+ * the sash. Starts drawn.
+ */
+function meshScreens(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  const tex = pleatTexture()
+  const gauze = new THREE.MeshStandardMaterial({ map: tex, color: 0xffffff, transparent: true, opacity: 0.42, roughness: 0.95, side: THREE.DoubleSide, depthWrite: false })
+  let idx = 0
+  for (const ew of exteriorWindows()) {
+    const { w, op, ux, uy, ox, oy, width, sill, head } = ew
+    const H = head - sill
+    const T = Math.max(w.thickness, 100)
+    const a = { x: op.p1.x - ux * op.from, y: op.p1.y - uy * op.from }
+    const ang = Math.atan2(ux, uy)
+    const item = new THREE.Group()
+    const at = (along: number, out: number, h: number, m: THREE.Object3D) => {
+      m.position.set((a.x + ux * along + ox * out) * S, h * S, (a.y + uy * along + oy * out) * S)
+      m.rotation.y = ang
+      item.add(m)
+    }
+    const FR = 50
+    const inner = width - 2 * FR                                  // between the jambs
+    const mid = (op.from + op.to) / 2
+    const out = -(T / 2 + 12)                                     // just inside the wall face, on the room side
+    // the tracks, top and bottom, and the meeting bar when drawn
+    at(mid, out, head - FR - 8, box(18, 16, inner, M.graphite))
+    at(mid, out, sill + FR + 8, box(18, 16, inner, M.graphite))
+    const gh = H - 2 * FR - 32
+    const gc = (sill + head) / 2
+    for (const e of [-1, 1]) {
+      const jamb = mid + e * (inner / 2)
+      const half = mode === 'shut' ? inner / 2 - 10 : 60         // drawn across, or pleated at the jamb
+      const panel = new THREE.Mesh(new THREE.BoxGeometry(6 * S, gh * S, half * S), gauze.clone())
+      ;(panel.material as THREE.MeshStandardMaterial).map = tex.clone()
+      ;(panel.material as THREE.MeshStandardMaterial).map!.repeat.set(mode === 'shut' ? Math.max(4, half / 30) : 12, 1)
+      ;(panel.material as THREE.MeshStandardMaterial).map!.needsUpdate = true
+      at(jamb - e * half / 2, out, gc, panel)
+      at(jamb - e * (half - 8), out, gc, box(22, gh, 16, M.graphite))          // the leading stile
+    }
+    tagItem(item, `mesh:${w.id}:${idx++}`, mode, [
+      { x: op.mid.x - ox * (w.thickness / 2 + 350), y: op.mid.y - oy * (w.thickness / 2 + 350), h: 1150 },
+    ])
+    g.add(item)
+  }
+  return g
+}
+
 function awningWindows(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   let idx = 0
@@ -4566,6 +4637,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(hatchSash(M, mode))
     set.add(timberBlinds(M, mode))
     set.add(awningWindows(M, mode))
+    set.add(meshScreens(M, mode))
     set.add(foldingDoors(M, mode))
     set.add(liftBeds(M, mode))
     set.add(dividerPanels(M, mode))
@@ -6139,12 +6211,13 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           const noun =
             kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
             : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : 'door'
+            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : kind === 'mesh' ? 'mesh' : 'door'
           const verb =
             kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
             : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
             : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
             : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the storage')
+            : kind === 'mesh' ? (open ? 'Draw the mosquito mesh' : 'Pleat the mesh back')
             : `${open ? 'Shut' : 'Open'} this ${noun}`
           return { noun, verb }
         }

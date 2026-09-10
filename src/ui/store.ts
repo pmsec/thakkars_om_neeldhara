@@ -176,7 +176,7 @@ export const initialState: PortalState = {
   walkBars: false,
   cutaway: 3505,
   section: { axis: null, at: 12240 },
-  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: false, wallBedDown: false, dryerDown: false, itemOpen: {}, ceiling: true, roofOpen: false, timeOfDay: 'afternoon' },
+  show3d: { glassRoofs: true, cages: true, furniture: true, podParents: true, podKaran: true, doorsShut: true, wallBedDown: false, dryerDown: false, itemOpen: {}, ceiling: true, roofOpen: false, timeOfDay: 'afternoon' },
   sun: { day: 80, hour: 11, mode: 'day', shadows: true },
   northAzimuth: 0,
   panels: { left: true, right: true },

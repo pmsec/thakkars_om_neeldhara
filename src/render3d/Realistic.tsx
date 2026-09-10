@@ -2405,7 +2405,8 @@ function foldingDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   let idx = 0
   for (const w of model.walls) {
     for (const op of w.openings) {
-      if (op.type !== 'slider' || !/fold/i.test(op.label ?? '')) continue
+      // Home 1's bath divider says 'fold' too, and has its own renderer
+      if (op.type !== 'slider' || !/fold/i.test(op.label ?? '') || op.id === 'SL-P-BATH-DIV') continue
       const label = op.label ?? ''
       const head = Math.min(op.head ?? 2400, model.data.levels.ceiling)
       const ux = op.dir.x, uy = op.dir.y
@@ -5290,8 +5291,10 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
   const [touchWalking, setTouchWalking] = useState(false)
   const [hint, setHint] = useState(true)
   // the interactive piece nearest the middle of the view, for the one-piece button
-  const [nearItem, setNearItem] = useState<string | null>(null)
-  const nearRef = useRef<string | null>(null)
+  // the interactive pieces in front of you, each with where it sits on screen
+  type NearPiece = { id: string; sx: number; sy: number; w: number; h: number }   // screen place, and the view's size then
+  const [nearItems, setNearItems] = useState<NearPiece[]>([])
+  const nearRef = useRef<string>('')
   const touch = isTouchDevice()
   const touchRef = useRef<TouchWalk | null>(null)
   const walkRef = useRef<((on: boolean) => void) | null>(null)
@@ -5391,9 +5394,17 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const s3 = st.show3d
     if (id === 'wallbed') return { ...st, show3d: { ...s3, wallBedDown: !s3.wallBedDown } }
     if (id === 'dryer') return { ...st, show3d: { ...s3, dryerDown: !s3.dryerDown } }
-    const open = s3.itemOpen[id] ?? !s3.doorsShut
+    const open = s3.itemOpen[id] ?? (id.startsWith('liftbed') ? false : !s3.doorsShut)
     return { ...st, show3d: { ...s3, itemOpen: { ...s3.itemOpen, [id]: !open } } }
   })
+  // EVERYTHING STARTS SHUT (Karan's call, both homes): whenever the
+  // walkthrough loads, every door, slider, blind, hatch and folding door is
+  // shut, the wall bed and the lift-up beds are down, the dryer up, the roof
+  // closed - whatever state the tabs were left in
+  useEffect(() => {
+    uiUpdate((st) => ({ ...st, show3d: { ...st.show3d, doorsShut: true, wallBedDown: false, dryerDown: false, roofOpen: false, itemOpen: {} } }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // The scene is built once the style library is primed, and again when the
   // style changes. It used to be built at mount AND again the moment priming
@@ -5671,6 +5682,9 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     // screen-space test rather than a ray, so a tap a few pixels off a 55 mm
     // dot still lands. The dot pulses once so the tap is seen to register.
     const dotList = (house.userData.anchors ?? []) as DotEntry[]
+    // the solid walls as plan segments, for the line-of-sight test on the buttons
+    const wallSegs: Array<[number, number, number, number]> = []
+    for (const wl of model.walls) { if (wl.thickness < 60) continue; for (let k = 1; k < wl.points.length; k++) wallSegs.push([wl.points[k - 1].x, wl.points[k - 1].y, wl.points[k].x, wl.points[k].y]) }
     let lastPickAt = 0
     const pickAt = (cx: number, cy: number): void => {
       lastPickAt = performance.now()
@@ -5815,20 +5829,44 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           if (!cur || d < cur.d) nearest.set(dt.id, { d, i })
         }
         for (const { i } of nearest.values()) dotList[i].shown = true
-        // the piece in front of you: of the shown dots, the one nearest the
-        // centre of the view (ahead of the camera, within its field), else none
+        // THE PIECES IN FRONT OF YOU: every shown piece ahead of the camera and
+        // within its field, with where it lands on the screen - one button
+        // each, so two doors in view get two buttons and each works its own
         const fwd = new THREE.Vector3()
         camera.getWorldDirection(fwd)
-        let bestId: string | null = null
-        let bestScore = 0.55                       // cos of the widest angle that still counts as "in front"
+        const W = renderer.domElement.clientWidth || 1, Hh = renderer.domElement.clientHeight || 1
+        const found: Array<NearPiece & { c: number }> = []
+        const pv = new THREE.Vector3()
+        // a piece behind a wall gets no button: the line from you to its anchor,
+        // in plan, must cross no solid wall
+        const camX = camera.position.x / S, camY = camera.position.z / S
+        const crossesWall = (ax: number, ay: number): boolean => {
+          for (const [px, py, qx, qy] of wallSegs) {
+            const d1 = (qx - px) * (ay - py) - (qy - py) * (ax - px)
+            const d2 = (qx - px) * (camY - py) - (qy - py) * (camX - px)
+            if (d1 * d2 > 0) continue
+            const d3 = (ax - camX) * (py - camY) - (ay - camY) * (px - camX)
+            const d4 = (ax - camX) * (qy - camY) - (ay - camY) * (qx - camX)
+            if (d3 * d4 > 0) continue
+            return true
+          }
+          return false
+        }
         for (const dt of dotList) {
           if (!dt.shown) continue
           const vx = dt.x - camera.position.x, vy = dt.y - camera.position.y, vz = dt.z - camera.position.z
           const L = Math.hypot(vx, vy, vz) || 1
           const c = (vx * fwd.x + vy * fwd.y + vz * fwd.z) / L
-          if (c > bestScore) { bestScore = c; bestId = dt.id }
+          if (c < 0.55) continue                  // cos of the widest angle that still counts as "in front"
+          if (crossesWall(dt.x / S, dt.z / S)) continue
+          pv.set(dt.x, dt.y, dt.z).project(camera)
+          if (pv.z > 1) continue
+          found.push({ id: dt.id, c, sx: ((pv.x + 1) / 2) * W, sy: ((1 - pv.y) / 2) * Hh, w: W, h: Hh })
         }
-        if (bestId !== nearRef.current) { nearRef.current = bestId; setNearItem(bestId) }
+        found.sort((p, q) => q.c - p.c)
+        const top = found.slice(0, 6)
+        const sig = top.map((t) => `${t.id}@${Math.round(t.sx / 8)},${Math.round(t.sy / 8)}`).join('|')
+        if (sig !== nearRef.current) { nearRef.current = sig; setNearItems(top.map(({ id, sx, sy, w, h }) => ({ id, sx, sy, w, h }))) }
       }
       // the lamps: only the nearest few shade the scene - a constant count, so the
       // shaders compile once - and the far ones stay off until you walk up to them
@@ -5974,43 +6012,64 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           )}
         </div>
       )}
-      {nearItem && (() => {
-        // what the piece is, and which way it is
-        const id = nearItem
-        const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? (id.startsWith('liftbed') ? false : !doorsShut))
-        const kind = id.split(':')[0]
-        const noun =
-          kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
-          : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-          : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : 'door'
-        const verb =
-          kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
-          : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
-          : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
-          : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the storage')
-          : `${open ? 'Shut' : 'Open'} this ${noun}`
-        return (
-          <button
-            onClick={() => { diag.log(`button ${id}`); toggleItemRef.current(id) }}
-            title={verb}
-            aria-label={verb}
-            style={{
-              // the right edge, in the column with the EYE rail above and Walk below
-              position: 'absolute', right: 14, bottom: 64,
-              width: 56, height: 56, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'rgba(250,248,244,0.92)', color: '#1e1c18',
-              border: '1px solid #d5cdbb', borderRadius: 28, cursor: 'pointer', zIndex: 6,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-            }}
-          >
-            {/* a fingertip on a tap ripple: touch here to switch the piece in front of you */}
-            <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
-              <circle cx="12" cy="10" r="7.5" fill="none" stroke="#1e1c18" strokeWidth="1.4" opacity="0.45" />
-              <circle cx="12" cy="10" r="3.2" fill="none" stroke="#1e1c18" strokeWidth="1.4" opacity="0.7" />
-              <path d="M12 10.5v9.5l-2.6-2.2c-.9-.7-2.2-.5-2.8.5-.4.7-.3 1.5.3 2.1l4.2 4.6c.7.8 1.7 1.2 2.8 1.2h4.4c2 0 3.7-1.6 3.7-3.6v-4.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-1.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-.9c0-1-.8-1.8-1.8-1.8s-1.7.8-1.7 1.8V10.5c0-1-.7-1.8-1.6-1.8s-1.5.8-1.5 1.8z" fill="#f3ecdd" stroke="#1e1c18" strokeWidth="1.3" strokeLinejoin="round" />
-            </svg>
-          </button>
+      {nearItems.length > 0 && (() => {
+        // what each piece is, and which way it is
+        const describe = (id: string) => {
+          const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? (id.startsWith('liftbed') ? false : !doorsShut))
+          const kind = id.split(':')[0]
+          const noun =
+            kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
+            : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
+            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : 'door'
+          const verb =
+            kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
+            : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
+            : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
+            : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the storage')
+            : `${open ? 'Shut' : 'Open'} this ${noun}`
+          return { noun, verb }
+        }
+        const icon = (
+          // a fingertip on a tap ripple: touch here to switch the piece
+          <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+            <circle cx="12" cy="10" r="7.5" fill="none" stroke="#1e1c18" strokeWidth="1.4" opacity="0.45" />
+            <circle cx="12" cy="10" r="3.2" fill="none" stroke="#1e1c18" strokeWidth="1.4" opacity="0.7" />
+            <path d="M12 10.5v9.5l-2.6-2.2c-.9-.7-2.2-.5-2.8.5-.4.7-.3 1.5.3 2.1l4.2 4.6c.7.8 1.7 1.2 2.8 1.2h4.4c2 0 3.7-1.6 3.7-3.6v-4.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-1.2c0-1-.8-1.8-1.8-1.8s-1.8.8-1.8 1.8v-.9c0-1-.8-1.8-1.8-1.8s-1.7.8-1.7 1.8V10.5c0-1-.7-1.8-1.6-1.8s-1.5.8-1.5 1.8z" fill="#f3ecdd" stroke="#1e1c18" strokeWidth="1.3" strokeLinejoin="round" />
+          </svg>
         )
+        const face = {
+          width: 56, height: 56, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(250,248,244,0.92)', color: '#1e1c18',
+          border: '1px solid #d5cdbb', borderRadius: 28, cursor: 'pointer', zIndex: 6,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+        } as const
+        if (nearItems.length === 1) {
+          // one piece: the button at the right edge, in the column with the EYE rail above and Walk below
+          const id = nearItems[0].id
+          const { verb } = describe(id)
+          return (
+            <button onClick={() => { diag.log(`button ${id}`); toggleItemRef.current(id) }} title={verb} aria-label={verb}
+              style={{ ...face, position: 'absolute', right: 14, bottom: 64 }}>
+              {icon}
+            </button>
+          )
+        }
+        // several: a button OVER each piece, with its name under it, so each
+        // works the one it sits on
+        return nearItems.map((it) => {
+          const { noun, verb } = describe(it.id)
+          const left = Math.max(8, Math.min(it.w - 64, it.sx - 28))
+          const top = Math.max(56, Math.min(it.h - 150, it.sy - 28))
+          return (
+            <div key={it.id} style={{ position: 'absolute', left, top, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, zIndex: 6, pointerEvents: 'none' }}>
+              <button onClick={() => { diag.log(`button ${it.id}`); toggleItemRef.current(it.id) }} title={verb} aria-label={verb}
+                style={{ ...face, pointerEvents: 'auto' }}>
+                {icon}
+              </button>
+              <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 8, background: 'rgba(30,28,24,0.72)', color: '#f3ecdd', whiteSpace: 'nowrap' }}>{noun}</span>
+            </div>
+          )
+        })
       })()}
       <button
         onClick={() => walkRef.current?.(!(walking || touchWalking))}

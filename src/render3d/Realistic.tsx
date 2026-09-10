@@ -2868,36 +2868,124 @@ export function ceramicPendant(M: Mats, x: number, y: number, h: number, ceiling
  * open air: it looks on to an enclosed outdoor room (a deck, a terrace, a
  * balcony), it sits under a glass roof, or it is too narrow for a box.
  */
+/**
+ * Every window in an exterior wall, with the way it faces: the wall, the
+ * opening, its unit direction along the wall and the outward normal (the room
+ * is on the other side), its width, sill and head. Home 1's windows carry no
+ * glass field; a window in an exterior wall is glazed. The hatch is not a
+ * window and is left out.
+ */
+type ExtWindow = { w: (typeof model.walls)[number]; op: (typeof model.walls)[number]['openings'][number]; ux: number; uy: number; ox: number; oy: number; width: number; sill: number; head: number }
+function exteriorWindows(): ExtWindow[] {
+  const out: ExtWindow[] = []
+  for (const w of model.walls) {
+    if (!w.isExterior) continue
+    for (const op of w.openings) {
+      if (op.type !== 'window' || /hatch/i.test(op.label ?? '')) continue
+      const width = op.to - op.from
+      if (width < 400) continue
+      const L = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y) || 1
+      const ux = (op.p2.x - op.p1.x) / L, uy = (op.p2.y - op.p1.y) / L
+      // the room side is where a room polygon is; outside is the other way
+      const nx = -uy, ny = ux
+      const roomAt = (s: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + nx * s * (w.thickness / 2 + 150), y: op.mid.y + ny * s * (w.thickness / 2 + 150) }, r.polygon))
+      const inside = roomAt(1) ? 1 : roomAt(-1) ? -1 : 0
+      if (!inside) continue
+      out.push({ w, op, ux, uy, ox: -nx * inside, oy: -ny * inside, width, sill: op.sill ?? model.data.levels.windowSill, head: Math.min(op.head ?? model.data.levels.windowHead, model.data.levels.ceiling - 60) })
+    }
+  }
+  return out
+}
+
 function windowBoxes(M: Mats): THREE.Group {
   const g = new THREE.Group()
   const kit = { M, box, basePrism: () => new THREE.Mesh(), place: () => {} }
   let seed = 3
-  for (const w of model.walls) {
-    if (!w.isExterior) continue
-    for (const op of w.openings) {
-      if (op.type !== 'window') continue                    // Home 1's windows carry no glass field; a window in an exterior wall is glazed
-      const width = op.to - op.from
-      if (width < 600) continue
-      const L = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y) || 1
-      const d = { x: (op.p2.x - op.p1.x) / L, y: (op.p2.y - op.p1.y) / L }
-      // the room side is where a room polygon is; outside is the other way
-      let nx = -d.y, ny = d.x
-      const roomAt = (s: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + nx * s * (w.thickness / 2 + 150), y: op.mid.y + ny * s * (w.thickness / 2 + 150) }, r.polygon))
-      const inside = roomAt(1) ? 1 : roomAt(-1) ? -1 : 0
-      if (!inside) continue
-      const ox = -nx * inside, oy = -ny * inside                    // outward
-      const probe = { x: op.mid.x + ox * (w.thickness / 2 + 500), y: op.mid.y + oy * (w.thickness / 2 + 500) }
-      if (model.rooms.some((r) => pointInPolygon(probe, r.polygon))) continue          // faces a deck, terrace or balcony
-      if (solids.roofs.some((r) => probe.x >= r.extent[0] && probe.x <= r.extent[2] && probe.y >= r.extent[1] && probe.y <= r.extent[3])) continue   // under a glass roof
-      const run = Math.min(width - 160, 3000)
-      const depth = 400
-      const sill = op.sill ?? model.data.levels.windowSill
-      const bx = windowBoxGroup(kit, run, depth, sill, seed += 7)
-      // local x along the wall, local -z toward the wall: yaw so that -z maps on to (-ox, -oy)
-      bx.position.set((op.mid.x + ox * (w.thickness / 2 + depth / 2 + 10)) * S, 0, (op.mid.y + oy * (w.thickness / 2 + depth / 2 + 10)) * S)
-      bx.rotation.y = Math.atan2(-ox, -oy) + Math.PI
-      g.add(bx)
+  for (const ew of exteriorWindows()) {
+    const { w, op, ox, oy, width, sill } = ew
+    if (width < 600) continue
+    const probe = { x: op.mid.x + ox * (w.thickness / 2 + 500), y: op.mid.y + oy * (w.thickness / 2 + 500) }
+    if (model.rooms.some((r) => pointInPolygon(probe, r.polygon))) continue          // faces a deck, terrace or balcony
+    if (solids.roofs.some((r) => probe.x >= r.extent[0] && probe.x <= r.extent[2] && probe.y >= r.extent[1] && probe.y <= r.extent[3])) continue   // under a glass roof
+    const run = Math.min(width - 160, 3000)
+    const depth = 400
+    const bx = windowBoxGroup(kit, run, depth, sill, seed += 7)
+    // local x along the wall, local -z toward the wall: yaw so that -z maps on to (-ox, -oy)
+    bx.position.set((op.mid.x + ox * (w.thickness / 2 + depth / 2 + 10)) * S, 0, (op.mid.y + oy * (w.thickness / 2 + depth / 2 + 10)) * S)
+    bx.rotation.y = Math.atan2(-ox, -oy) + Math.PI
+    g.add(bx)
+  }
+  return g
+}
+
+/**
+ * EVERY WINDOW OPENS (Karan's call, both homes): a top-hung awning sash in a
+ * dark aluminium frame that swings outward and up on two gas struts, the way
+ * a pass-through window does. Shut, the sash fills the opening; open, it
+ * stands out at 70 degrees from the head with the struts holding it. Follows
+ * the Doors switch and has its own button. The static pane the opening used
+ * to carry is dropped where a sash sits.
+ */
+function awningWindows(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  let idx = 0
+  for (const ew of exteriorWindows()) {
+    const { w, op, ux, uy, ox, oy, width, sill, head } = ew
+    const H = head - sill
+    const T = Math.max(w.thickness, 100)
+    const a = { x: op.p1.x - ux * op.from, y: op.p1.y - uy * op.from }
+    const ang = Math.atan2(ux, uy)
+    const item = new THREE.Group()
+    // out is measured OUTWARD from the wall's centreline
+    const at = (along: number, out: number, h: number, m: THREE.Object3D) => {
+      m.position.set((a.x + ux * along + ox * out) * S, h * S, (a.y + uy * along + oy * out) * S)
+      m.rotation.y = ang
+      item.add(m)
     }
+    const mid = (op.from + op.to) / 2
+    const FR = 50
+    // the fixed frame, in the opening on the wall's centreline: head, sill, two jambs
+    at(mid, 0, head - FR / 2, box(T - 10, FR, width, M.graphite))
+    at(mid, 0, sill + FR / 2, box(T - 10, FR, width, M.graphite))
+    at(op.from + FR / 2, 0, (sill + head) / 2, box(T - 10, H, FR, M.graphite))
+    at(op.to - FR / 2, 0, (sill + head) / 2, box(T - 10, H, FR, M.graphite))
+    // the sash: hung from a hinge at the head on the outer face; its own group
+    // so it turns as one about the head
+    const hinge = new THREE.Group()
+    hinge.position.set((a.x + ux * mid + ox * (T / 2 + 22)) * S, (head - FR - 10) * S, (a.y + uy * mid + oy * (T / 2 + 22)) * S)
+    hinge.rotation.y = ang
+    const sash = new THREE.Group()
+    const SW = width - 2 * FR - 8, SH = H - 2 * FR - 8            // the sash inside the frame
+    const SF = 44
+    sash.add(box(10, SH - 2 * SF, SW - 2 * SF, M.glass, 0, -SH / 2, 0))
+    sash.add(box(36, SF, SW, M.graphite, 0, -SF / 2, 0))                              // top rail
+    sash.add(box(36, SF, SW, M.graphite, 0, -SH + SF / 2, 0))                         // bottom rail
+    for (const e of [-1, 1]) sash.add(box(36, SH, SF, M.graphite, 0, -SH / 2, e * (SW / 2 - SF / 2)))   // stiles
+    // the pull on the bottom rail, on the room side
+    const lxSign = uy * ox - ux * oy > 0 ? 1 : -1                  // which way local +x is outward
+    sash.add(box(26, 14, 160, M.chrome, -lxSign * 28, -SH + SF / 2, 0))
+    if (mode === 'open') {
+      const th = lxSign * (70 * Math.PI / 180)
+      sash.rotation.z = th
+      // two gas struts: from the sash's stiles, 40 % down, to the jambs just above the sill
+      for (const e of [-1, 1]) {
+        const z = e * (SW / 2 - SF / 2)
+        const pTop = new THREE.Vector3(0.4 * SH * Math.sin(th), -0.4 * SH * Math.cos(th), z)
+        const pJamb = new THREE.Vector3(-lxSign * 12, -(H - 2 * FR - 40), z)
+        const len = pTop.distanceTo(pJamb)
+        const rod = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 11 * S, len * S, 8), M.chrome)
+        rod.position.copy(pTop).add(pJamb).multiplyScalar(0.5 * S)
+        rod.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), pTop.clone().sub(pJamb).normalize())
+        hinge.add(rod)
+      }
+    }
+    hinge.add(sash)
+    item.add(hinge)
+    tagItem(item, `window:${w.id}:${idx++}`, mode, [
+      { x: op.mid.x - ox * (w.thickness / 2 + 350), y: op.mid.y - oy * (w.thickness / 2 + 350), h: 1500 },
+      { x: op.mid.x + ox * (w.thickness / 2 + 350), y: op.mid.y + oy * (w.thickness / 2 + 350), h: 1500 },
+    ])
+    g.add(item)
   }
   return g
 }
@@ -4441,8 +4529,13 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   }
 
   // ---- walls and glass from the shared prisms
+  // the panes of the exterior windows are the awning sashes' now (both states,
+  // in the door sets), so the static pane those openings carry is not drawn
+  const sashPanes = new Set<string>()
+  for (const ew of exteriorWindows()) sashPanes.add(`${ew.w.id.replace(/#\d+$/, '')}|${ew.sill}|${ew.head}`)
   for (const p of solids.prisms) {
     if (p.kind === 'lintel' && p.top - p.base < 60) continue
+    if (p.id.endsWith(':pane') && p.wallId && sashPanes.has(`${p.wallId.replace(/#\d+$/, '')}|${p.base}|${p.top}`)) continue
     // The entry drum and the gallery legs are wood, both faces. (They used to be a
     // second mesh scaled by 0.1 % about the scene origin, which shifted the copy a
     // dozen millimetres east and left the drum's east half showing plaster.)
@@ -4472,6 +4565,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(podPortalDoors(M, mode))
     set.add(hatchSash(M, mode))
     set.add(timberBlinds(M, mode))
+    set.add(awningWindows(M, mode))
     set.add(foldingDoors(M, mode))
     set.add(liftBeds(M, mode))
     set.add(dividerPanels(M, mode))
@@ -6021,7 +6115,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           const noun =
             kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
             : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : 'door'
+            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : 'door'
           const verb =
             kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
             : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')

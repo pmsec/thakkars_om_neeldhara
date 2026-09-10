@@ -1,0 +1,226 @@
+# CAD — working agreement
+
+## Scope
+
+**This repo now holds MORE THAN ONE HOME.** The machinery in `tools/` is
+shared; each building lives in `homes/<id>/`:
+
+```
+tools/                 shared: symbols, draw_design, verify, clash, build_dxf
+homes/om-neeldhara/    design.py · retrofit.py · immovables.py · home.json · golden.json
+homes/ekta/            imported from a DWG: source/ · import.py · design.py · immovables.py
+homes/<new-home>/      the same shape
+```
+
+Every tool takes `--home <id>` and defaults to `om-neeldhara`, so every
+command in this file still behaves exactly as it always did.
+
+### THE PRIME DIRECTIVE — an existing home never changes
+
+Work on one home must not alter another home's output, ever. Before touching
+anything shared, and again afterwards:
+
+```
+python3 tools/golden.py                  # must end "GOLDEN OK"
+python3 tools/golden.py --home <other>   # for each other home
+```
+
+`golden.json` in each home records the hash of everything it generates. A
+`CHANGED!!` line for a design nobody edited is a bug in the refactor, never
+an acceptable diff. Only run `--update` when a change to that home is
+*intended and reviewed*.
+
+Home-specific things live in the home, not the tools: the plan (`design.py`),
+its bespoke generators (`retrofit.py`), its columns/beams/shafts and raster
+window (`immovables.py`), and its name, source drawing and output paths
+(`home.json`). `om-neeldhara` writes to `CAD/drawings` and `CAD/out` as it
+always has — new homes write under `homes/<id>/` so two homes can never
+overwrite each other.
+
+### Importing a home from a DWG
+
+Om Neeldhara was written; Ekta's flat was read. The chain is:
+
+```
+dwg2dxf <file>.dwg                LibreDWG, straight to DXF
+tools/extract_dwg.py              flatten block inserts through their matrices
+homes/<id>/import.py              read the drawing; write design.py
+tools/draw_home.py --home <id>    the sheet
+tools/export_app.py --home <id>   the web app's building.ts / fixtures.ts / furniture.ts
+tools/build_dxf_home.py --home <id>   the DXF, for the architect
+```
+
+**The DXF for an imported home is a DIFFERENT TOOL.** `build_dxf.py` is Om
+Neeldhara's end to end — it opens `source/floor14.dxf` by name, applies a frame
+tied to that drawing, and imports `retrofit.py`, which only Home 1 has. Bending
+it to take a second home would put Home 1's only shipped artefact at risk for a
+home that needs none of its machinery, so imported homes get
+`build_dxf_home.py` and `build_dxf.py` is not touched. Home 1 cannot change
+because nothing it reads has changed — and its DXF is checked byte-identical
+either side of any work here.
+
+It writes two files, for different people:
+
+```
+homes/<id>/out/<id>-layout.dxf              the builder's DXF with our design
+                                            added on PROP-* layers (~3 MB)
+homes/<id>/out/<id>-layout-standalone.dxf   the design and the shell alone,
+                                            no builder file (~110 KB)
+```
+
+Both carry the shell on `PROP-SHELL`, because in the builder's file it lives
+inside his unit blocks on the same `DA_*` layers as the partitions nobody
+built — switch those off to read our plan and the external walls, columns and
+glazing go with them. `import.py` already extracted that geometry into
+`source/shell.json`, in the design's frame, so it is copied through.
+
+**The frame is the importer's, read back.** `import.py` maps the drawing into
+the design frame with `local = (x - x0, y1 - y)`; that pair lives in
+`home.json` under `frame`, and the DXF tool maps back through it. Nothing is
+measured twice, so the layout cannot land anywhere but where it was read from.
+
+**Reading the lines is not reading the drawing.** The first version of this
+paired the two drawn faces of every wall into a centreline and stopped, and
+it got the flat wrong three ways:
+
+* A gap in a wall line is not the end of the wall. It is a DOOR (there is a
+  leaf on `DA_DOOR`) or a COLUMN (a rectangle on `DA_COLUMN`), and only
+  rarely a free end. Emit the wall as its full run with the doors as
+  openings, and the room closes and gains a doorway at the same time.
+* Some rooms are not divided by walls at all. In Ekta's flat the kitchen is
+  open to the living room, the foyer is an alcove of it, two passages have
+  cased openings and the balcony has a slider. A room is a face of the
+  boundary graph, so those lines are emitted as ZERO-THICKNESS THRESHOLDS:
+  draw nothing and the rooms do not exist; draw walls and the flat gains
+  five walls nobody built.
+* The balcony is outside the RERA carpet boundary, so an envelope offset
+  from the carpet alone leaves it off the plan.
+
+**Check the import against the drawing's own dimension text.** Every room on
+a builder's plan carries his figure — `10'0"X13'6"` under BEDROOM. `import.py`
+copies that through untouched as `publishedSqFt`, and the app's test suite
+compares each DERIVED room against it. Nothing in that chain measures the
+drawing twice, which is the only reason it is worth anything.
+
+**The frame is flipped on purpose.** DWG y runs up the page and a plan
+sheet's y runs down it. `local y = <top> - dwg y`, so the sheet reads the
+same way up as the drawing and the two can be compared by eye.
+
+**The import ends when the design begins.** `design.py` is the importer's
+output only until somebody starts designing the flat; from that moment it IS
+the design and re-running the import would throw it away. Ekta's has been
+handed over, so `import.py` now refuses to write unless forced:
+
+```
+python3 homes/ekta/import.py --to design.imported.py   # a fresh copy of the
+                                                       # builder's plan, to diff
+python3 homes/ekta/import.py --force                   # start again from the DWG
+```
+
+`homes/ekta/design.imported.py` is that copy frozen at handover — the record
+of what the builder drew, next to what we are turning it into.
+
+Everything for this work lives in `CAD/`. **Do not touch any other file in the
+repo.** Branch: `claude/cad-apartment-merge-miwnpm`.
+
+## The loop — preview first, ship on the word
+
+This is the agreed flow. Follow it for every change that moves geometry.
+
+1. **Karan says what to change.**
+2. **Edit, render, verify.** Edit `homes/<id>/design.py` (or whichever source
+   the change belongs in), run `draw_design.py` for the PNG, and `verify.py`.
+   Verify stays in the loop even in preview — it is fast and it is the one
+   thing that proves no column, beam, duct or void has been broken. Never show
+   a render of something structurally impossible.
+3. **Show a zoomed crop of just the area that changed.** Add the full sheet
+   only when the change is plan-wide. Crops are how flaws get caught; the full
+   sheet hides them. For an imported home:
+
+   ```
+   python3 tools/draw_home.py --home ekta --room KITCHEN [--pad 2800]
+   python3 tools/draw_home.py --home ekta --crop x0,y0,x1,y1 --name r1-kitchen
+   ```
+
+   Crops write `drawings/<name>.png` and never overwrite `plan.png`.
+4. **Wait.** Karan says *ship it* / *change this* / *try it the other way*.
+5. **On "ship it"**: run `build_dxf.py`, commit, push.
+
+**Between rounds the DXF in the repo is stale** — it is the last shipped
+version, not what is in the preview. Say so when it matters.
+
+Nothing is committed while iterating, and this container is ephemeral. If a
+round ends unresolved, drop a WIP commit.
+
+### Exceptions — just do the whole thing
+
+Anything that does not move geometry: colour, a label, a layer name, a legend
+line, a note in the docs. The DXF rebuild costs nothing there and a round trip
+is pure friction.
+
+### When a decision is open
+
+For a choice that could go several ways (the entry gallery went round three
+times), render **two or three options as crops in one message** and let Karan
+pick. Cheaper than converging one guess at a time.
+
+## Why the loop is shaped this way
+
+The PNG is *generated from* `design.py`. There is no throwaway sketch layer —
+to show a render, the real edit has to happen first. So the "quick fix" and
+the "real change" are the same step, and what gets approved is exactly what
+ships. What is genuinely separable is the slow tail: `build_dxf.py` re-reads
+and rewrites the builder's whole 2.9 MB drawing.
+
+```
+edit design.py ─┬─► draw_design.py ─► drawings/07-round1-layout.png   fast
+                ├─► verify.py      ─► the clash checks                fast
+                └─► build_dxf.py   ─► out/round1-layout.dxf           slow
+```
+
+## Commands
+
+```
+cd CAD/tools
+gunzip -kf ../source/floor14.dxf.gz   # working copy, gitignored
+python3 verify.py                     # must end "ALL CHECKS PASS"
+python3 draw_design.py                # PNG + SVG
+python3 golden.py                     # must end "GOLDEN OK"
+python3 build_dxf.py                  # only on "ship it"
+```
+
+Add `--home <id>` to any of them to work on another home; with no flag they
+all operate on `om-neeldhara`.
+
+## How to quote a measurement — always both units
+
+**Every number Karan is given carries metric first and imperial in brackets
+after it. No exceptions, anywhere in chat.** The drawing and the source stay
+metric; this is about how the numbers are *said*.
+
+```
+lengths   350 mm (1'-2")            2321 mm (7'-7")        2.6 m (8'-6")
+areas     11.7 m² (126 sq ft)       2.65 m² (28.5 sq ft)
+```
+
+Round the imperial to the nearest inch for lengths and to whole square feet for
+areas — it is there to be read, not to be built from. Metric is the number that
+governs.
+
+This applies to prose, tables, bullet lists and captions alike. A table column
+headed `mm` still needs its sq ft / feet column beside it.
+
+## Standing facts
+
+* The flats came from the builder as **bare shell — no internal walls**. Every
+  wall is new; every opening is a gap left in a wall, never a hole cut in
+  something existing.
+* Immovable: columns, beams, the outer walls, and all eight shafts, ducts and
+  voids. `clash.py` holds the list and it is not negotiable.
+* The society has agreed the lift lobby can be absorbed. Do not re-litigate.
+* PNG renders are Karan's working view. The DXF is for the architect, who will
+  toggle layers.
+* The web app reads `CAD/drawings/07-round1-layout.svg` at runtime for its
+  "Fetch latest plan" button. That path is Home 1's and must not move.
+* Dimensions carry **no typed text** — every one is computed from its two
+  points so the label and the geometry cannot disagree.

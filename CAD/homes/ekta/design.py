@@ -1103,13 +1103,13 @@ FURNITURE += [
 ]
 
 # ------------------------------------------------- the sink and the hob
-# THE SINK IS UNDER THE HATCH, on the kitchen side of the serving slab: whoever
-# is washing up faces the living room through the open sash, which is what the
-# hatch is for. The tap stands at the back, 75 (3") off the wall's face, so the
-# sash comes down past it. THE HOB IS ON THE NORTH RUN under the big window,
-# centred on it, where the sink was. (Karan's call, both.)
-SINK_W, SINK_D = 520.0, 420.0
-SINK_C = ((BAR_X0 + BAR_X1) / 2, KBOT - KT / 2 - 75.0 - SINK_D / 2)   # (5795, 3000)
+# THE SINK IS ON THE WEST RUN, just north of where the corner's curve ends at
+# y 2500, its long side along the run and the tap at the back against the
+# west wall. It was under the hatch on the serving slab; Karan moved it here
+# so the slab stays a clear pass-through and the tap is out of the sash's
+# way. THE HOB IS ON THE NORTH RUN under the big window, centred on it.
+SINK_W, SINK_D = 420.0, 520.0                                          # across, along
+SINK_C = (KX0 + KT / 2 + CTOP_D / 2, KBOT - KR - 400.0)                # (4910, 2100)
 SINK = (SINK_C[0] - SINK_W / 2, SINK_C[1] - SINK_D / 2,
         SINK_C[0] + SINK_W / 2, SINK_C[1] + SINK_D / 2)
 HOB_W, HOB_D = 580.0, 500.0
@@ -1118,8 +1118,8 @@ HOB = (HOB_C[0] - HOB_W / 2, HOB_C[1] - HOB_D / 2,
        HOB_C[0] + HOB_W / 2, HOB_C[1] + HOB_D / 2)
 FURNITURE += [
     ('console', *SINK,
-     f"sink — {SINK_W:.0f} x {SINK_D:.0f} ({_ft(SINK_W)} x {_ft(SINK_D)}) under "
-     'the serving hatch, tap at the back',
+     f"sink — {SINK_W:.0f} x {SINK_D:.0f} ({_ft(SINK_W)} x {_ft(SINK_D)}) on the "
+     'west run just past the corner, tap at the back',
      'R-KITCHEN', 900, _round_rect(*SINK, 40)),
     ('console', *HOB,
      f"hob — {HOB_W:.0f} x {HOB_D:.0f} ({_ft(HOB_W)} x {_ft(HOB_D)}), four "

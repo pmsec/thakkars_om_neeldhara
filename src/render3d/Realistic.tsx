@@ -2932,11 +2932,12 @@ function pleatTexture(): THREE.CanvasTexture {
   c.width = 64
   c.height = 4
   const ctx = c.getContext('2d')!
-  // one pleat per 64 px: bright on the crest, dimmer in the fold
+  // one pleat per 64 px: a pale crest, a dark fold - the grey pleated gauze of
+  // a sliding mosquito net (SIPKO-type), read at 18 mm a pleat
   for (let x = 0; x < 64; x++) {
     const t = Math.abs((x / 64) * 2 - 1)
-    const v = Math.round(214 + 36 * (1 - t))
-    ctx.fillStyle = `rgb(${v},${v},${v - 6})`
+    const v = Math.round(120 + 110 * (1 - t) ** 1.6)
+    ctx.fillStyle = `rgb(${v},${v + 2},${v + 4})`
     ctx.fillRect(x, 0, 1, 4)
   }
   const tex = new THREE.CanvasTexture(c)
@@ -2953,10 +2954,11 @@ function pleatTexture(): THREE.CanvasTexture {
  * and the view is clear. Its own piece, with its own button, apart from
  * the sash. Starts drawn.
  */
-function meshScreens(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+function meshScreens(_M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   const tex = pleatTexture()
-  const gauze = new THREE.MeshStandardMaterial({ map: tex, color: 0xffffff, transparent: true, opacity: 0.42, roughness: 0.95, side: THREE.DoubleSide, depthWrite: false })
+  const gauze = new THREE.MeshStandardMaterial({ map: tex, color: 0xd8dadc, transparent: true, opacity: 0.5, roughness: 0.95, side: THREE.DoubleSide, depthWrite: false })
+  const alu = new THREE.MeshStandardMaterial({ color: 0xf1f1ee, roughness: 0.35, metalness: 0.25 })   // white powder-coated aluminium
   let idx = 0
   for (const ew of exteriorWindows()) {
     const { w, op, ux, uy, ox, oy, width, sill, head } = ew
@@ -2975,8 +2977,9 @@ function meshScreens(M: Mats, mode: 'open' | 'shut'): THREE.Group {
     const mid = (op.from + op.to) / 2
     const out = -(T / 2 + 12)                                     // just inside the wall face, on the room side
     // the tracks, top and bottom, and the meeting bar when drawn
-    at(mid, out, head - FR - 8, box(18, 16, inner, M.graphite))
-    at(mid, out, sill + FR + 8, box(18, 16, inner, M.graphite))
+    at(mid, out, head - FR - 8, box(18, 16, inner, alu))
+    at(mid, out, sill + FR + 8, box(18, 16, inner, alu))
+    for (const e of [-1, 1]) at(mid + e * (inner / 2 - 9), out, (sill + head) / 2, box(18, H - 2 * FR, 18, alu))   // the side channels
     const gh = H - 2 * FR - 32
     const gc = (sill + head) / 2
     for (const e of [-1, 1]) {
@@ -2984,10 +2987,10 @@ function meshScreens(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const half = mode === 'shut' ? inner / 2 - 10 : 60         // drawn across, or pleated at the jamb
       const panel = new THREE.Mesh(new THREE.BoxGeometry(6 * S, gh * S, half * S), gauze.clone())
       ;(panel.material as THREE.MeshStandardMaterial).map = tex.clone()
-      ;(panel.material as THREE.MeshStandardMaterial).map!.repeat.set(mode === 'shut' ? Math.max(4, half / 30) : 12, 1)
+      ;(panel.material as THREE.MeshStandardMaterial).map!.repeat.set(mode === 'shut' ? Math.max(4, half / 18) : 14, 1)
       ;(panel.material as THREE.MeshStandardMaterial).map!.needsUpdate = true
       at(jamb - e * half / 2, out, gc, panel)
-      at(jamb - e * (half - 8), out, gc, box(22, gh, 16, M.graphite))          // the leading stile
+      at(jamb - e * (half - 8), out, gc, box(22, gh, 18, alu))                 // the leading stile
     }
     tagItem(item, `mesh:${w.id}:${idx++}`, mode, [
       { x: op.mid.x - ox * (w.thickness / 2 + 350), y: op.mid.y - oy * (w.thickness / 2 + 350), h: 1150 },

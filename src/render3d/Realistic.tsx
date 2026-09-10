@@ -45,6 +45,7 @@ import { cityscape, followCamera, skyDome, STREET_DROP } from './backdrop'
 import { useStore } from '../ui/store'
 import { importedPiece, wallGaps, windowBoxGroup } from './imported'
 import { homeLamps } from './homeLamps'
+import { wallFans, flowTexture } from './homeFans'
 import { activeHomeId } from '../homes/registry'
 
 const model = getModel()
@@ -2719,6 +2720,11 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
 
 type ItemAnchor = { x: number; y: number; h: number }
 
+/** the pieces that start SHUT (or off) whatever the Doors switch says: the lift-up beds and the fans */
+function startsShut(id: string): boolean {
+  return id.startsWith('liftbed') || id.startsWith('fan')
+}
+
 /**
  * Gather a state group's children into one group per interactive piece, so a
  * single door or slider can be switched on its own: each piece keeps its own
@@ -4777,9 +4783,15 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   }
 
   // every door in both states; the Doors switch picks which set is visible
+  const flowTex = flowTexture()
   for (const mode of ['open', 'shut'] as const) {
     const set = new THREE.Group()
     set.name = `doors-${mode}`
+    // the wall fans: off in the shut set, on - spinning, airflow drawn - in the open one
+    for (const f of wallFans(activeHomeId, { M, style: HOME1 ? 'black' : 'white' }, mode, flowTex)) {
+      tagItem(f.group, f.id, mode, f.anchor)
+      set.add(f.group)
+    }
     const curved = curvedDoors(M, mode)
     if (curved) { tagItem(curved, 'entry', mode, { x: 12240, y: 7250, h: 1450 }); set.add(curved) }
     set.add(podDoorGroup(M, mode))
@@ -5689,7 +5701,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       const id = o.userData.item as string | undefined
       if (id && o.userData.mode) {
         // a lift-up bed starts shut whatever the Doors switch says
-        const open = items[id] ?? (id.startsWith('liftbed') ? false : !shut)
+        const open = items[id] ?? (startsShut(id) ? false : !shut)
         o.visible = (o.userData.mode === 'open') === open
         pieces++
       }
@@ -5716,7 +5728,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const s3 = st.show3d
     if (id === 'wallbed') return { ...st, show3d: { ...s3, wallBedDown: !s3.wallBedDown } }
     if (id === 'dryer') return { ...st, show3d: { ...s3, dryerDown: !s3.dryerDown } }
-    const open = s3.itemOpen[id] ?? (id.startsWith('liftbed') ? false : !s3.doorsShut)
+    const open = s3.itemOpen[id] ?? (startsShut(id) ? false : !s3.doorsShut)
     return { ...st, show3d: { ...s3, itemOpen: { ...s3.itemOpen, [id]: !open } } }
   })
   // EVERYTHING STARTS SHUT (Karan's call, both homes): whenever the
@@ -6091,6 +6103,15 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const NEAR_LIGHTS = 16
     const pointLights: THREE.PointLight[] = []
     scene.traverse((o) => { if (o instanceof THREE.PointLight) pointLights.push(o) })
+    // the fans: every rotor spins and every airflow line's dashes scroll,
+    // whichever are showing - a dozen objects, cheaper than checking
+    const rotors: THREE.Object3D[] = []
+    const flows = new Set<THREE.Texture>()
+    scene.traverse((o) => {
+      if (o.userData.spin) rotors.push(o)
+      const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined
+      if (m && m.alphaMap && m.alphaMap.userData.flow) flows.add(m.alphaMap)
+    })
     const lightScore = new Map<THREE.PointLight, number>()
     const wp = new THREE.Vector3()
     const cullLights = (): void => {
@@ -6139,6 +6160,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       }
       followCamera(dayRef.current?.sky ?? sky, camera)
       frame++
+      for (const r of rotors) r.rotation.z += dt * 22
+      for (const t of flows) t.offset.x -= dt * 0.9
       // the piece dots: within 4.5 m, the nearer of a piece's two, the rest parked under the floor
       if (dotList.length && frame % 4 === 0) {
         const nearest = new Map<string, { d: number; i: number }>()
@@ -6358,18 +6381,19 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       {showTouch && nearItems.length > 0 && (() => {
         // what each piece is, and which way it is
         const describe = (id: string) => {
-          const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? (id.startsWith('liftbed') ? false : !doorsShut))
+          const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : (itemOpen[id] ?? (startsShut(id) ? false : !doorsShut))
           const kind = id.split(':')[0]
           const noun =
             kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
             : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : kind === 'mesh' ? 'mesh' : 'door'
+            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : kind === 'mesh' ? 'mesh' : kind === 'fan' ? 'wall fan' : 'door'
           const verb =
             kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
             : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
             : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
             : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the storage')
             : kind === 'mesh' ? (open ? 'Draw the mosquito mesh' : 'Pleat the mesh back')
+            : kind === 'fan' ? (open ? 'Turn the fan off' : 'Turn the fan on')
             : `${open ? 'Shut' : 'Open'} this ${noun}`
           return { noun, verb }
         }

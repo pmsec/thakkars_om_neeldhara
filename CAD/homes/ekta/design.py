@@ -1333,13 +1333,12 @@ CONSOLE_ROOM = (11470.0 - 400.0, 2830.0, 11470.0, 4030.0)
 # two legs stand ON the seat, from 520 (above the mattress) up, 350 (1'-2")
 # deep off the window wall; they are on the plan because they are there at
 # eye level, and the band is the walkthrough's.
-# THE WEST LEG RUNS TO THE WINDOW'S JAMB (Karan's call): not a 40 fin at the
-# daybed's end but a teak panel from the daybed's west end to the window's
-# west jamb at 8525, floor to ceiling, so the frame spans the whole window
-# and the leg reads as one pilaster from the room.
+# THE FRAME HAS ONE LEG NOW (Karan's call): the panel on the east wall. The
+# west leg - a fin at the daybed's end, then a panel to the window's jamb -
+# went, because it took the pocket the ottoman needs; the band along the
+# ceiling still runs from the window's west jamb to the east wall.
 ARCH_D = 350.0
 ARCH_WIN_W = 8525.0                                   # the south window's west jamb
-ARCH_FIN = (ARCH_WIN_W, 8355.0 - ARCH_D, ARM_DAY[0], 8355.0)
 ARCH_PANEL_E = (11470.0 - 40.0, 8355.0 - ARCH_D, 11470.0, 8355.0)
 
 FURNITURE += [
@@ -1351,13 +1350,12 @@ FURNITURE += [
     # THE OTTOMAN (Karan's call): a 700 square in the pocket between the
     # dressing console and the daybed's west end, flush against the daybed
     # and level with its mattress at 530 - a footrest for the daybed, and
-    # pulled north it is the console's seat. It sits north of the frame's
-    # west panel, 45 (2") off the console and 15 off the panel.
-    ('stool', ARM_DAY[0] - 700.0, 7290.0, ARM_DAY[0], 7990.0,
+    # pulled 335 (1'-1") north it is the console's seat.
+    ('stool', ARM_DAY[0] - 700.0, 7580.0, ARM_DAY[0], 8280.0,
      "ottoman — 700 x 700 (2'-4\" x 2'-4\"), flush against the daybed's west "
      'end and level with its mattress: a footrest for the daybed and the seat '
      'for the dressing console',
-     'R-ROOM', 530, _round_rect(ARM_DAY[0] - 700.0, 7290.0, ARM_DAY[0], 7990.0, 60)),
+     'R-ROOM', 530, _round_rect(ARM_DAY[0] - 700.0, 7580.0, ARM_DAY[0], 8280.0, 60)),
     ('console', *CONSOLE_ROOM,
      f"console cabinet — {CONSOLE_ROOM[3] - CONSOLE_ROOM[1]:.0f} x 400 "
      f"({_ft(CONSOLE_ROOM[3] - CONSOLE_ROOM[1])} x 1'-4\") on the east wall "
@@ -1379,12 +1377,6 @@ FURNITURE += [
      "the mattress — 900 (2'-11\") wide, which is what set the depth; it "
      'lifts with the seat',
      'R-ROOM', 500, ARM_DAY_MAT),
-    ('screen', *ARCH_FIN,
-     f"arch fin — the timber frame's west leg: a panel "
-     f"{ARCH_FIN[2] - ARCH_FIN[0]:.0f} ({_ft(ARCH_FIN[2] - ARCH_FIN[0])}) wide "
-     "from the daybed's end to the window's west jamb, 350 (1'-2\") deep, "
-     'from the floor to the ceiling',
-     'R-ROOM', 3050),
     ('screen', *ARCH_PANEL_E,
      "arch panel — the timber frame's east leg: 40 thick, 350 (1'-2\") deep, "
      'on the east wall from the daybed seat to the ceiling',

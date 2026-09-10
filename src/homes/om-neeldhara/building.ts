@@ -775,10 +775,10 @@ export const building: BuildingData = {
   ],
 
   stacks: [
-    { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3545.698, y: 5990.301 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures, on the main duct; confirm against the sanctioned plumbing drawings.' },
+    { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3545.698, y: 5830.301 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures, on the main duct; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'At the centroid of his bath’s plumbed fixtures, on the east main duct.' },
     { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 16465.434, y: 9141.59 }, room: 'R-GUEST-BATH', provenance: 'On the builder’s common-toilet zone beside the secondary duct.' },
-    { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3591.333, y: 8413.333 }, room: 'R-G-BATH', provenance: 'The same main duct as the parents’ bath, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
+    { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3608, y: 8413.333 }, room: 'R-G-BATH', provenance: 'The same main duct as the parents’ bath, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7738.333, y: 10066.667 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],
 

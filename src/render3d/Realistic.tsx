@@ -389,6 +389,35 @@ function teakTexture(): THREE.CanvasTexture {
   }, 1.6)
 }
 
+/** pale stone tiles, 600 x 300 in a running bond, a fine grout line */
+function tileTexture(): THREE.CanvasTexture {
+  return canvasTexture(512, (g, s) => {
+    g.fillStyle = '#e4ddd2'
+    g.fillRect(0, 0, s, s)
+    const tw = s / 2, th = s / 4
+    for (let r = 0; r < 4; r++) {
+      const off = r % 2 ? tw / 2 : 0
+      for (let c = -1; c < 3; c++) {
+        const x = c * tw + off, y = r * th
+        g.fillStyle = `hsl(32, ${14 + ((r * 3 + c) % 4) * 3}%, ${86 + ((r + c) % 3) * 2}%)`
+        g.fillRect(x + 2, y + 2, tw - 4, th - 4)
+        for (let k = 0; k < 6; k++) {
+          g.strokeStyle = 'rgba(120, 100, 80, 0.10)'
+          g.lineWidth = 1
+          g.beginPath()
+          g.moveTo(x + 10 + k * 40, y + 6)
+          g.bezierCurveTo(x + 30 + k * 40, y + th * 0.4, x - 10 + k * 40, y + th * 0.7, x + 20 + k * 40, y + th - 6)
+          g.stroke()
+        }
+      }
+    }
+    g.strokeStyle = '#cfc6b8'
+    g.lineWidth = 2
+    for (let r = 0; r <= 4; r++) { g.beginPath(); g.moveTo(0, r * th); g.lineTo(s, r * th); g.stroke() }
+    for (let r = 0; r < 4; r++) { const off = r % 2 ? tw / 2 : 0; for (let c = 0; c < 3; c++) { g.beginPath(); g.moveTo(c * tw + off, r * th); g.lineTo(c * tw + off, (r + 1) * th); g.stroke() } }
+  }, 1.2)
+}
+
 function woodTexture(): THREE.CanvasTexture {
   return canvasTexture(256, (g, s) => {
     g.fillStyle = '#8a6238'
@@ -413,6 +442,7 @@ export function makeMaterials() {
   const plaster = plasterTexture()
   const wood = woodTexture()
   const teak = teakTexture()
+  const tile = tileTexture()
   const walnut = walnutTexture()
   const rug = rugTexture()
   const jute = juteTexture()
@@ -429,6 +459,8 @@ export function makeMaterials() {
     loftPlaster: new THREE.MeshStandardMaterial({ map: plaster, emissive: 0x8a8076, roughness: 0.92, side: THREE.DoubleSide }),
     wallWood: new THREE.MeshStandardMaterial({ map: wood, roughness: 0.55, side: THREE.DoubleSide }),
     teak: new THREE.MeshStandardMaterial({ map: teak, roughness: 0.5, metalness: 0.02 }),
+    tile: new THREE.MeshStandardMaterial({ map: tile, roughness: 0.35, metalness: 0.02 }),
+    curtain: new THREE.MeshStandardMaterial({ color: 0xf1ece2, roughness: 0.95, side: THREE.DoubleSide }),
     glass: new THREE.MeshPhysicalMaterial({
       color: 0xe4f0f4, transparent: true, opacity: 0.13, roughness: 0.06,
       metalness: 0, side: THREE.DoubleSide, depthWrite: false,
@@ -3910,6 +3942,49 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     }
   }
 
+  // ---- the wet rooms are tiled: a band of pale stone tiles on every wall face,
+  // floor to 2100, 10 mm proud, broken at each door and slider
+  {
+    const TH = 2100
+    for (const room of model.rooms) {
+      if (room.def.category !== 'wet') continue
+      const poly = room.polygon
+      for (let i = 0; i < poly.length; i++) {
+        const a = poly[i], b = poly[(i + 1) % poly.length]
+        const len = Math.hypot(b.x - a.x, b.y - a.y)
+        if (len < 60) continue
+        const ux = (b.x - a.x) / len, uy = (b.y - a.y) / len
+        let nx = -uy, ny = ux
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2
+        if ((room.centroid.x - mx) * nx + (room.centroid.y - my) * ny < 0) { nx = -nx; ny = -ny }
+        // the openings on this edge, as spans along it
+        const cuts: Array<[number, number]> = []
+        for (const wl of model.walls) for (const op of wl.openings) {
+          if (op.type === 'window') continue
+          const dm = Math.abs((op.mid.x - a.x) * nx + (op.mid.y - a.y) * ny)
+          if (dm > 200) continue
+          const t1 = (op.p1.x - a.x) * ux + (op.p1.y - a.y) * uy, t2 = (op.p2.x - a.x) * ux + (op.p2.y - a.y) * uy
+          const lo = Math.min(t1, t2) - 20, hi = Math.max(t1, t2) + 20
+          if (hi <= 0 || lo >= len) continue
+          cuts.push([Math.max(0, lo), Math.min(len, hi)])
+        }
+        cuts.sort((p, q) => p[0] - q[0])
+        let at = 0
+        const spans: Array<[number, number]> = []
+        for (const [lo, hi] of cuts) { if (lo > at) spans.push([at, lo]); at = Math.max(at, hi) }
+        if (at < len) spans.push([at, len])
+        for (const [s0, s1] of spans) {
+          if (s1 - s0 < 40) continue
+          const tile = new THREE.Mesh(new THREE.BoxGeometry((s1 - s0) * S, TH * S, 10 * S), M.tile)
+          tile.position.set((a.x + ux * (s0 + s1) / 2 + nx * 6) * S, (TH / 2) * S, (a.y + uy * (s0 + s1) / 2 + ny * 6) * S)
+          tile.rotation.y = -Math.atan2(uy, ux)
+          tile.receiveShadow = true
+          root.add(tile)
+        }
+      }
+    }
+  }
+
   // ---- walls and glass from the shared prisms
   for (const p of solids.prisms) {
     if (p.kind === 'lintel' && p.top - p.base < 60) continue
@@ -4261,55 +4336,113 @@ export function buildFixtures(M: Mats): THREE.Group {
     // The shower is a CABINET, not a floor stain: stone tray with a raised
     // curb and glass around it — visible from above and walk-through alike.
     if (f.kind === 'shower') {
-      const tray = box(w, 50, d, M.marble)
-      place(tray, f.at.x, f.at.y, 25)
+      const lab = f.label ?? ''
+      const curtain = /curtain/i.test(lab)
+      const noGlass = curtain || /no screen/i.test(lab)
+      const pseudo = { x: f.at.x - w / 2, y: f.at.y - d / 2, w, d } as unknown as FurnitureItem
+      const gaps = wallGaps(pseudo)
+      type Side = 'N' | 'S' | 'E' | 'W'
+      const SIDES: Side[] = ['N', 'S', 'E', 'W']
+      const vec = (sd: Side) => ({ x: sd === 'E' ? 1 : sd === 'W' ? -1 : 0, z: sd === 'S' ? 1 : sd === 'N' ? -1 : 0 })
+      const walled = SIDES.filter((sd) => gaps[sd] <= 100)
+      // the head and the controls go on a real wall, not on the folding divider
+      const divider = model.walls.find((wl) => /DIV/i.test(wl.id))
+      const onDivider = (sd: Side): boolean => {
+        if (!divider) return false
+        const v = vec(sd)
+        const q = { x: f.at.x + v.x * (w / 2 + 40), y: f.at.y + v.z * (d / 2 + 40) }
+        const a = divider.points[0], b = divider.points[divider.points.length - 1]
+        const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+        const t = L2 ? Math.max(0, Math.min(1, ((q.x - a.x) * (b.x - a.x) + (q.y - a.y) * (b.y - a.y)) / L2)) : 0
+        return Math.hypot(q.x - (a.x + t * (b.x - a.x)), q.y - (a.y + t * (b.y - a.y))) < 120
+      }
+      const headSide: Side = walled.filter((sd) => !onDivider(sd)).sort((a, b) => (a === 'N' || a === 'S' ? w : d) - (b === 'N' || b === 'S' ? w : d))[0]
+        ?? walled[0] ?? 'S'
+      // a level tray with a slot drain at its centre
+      const tray = box(w, 12, d, M.stone)
+      place(tray, f.at.x, f.at.y, 6)
       g.add(tray)
-      // the rain head on its arm from the wall side, the control plate under it,
-      // a shelf niche beside it: the wall side is away from the room's centre
+      const drain = box(Math.min(600, w * 0.6), 4, 60, M.chrome)
+      place(drain, f.at.x, f.at.y, 13)
+      g.add(drain)
+      for (let k = 0; k < 6; k++) { const slot = box(Math.min(600, w * 0.6) - 40, 2, 4, M.graphite); place(slot, f.at.x, f.at.y - 25 + k * 10, 16); g.add(slot) }
       {
-        const room = model.roomById.get(f.room)
-        const dx = f.at.x - (room?.centroid.x ?? f.at.x)
-        const dy = f.at.y - (room?.centroid.y ?? f.at.y)
-        const alongX = Math.abs(dx) >= Math.abs(dy)
-        const sgn = alongX ? Math.sign(dx) || 1 : Math.sign(dy) || 1
-        const wx = f.at.x + (alongX ? sgn * (w / 2 - 20) : 0)
-        const wy = f.at.y + (alongX ? 0 : sgn * (d / 2 - 20))
-        const arm = box(alongX ? 300 : 16, 16, alongX ? 16 : 300, M.steel)
-        place(arm, wx - (alongX ? sgn * 150 : 0), wy - (alongX ? 0 : sgn * 150), 2180)
+        // the rain head on its arm from the head wall, the mixer plate under it,
+        // a hand shower on a bar, a shelf niche
+        const hv = vec(headSide)
+        const along = headSide === 'N' || headSide === 'S'
+        const wx = f.at.x + hv.x * (w / 2 - 20)
+        const wy = f.at.y + hv.z * (d / 2 - 20)
+        const arm = box(along ? 16 : 300, 16, along ? 300 : 16, M.chrome)
+        place(arm, wx - hv.x * 150, wy - hv.z * 150, 2180)
         g.add(arm)
-        const head = new THREE.Mesh(new THREE.CylinderGeometry(120 * S, 120 * S, 12 * S, 20), M.steel)
-        head.position.set((wx - (alongX ? sgn * 300 : 0)) * S, 2160 * S, (wy - (alongX ? 0 : sgn * 300)) * S)
+        const head = new THREE.Mesh(new THREE.CylinderGeometry(120 * S, 120 * S, 12 * S, 20), M.chrome)
+        head.position.set((wx - hv.x * 300) * S, 2160 * S, (wy - hv.z * 300) * S)
         g.add(head)
-        const plate = box(alongX ? 10 : 160, 160, alongX ? 160 : 10, M.steel)
+        const plate = box(along ? 160 : 10, 160, along ? 10 : 160, M.chrome)
         place(plate, wx, wy, 1150)
         g.add(plate)
-        const knob = new THREE.Mesh(new THREE.CylinderGeometry(28 * S, 28 * S, 40 * S, 12), M.steel)
-        knob.rotation.set(alongX ? 0 : Math.PI / 2, 0, alongX ? Math.PI / 2 : 0)
-        knob.position.set((wx - (alongX ? sgn * 20 : 0)) * S, 1150 * S, (wy - (alongX ? 0 : sgn * 20)) * S)
+        const knob = new THREE.Mesh(new THREE.CylinderGeometry(28 * S, 28 * S, 40 * S, 12), M.chrome)
+        knob.rotation.set(along ? Math.PI / 2 : 0, 0, along ? 0 : Math.PI / 2)
+        knob.position.set((wx - hv.x * 20) * S, 1150 * S, (wy - hv.z * 20) * S)
         g.add(knob)
-        const niche = box(alongX ? 12 : 320, 240, alongX ? 320 : 12, M.stoneTop)
-        place(niche, wx, wy + (alongX ? (d / 2 - 260) : 0) - (alongX ? 0 : 0), 1500)
-        if (!alongX) niche.position.x = (wx + (w / 2 - 260)) * S
+        // the hand shower: a slide bar 600 long beside the plate, the handset on it
+        const off = (along ? w : d) / 2 - 220
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, 600 * S, 8), M.chrome)
+        bar.position.set((wx - hv.x * 40 + (along ? -off : 0)) * S, 1450 * S, (wy - hv.z * 40 + (along ? 0 : -off)) * S)
+        g.add(bar)
+        const hand = new THREE.Mesh(new THREE.CylinderGeometry(14 * S, 22 * S, 180 * S, 10), M.chrome)
+        hand.position.set((wx - hv.x * 60 + (along ? -off : 0)) * S, 1560 * S, (wy - hv.z * 60 + (along ? 0 : -off)) * S)
+        g.add(hand)
+        const niche = box(along ? 320 : 12, 240, along ? 12 : 320, M.stoneTop)
+        place(niche, wx + (along ? off : 0), wy + (along ? 0 : off), 1500)
         g.add(niche)
+        const bottle = new THREE.Mesh(new THREE.CylinderGeometry(30 * S, 30 * S, 170 * S, 10), M.acrylic)
+        bottle.position.set((wx - hv.x * 60 + (along ? off - 60 : 0)) * S, 1585 * S, (wy - hv.z * 60 + (along ? 0 : off - 60)) * S)
+        g.add(bottle)
       }
-      const curb = 60
-      const gh = 2000
-      for (const [px, py, sw, sd] of [
-        [f.at.x, f.at.y - d / 2 + curb / 2, w, curb],
-        [f.at.x, f.at.y + d / 2 - curb / 2, w, curb],
-        [f.at.x - w / 2 + curb / 2, f.at.y, curb, d],
-        [f.at.x + w / 2 - curb / 2, f.at.y, curb, d],
-      ] as const) {
-        const c = box(sw, 100, sd, M.marble)
-        place(c, px, py, 75)
-        g.add(c)
-        const gl = new THREE.Mesh(
-          new THREE.BoxGeometry((sw === curb ? 14 : sw - 20) * S, gh * S,
-            (sd === curb ? 14 : sd - 20) * S),
-          M.glass,
-        )
-        gl.position.set(px * S, (100 + gh / 2) * S, py * S)
-        g.add(gl)
+      if (!noGlass) {
+        // glass on every free edge: 8 mm clear in a chrome channel top and bottom,
+        // 2000 high; the door leaf ajar on the side the label names
+        const gh = 2000
+        const doorSide = (/door on the (north|south|east|west)/i.exec(lab)?.[1] ?? '').toUpperCase().slice(0, 1) as Side | ''
+        for (const sd of SIDES) {
+          if (gaps[sd] <= 100) continue
+          const v = vec(sd)
+          const along = sd === 'N' || sd === 'S'
+          const L = along ? w : d
+          const px = f.at.x + v.x * (w / 2 - 12), py = f.at.y + v.z * (d / 2 - 12)
+          if (sd === doorSide) {
+            // a fixed panel plus a 700 leaf, hinged at the head end, standing 30 degrees open
+            const leaf = Math.min(700, L * 0.6)
+            const fixed = L - leaf
+            const fixedC = -L / 2 + fixed / 2
+            const pane = box(along ? fixed - 8 : 8, gh - 60, along ? 8 : fixed - 8, M.glass)
+            place(pane, px + (along ? fixedC : 0), py + (along ? 0 : fixedC), 30 + gh / 2)
+            g.add(pane)
+            const post = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 12 * S, gh * S, 8), M.chrome)
+            post.position.set((px + (along ? fixedC + fixed / 2 : 0)) * S, (gh / 2) * S, (py + (along ? 0 : fixedC + fixed / 2)) * S)
+            g.add(post)
+            const hinge = { x: px + (along ? -L / 2 + fixed : 0), y: py + (along ? 0 : -L / 2 + fixed) }
+            const door = new THREE.Group()
+            const dl = box(leaf - 10, gh - 60, 8, M.glass, (leaf - 10) / 2, 30 + gh / 2, 0)
+            door.add(dl)
+            door.add(box(leaf - 10, 30, 14, M.chrome, (leaf - 10) / 2, 15, 0))
+            door.add(box(leaf - 10, 30, 14, M.chrome, (leaf - 10) / 2, gh - 15, 0))
+            door.add(box(20, 280, 30, M.chrome, leaf - 90, 1050, 0))
+            door.position.set(hinge.x * S, 0, hinge.y * S)
+            // the leaf's closed line runs along the edge; ajar it turns 30 degrees into the dry side
+            const closedAng = along ? 0 : -Math.PI / 2
+            door.rotation.y = closedAng + (along ? v.z : -v.x) * 0.52 * (sd === 'S' || sd === 'W' ? -1 : 1)
+            g.add(door)
+          } else {
+            const pane = box(along ? L - 8 : 8, gh - 60, along ? 8 : L - 8, M.glass)
+            place(pane, px, py, 30 + gh / 2)
+            g.add(pane)
+          }
+          const ch = (hh: number) => { const c = box(along ? L : 14, 30, along ? 14 : L, M.chrome); place(c, px, py, hh); g.add(c) }
+          ch(15); ch(gh - 15)
+        }
       }
       continue
     }
@@ -4476,6 +4609,118 @@ export function buildFixtures(M: Mats): THREE.Group {
       const plate = box(alongX ? 6 : 220, 150, alongX ? 220 : 6, M.steel)
       place(plate, f.at.x + (alongX ? sgn * (w / 2 - 2) : 0), f.at.y + (alongX ? 0 : sgn * (d / 2 - 2)), 1000)
       g.add(plate)
+      // the roll holder on the same wall, 350 to the side with more room
+      {
+        const pseudo = { x: f.at.x - w / 2, y: f.at.y - d / 2, w, d } as unknown as FurnitureItem
+        const gp = wallGaps(pseudo)
+        const side = alongX ? (gp.N >= gp.S ? -1 : 1) : (gp.W >= gp.E ? -1 : 1)
+        const hx = f.at.x + (alongX ? sgn * (w / 2 - 30) : side * (w / 2 + 150))
+        const hy = f.at.y + (alongX ? side * (d / 2 + 150) : sgn * (d / 2 - 30))
+        const holder = new THREE.Mesh(new THREE.CylinderGeometry(55 * S, 55 * S, 100 * S, 14), M.porcelain)
+        holder.rotation.set(alongX ? 0 : 0, 0, alongX ? 0 : Math.PI / 2)
+        holder.rotation.x = alongX ? Math.PI / 2 : 0
+        holder.rotation.z = alongX ? 0 : Math.PI / 2
+        holder.position.set(hx * S, 700 * S, hy * S)
+        g.add(holder)
+        const pin = box(alongX ? 60 : 12, 12, alongX ? 12 : 60, M.chrome)
+        place(pin, hx + (alongX ? -sgn * 20 : 0), hy + (alongX ? 0 : -sgn * 20), 700)
+        g.add(pin)
+      }
+      continue
+    }
+    if (f.kind === 'grab') {
+      // a chrome grab bar on the wall: horizontal along its length at 900,
+      // or, when square, vertical from 700 to 1400
+      const vertical = Math.abs(w - d) < 20
+      const alongX = w >= d
+      const len = vertical ? 700 : Math.max(w, d)
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(16 * S, 16 * S, len * S, 12), M.chrome)
+      if (!vertical) bar.rotation.set(alongX ? 0 : Math.PI / 2, 0, alongX ? Math.PI / 2 : 0)
+      bar.position.set(f.at.x * S, (vertical ? 1050 : 900) * S, f.at.y * S)
+      g.add(bar)
+      const pseudo = { x: f.at.x - w / 2, y: f.at.y - d / 2, w, d } as unknown as FurnitureItem
+      const gp = wallGaps(pseudo)
+      const side = (['N', 'S', 'E', 'W'] as const).reduce((b, k) => (gp[k] < gp[b] ? k : b), 'N' as 'N' | 'S' | 'E' | 'W')
+      const vx = side === 'E' ? 1 : side === 'W' ? -1 : 0, vz = side === 'S' ? 1 : side === 'N' ? -1 : 0
+      const ends = vertical ? [[0, 0, 720], [0, 0, 1380]] : alongX ? [[-len / 2 + 40, 0, 900], [len / 2 - 40, 0, 900]] : [[0, -len / 2 + 40, 900], [0, len / 2 - 40, 900]]
+      for (const [ex, ez, eh] of ends) {
+        const foot = box(vx ? 40 : 50, 50, vz ? 40 : 50, M.chrome)
+        place(foot, f.at.x + ex + vx * 8, f.at.y + ez + vz * 8, eh)
+        g.add(foot)
+      }
+      continue
+    }
+    if (f.kind === 'seat') {
+      // a fold-down teak seat on chrome brackets, hung on the wall behind it
+      const pseudo = { x: f.at.x - w / 2, y: f.at.y - d / 2, w, d } as unknown as FurnitureItem
+      const gp = wallGaps(pseudo)
+      const side = (['N', 'S', 'E', 'W'] as const).reduce((b, k) => (gp[k] < gp[b] ? k : b), 'N' as 'N' | 'S' | 'E' | 'W')
+      const vx = side === 'E' ? 1 : side === 'W' ? -1 : 0, vz = side === 'S' ? 1 : side === 'N' ? -1 : 0
+      const along = side === 'N' || side === 'S'
+      const H = 480
+      const n = 5
+      const span = along ? w : d
+      for (let k = 0; k < n; k++) {
+        const t = -(along ? d : w) / 2 + 30 + (k + 0.5) * (((along ? d : w) - 60) / n)
+        const slat = box(along ? span - 40 : ((w - 60) / n) - 10, 22, along ? ((d - 60) / n) - 10 : span - 40, M.teak)
+        place(slat, f.at.x + (along ? 0 : t), f.at.y + (along ? t : 0), H)
+        g.add(slat)
+      }
+      for (const e of [-1, 1]) {
+        const arm = box(along ? 30 : d - 70, 26, along ? d - 70 : 30, M.chrome)
+        place(arm, f.at.x + (along ? e * (w / 2 - 60) : 0), f.at.y + (along ? 0 : e * (d / 2 - 60)), H - 24)
+        g.add(arm)
+        const stay = box(along ? 26 : 26, 300, along ? 26 : 26, M.chrome)
+        place(stay, f.at.x + (along ? e * (w / 2 - 60) : vx * (w / 2 - 20)), f.at.y + (along ? vz * (d / 2 - 20) : e * (d / 2 - 60)), H - 170)
+        g.add(stay)
+      }
+      continue
+    }
+    if (f.kind === 'rail') {
+      // the curtain rail at 2000 along its drawn path, and the curtain on it:
+      // gathered to the east end over the last third, drawn across the rest
+      const path = f.poly ?? []
+      if (path.length >= 2) {
+        const H = 2000
+        let total = 0
+        for (let i = 1; i < path.length; i++) total += Math.hypot(path[i].x - path[i - 1].x, path[i].y - path[i - 1].y)
+        let run = 0
+        for (let i = 1; i < path.length; i++) {
+          const a = path[i - 1], b = path[i]
+          const L = Math.hypot(b.x - a.x, b.y - a.y)
+          if (L < 1) continue
+          const seg = new THREE.Mesh(new THREE.CylinderGeometry(12 * S, 12 * S, (L + 4) * S, 8), M.chrome)
+          seg.rotation.z = Math.PI / 2
+          seg.rotation.y = -Math.atan2(b.y - a.y, b.x - a.x)
+          seg.position.set(((a.x + b.x) / 2) * S, H * S, ((a.y + b.y) / 2) * S)
+          g.add(seg)
+          // the curtain: over the open stretch a few loose folds hang from rings;
+          // over the gathered end the folds bunch tight
+          const gathered = run > total * 0.62
+          const pitch = gathered ? 45 : 140
+          for (let t = pitch / 2; t < L; t += pitch) {
+            const px = a.x + ((b.x - a.x) * t) / L, py = a.y + ((b.y - a.y) * t) / L
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(22 * S, 4 * S, 6, 12), M.chrome)
+            ring.rotation.y = -Math.atan2(b.y - a.y, b.x - a.x) + Math.PI / 2
+            ring.position.set(px * S, (H - 6) * S, py * S)
+            g.add(ring)
+            if (gathered) {
+              const fold = box(30, H - 120, 60, M.curtain)
+              fold.rotation.y = -Math.atan2(b.y - a.y, b.x - a.x)
+              fold.position.set(px * S, ((H - 120) / 2 + 60) * S, py * S)
+              g.add(fold)
+            }
+          }
+          run += L
+        }
+        // the caps on the walls
+        for (const e of [path[0], path[path.length - 1]]) {
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(26 * S, 26 * S, 12 * S, 12), M.chrome)
+          cap.rotation.z = Math.PI / 2
+          cap.position.set(e.x * S, H * S, e.y * S)
+          g.add(cap)
+        }
+      }
       continue
     }
     if (f.kind === 'basin') {
@@ -4518,6 +4763,16 @@ export function buildFixtures(M: Mats): THREE.Group {
       const mirror = box(along ? MW : 10, MH, along ? 10 : MW, M.mirror)
       mirror.position.set((mx - vx * 10) * S, 1500 * S, (mz - vz * 10) * S)
       g.add(mirror)
+      const lightBar = box(along ? MW * 0.7 : 60, 30, along ? 60 : MW * 0.7, M.brass)
+      lightBar.position.set((mx - vx * 40) * S, 1960 * S, (mz - vz * 40) * S)
+      g.add(lightBar)
+      const glow = new THREE.PointLight(0xfff0d8, 0.35, 2.0, 1.8)
+      glow.position.set((mx - vx * 120) * S, 1900 * S, (mz - vz * 120) * S)
+      g.add(glow)
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(90 * S, 8 * S, 8, 24), M.chrome)
+      ring.rotation.y = along ? 0 : Math.PI / 2
+      ring.position.set((mx - vx * 12 + (along ? w / 2 + 200 : 0)) * S, 1000 * S, (mz - vz * 12 + (along ? 0 : w / 2 + 200)) * S)
+      g.add(ring)
       continue
     }
     const mat = f.kind === 'counter' ? M.timber

@@ -124,6 +124,12 @@ export type FixtureKind =
   /** A small worktop appliance: microwave, air fryer. */
   | 'appliance'
   | 'counter'
+  /** A grab bar on a bath wall: horizontal when longer than deep, else vertical. */
+  | 'grab'
+  /** A fold-down shower seat, wall hung. */
+  | 'seat'
+  /** A curtain rail: `poly` is its PATH along the ceiling, not an outline. */
+  | 'rail'
 
 export interface FixtureDef {
   id: string

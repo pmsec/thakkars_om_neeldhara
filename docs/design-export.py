@@ -874,13 +874,21 @@ def emit_fixtures():
         elif base == 'basin':
             # the grandmother's wall-hung basin (the vanities come from their consoles)
             add(f'FX-BASIN-{len(fx)}', 'basin', cx, cy, c - a, d - b, 'R-G-BATH',
-                'STK-G-BATH', 'Basin, 450 × 400')
+                'STK-G-BATH', f'Basin, {c - a:.0f} × {d - b:.0f}')
+        elif base in ('seat', 'grab'):
+            # her fold-down seat and grab bars: fittings on the wall, no stack
+            room = ('R-G-BATH' if cx < M and cy >= D.MB_DIV[0] else
+                    'R-P-BATH' if cx < M else 'R-K-BATH')
+            add(f'FX-{base.upper()}-{len(fx)}', base, cx, cy, c - a, d - b, room,
+                None, (lab.split('·')[0].strip() if lab else base))
         elif base == 'shower':
             room, stack = (('R-GUEST-BATH', 'STK-GUEST') if 15000 < cx < 18500
                            else ('R-P-BATH', 'STK-P-BATH') if cx < M and cy < D.MB_DIV[0]
                            else ('R-G-BATH', 'STK-G-BATH') if cx < M
                            else ('R-K-BATH', 'STK-K-BATH'))
-            add(f'FX-SH-{len(fx)}', 'shower', cx, cy, c - a, d - b, room, stack, 'Shower')
+            # the label says how it is closed: a screen, a curtain, or nothing
+            add(f'FX-SH-{len(fx)}', 'shower', cx, cy, c - a, d - b, room, stack,
+                'Shower' + (f' — {lab}' if lab else ''))
         elif base == 'sink':
             add(f'FX-SINK-{len(fx)}', 'sink', cx, cy, c - a, d - b, 'R-KITCHEN',
                 'STK-KITCHEN', 'Sink')
@@ -902,6 +910,16 @@ def emit_fixtures():
             else:
                 add(f'FX-FR-{len(fx)}', 'fridge', cx, cy, c - a, d - b,
                     'R-KITCHEN', None, 'Tall fridge')
+
+    # the grandmother's curtain rail: the drawn polyline, carried as the
+    # fixture's poly (a PATH, not an outline: the app hangs the rail on it)
+    rail = R.gm_curtain_rail()
+    rpts = [(p[1], p[2]) for p in rail] + [(rail[-1][3], rail[-1][4])]
+    rxs, rys = [q[0] for q in rpts], [q[1] for q in rpts]
+    add('FX-RAIL-G', 'rail', (min(rxs) + max(rxs)) / 2, (min(rys) + max(rys)) / 2,
+        max(rxs) - min(rxs), max(rys) - min(rys), 'R-G-BATH', None,
+        'Curtain rail — straight 600 off the west wall, then bowed 150, at 2000',
+        poly=rpts)
 
     # the kitchen's counter runs, each with its TRUE drawn polygon — the runs
     # turn corners and end on curves, and each ships the shape the sheet
@@ -1472,6 +1490,7 @@ def audit_coverage():
     take('arch_console_par', R.arch_console_par())
     take('arch_console_par_flank', R.arch_console_par_flank())
     take('bath_divider', R.bath_divider())
+    take('gm_curtain_rail', R.gm_curtain_rail())
     take('help_rack', R.help_rack())
     with R.karan():
         take('arch_console', R.arch_console(), mirror=True)

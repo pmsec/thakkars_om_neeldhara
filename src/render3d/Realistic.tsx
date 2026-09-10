@@ -2779,7 +2779,7 @@ type ArtSpot = { x: number; y: number; nx: number; ny: number; w: number; seed: 
 const ART_SPOTS: Record<string, ArtSpot[]> = {
   'om-neeldhara': [
     { x: 5700, y: 8400, nx: 0, ny: -1, w: 900, seed: 11 },      // family room, south wall
-    { x: 19000, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall, east of the kit
+    { x: 18300, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall over the kit; the guitars hang east of it
     { x: 20900, y: 1350, nx: 0, ny: 1, w: 800, seed: 37 },      // Karan's suite, over the plant table
     { x: 14450, y: 8400, nx: 0, ny: -1, w: 700, seed: 41 },     // great room, between the drum and the WC door
   ],
@@ -3759,6 +3759,154 @@ function mossWall(M: Mats): THREE.Group | null {
   return g
 }
 
+/**
+ * THE GUITAR WALL in the den (Karan's call): three wall hangers on the south
+ * wall east of the canvas, an electric, an acoustic and a ukulele hung by
+ * their headstocks, each at its own height above the drum kit. Each is
+ * built as the thing: an extruded body, a neck with frets and a headstock
+ * with its tuners, strings from bridge to nut, pickups or a soundhole.
+ */
+function guitarWall(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const WALL = 8400                                                 // the den's south wall face
+  const lac = (hex: number, rough = 0.3) => new THREE.MeshStandardMaterial({ color: hex, roughness: rough, metalness: 0.05 })
+  const red = lac(0x8e1e1e, 0.22), cream = lac(0xf2e8d0, 0.5), spruce = lac(0xe2c78e, 0.55), mahogany = lac(0x6a3d22, 0.5)
+  const maple = lac(0xd7b674, 0.5), rosewood = lac(0x3a2417, 0.6), koa = lac(0xb8853f, 0.45)
+  const wire = new THREE.MeshStandardMaterial({ color: 0xd9d9d9, metalness: 0.7, roughness: 0.35 })
+  const extrude = (sh: THREE.Shape, depth: number, mat: THREE.Material): THREE.Mesh => {
+    const geo = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: true, bevelThickness: 5, bevelSize: 5, bevelSegments: 2, curveSegments: 20 })
+    geo.scale(S, S, S)
+    const m = new THREE.Mesh(geo, mat)
+    m.castShadow = true
+    return m
+  }
+  // outlines in (across, up), the neck joint at the origin, the body hanging below it
+  const figure8 = (k: number): THREE.Shape => {
+    const sh = new THREE.Shape()
+    sh.moveTo(0, 0)
+    sh.bezierCurveTo(150 * k, 0, 175 * k, -200 * k, 115 * k, -250 * k)
+    sh.bezierCurveTo(60 * k, -300 * k, 205 * k, -320 * k, 205 * k, -420 * k)
+    sh.bezierCurveTo(205 * k, -540 * k, 60 * k, -545 * k, 0, -545 * k)
+    sh.bezierCurveTo(-60 * k, -545 * k, -205 * k, -540 * k, -205 * k, -420 * k)
+    sh.bezierCurveTo(-205 * k, -320 * k, -60 * k, -300 * k, -115 * k, -250 * k)
+    sh.bezierCurveTo(-175 * k, -200 * k, -150 * k, 0, 0, 0)
+    return sh
+  }
+  const strat = (): THREE.Shape => {
+    const sh = new THREE.Shape()
+    sh.moveTo(0, 0)
+    sh.bezierCurveTo(110, 70, 170, 10, 150, -80)                // the horn
+    sh.bezierCurveTo(130, -150, 200, -190, 192, -300)
+    sh.bezierCurveTo(185, -420, 60, -440, 0, -430)
+    sh.bezierCurveTo(-60, -440, -185, -420, -192, -300)
+    sh.bezierCurveTo(-200, -190, -130, -150, -150, -80)
+    sh.bezierCurveTo(-170, 10, -110, 70, 0, 0)
+    return sh
+  }
+  /** neck, frets, headstock, tuners and strings, the body's front face at z = depth */
+  const neckAndStrings = (into: THREE.Group, L: number, W: number, depth: number, nStr: number, bridgeY: number, neckMat: THREE.Material, headMat: THREE.Material, scale = 1) => {
+    into.add(box(W, L, 18 * scale, neckMat, 0, L / 2, depth - 9 * scale))
+    into.add(box(W + 2, L, 5, rosewood, 0, L / 2, depth + 2.5))                     // fretboard
+    const nF = Math.round(14 * scale)
+    for (let i = 1; i <= nF; i++) {
+      const y = L * (1 - Math.pow(2, -i / 12)) / (1 - Math.pow(2, -nF / 12)) * 0.98
+      into.add(box(W + 2, 2, 2, wire, 0, L - y * 0.62, depth + 6))
+    }
+    const HL = 150 * scale, HW = W + 30 * scale
+    into.add(box(HW, HL, 12 * scale, headMat, 0, L + HL / 2, depth - 8 * scale))
+    for (let i = 0; i < nStr; i++) {
+      const side = i < nStr / 2 ? -1 : 1
+      const peg = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 4 * S, 28 * S * scale, 8), wire)
+      peg.rotation.z = Math.PI / 2
+      peg.position.set(side * (HW / 2 + 10 * scale) * S, (L + 30 * scale + (i % Math.ceil(nStr / 2)) * (HL - 50 * scale) / Math.max(1, Math.ceil(nStr / 2) - 1)) * S, (depth - 8 * scale) * S)
+      into.add(peg)
+    }
+    // the strings, bridge to nut, fanned a little
+    for (let i = 0; i < nStr; i++) {
+      const t = (i - (nStr - 1) / 2)
+      const xb = t * (W * 0.7 / Math.max(1, nStr - 1)), xn = t * (W * 0.5 / Math.max(1, nStr - 1))
+      const len = L - bridgeY
+      const str = box(1.2, len, 1.2, wire, (xb + xn) / 2, bridgeY + len / 2, depth + 9)
+      str.rotation.z = Math.atan2(xn - xb, len)
+      into.add(str)
+    }
+    into.add(box(W + 4, 4, 5, cream, 0, L, depth + 5))                               // the nut
+  }
+  const hanger = (x: number, h: number): void => {
+    const plate = box(40, 110, 12, M.graphite)
+    plate.position.set(x * S, h * S, (WALL - 6) * S)
+    g.add(plate)
+    for (const e of [-1, 1]) {
+      const prong = box(12, 12, 80, M.graphite)
+      prong.position.set((x + e * 38) * S, (h + 20) * S, (WALL - 46) * S)
+      g.add(prong)
+    }
+  }
+  const hang = (inst: THREE.Group, x: number, hookH: number, neckL: number, depth: number, tilt: number) => {
+    // the headstock sits between the prongs: its top 140 above the nut, so the nut is 100 under the hook
+    inst.position.set(x * S, (hookH - 100) * S, (WALL - 34 - depth) * S)
+    inst.rotation.set(0, Math.PI, tilt)
+    void neckL
+    g.add(inst)
+    hanger(x, hookH)
+  }
+  // ---- the electric: a red double-cutaway, cream pickguard, three pickups, a maple neck
+  {
+    const e = new THREE.Group()
+    const D = 42
+    e.add(extrude(strat(), D, red))
+    const guard = new THREE.Shape()
+    guard.moveTo(-20, -60); guard.bezierCurveTo(120, -70, 150, -180, 120, -340); guard.bezierCurveTo(60, -400, -60, -400, -120, -340); guard.bezierCurveTo(-150, -180, -120, -70, -20, -60)
+    const pg = extrude(guard, 3, cream)
+    pg.position.z = (D + 4) * S
+    e.add(pg)
+    for (const y of [-130, -190, -255]) e.add(box(70, 18, 8, M.graphite, 0, y, D + 10))
+    e.add(box(70, 14, 10, M.chrome, 0, -305, D + 10))                                 // the bridge
+    for (const [kx, ky] of [[95, -230], [110, -290], [120, -350]] as const) {
+      const knob = new THREE.Mesh(new THREE.CylinderGeometry(11 * S, 11 * S, 14 * S, 12), M.graphite)
+      knob.rotation.x = Math.PI / 2
+      knob.position.set(kx * S, ky * S, (D + 12) * S)
+      e.add(knob)
+    }
+    neckAndStrings(e, 640, 44, D, 6, -305, maple, maple)
+    hang(e, 18980, 1880, 640, D, 0.03)
+  }
+  // ---- the acoustic: a dreadnought, spruce top over mahogany, a soundhole and rosette
+  {
+    const a = new THREE.Group()
+    const D = 100
+    a.add(extrude(figure8(1), D - 6, mahogany))
+    const top = extrude(figure8(1), 6, spruce)
+    top.position.z = (D - 6) * S
+    a.add(top)
+    const hole = new THREE.Mesh(new THREE.CylinderGeometry(46 * S, 46 * S, 4 * S, 24), M.graphite)
+    hole.rotation.x = Math.PI / 2
+    hole.position.set(0, -215 * S, (D + 2) * S)
+    a.add(hole)
+    const rosette = new THREE.Mesh(new THREE.TorusGeometry(54 * S, 5 * S, 6, 28), rosewood)
+    rosette.position.set(0, -215 * S, (D + 3) * S)
+    a.add(rosette)
+    a.add(box(150, 24, 10, rosewood, 0, -345, D + 6))                                  // the bridge
+    a.add(box(80, 6, 5, cream, 0, -340, D + 12))                                       // the saddle
+    neckAndStrings(a, 560, 46, D, 6, -340, mahogany, mahogany)
+    hang(a, 19420, 1900, 560, D, -0.03)
+  }
+  // ---- the ukulele: a soprano in koa, half the acoustic, four strings
+  {
+    const u = new THREE.Group()
+    const D = 58
+    u.add(extrude(figure8(0.5), D, koa))
+    const hole = new THREE.Mesh(new THREE.CylinderGeometry(24 * S, 24 * S, 4 * S, 20), M.graphite)
+    hole.rotation.x = Math.PI / 2
+    hole.position.set(0, -105 * S, (D + 2) * S)
+    u.add(hole)
+    u.add(box(70, 14, 8, rosewood, 0, -170, D + 5))
+    neckAndStrings(u, 240, 36, D, 4, -170, koa, koa, 0.6)
+    hang(u, 19790, 1720, 240, D, 0.05)
+  }
+  return g
+}
+
 function petalPendant(_M: Mats): THREE.Group | null {
   const room = model.roomById.get('R-GREAT')
   if (!room) return null
@@ -4688,6 +4836,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     if (petals) root.add(petals)
     const moss = mossWall(M)
     if (moss) root.add(moss)
+    root.add(guitarWall(M))
     const art = sweepArt(M)
     if (art) root.add(art)
   }

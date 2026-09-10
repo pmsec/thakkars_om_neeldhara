@@ -97,7 +97,7 @@ MB_RW = 765                         # west flank, a quarter circle
 MB_YW = MB_CY + MB_RW               # 5115 — where it has turned vertical
 MB_XW = MB_CX - MB_RW + T_MB / 2    # 2475 — the bath's west face below that
 BATH_N = MB_YE + 100                # 5050 — the parents' bath's east wall starts here
-MB_SHELF_END = 6060                 # the linen shelves stop 120 short of the pan
+MB_SHELF_END = 5600                 # the linen shelves stop 100 short of the pan, now at 5700
 MB_DIV = (7150, 7250)               # the folding divider, north and south faces
 # The parents' door: on the straight tail, between the foot of the arch and the
 # glass partition — 700, Y 5130-5830, 45 above the partition's north face.
@@ -773,19 +773,39 @@ _ONCE = [
     # NORTH HALF, the parents': under the arch.  The pan goes on the duct
     # wall, as far north as the duct allows — the builder's main duct starts
     # at 6175, and the soil stack is in it — with 700 in front of it.  The
-    # shower is a 900 walk-in in the south-west corner against the divider,
-    # open, no screen: at 1930 clear its floor doubles as the standing room
-    # in front of the pan, which is what a wet room is.
-    ('wc-e',     3725, 6180, 4405, 6570, ''),   # 680 x 390, on the duct wall
-    ('shower',   2475, 6250, 3375, 7150, 'walk-in, 900 x 900, no screen'),
+    # shower is a 900 walk-in in the south-west corner against the divider.
+    #
+    # THE SHOWER IS SCREENED NOW (Karan's call), and that moved the pan.  Side
+    # by side across 1917 the pan and the shower had 350 between them, which
+    # a screen would have left as the standing room in front of the pan.  So
+    # the pan goes 480 NORTH, to 5700-6090, clear of the shower's line, and the
+    # duct-wall shelves stop at 5600 to let it.  In front of it there is now
+    # 1250 to the west wall, crossed by the door's leaf only while the door
+    # opens.  The price: the pan is 85 north of the duct's end at 6175, so its
+    # waste runs ~500 to the stack under the floor — ordinary in a sunken bath
+    # slab; the plumber has to say yes.  Fixed glass on the shower's north and
+    # east edges, the door on the east, into the 1017 x 900 dry strip.
+    ('wc-e',     3725, 5700, 4405, 6090, 'pan 85 north of the duct: 500 waste run'),
+    ('shower',   2475, 6250, 3375, 7150, 'walk-in, 900 x 900, glass screen north and east, door on the east'),
     # SOUTH HALF, the grandmother's: the pan and the walk-in shower exactly
     # where the bath always had them, and a wall-hung basin of her own on the
     # west wall between her door and the shower.
     ('wc-e',     3725, 7625, 4405, 8015, ''),   # 680 x 390      # 600 off the duct wall
     # 4325, not the wall at 4405: the builder leaves a 230 x 1000 column on
     # the duct's corner and 80 of it stands in this corner of the room.
-    ('shower',   MB_XW_G, 8595, 4325, 9545, 'walk-in, 1457 x 950'),
-    ('basin',    MB_XW_G, 8150, MB_XW_G + 450, 8550, "basin  ·  450 x 400, wall hung"),
+    # NO SCREEN FOR HER — A CURTAIN, because she needs help bathing sometimes
+    # and a helper stands beside her with nothing to reach round.  The rail is
+    # retrofit.gm_curtain_rail(): straight for 600 off the west wall, past the
+    # basin, then bowed 150 north to the east wall, at 2000.  A fold-down seat
+    # in the shower's west corner, grab bars on the west and south walls and a
+    # vertical one on the east at the shower's entry.  The basin is 550, not
+    # 450: a cloakroom size on a wall with room for a proper one.
+    ('shower',   MB_XW_G, 8595, 4325, 9545, 'walk-in, 1457 x 950, curtain on a bowed rail, no screen'),
+    ('basin',    MB_XW_G, 8150, MB_XW_G + 550, 8550, "basin  ·  550 x 400, wall hung"),
+    ('seat',     MB_XW_G, 9145, MB_XW_G + 450, 9545, 'fold-down shower seat  ·  450 x 400 teak slats, at 480'),
+    ('grab',     MB_XW_G, 8700, MB_XW_G + 40, 9400, 'grab bar  ·  700, west wall at 900'),
+    ('grab',     MB_XW_G + 500, 9505, MB_XW_G + 1300, 9545, 'grab bar  ·  800, south wall at 900'),
+    ('grab',     4352, 8620, 4392, 8660, 'grab bar  ·  vertical, 700 to 1400, at the shower entry'),
 
     # ------------------------- KARAN'S BATH, as first drawn (in his own frame)
     # The pan on the duct wall, the walk-in shower across the south end, and

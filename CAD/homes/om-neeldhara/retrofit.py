@@ -583,6 +583,23 @@ def bath_divider(leaves=4):
     return out
 
 
+def gm_curtain_rail(straight=600, bow=150, n=16):
+    """The grandmother's shower curtain rail, at 2000, on the shower's north
+    line: straight for `straight` off the west wall, past her basin, then
+    bowed `bow` north to the east wall.  A bow from wall to wall would hang
+    the curtain over the basin's corner; the straight lead-in clears it.
+    Drawn as a polyline of light lines; the app carries the same points."""
+    y = 8595
+    x0, x1 = D.MB_XW_G, D.MB_XE
+    pts = [(x0, y), (x0 + straight, y)]
+    xa, xb = x0 + straight, x1
+    for i in range(1, n + 1):
+        t = i / n
+        pts.append((xa + (xb - xa) * t, y - bow * math.sin(math.pi * t)))
+    return [('line', pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], 'light')
+            for i in range(len(pts) - 1)]
+
+
 def lofts():
     """The lofts over the service bay's small rooms, drawn dashed because
     they are over and not in plan.

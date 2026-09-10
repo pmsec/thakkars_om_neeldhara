@@ -292,7 +292,7 @@ def main():
         prim(p)
     for p in R.mb_door(D.MB_DOOR_P) + R.mb_door():
         prim(p, shadow=False)
-    for p in R.bath_divider():
+    for p in R.bath_divider() + R.gm_curtain_rail():
         prim(p)
     for p in R.help_rack():
         prim(p)

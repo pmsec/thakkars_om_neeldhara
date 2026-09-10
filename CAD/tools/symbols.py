@@ -264,6 +264,14 @@ def symbol(kind, a, b, c, d):
         return [('poly', _rrect(a + w * 0.27, cy - h * 0.46, c,
                                 cy + h * 0.46, h * 0.46), 'solid'),
                 _rr(a, cy - h * 0.5, a + w * 0.27, cy + h * 0.5, 'soft')]
+    if kind == 'grab':
+        # a grab bar: a solid bar on the wall; a square one is vertical
+        return [_rr(a, b, c, d, 'solid')]
+    if kind == 'seat':
+        # a fold-down shower seat: an outline with two slat lines
+        return [_rr(a, b, c, d, 'soft'),
+                ('line', a, b + h / 3, c, b + h / 3, 'light'),
+                ('line', a, b + 2 * h / 3, c, b + 2 * h / 3, 'light')]
     if kind == 'basin':
         return [_rr(a, b, c, d, 'solid'),
                 ('circle', cx, cy, min(w, h) * 0.30, 'light')]

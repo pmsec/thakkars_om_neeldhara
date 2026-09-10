@@ -309,7 +309,7 @@ def main():
     for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
               + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)):
         prim(p)
-    for p in R.mb_door(D.MB_DOOR_P) + R.mb_door() + R.bath_divider():
+    for p in R.mb_door(D.MB_DOOR_P) + R.mb_door() + R.bath_divider() + R.gm_curtain_rail():
         prim(p)                                 # the parents' two doors, the divider
     for p in R.help_rack():                     # the curved rack on the apse
         prim(p)

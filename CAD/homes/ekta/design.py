@@ -1564,3 +1564,37 @@ FURNITURE += [
      "basin — 460 x 360 (1'-6\" x 1'-2\") oval, mirror over",
      'R-LIVING-DINING', 880, WASH_BOWL),
 ]
+
+
+# ------------------------------------------- what makes the rooms read as lived in
+# RUGS, PLANTS AND PLANTERS (Karan's call, for the walkthrough).  Each is on
+# the sheet too, so the 2D and the 3D stay one drawing: a rug is a dashed
+# outline the furniture stands on, a plant a circle.  Nothing here stands in
+# a route: the living rugs lie under the two seating groups, the plant takes
+# the dead corner between the recliner and the swivels on the east wall, and
+# the balcony planters sit at its two ends, clear of the way out between the
+# chairs.
+FURNITURE += [
+    ('rug', 3300, 5900, 5700, 8700,
+     "rug — 2400 x 2800 (7'-10\" x 9'-2\") wool, under the west seating group",
+     'R-LIVING-DINING', 12),
+    ('rug', 3600, 9350, 6700, 10950,
+     "rug — 3100 x 1600 (10'-2\" x 5'-3\") flatweave, under the swivels at the balcony",
+     'R-LIVING-DINING', 12),
+    ('plant', 6350, 8300, 6800, 8750,
+     "floor plant — 450 (1'-6\") pot on the east wall, between the recliner and the swivels",
+     'R-LIVING-DINING', 1600),
+    ('plant', 8600, 300, 9000, 700,
+     "floor plant — 400 (1'-4\") pot in the room's north-west corner",
+     'R-ROOM', 1400),
+    ('rug', 1100, 1300, 2700, 3300,
+     "rug — 1600 x 2000 (5'-3\" x 6'-7\") beside the sofa; the bed comes down over it",
+     'R-BEDROOM', 12),
+    ('rug', 8900, 2900, 11300, 4900,
+     "rug — 2400 x 2000 (7'-10\" x 6'-7\") at the foot of the bed",
+     'R-ROOM', 12),
+    ('planter', 3850, 11950, 4200, 12300,
+     "planter — 350 (1'-2\") square, the balcony's west end", 'R-BALCONY', 450),
+    ('planter', 6450, 11950, 6800, 12300,
+     "planter — 350 (1'-2\") square, the balcony's east end", 'R-BALCONY', 450),
+]

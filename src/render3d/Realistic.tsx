@@ -2789,6 +2789,7 @@ const ART_SPOTS: Record<string, ArtSpot[]> = {
     { x: 3050, y: 600, nx: -1, ny: 0, w: 640, seed: 13 },       // bedroom, over the desk
     { x: 1380, y: 9700, nx: 0, ny: 1, w: 700, seed: 17 },       // the foyer, facing the front door
     { x: 6800, y: 9200, nx: -1, ny: 0, w: 800, seed: 21 },      // living, east wall south of the bath
+    { x: 6800, y: 7150, nx: -1, ny: 0, w: 1100, seed: 29 },     // living, the bath's west wall where the two-seater was: the big one
   ],
 }
 function wallArt(M: Mats): THREE.Group {

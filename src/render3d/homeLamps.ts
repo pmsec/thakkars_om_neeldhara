@@ -67,6 +67,9 @@ export const LAMP_SPOTS: Record<string, LampSpot[]> = {
     // the living room's west wall: a sconce either side of the canvas over the diwan
     { kind: 'sconce', x: 2295, y: 6850, h: 1750, nx: 1, ny: 0 },
     { kind: 'sconce', x: 2295, y: 8350, h: 1750, nx: 1, ny: 0 },
+    // and the bath's west wall: a sconce either side of the big canvas
+    { kind: 'sconce', x: 6800, y: 6470, h: 1750, nx: -1, ny: 0 },
+    { kind: 'sconce', x: 6800, y: 7830, h: 1750, nx: -1, ny: 0 },
     // the east room: a pendant at each side of the bed's head, and a teak
     // panel behind it
     { kind: 'pendant', x: 11150, y: 560, h: 1450, r: 90 },

@@ -15,9 +15,48 @@ const PT_PER_MM = 72 / 25.4
 export const PAPER = {
   A1: { w: 841, h: 594 },
   A3: { w: 420, h: 297 },
+  A4: { w: 297, h: 210 },
 } as const
 
 export type PaperName = keyof typeof PAPER
+
+/** The model-space breathing room the sheet leaves round the envelope for the dimension chains. */
+export const SHEET_PAD = 2600
+
+/** Margin and title-block height for a sheet. The layout and the UI must agree, so both read this. */
+export function sheetFrame(paper: PaperName): { margin: number; tb: number } {
+  if (paper === 'A1') return { margin: 15, tb: 34 }
+  if (paper === 'A3') return { margin: 10, tb: 24 }
+  return { margin: 7, tb: 16 }
+}
+
+/**
+ * What the ACTIVE home needs on paper at a given scale, and whether it fits.
+ * The Export panel used to state one home's length as a fixed sentence, which
+ * was wrong the moment a second home existed.
+ */
+export function sheetFit(
+  paper: PaperName,
+  scale: number,
+  scales: readonly number[] = [50, 75, 100, 150, 200],
+): { needW: number; needH: number; drawW: number; drawH: number; fits: boolean; best: number | null; extent: number } {
+  const bb = getModel().envelopeBBox
+  const mw = bb.maxX - bb.minX + SHEET_PAD * 2
+  const mh = bb.maxY - bb.minY + SHEET_PAD * 2
+  const { margin, tb } = sheetFrame(paper)
+  const drawW = PAPER[paper].w - margin * 2
+  const drawH = PAPER[paper].h - margin * 2 - tb
+  const ok = (sc: number): boolean => mw / sc <= drawW && mh / sc <= drawH
+  return {
+    needW: mw / scale,
+    needH: mh / scale,
+    drawW,
+    drawH,
+    fits: ok(scale),
+    best: scales.find(ok) ?? null,
+    extent: Math.max(mw, mh),
+  }
+}
 
 class PdfDoc {
   private objects: string[] = []
@@ -167,6 +206,11 @@ const escapePdf = (s: string): string =>
     .replace(/[’‘]/g, "'")
     .replace(/[“”]/g, '"')
     .replace(/–|—/g, '-')
+    .replace(/…/g, '...')
+    // formatMm separates thousands with a THIN SPACE, and the catch-all below
+    // used to turn it into a '?', so every dimension on every PDF read
+    // "25?680". Typographic spaces degrade to an ordinary space.
+    .replace(/[\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
     // eslint-disable-next-line no-control-regex
     .replace(/[^\x00-\xFF]/g, '?')
 
@@ -186,14 +230,13 @@ export function exportPdf(opts: PdfOptions): Blob {
   const paper = PAPER[opts.paper]
   const doc = new PdfDoc(paper.w * PT_PER_MM, paper.h * PT_PER_MM)
 
-  const marginMm = opts.paper === 'A1' ? 15 : 10
-  const tbHeightMm = opts.paper === 'A1' ? 34 : 24
+  const { margin: marginMm, tb: tbHeightMm } = sheetFrame(opts.paper)
   const drawWmm = paper.w - marginMm * 2
   const drawHmm = paper.h - marginMm * 2 - tbHeightMm
 
   // Model-space extent we need to show, including the dimension chains.
   const bb = model.envelopeBBox
-  const pad = 2600
+  const pad = SHEET_PAD
   const mx0 = bb.minX - pad
   const my0 = bb.minY - pad
   const mw = bb.maxX - bb.minX + pad * 2
@@ -281,15 +324,27 @@ function drawTitleBlock(
   doc.setFill('#232120')
   const lineH = hh / (rows.length + 0.6)
   const fs = Math.min(9, lineH * 0.62)
+  // Helvetica averages ~0.52 em; trim what will not fit rather than let it run
+  // off the sheet (the scale note overran the box on A4)
+  const clip = (t: string, maxW: number, size: number): string => {
+    const n = Math.floor(maxW / (size * 0.52))
+    return t.length <= n ? t : `${t.slice(0, Math.max(1, n - 3)).trimEnd()}...`
+  }
+  const col2 = x + w * 0.62
+  // the scale stamp shares the last row's baseline, so that row's text stops short of it
+  const stamp = `SCALE 1:${opts.scale} @ ${opts.paper}${fits ? '' : ' (CLIPPED — use a larger sheet)'}`
+  const stampW = stamp.length * fs * 0.52 + 10
+  const last = rows.length - 1
   rows.forEach((row, i) => {
     const ty = y + hh - lineH * (i + 1)
-    doc.text(x + 6, ty, i === 0 ? fs * 1.35 : fs, row[0], { bold: i === 0 })
-    doc.text(x + w * 0.62, ty, i === 0 ? fs * 1.05 : fs, row[1], { bold: i === 0 })
+    const s1 = i === 0 ? fs * 1.35 : fs
+    const s2 = i === 0 ? fs * 1.05 : fs
+    const right = x + w - 6 - (i === last ? stampW : 0)
+    doc.text(x + 6, ty, s1, clip(row[0], col2 - (x + 6) - 8, s1), { bold: i === 0 })
+    doc.text(col2, ty, s2, clip(row[1], Math.max(20, right - col2), s2), { bold: i === 0 })
   })
   doc.setFill('#7B756B')
-  doc.text(x + w - 6, y + 5, fs, `SCALE 1:${opts.scale} @ ${opts.paper}${fits ? '' : ' (CLIPPED — use a larger sheet)'}`, {
-    anchor: 'end',
-  })
+  doc.text(x + w - 6, y + hh - lineH * rows.length, fs, stamp, { anchor: 'end' })
 }
 
 /** Markup comments as a standalone annotation sheet (brief §5.10). */

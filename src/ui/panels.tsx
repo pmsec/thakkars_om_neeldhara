@@ -12,7 +12,7 @@ import { formatArea, formatFeetInches, formatLength, formatMm, sqFt, sqM } from 
 import { LAYER_LABELS, useStore, type LayerId } from './store'
 import { podDoorLeaves } from '../render3d/podDoors'
 import { sheetSvg as sheetSvgRaw } from '../data/sheet'
-import { exportMarkupPdf, exportPdf, PAPER, type PaperName } from '../export/pdf'
+import { exportMarkupPdf, exportPdf, PAPER, sheetFit, type PaperName } from '../export/pdf'
 import {
   download,
   exportDxf,
@@ -622,7 +622,14 @@ export function ExportPanel(): React.ReactElement {
         </select>
       </div>
       <p className="tiny muted" style={{ margin: '2px 0 6px' }}>
-        {(24480 / scale).toFixed(0)} mm of paper for the 24 480 mm length. A1 fits at 1:50; A3 needs 1:150.
+        {(() => {
+          // measured off THIS home, not a fixed number: two homes of different
+          // sizes share this panel
+          const f = sheetFit(paper, scale)
+          const need = `${f.needW.toFixed(0)} × ${f.needH.toFixed(0)} mm of drawing for this home's ${formatMm(f.extent)}.`
+          if (f.fits) return `${need} Fits ${paper} (${f.drawW.toFixed(0)} × ${f.drawH.toFixed(0)} mm clear).`
+          return `${need} Too big for ${paper}${f.best ? ` — use 1:${f.best}, or a larger sheet` : ' at every scale — use a larger sheet'}.`
+        })()}
       </p>
       <button
         className="btn wide"

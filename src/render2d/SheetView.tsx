@@ -1,12 +1,11 @@
 /**
  * THE 2D plan: the CAD sheet, verbatim, with the portal's tools laid over it.
  *
- * src/assets/plan-sheet.svg is copied byte-for-byte from the CAD branch's
- * drawings/07-round1-layout.svg by docs/design-export.py. The sheet's own
- * coordinate frame is known exactly — Sheet(-3200, -2400 … 26600, 16100) at
- * 4200 px wide with a 90 px pad — so model millimetres and sheet pixels
- * convert losslessly, and every tool (measure, area, markup, room inspect)
- * works on the real drawing. The sheet's <g id="L-*"> groups, emitted by the
+ * The active home's plan-sheet.svg is copied byte-for-byte from the CAD
+ * branch by its exporter. The sheet's own coordinate frame is stamped on its
+ * root (data-frame, data-pad — see export/sheetFrame.ts), so model
+ * millimetres and sheet pixels convert losslessly for either home, and every
+ * tool (measure, area, markup, room inspect) works on the real drawing. The sheet's <g id="L-*"> groups, emitted by the
  * CAD generator, give the layer toggles.
  *
  * When the plan changes on the CAD branch, re-running the exporter refreshes
@@ -15,6 +14,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { sheetSvg } from '../data/sheet'
+import { parseSheetFrame } from '../export/sheetFrame'
 import { getModel } from '../geometry/model'
 import { formatFeetInches, sqFt, sqM } from '../geometry/units'
 import { area as polyArea, pointInPolygon, type Pt } from '../geometry/vec'
@@ -22,16 +22,12 @@ import { useStore } from '../ui/store'
 
 const model = getModel()
 
-// ---- the sheet's own frame, from the CAD generator: Sheet(x0, y0, x1, y1)
-const SHEET_W = 4200
-const SHEET_H = 2675
-const PAD = 90
-const X0 = -3200
-const Y0 = -2400
-const SC = (SHEET_W - 2 * PAD) / (26600 - X0)
-
-const mmToSheet = (p: Pt): Pt => ({ x: PAD + (p.x - X0) * SC, y: PAD + (p.y - Y0) * SC })
-const sheetToMm = (p: Pt): Pt => ({ x: X0 + (p.x - PAD) / SC, y: Y0 + (p.y - PAD) / SC })
+// ---- the sheet's own frame, stamped on the SVG root by the CAD generator
+const FRAME = parseSheetFrame(sheetSvg)
+const SHEET_W = FRAME.w
+const SHEET_H = FRAME.h
+const SC = FRAME.sc
+const { mmToSheet, sheetToMm } = FRAME
 
 /** Snap targets: every wall vertex and opening end, in mm. */
 function snapPoints(): Pt[] {

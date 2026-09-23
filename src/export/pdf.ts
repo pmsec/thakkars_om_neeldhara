@@ -10,7 +10,7 @@ import { buildSheet, titleBlock, type Prim, type SheetOptions } from './sheet'
 import { getModel } from '../geometry/model'
 import type { Pt } from '../geometry/vec'
 
-const PT_PER_MM = 72 / 25.4
+export const PT_PER_MM = 72 / 25.4
 
 export const PAPER = {
   A1: { w: 841, h: 594 },
@@ -58,10 +58,12 @@ export function sheetFit(
   }
 }
 
-class PdfDoc {
+export class PdfDoc {
   private objects: string[] = []
   private content = ''
   private pages: Array<{ w: number; h: number; content: string }> = []
+  /** Constant-alpha graphics states used so far, by alpha (e.g. 0.45 -> /GS45). */
+  private alphas = new Map<number, string>()
 
   constructor(
     private wPt: number,
@@ -90,6 +92,53 @@ class PdfDoc {
     this.cmd(pattern ? `[${pattern[0].toFixed(2)} ${pattern[1].toFixed(2)}] 0 d` : '[] 0 d')
   }
 
+  /** 0 butt, 1 round, 2 square. */
+  setLineCap(cap: 0 | 1 | 2): void {
+    this.cmd(`${cap} J`)
+  }
+
+  /**
+   * Constant alpha for both strokes and fills, as an ExtGState. Wrap in
+   * save()/restore() to scope it; alpha 1 emits nothing.
+   */
+  setAlpha(alpha: number): void {
+    const a = Math.max(0, Math.min(1, alpha))
+    if (a >= 0.999) return
+    const key = Math.round(a * 100)
+    let name = this.alphas.get(key)
+    if (!name) {
+      name = `/GS${key}`
+      this.alphas.set(key, name)
+    }
+    this.cmd(`${name} gs`)
+  }
+
+  /** Concatenate an affine matrix onto the CTM. */
+  transform(a: number, b: number, c: number, d: number, e: number, f: number): void {
+    this.cmd(`${a.toFixed(5)} ${b.toFixed(5)} ${c.toFixed(5)} ${d.toFixed(5)} ${e.toFixed(3)} ${f.toFixed(3)} cm`)
+  }
+
+  /** A full circle as four Béziers (kappa 0.5523). */
+  circle(cx: number, cy: number, r: number): void {
+    const k = 0.5523 * r
+    this.cmd(`${(cx + r).toFixed(3)} ${cy.toFixed(3)} m`)
+    const seg = (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): void =>
+      this.cmd(`${x1.toFixed(3)} ${y1.toFixed(3)} ${x2.toFixed(3)} ${y2.toFixed(3)} ${x3.toFixed(3)} ${y3.toFixed(3)} c`)
+    seg(cx + r, cy + k, cx + k, cy + r, cx, cy + r)
+    seg(cx - k, cy + r, cx - r, cy + k, cx - r, cy)
+    seg(cx - r, cy - k, cx - k, cy - r, cx, cy - r)
+    seg(cx + k, cy - r, cx + r, cy - k, cx + r, cy)
+    this.cmd('h')
+  }
+
+  /** Fill and stroke the current path in one go (PDF `B*`), or just one of them. */
+  paint(fill: boolean, stroke: boolean): void {
+    if (fill && stroke) this.cmd('B*')
+    else if (fill) this.cmd('f*')
+    else if (stroke) this.cmd('S')
+    else this.cmd('n')
+  }
+
   poly(pts: Array<[number, number]>, close: boolean): void {
     if (pts.length === 0) return
     this.cmd(`${pts[0][0].toFixed(3)} ${pts[0][1].toFixed(3)} m`)
@@ -109,13 +158,21 @@ class PdfDoc {
     this.cmd(`${x.toFixed(3)} ${y.toFixed(3)} ${w.toFixed(3)} ${h.toFixed(3)} re`)
   }
 
-  text(x: number, y: number, size: number, s: string, opts: { bold?: boolean; rot?: number; anchor?: 'start' | 'middle' | 'end' } = {}): void {
+  text(
+    x: number,
+    y: number,
+    size: number,
+    s: string,
+    opts: { bold?: boolean; rot?: number; anchor?: 'start' | 'middle' | 'end'; charSpace?: number } = {},
+  ): void {
     const font = opts.bold ? '/F2' : '/F1'
+    const cs = opts.charSpace ?? 0
     // Helvetica average advance ≈ 0.52 em; good enough for centring plan annotation.
-    const wEst = s.length * size * 0.52
+    const wEst = s.length * size * 0.52 + Math.max(0, s.length - 1) * cs
     const dx = opts.anchor === 'middle' ? -wEst / 2 : opts.anchor === 'end' ? -wEst : 0
     this.cmd('BT')
     this.cmd(`${font} ${size.toFixed(2)} Tf`)
+    if (cs) this.cmd(`${cs.toFixed(3)} Tc`)
     if (opts.rot) {
       const a = (opts.rot * Math.PI) / 180
       const c = Math.cos(a)
@@ -125,6 +182,7 @@ class PdfDoc {
       this.cmd(`1 0 0 1 ${(x + dx).toFixed(3)} ${y.toFixed(3)} Tm`)
     }
     this.cmd(`(${escapePdf(s)}) Tj`)
+    if (cs) this.cmd('0 Tc')
     this.cmd('ET')
   }
 
@@ -155,6 +213,11 @@ class PdfDoc {
     this.pages.forEach((_, i) => pageObjIds.push(firstPageObj + i * 2))
     const fontRegular = firstPageObj + this.pages.length * 2
     const fontBold = fontRegular + 1
+    const gsFirst = fontBold + 1
+    const gsEntries = [...this.alphas.entries()]
+    const extG = gsEntries.length
+      ? ` /ExtGState << ${gsEntries.map(([, name], i) => `${name} ${gsFirst + i} 0 R`).join(' ')} >>`
+      : ''
 
     this.objects[1] = '<< /Type /Catalog /Pages 2 0 R >>'
     this.objects[2] = `<< /Type /Pages /Kids [${pageObjIds.map((i) => `${i} 0 R`).join(' ')}] /Count ${this.pages.length} >>`
@@ -162,11 +225,15 @@ class PdfDoc {
       const pid = pageObjIds[i]
       this.objects[pid] =
         `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pg.w.toFixed(2)} ${pg.h.toFixed(2)}] ` +
-        `/Resources << /Font << /F1 ${fontRegular} 0 R /F2 ${fontBold} 0 R >> >> /Contents ${pid + 1} 0 R >>`
+        `/Resources << /Font << /F1 ${fontRegular} 0 R /F2 ${fontBold} 0 R >>${extG} >> /Contents ${pid + 1} 0 R >>`
       this.objects[pid + 1] = `<< /Length ${pg.content.length} >>\nstream\n${pg.content}\nendstream`
     })
     this.objects[fontRegular] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>'
     this.objects[fontBold] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'
+    gsEntries.forEach(([key], i) => {
+      const a = (key / 100).toFixed(2)
+      this.objects[gsFirst + i] = `<< /Type /ExtGState /CA ${a} /ca ${a} >>`
+    })
 
     let out = '%PDF-1.4\n'
     const offsets: number[] = []

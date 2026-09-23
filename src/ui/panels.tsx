@@ -13,6 +13,7 @@ import { LAYER_LABELS, useStore, type LayerId } from './store'
 import { podDoorLeaves } from '../render3d/podDoors'
 import { sheetSvg as sheetSvgRaw } from '../data/sheet'
 import { exportMarkupPdf, exportPdf, PAPER, sheetFit, type PaperName } from '../export/pdf'
+import { exportStyledPdf, styledFit } from '../export/styledPdf'
 import {
   download,
   exportDxf,
@@ -633,9 +634,30 @@ export function ExportPanel(): React.ReactElement {
       </p>
       <button
         className="btn wide"
+        onClick={() =>
+          download(
+            `plan-sheet-styled-${paper}-1-${scale}.pdf`,
+            exportStyledPdf({ paper, scale, layers: state.sheetLayers }),
+          )
+        }
+      >
+        Styled PDF — the sheet as displayed
+      </button>
+      <p className="tiny muted" style={{ margin: '2px 0 6px' }}>
+        {(() => {
+          // the CAD sheet with its colours, columns, hatches and furniture,
+          // printed at the same scale; the layer toggles on the 2D tab apply
+          const f = styledFit(paper, scale)
+          const need = `Sheet needs ${f.needW.toFixed(0)} × ${f.needH.toFixed(0)} mm at 1:${scale}.`
+          if (f.fits) return `${need} Fits ${paper}.`
+          return `${need} Clipped on ${paper}${f.best ? ` — use 1:${f.best}, or a larger sheet` : ' at every scale — use a larger sheet'}.`
+        })()}
+      </p>
+      <button
+        className="btn wide"
         onClick={() => download(`floor-plan-A101-rev4-${paper}-1-${scale}.pdf`, exportPdf({ ...sheetOpts, paper, scale }))}
       >
-        Vector PDF, true scale
+        Vector PDF, true scale (plain linework)
       </button>
 
       <h4>CAD</h4>

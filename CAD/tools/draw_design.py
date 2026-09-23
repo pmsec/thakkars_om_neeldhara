@@ -157,6 +157,72 @@ def arc_quads(cx, cy, r, t, gaps, step=1.5):
     return out
 
 
+# Where this flat's slab stops on the builder's building line: the south
+# face of the entry bay and Karan's service bay (10975) and, on the west,
+# the service bay's own 150 deeper ledge (11125), which sits between x 5555
+# and 9810. South of these is the lift lobby and the neighbour's plate.
+FLAT_S = 10975
+WEST_BAY_E = 9810
+WEST_BAY_S = 11125
+EAST_BAY_W = 18925
+
+
+def clip_box(poly, x0, y0, x1, y1):
+    """Sutherland-Hodgman against an axis-aligned box; None leaves a side open."""
+    def half(pts, inside, cut):
+        out = []
+        for a, b in zip(pts, pts[1:] + pts[:1]):
+            ia, ib = inside(a), inside(b)
+            if ia:
+                out.append(a)
+            if ia != ib:
+                out.append(cut(a, b))
+        return out
+
+    def at_x(c):
+        return lambda a, b: (c, a[1] + (b[1] - a[1]) * (c - a[0]) / (b[0] - a[0]))
+
+    def at_y(c):
+        return lambda a, b: (a[0] + (b[0] - a[0]) * (c - a[1]) / (b[1] - a[1]), c)
+
+    pts = list(poly)
+    if x0 is not None:
+        pts = half(pts, lambda p: p[0] >= x0, at_x(x0))
+    if x1 is not None:
+        pts = half(pts, lambda p: p[0] <= x1, at_x(x1))
+    if y0 is not None:
+        pts = half(pts, lambda p: p[1] >= y0, at_y(y0))
+    if y1 is not None:
+        pts = half(pts, lambda p: p[1] <= y1, at_y(y1))
+    return pts
+
+
+def clip_seg(a, b, x0, y0, x1, y1):
+    """The part of segment a-b inside the box (Liang-Barsky), or None."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-dx, a[0] - x0 if x0 is not None else None),
+                 (dx, x1 - a[0] if x1 is not None else None),
+                 (-dy, a[1] - y0 if y0 is not None else None),
+                 (dy, y1 - a[1] if y1 is not None else None)):
+        if q is None:
+            continue
+        if p == 0:
+            if q < 0:
+                return None
+            continue
+        t = q / p
+        if p < 0:
+            t0 = max(t0, t)
+        else:
+            t1 = min(t1, t)
+        if t0 > t1:
+            return None
+    if t1 - t0 < 1e-9:
+        return None
+    return ((a[0] + dx * t0, a[1] + dy * t0), (a[0] + dx * t1, a[1] + dy * t1))
+
+
 def main():
     lay = C.builder_layers()
     bl = max(lay['DA_BUILDING LINE'], key=len)
@@ -165,13 +231,34 @@ def main():
     s = Sheet(-3200, -2400, 26600, 16100)
 
     # ---------------------------------------------------------------- slab
-    s.poly(bl, fill=SLAB, stroke='#b9b5ab', stroke_width=1.4)
+    # The builder's building line is the whole floor plate: this flat, the
+    # lift lobby south of it and the neighbour's slab beyond. The sheet only
+    # ever needs this flat, so the slab is cut at the flat's south face and
+    # the rest goes on the lobby ('ref') layer with the lobby itself, which
+    # the app and the print can switch off (Karan: no lobby on the print).
+    flat_pieces = [clip_box(bl, None, None, None, FLAT_S),                # the flat
+                   clip_box(bl, None, FLAT_S, WEST_BAY_E, WEST_BAY_S)]    # west bay ledge
+    for piece in flat_pieces:
+        if len(piece) >= 3:
+            s.poly(piece, fill=SLAB, stroke='none')
+    for a, b in zip(bl, bl[1:] + bl[:1]):
+        for seg in (clip_seg(a, b, None, None, None, FLAT_S),
+                    clip_seg(a, b, None, FLAT_S, WEST_BAY_E, WEST_BAY_S)):
+            if seg:
+                s.line(*seg[0], *seg[1], '#b9b5ab', 1.4)
+    # the join with the lobby, where the building line runs on south
+    s.line(WEST_BAY_E, FLAT_S, EAST_BAY_W, FLAT_S, '#b9b5ab', 1.4)
+    lobby_cols = [r_ for r_ in cols if min(r_[1], r_[3]) >= FLAT_S]
+    cols = [r_ for r_ in cols if r_ not in lobby_cols]
 
     # ------------------------------------------------------- keep only: shell
     keep, _demo = R.keep_demo()
 
     # ------------------------------- the lift core beyond the entry hall
     s.begin_layer('ref')
+    s.poly(bl, fill=SLAB, stroke='#b9b5ab', stroke_width=1.4)
+    for r_ in lobby_cols:
+        s.rect(*r_, fill=KEEP, stroke='#7c1610', stroke_width=1.0)
     rx0, ry0, rx1, ry1 = D.REFERENCE
     ref, reft = frame.load_cad(x0=40000, y0=10000, x1=135000, y1=75000)
     for lay, x1, y1, x2, y2 in ref:

@@ -54,8 +54,12 @@ class Sheet:
         self.w = width
         self.h = int((y1 - y0) * self.sc) + 2 * pad
         self.pad = pad
+        # data-frame / data-pad: the model-mm window this sheet draws and its
+        # pixel pad, so the app can convert sheet pixels to millimetres (and
+        # print the sheet at a true scale) without a hard-coded copy of these
         self.o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{self.w}" '
-                  f'height="{self.h}"><rect width="100%" height="100%" fill="{PAPER}"/>']
+                  f'height="{self.h}" data-frame="{x0} {y0} {x1} {y1}" data-pad="{pad}">'
+                  f'<rect width="100%" height="100%" fill="{PAPER}"/>']
 
     def X(self, v):
         return self.pad + (v - self.x0) * self.sc

@@ -62,8 +62,10 @@ class Sheet:
         # the paper is given real pixel numbers, not "100%": the SVG rasteriser
         # resolves a percentage against a default viewport and paints a pale
         # block in the corner instead of the sheet
+        # data-frame / data-pad: see draw_design.Sheet — the app reads them
         self.o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{self.w}" '
-                  f'height="{self.h}" viewBox="0 0 {self.w} {self.h}">'
+                  f'height="{self.h}" viewBox="0 0 {self.w} {self.h}" '
+                  f'data-frame="{x0} {y0} {x1} {y1}" data-pad="{pad}">'
                   f'<rect x="0" y="0" width="{self.w}" height="{self.h}" fill="{PAPER}"/>']
 
     def X(self, v):

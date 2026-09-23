@@ -587,6 +587,8 @@ export function ExportPanel(): React.ReactElement {
   const [scale, setScale] = useState(50)
   const [dpi, setDpi] = useState(300)
   const [busy, setBusy] = useState('')
+  // the lift lobby beyond the flat is reference on screen, not wanted on paper (Karan)
+  const [printLobby, setPrintLobby] = useState(false)
 
   const sheetOpts = useMemo(
     () => ({
@@ -637,12 +639,16 @@ export function ExportPanel(): React.ReactElement {
         onClick={() =>
           download(
             `plan-sheet-styled-${paper}-1-${scale}.pdf`,
-            exportStyledPdf({ paper, scale, layers: state.sheetLayers }),
+            exportStyledPdf({ paper, scale, layers: { ...state.sheetLayers, ref: printLobby } }),
           )
         }
       >
         Styled PDF — the sheet as displayed
       </button>
+      <label className="tiny" style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '4px 0' }}>
+        <input type="checkbox" checked={printLobby} onChange={(e) => setPrintLobby(e.target.checked)} />
+        Include the lobby beyond the flat
+      </label>
       <p className="tiny muted" style={{ margin: '2px 0 6px' }}>
         {(() => {
           // the CAD sheet with its colours, columns, hatches and furniture,

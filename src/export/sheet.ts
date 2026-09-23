@@ -12,7 +12,7 @@ import { buildDimensions } from '../geometry/dimensions'
 import { getModel, type BuiltModel } from '../geometry/model'
 import { formatFeetInches, formatMm, sqFt, sqM } from '../geometry/units'
 import { bbox, type BBox, type Pt } from '../geometry/vec'
-import { archPath, dimGeometry, doorSwing, sliderLeaves, windowLines } from '../render2d/draw'
+import { dimGeometry, doorSwing, sliderLeaves, windowLines } from '../render2d/draw'
 import { placeLabel } from '../render2d/labels'
 
 export interface PrimPoly {
@@ -232,19 +232,13 @@ export function buildSheet(
       }
       continue
     }
-    if (op.type === 'arch') {
-      const d = archPath(op)
-      const pts = d
-        .slice(1)
-        .split('L')
-        .map((s) => {
-          const [x, y] = s.split(',').map(Number)
-          return { x, y }
-        })
-      p.push({ t: 'poly', layer: 'DOORS', rings: [pts], closed: false, stroke: ACCENT, width: 42, dash: [140, 110] })
-      continue
-    }
+    // an open threshold has nothing in it: the dashed room line below is enough
+    if (op.type === 'threshold') continue
     const n = { x: -op.dir.y * 95, y: op.dir.x * 95 }
+    // an arch is an opening with no leaves (the pod portals): its span, then the jambs
+    if (op.type === 'arch') {
+      p.push({ t: 'poly', layer: 'DOORS', rings: [[op.p1, op.p2]], closed: false, stroke: ACCENT, width: 30 })
+    }
     for (const q of [op.p1, op.p2]) {
       p.push({
         t: 'poly',
@@ -255,6 +249,12 @@ export function buildSheet(
         width: 38,
       })
     }
+  }
+
+  // ---- open thresholds: a dashed room line where two rooms meet with no wall
+  for (const w of model.walls) {
+    if (w.kind !== 'threshold') continue
+    p.push({ t: 'poly', layer: 'THRESHOLDS', rings: [[w.points[0], w.points[w.points.length - 1]]], closed: false, stroke: '#8E877C', width: 34, dash: [240, 180] })
   }
 
   // ---- curved glass walls

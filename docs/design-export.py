@@ -255,15 +255,18 @@ WALLS += [
 #     deck is glazed and cooled, so it is one space with the rooms); the ceiling
 #     still stops at them
 WALLS += [
-    w('G-FAMILY-DECK', [(4650, 2545), (7500, 2545)], 0, 'glazing',
-      [op('O-FAM-DECK', 'arch', 0, 2850, head=CEIL,
-          label='Family room open to the deck — no doors, floor to ceiling')], pane=True),
-    w('G-GREAT-DECK', [(9115, 2545), (15365, 2545)], 0, 'glazing',
-      [op('O-GREAT-DECK', 'arch', 0, 6250, head=CEIL,
-          label='Great room open to the deck — 6250 clear, no doors, floor to ceiling')], pane=True),
-    w('G-DEN-DECK', [(16980, 2545), (19830, 2545)], 0, 'glazing',
-      [op('O-DEN-DECK', 'arch', 0, 2850, head=CEIL,
-          label='Den open to the deck — no doors, floor to ceiling')], pane=True),
+    # Each is a THRESHOLD line (no solid, nothing drawn but a dashed room
+    # boundary) carrying one threshold opening the full length, which is what
+    # joins the rooms in the circulation graph. Nothing stands in it.
+    w('T-FAMILY-DECK', [(4650, 2545), (7500, 2545)], 0, 'threshold',
+      [op('O-FAM-DECK', 'threshold', 0, 2850, head=CEIL,
+          label='Family room open to the deck — no doors, floor to ceiling')]),
+    w('T-GREAT-DECK', [(9115, 2545), (15365, 2545)], 0, 'threshold',
+      [op('O-GREAT-DECK', 'threshold', 0, 6250, head=CEIL,
+          label='Great room open to the deck — 6250 clear, no doors, floor to ceiling')]),
+    w('T-DEN-DECK', [(16980, 2545), (19830, 2545)], 0, 'threshold',
+      [op('O-DEN-DECK', 'threshold', 0, 2850, head=CEIL,
+          label='Den open to the deck — no doors, floor to ceiling')]),
     w('W-DECK-W-STUB', [(4467, 2545), (4650, 2545)], 150, 'interior'),
     w('W-DECK-E-STUB', [(19830, 2545), (20013, 2545)], 150, 'interior'),
 ]
@@ -379,7 +382,7 @@ def pod_wall(P, portal, wid, label, y_end):
     a, b = s_at(portal[0]), s_at(portal[1])
     return w(wid, line, 150, 'curved-glass',
              [op(wid.replace('W-', 'PORTAL-'), 'arch', a, b, head=2400,
-                 label='Arched portal — a pair of curved glass leaves slide on the screen')],
+                 label='Arched portal — open, no doors (Karan\'s call)')],
              label=label, glass='tinted')
 
 

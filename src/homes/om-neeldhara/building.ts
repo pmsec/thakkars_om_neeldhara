@@ -351,33 +351,30 @@ export const building: BuildingData = {
       kind: 'interior',
     },
     {
-      id: 'G-FAMILY-DECK',
+      id: 'T-FAMILY-DECK',
       points: [{ x: 4650, y: 2545 }, { x: 7500, y: 2545 }],
       thickness: 0,
-      kind: 'glazing',
-      renderPane: true,
+      kind: 'threshold',
       openings: [
-        { id: 'O-FAM-DECK', type: 'arch', at: [0, 2850], head: 3505, label: 'Family room open to the deck — no doors, floor to ceiling' },
+        { id: 'O-FAM-DECK', type: 'threshold', at: [0, 2850], head: 3505, label: 'Family room open to the deck — no doors, floor to ceiling' },
       ],
     },
     {
-      id: 'G-GREAT-DECK',
+      id: 'T-GREAT-DECK',
       points: [{ x: 9115, y: 2545 }, { x: 15365, y: 2545 }],
       thickness: 0,
-      kind: 'glazing',
-      renderPane: true,
+      kind: 'threshold',
       openings: [
-        { id: 'O-GREAT-DECK', type: 'arch', at: [0, 6250], head: 3505, label: 'Great room open to the deck — 6250 clear, no doors, floor to ceiling' },
+        { id: 'O-GREAT-DECK', type: 'threshold', at: [0, 6250], head: 3505, label: 'Great room open to the deck — 6250 clear, no doors, floor to ceiling' },
       ],
     },
     {
-      id: 'G-DEN-DECK',
+      id: 'T-DEN-DECK',
       points: [{ x: 16980, y: 2545 }, { x: 19830, y: 2545 }],
       thickness: 0,
-      kind: 'glazing',
-      renderPane: true,
+      kind: 'threshold',
       openings: [
-        { id: 'O-DEN-DECK', type: 'arch', at: [0, 2850], head: 3505, label: 'Den open to the deck — no doors, floor to ceiling' },
+        { id: 'O-DEN-DECK', type: 'threshold', at: [0, 2850], head: 3505, label: 'Den open to the deck — no doors, floor to ceiling' },
       ],
     },
     {
@@ -545,7 +542,7 @@ export const building: BuildingData = {
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
-        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [2155.254, 2978.772], head: 2400, label: 'Arched portal — a pair of curved glass leaves slide on the screen' },
+        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [2155.254, 2978.772], head: 2400, label: "Arched portal — open, no doors (Karan's call)" },
       ],
       label: 'Family pod — curved glass screen',
     },
@@ -591,7 +588,7 @@ export const building: BuildingData = {
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
-        { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2400, label: 'Arched portal — a pair of curved glass leaves slide on the screen' },
+        { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2400, label: "Arched portal — open, no doors (Karan's call)" },
       ],
       label: 'Den pod — curved glass screen, wood dado below',
     },

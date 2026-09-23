@@ -71,7 +71,7 @@ function chain(
 export function buildDimensions(model: BuiltModel): DimChain[] {
   const bb = model.envelopeBBox
   // Deck band / main body / east bay divisions, read off the fabric.
-  const deckLine = wallY(model, 'G-GREAT-DECK') // y = 2545, the deck glass line
+  const deckLine = wallY(model, 'T-GREAT-DECK') // y = 2545, the deck glass line
   const bodyLine = wallY(model, 'W-HELP-N') // y = 8462.5, the body's south line
 
   const out: DimChain[] = []

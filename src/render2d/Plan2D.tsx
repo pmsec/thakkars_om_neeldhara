@@ -16,7 +16,6 @@ import { area as polyArea, dist, perimeter, pointInPolygon, type Poly, type Pt }
 import { useStore } from '../ui/store'
 import underlayUrl from '../assets/builder-original-plan.jpg'
 import {
-  archPath,
   buildSnapIndex,
   chainLength,
   curvePoints,
@@ -526,16 +525,21 @@ function OpeningLayer(): React.ReactElement {
             </g>
           )
         }
+        // an open threshold has nothing in it: the dashed room line is enough
+        if (op.type === 'threshold') return null
+        // an arch is an opening with no leaves (the pod portals): its span and jambs
+        const n = { x: -op.dir.y * 95, y: op.dir.x * 95 }
         if (op.type === 'arch') {
           return (
             <g key={op.id}>
-              <path d={archPath(op)} fill="none" stroke="var(--accent)" strokeWidth={42} strokeDasharray="140 110" />
               <line x1={op.p1.x} y1={op.p1.y} x2={op.p2.x} y2={op.p2.y} stroke="var(--accent)" strokeWidth={30} opacity={0.5} />
+              {[op.p1, op.p2].map((p, i) => (
+                <line key={i} x1={p.x - n.x} y1={p.y - n.y} x2={p.x + n.x} y2={p.y + n.y} stroke="var(--ink)" strokeWidth={38} />
+              ))}
             </g>
           )
         }
         // Cased opening: jamb ticks.
-        const n = { x: -op.dir.y * 95, y: op.dir.x * 95 }
         return (
           <g key={op.id}>
             {[op.p1, op.p2].map((p, i) => (

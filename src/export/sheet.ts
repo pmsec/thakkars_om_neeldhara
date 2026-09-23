@@ -286,7 +286,11 @@ export function buildSheet(
       const lab = placeLabel(room, o.roundToInch ? 1 : 16)
       if (!lab) continue
       // The CAD-fabric export keeps room names for orientation but drops the metrics.
-      const lines = o.fabricOnly ? [] : lab.lines
+      // On the print every room carries its sizes (Karan's call): a label that
+      // had to drop them for want of space gets them back at the smallest
+      // legible size, even if they run a little past a small room's wall
+      const lines = o.fabricOnly ? [] : lab.lines.some((l) => l.includes('×')) ? lab.lines
+        : [`${ft(room.width)} × ${ft(room.depth)}`, `${sqFt(room.area).toFixed(1)} sq ft`, ...lab.lines]
       const rows = lab.name.length + lines.length
       const top = -((rows - 1) * lab.size * 0.6)
       const layer = o.fabricOnly ? 'ROOM-NAMES' : 'LABELS'

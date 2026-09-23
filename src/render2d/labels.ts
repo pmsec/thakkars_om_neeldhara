@@ -90,17 +90,30 @@ export function placeLabel(room: Room, precision: InchPrecision): PlacedLabel | 
   const across = rotation === 0 ? box.h : box.w
 
   const name = room.name.toUpperCase()
-  const dims = `${Math.round(room.width)} × ${Math.round(room.depth)} mm · ${formatFeetInches(room.width, precision)} × ${formatFeetInches(room.depth, precision)}`
+  const mmDims = `${Math.round(room.width)} × ${Math.round(room.depth)} mm`
+  const ftDims = `${formatFeetInches(room.width, precision)} × ${formatFeetInches(room.depth, precision)}`
+  const dims = `${mmDims} · ${ftDims}`
   const areaLine = formatArea(room.area)
 
-  // In order of preference: name + both subtitles, name + area, name alone, then the
-  // name wrapped over two lines. Take the first that fits at a comfortable size; if
-  // none does, take whichever of them came out largest, down to a legibility floor.
+  // In order of preference: name + both subtitles on one line, then the same as
+  // three short lines (a narrow room like a bath takes those where the long
+  // line would not fit), then the feet alone, then the area alone, then the
+  // name, then the name wrapped. The sizes come before the area on purpose: a
+  // room with only one subtitle's worth of space shows what it measures
+  // (Karan's call - the print had suites and baths with no dimensions). Take
+  // the first that fits at a comfortable size; if none does, take whichever
+  // came out largest, down to a legibility floor.
+  const wrapped = wrap(name, Math.ceil(name.length / 2))
   const attempts: Array<{ nameLines: string[]; lines: string[] }> = [
     { nameLines: [name], lines: [dims, areaLine] },
+    { nameLines: [name], lines: [mmDims, ftDims, areaLine] },
+    { nameLines: wrapped, lines: [mmDims, ftDims, areaLine] },
+    { nameLines: [name], lines: [ftDims, areaLine] },
+    { nameLines: wrapped, lines: [ftDims, areaLine] },
+    { nameLines: [name], lines: [ftDims] },
     { nameLines: [name], lines: [areaLine] },
     { nameLines: [name], lines: [] },
-    { nameLines: wrap(name, Math.ceil(name.length / 2)), lines: [] },
+    { nameLines: wrapped, lines: [] },
   ]
 
   const sized = attempts.map((a) => {
@@ -116,7 +129,9 @@ export function placeLabel(room: Room, precision: InchPrecision): PlacedLabel | 
     return { ...a, size: Math.min(widthLimited, heightLimited, room.area > 3e7 ? 460 : 320) }
   })
 
-  const comfortable = sized.find((a) => a.size >= 150)
+  // a label that carries the room's sizes wins at a slightly smaller type size
+  // than a bare name would need: the sizes are the point of the print
+  const comfortable = sized.find((a) => a.size >= (a.lines.length ? 110 : 150))
   if (comfortable) {
     return { at, rotation, name: comfortable.nameLines, lines: comfortable.lines, size: comfortable.size }
   }

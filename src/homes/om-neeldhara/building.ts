@@ -94,7 +94,7 @@ export const building: BuildingData = {
       thickness: 125,
       kind: 'interior',
       openings: [
-        { id: 'SL-P-SUITE', type: 'slider', at: [2825, 4600], head: 2400, label: 'Sliding partition — suite to family room' },
+        { id: 'SL-P-SUITE', type: 'slider', at: [2325, 4600], head: 2400, label: 'Sliding partition — suite to family room' },
       ],
     },
     {

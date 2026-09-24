@@ -102,7 +102,8 @@ describe('2D↔3D fidelity', () => {
     expect(furniture.filter((f) => f.kind === 'planter').length, 'planters').toBeGreaterThanOrEqual(2)
     expect(furniture.find((f) => f.label.includes('drum kit')), 'the drum kit').toBeDefined()
     expect(fixtures.filter((f) => f.label?.includes('cabinet')).length, 'bath wall cabinets').toBe(2)
-    expect(fixtures.filter((f) => f.label?.includes('shelves')).length, 'bath shelf units').toBe(2)
+    // Karan's only: the parents' bath sits on the builder's toilet 01 with the shower on its pod wall, so it has no shelf unit
+    expect(fixtures.filter((f) => f.label?.includes('shelves')).length, 'bath shelf units').toBe(1)
     const vans = fixtures.filter((f) => f.id.endsWith('-VAN'))
     for (const v of vans) expect(v.bowl, `${v.id} basin bowl`).toBeDefined()
   })

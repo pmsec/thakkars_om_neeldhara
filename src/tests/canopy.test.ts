@@ -147,7 +147,7 @@ describe('the bellied glass', () => {
 describe('the bronze glass walls', () => {
   it("the parents' dressing partition and both pod screens are tinted glass", () => {
     const tinted = building.walls.filter((w) => w.glass === 'tinted').map((w) => w.id).sort()
-    expect(tinted).toEqual(['W-CURVE-KARAN', 'W-CURVE-PARENTS', 'W-P-DRESS'])
+    expect(tinted).toEqual(['W-CURVE-KARAN', 'W-CURVE-PARENTS', 'W-P-DRESS', 'W-P-DRESS-2'])
   })
 
   it("the parents' dressing partition is tinted glass, with its sliding leaves left to the door states", () => {

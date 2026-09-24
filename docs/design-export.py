@@ -134,33 +134,32 @@ WALLS = []
 # --- suite / family partitions, bath walls: NEW_WALLS carried over verbatim,
 # with ids and opening types assigned by what each one is.
 WALLS += [
-    # The parents' cubicle: the sweep is 1600 further north than Karan's, the
-    # straight west wall carries two doors — the parents' at its top, into the
-    # north half, and the grandmother's lower down, into hers — and a folding
-    # wooden divider splits the cubicle at 7150-7250.
-    # The west wall JOGS on the divider's line: the parents' tail at 2400 down
-    # to the divider's south face, a short return along that line, and the
-    # grandmother's tail 393 further east, so her half is 5'-0" clear and the
-    # wall bed's foot has a way past it to her door.
-    w('W-P-BATH-W', [(2400, D.MB_YW), (2400, D.MB_DIV[1])], 150, 'interior',
+    # BOTH OF THE WEST WING'S BATHS ARE ON THE BUILDER'S FOOTPRINTS: the
+    # parents' on his M.TOILET 01 at the north end of the strip (2875-4405 x
+    # 1350-3780, backing on to the void that carries its stacks), the
+    # grandmother's on M.TOILET 02 at the south end (7115-9545).  Each has
+    # its arch on the entry side — theirs at the south, hers at the north —
+    # and the one cubicle with the folding divider is gone.  The parents'
+    # tail runs from their arch's foot NORTH to the void wall; offsets on it
+    # are measured from the foot, the way the other two doors are.
+    # runs to the void wall's CENTRELINE at 1275, so the planar graph closes
+    w('W-P-BATH-W', [(D.MB_XW - 75, D.MB_YW), (D.MB_XW - 75, 1275)], 150, 'interior',
       [op('D-P-BATH', 'door', D.MB_DOOR_P[0], D.MB_DOOR_P[1],
-          label="Parents' bath door — from the bed zone")]),
-    w('W-P-BATH-JOG', [(D.MB_XW - D.T_MB, D.MB_DIV_MID), (D.MB_XW_G - 75, D.MB_DIV_MID)],
-      D.MB_DIV[1] - D.MB_DIV[0], 'interior', [],
-      label='The jog', notes="On the divider's line: the parents' tail across to the grandmother's."),
-    w('W-G-BATH-W', [(D.MB_XW_G - 75, D.MB_DIV[0]), (D.MB_XW_G - 75, 9695)], 150, 'interior',
+          label="Parents' bath door — from the bed zone, hard against the arch")]),
+    w('W-G-BATH-W', [(D.MB_XW - 75, D.MB_YW_G), (D.MB_XW - 75, 9695)], 150, 'interior',
       [op('D-G-BATH', 'door', D.MB_DOOR_G[0], D.MB_DOOR_G[1],
           label="Grandmother's bath door — from her zone")]),
-    w('W-P-BATH-DIV', [(D.MB_XW_G - 75, D.MB_DIV_MID), (4467, D.MB_DIV_MID)], 100, 'partition',
-      [op('SL-P-BATH-DIV', 'slider', 75, D.MB_XE - (D.MB_XW_G - 75), head=2100,
-          label='Folding wooden divider — four leaves, folds back to make one bath')],
-      label="Bath divider", notes='Parents’ half north of it, grandmother’s south.'),
     w('W-K-BATH-E', [(22080, 6715), (22080, 9695)], 150, 'interior',
       [op('D-K-BATH', 'door', 1080, 1880, label="Karan's bath door")]),
-    w('W-P-BATH-E', [(4467, D.BATH_N), (4467, 9695)], 150, 'interior'),
+    # From the glass line south: the main duct's open end and then the
+    # grandmother's bath's east wall, the pan on it and the stack behind.
+    w('W-P-BATH-E', [(4467, D.SCR_S), (4467, 9695)], 150, 'interior'),
     w('W-K-BATH-W', [(20013, 6650), (20013, 9695)], 150, 'interior'),
-    w('W-P-SUITE-E', [(4467, 1275), (4467, D.BATH_N)], 125, 'interior',
-      [op('SL-P-SUITE', 'slider', 1345, D.BATH_N - 475 - 1275, head=2400,
+    # The parents' pod partition, column to glass line; toilet 01 backs on to
+    # its top, and the slider is the stretch between the arch cupboard and
+    # the glass — SL_P.
+    w('W-P-SUITE-E', [(4467, 1275), (4467, D.SCR_S)], 125, 'interior',
+      [op('SL-P-SUITE', 'slider', D.SL_P[0] - 1275, D.SL_P[1] - 1275, head=2400,
           label='Sliding partition — suite to family room')]),
     w('W-K-SUITE-W', [(20013, 1275), (20013, 6650)], 125, 'interior',
       [op('SL-K-SUITE', 'slider', 1345, 4900, head=2400,
@@ -184,8 +183,10 @@ WALLS += [
     w('W-BAY-S', [(17505, 9545), (20013, 9545)], 150, 'interior',
       notes='Closes the suite bay off the store zone.'),
     w('W-KIT-HATCH', [(6900, 8462.5), (8725, 8462.5)], 125, 'interior',
-      [op('O-HATCH', 'window', 0, 1100, head=2100, sill=900,
-          label='Serving hatch — kitchen to family room')]),
+      [op('D-KIT', 'slider', 0, 800, head=2100,
+          label='Kitchen door — one 800 leaf of tinted glass, parks west on the family-room face across the duct enclosure'),
+       op('O-HATCH', 'window', 1000, 1700, head=2100, sill=1050,
+          label='Serving hatch — 700 over the sink, kitchen to family room')]),
     w('W-KIT-N', [(8600, 7862.5), (11450, 7862.5)], 125, 'interior',
       notes='Extended past the drum face so it dies INTO the arc.'),
     w('W-KIT-NW', [(8662.5, 7862.5), (8662.5, 8462.5)], 125, 'interior'),
@@ -278,6 +279,10 @@ WALLS += [
       [op('SL-P-DRESS', 'slider', 150, 3000, head=2100,
           label='Tinted glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line')],
       label="Parents' dressing partition", glass='tinted'),
+    # the same line carried on to the pod wall as a FIXED pane, now that the
+    # cubicle it used to stop at is gone
+    w('W-P-DRESS-2', [(2400, 5935), (4467, 5935)], 120, 'partition', [],
+      label="Parents' dressing partition — fixed pane to the pod wall", glass='tinted'),
     # Karan's side has NO partition on this line: his suite runs from the terrace
     # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on
     # it), and the sheet draws nothing at 5935. The mirrored copy that used to be
@@ -305,19 +310,24 @@ def sweep_centreline(quads, ext=140.0):
 
 def _sweep_line(yw, ye):
     """The sweep's centreline with its two feet snapped on to the bath
-    walls' centrelines: the west foot to the top of the west wall at
-    (2400, yw), the east to the east wall at (4467, ye)."""
+    walls' centrelines: the west foot to the end of the west wall at
+    (MB_XW - 75, yw), the east to the pod wall at (4467, ye) — in whichever
+    frame is current."""
+    xw = D.MB_XW - D.T_MB / 2
     line = sweep_centreline(R.mb_wall(), ext=0.0)
-    return ([(2400, yw)] + line + [(4467, ye)]
+    return ([(xw, yw)] + line + [(4467, ye)]
             if line[0][0] < line[-1][0]
-            else [(4467, ye)] + line + [(2400, yw)])
+            else [(4467, ye)] + line + [(xw, yw)])
 
 
-# The two sweeps are NOT mirrors: the parents' crown is 1600 further north
-# than Karan's. Each is taken from the CAD in its own frame.
+# The three sweeps are NOT mirrors: the parents' is turned over (arch at the
+# south end of their bath), the grandmother's is the usual way up at her
+# north end, and Karan's is as first drawn. Each is taken in its own frame.
 mb_line = _sweep_line(D.MB_YW, D.BATH_N)
 with R.karan():
     mb_line_k = [(mx(x), y) for x, y in _sweep_line(D.MB_YW, D.BATH_N)]
+with R.gm():
+    mb_line_g = _sweep_line(D.MB_YW, D.BATH_N)
 mb_len = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(mb_line, mb_line[1:]))
 # The sweeps are FULL curves: the sheet takes nothing out of them. Each bath is
 # entered through the door in its straight west (parents') / east (Karan's)
@@ -327,6 +337,8 @@ WALLS += [
       label="Parents' bath — arched sweep"),
     w('W-K-BATH-ARCH', mb_line_k, 230, 'interior', [],
       label="Karan's bath — arched sweep"),
+    w('W-G-BATH-ARCH', mb_line_g, 230, 'interior', [],
+      label="Grandmother's bath — arched sweep"),
 ]
 
 wcq = R.wc_wall()
@@ -472,18 +484,18 @@ ROOMS = [
 
     ('R-P-SUITE', 'Master suite — parents', (1500, 3500), 'habitable', 'parents', True,
      'Oak plank', 'Bed zone north of the tinted-glass partition; opens full-width to the '
-     'terrace. The bath’s arch stands in its south-east corner with a full-height '
-     'cupboard curled round it; the study desk is back in the north-east corner.'),
+     'terrace. The bath stands in the north-east corner on the builder’s toilet '
+     'footprint, its arch facing south with a full-height cupboard curled round it.'),
     ('R-P-DRESSING', "Parents' dressing", (1200, 8000), 'circulation', 'parents', True,
      'Oak plank', 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — '
      'behind a partition of brown tinted glass end to end, three bypass leaves that stack into a third of it.'),
-    ('R-P-BATH', "Parents' bath", (3550, 5700), 'wet', 'parents', True,
-     'Stone', 'The north half of the cubicle, under the arch: curved vanity, WC on the '
-     'duct wall, 900 walk-in shower; its own door from the bed zone. The folding '
-     'divider on its south side opens it into the grandmother’s bath.'),
-    ('R-G-BATH', "Grandmother's bath", (3350, 8300), 'wet', 'parents', True,
-     'Stone', 'The south half of the cubicle, off her zone: WC, walk-in shower, her own '
-     'basin — not shared with the parents. One bath with theirs when the divider is folded.'),
+    ('R-P-BATH', "Parents' bath", (3640, 2780), 'wet', 'parents', True,
+     'Stone', 'The builder’s M.TOILET 01, 5’-0” x 8’-0”, with an arch added at its south '
+     'end: 900 walk-in shower on the duct wall, WC on the pod wall, the curved vanity '
+     'in the arch; its own door from the bed zone.'),
+    ('R-G-BATH', "Grandmother's bath", (3640, 8330), 'wet', 'parents', True,
+     'Stone', 'The builder’s M.TOILET 02, 5’-0” x 8’-0”, with an arch added at its north '
+     'end: WC, walk-in shower, her own basin — not shared with the parents.'),
     ('R-K-SUITE', 'Master suite — Karan', (mx(1500), 3500), 'habitable', 'karan', True,
      'Oak plank', 'The king bed, headboard window-jamb to window-jamb; the dressing '
      'zone south of the screen, with two hanging wardrobes and the dresser.'),
@@ -559,13 +571,13 @@ PUB_G_BATH = _sheet_sqft(_POLY_ROOMS[("GRANDMOTHER'S BATH", '')])
 STACK_POS = {}
 STACKS = [
     ('STK-P-BATH', "Parents' bath stack", 'R-P-BATH',
-     'At the centroid of this bath’s plumbed fixtures, on the main duct; confirm against the sanctioned plumbing drawings.'),
+     'At the centroid of this bath’s plumbed fixtures; the stack is in the builder’s toilet void north of the bath, reached through his 750 opening — confirm against the sanctioned plumbing drawings.'),
     ('STK-K-BATH', "Karan's bath stack", 'R-K-BATH',
      'At the centroid of his bath’s plumbed fixtures, on the east main duct.'),
     ('STK-GUEST', 'Guest WC stack', 'R-GUEST-BATH',
      'On the builder’s common-toilet zone beside the secondary duct.'),
     ('STK-G-BATH', "Grandmother's bath stack", 'R-G-BATH',
-     'The same main duct as the parents’ bath, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.'),
+     'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.'),
     ('STK-KITCHEN', 'Kitchen stack', 'R-KITCHEN',
      'At the sink and dishwasher run.'),
 ]
@@ -881,7 +893,7 @@ def emit_fixtures():
         cx, cy = (a + c) / 2, (b + d) / 2
         if base == 'wc':
             room, stack = (('R-GUEST-BATH', 'STK-GUEST') if 15000 < cx < 18500
-                           else ('R-P-BATH', 'STK-P-BATH') if cx < M and cy < D.MB_DIV[0]
+                           else ('R-P-BATH', 'STK-P-BATH') if cx < M and cy < D.MB_MID
                            else ('R-G-BATH', 'STK-G-BATH') if cx < M
                            else ('R-K-BATH', 'STK-K-BATH'))
             add(f'FX-WC-{len(fx)}', 'wc', cx, cy, c - a, d - b, room, stack, 'WC')
@@ -891,13 +903,13 @@ def emit_fixtures():
                 'STK-G-BATH', f'Basin, {c - a:.0f} × {d - b:.0f}')
         elif base in ('seat', 'grab'):
             # her fold-down seat and grab bars: fittings on the wall, no stack
-            room = ('R-G-BATH' if cx < M and cy >= D.MB_DIV[0] else
+            room = ('R-G-BATH' if cx < M and cy >= D.MB_MID else
                     'R-P-BATH' if cx < M else 'R-K-BATH')
             add(f'FX-{base.upper()}-{len(fx)}', base, cx, cy, c - a, d - b, room,
                 None, (lab.split('·')[0].strip() if lab else base))
         elif base == 'shower':
             room, stack = (('R-GUEST-BATH', 'STK-GUEST') if 15000 < cx < 18500
-                           else ('R-P-BATH', 'STK-P-BATH') if cx < M and cy < D.MB_DIV[0]
+                           else ('R-P-BATH', 'STK-P-BATH') if cx < M and cy < D.MB_MID
                            else ('R-G-BATH', 'STK-G-BATH') if cx < M
                            else ('R-K-BATH', 'STK-K-BATH'))
             # the label says how it is closed: a screen, a curtain, or nothing
@@ -1011,9 +1023,6 @@ def emit_fixtures():
             add('FX-K-SHELF', 'counter', mx((a + c) / 2), (b + d) / 2, c - a, d - b,
                 'R-K-BATH', None, 'Bath shelves, duct wall',
                 poly=[(mx(q[0]), q[1]) for q in shl])
-    # the folding divider is a wall in the model (W-P-BATH-DIV), not a
-    # fixture; the sheet's prim for it is covered by that wall
-    EXPORTED.append(('W-P-BATH-DIV', (D.MB_XW_G, D.MB_DIV[0], D.MB_XE, D.MB_DIV[1]), None))
 
     # place each stack at its fixture group's centroid
     groups = {}
@@ -1085,7 +1094,7 @@ def room_for(cx, cy):
         return 'R-DECK'
     if cy < 5935 and cx < 4467:
         return 'R-P-SUITE'
-    if cy >= 5935 and cx < 2400:
+    if cy >= 5935 and cx < D.MB_XW - D.T_MB:
         return 'R-P-DRESSING'
     if cx < 4480 and cy >= 5935:
         return 'R-P-DRESSING'
@@ -1503,7 +1512,6 @@ def audit_coverage():
             take(fn.__name__, fn(), mirror=True)
     take('arch_console_par', R.arch_console_par())
     take('arch_console_par_flank', R.arch_console_par_flank())
-    take('bath_divider', R.bath_divider())
     take('gm_curtain_rail', R.gm_curtain_rail())
     take('help_rack', R.help_rack())
     with R.karan():

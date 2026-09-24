@@ -139,14 +139,20 @@ def bez_x(P, y):
 def pod_polys():
     """Family room, music den and great room as polygons."""
     ys = list(np.linspace(D.BODY_N, D.BODY_S, 160))
-    west_curve = [(bez_x(D.POD_W, y), y) for y in ys]
+    # the west screen stops on the kitchen's front: the family room and the
+    # great room both end there on that side
+    west_curve = [(bez_x(D.POD_W, y), y) for y in ys if y <= D.KIT_N] + [(bez_x(D.POD_W, D.KIT_N), D.KIT_N)]
     east_curve = [(bez_x(D.POD_E, y), y) for y in ys]
 
     # family room: pod bay to the curve, less the walled-off service duct
     fam = ([(D.POD_W0, D.BODY_N)] + west_curve
-           + [(bez_x(D.POD_W, D.BODY_S), D.BODY_S), (D.DUCT_W1 + 150, D.BODY_S),
-              (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
-    den = [(2 * D.MID - x, y) for x, y in fam]
+           + [(D.DUCT_W1 + 150, D.KIT_N), (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
+    # the den is the mirror of what the family room WAS — it still runs to
+    # the body's south wall on its side
+    fam_full = ([(D.POD_W0, D.BODY_N)] + [(bez_x(D.POD_W, y), y) for y in ys]
+                + [(bez_x(D.POD_W, D.BODY_S), D.BODY_S), (D.DUCT_W1 + 150, D.BODY_S),
+                   (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
+    den = [(2 * D.MID - x, y) for x, y in fam_full]
     # The great room's south edge is not one straight line any more: the
     # kitchen's bump takes a 300 bite out of its western half, from the pod
     # glazing across to the apse.  Nothing comes out of the eastern half — the
@@ -578,7 +584,7 @@ def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42, u_end=0.05):
 
 
 POD_CONSOLE_DEP = 300           # each face: from the glass face out
-POD_CONSOLE_H = 800
+POD_CONSOLE_H = 750             # desk height: one plane through the glass, both faces
 
 
 def pod_console_runs(side, face):
@@ -594,30 +600,30 @@ def pod_console_runs(side, face):
     py0, py1 = bez(P, t0)[1] - 100, bez(P, t1)[1] + 100
     # the south end: the family pod's face runs to its south wall, the great
     # room's stops 100 clear of the kitchen bump's north face at 7800
-    y_end = 7700 if (side == 'w' and face == 'great') else 8300
+    # the family pod and the great room both stop on the kitchen's front now
+    y_end = 7700 if side == 'w' else 8300
     runs = [(2800, py0), (py1, y_end)]
-    if side == 'e' and face == 'pod':
-        out = []
-        for a, b in runs:                             # cut out 4700-7100
-            if b <= 4700 or a >= 7100:
-                out.append((a, b))
-            else:
-                if a < 4700:
-                    out.append((a, 4700))
-                if b > 7100:
-                    out.append((7100, b))
-        runs = out
     return [(a, b) for a, b in runs if b - a > 300]
 
 
-def pod_consoles(side='w', face='great', dep=None, n=60):
+DESK = (4800, 7000)             # Karan's desk: the den-side run swells to 700 here
+
+
+def pod_console_dep(side, face, y):
+    """How deep the console is at y: 300, or 700 through the desk on the
+    den side, where the work console has become part of it."""
+    if side == 'e' and face == 'pod' and DESK[0] <= y <= DESK[1]:
+        return 700
+    return POD_CONSOLE_DEP
+
+
+def pod_consoles(side='w', face='great', dep=None, n=120):
     """The wood console along the pod's curved glass screen, on BOTH faces
     of it, so the glass stands on the console's centreline (Karan's call):
     one run in the pod, one in the great room, each `dep` from the glass
     face out, 800 high.  Each run is its own poly.  side 'w' is the family
     pod's screen, 'e' the den's — the den's is the mirror of the same
     curve, so it is struck in the west frame and mirrored here."""
-    dep = POD_CONSOLE_DEP if dep is None else dep
     P = D.POD_W
     h = 75                                            # the screen's half thickness
     sgn = 1 if face == 'great' else -1                # great room is east of the west curve
@@ -632,8 +638,9 @@ def pod_consoles(side='w', face='great', dep=None, n=60):
             tx, ty = x1 - x0, y1 - y0
             m = math.hypot(tx, ty) or 1.0
             nx, ny = ty / m, -tx / m                  # to the east of a southward tangent
+            d = pod_console_dep(side, face, y) if dep is None else dep
             inner.append((x + sgn * nx * h, y + sgn * ny * h))
-            outer.append((x + sgn * nx * (h + dep), y + sgn * ny * (h + dep)))
+            outer.append((x + sgn * nx * (h + d), y + sgn * ny * (h + d)))
         poly = inner + list(reversed(outer))
         if side == 'e':
             poly = [(D.M(x), y) for x, y in reversed(poly)]
@@ -901,24 +908,23 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     step, along the upper leg, round the apse, back west along the wall.
     """
     kw = 7900                       # east of the door's pier: the run starts under the hatch, and the door lands on clear floor
-    y0, y1 = D.BAY_N, D.KIT_S       # the two wall faces the counter backs on
-    xr = D.KIT_BUMP_W + 125         # 8725 — the return's face, the inside corner
-    xc = xr + dep                   # 9325 — the front edge's corner
+    # ONE STRAIGHT RUN NOW: the front is on one line from the duct cheek to
+    # the apse, so there is no step and no blind corner — the counter backs
+    # on KIT_S the whole way and ends on the apse like before.
+    y1 = D.KIT_S
 
     def arc(cx, cy, r, t0, t1, n=18):
         return [(cx + math.cos(math.radians(t)) * r,
                  cy + math.sin(math.radians(t)) * r)
                 for t in np.linspace(t0, t1, n)]
 
-    pts = [(kw + r_ease, y0 + dep), (xc - r_end, y0 + dep)]
-    pts += arc(xc - r_end, y0 + dep - r_end, r_end, 90, 0)      # the step's nose
-    pts += [(xc, y1 + dep), (D.gal_cross(y1 + dep), y1 + dep)]
+    pts = [(kw + r_ease, y1 + dep), (D.gal_cross(y1 + dep), y1 + dep)]
     pts += _gal_arc(D.GAL_RO, D._ang(D.gal_cross(y1 + dep), y1 + dep),
                     D._ang(D.gal_cross(y1), y1), 24)            # the apse end
-    pts += [(xr, y1), (xr, y0), (kw + r_ease, y0)]
-    pts += arc(kw + r_ease, y0 + r_ease, r_ease, 270, 180)      # west end, eased
-    pts += [(kw, y0 + dep - r_ease)]
-    pts += arc(kw + r_ease, y0 + dep - r_ease, r_ease, 180, 90)
+    pts += [(kw + r_ease, y1)]
+    pts += arc(kw + r_ease, y1 + r_ease, r_ease, 270, 180)      # west end, eased
+    pts += [(kw, y1 + dep - r_ease)]
+    pts += arc(kw + r_ease, y1 + dep - r_ease, r_ease, 180, 90)
     return [('poly', pts, 'solid')]
 
 
@@ -989,6 +995,8 @@ def magic_corner():
     The floor they swing into is clear: the lower leg's worktop stops at
     X 9325, so X 9325-9825 / Y 8525-9125 is open.
     """
+    return []                     # no corner to turn: the front is one straight run now
+
     BX0, BX1 = 8725, 9325           # the blind carcass
     DX0, DX1 = 9325, 9825           # the unit whose door is the only way in
     Y0, Y1 = D.KIT_S, D.BAY_N       # 7925 / 8525 — the upper leg's two faces
@@ -1813,10 +1821,12 @@ def lobby_polys():
 
     # the kitchen now includes the builder's dry balcony — one room, one area,
     # and since this round it steps north over its eastern half as well
-    kitchen = ([(kw, D.BAY_N), (D.KIT_BUMP_W + 125, D.BAY_N),
-                (D.KIT_BUMP_W + 125, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._A0)
+    # and since this round its whole front is on the bump's line, duct cheek
+    # to apse, with the niche in front of the secondary duct inside it
+    kitchen = ([(D.DUCT_W1 + 150, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._A0)
                + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
-                  (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
+                  (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470),
+                  (kw, 8400), (D.DUCT_W1 + 150, 8400)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
                + [(ie, COL_N), (ie, D.BAY_S)])
 

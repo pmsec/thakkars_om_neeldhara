@@ -445,9 +445,13 @@ NEW_WALLS = [
     #     at the duct end, one tinted-glass leaf that parks west on the
     #     family-room face across the duct enclosure, a 200 pier, then a 700
     #     hatch over the sink with its sill at 1050.
-    (6900, 8462.5, KIT_BUMP_W + 125, 8462.5, 125, [(0, 800), (1000, 1700)]),
-    (KIT_BUMP_W + 62.5, KIT_N, KIT_BUMP_W + 62.5, BAY_N, 125, []),
-    (KIT_BUMP_W, KIT_N + 62.5, _BRK_K, KIT_N + 62.5, 125, []),
+    #     THE WHOLE FRONT IS ON ONE LINE NOW (Karan's call): the 600 step the
+    #     eastern half already took is carried west to the pod's duct cheek,
+    #     so the kitchen's north wall runs from 5630 to the apse at KIT_N, the
+    #     door and the hatch in it where they were, and the 1270 x 475 in front
+    #     of the secondary duct becomes a kitchen niche.
+    (DUCT_W1 + 75, KIT_N + 62.5, _BRK_K, KIT_N + 62.5, 125,
+     [(6900 - (DUCT_W1 + 75), 7700 - (DUCT_W1 + 75)), (7900 - (DUCT_W1 + 75), 8600 - (DUCT_W1 + 75))]),
     # Help's room has no door on to the great room any more — it is reached
     # from the entry gallery, and through it the WC.  The one opening left in
     # this run is the guest WC's.  The apse springs at 15000 and the pod glazing
@@ -1098,7 +1102,7 @@ _ONCE = [
     # end and has come out.  Both ends of the table stay clear, and that is what
     # lets you walk round them: the south end is the serving stance at the hatch,
     # 500 off the wall, and the north end is the run up to the sitting group.
-    ('dining-se', 6603, 5700, 7703, 7900,
+    ('dining-se', 6603, 5300, 7703, 7500,
      'superellipse 1100 x 2200  ·  six, seven with the north end chair'),
     # ------------------------------------------------- the deck: the two recliners
     # From the reference sheet: TWO 2-SEAT RECLINERS BACKING ON TO THE VOIDS,
@@ -1236,13 +1240,14 @@ _ONCE = [
     # end is struck off the apse.  This console floats along the glass with
     # neither end against anything, so both get the full half-width round and
     # it reads as a piece of the same drawing.  It costs 0.05 m2 of top.
-    ('counter-b', 15880, 4800, 16580, 7000,
-     "work console  ·  2200 x 700, back on the pod screen, both ends bullnosed"),
+    # THE WORK CONSOLE IS PART OF THE SCREEN CONSOLE NOW (Karan's call): the
+    # den-side run swells to 700 deep for the 2200 of the desk — see
+    # retrofit.pod_consoles.  The separate 'counter-b' piece is gone.
     # The screen faces EAST, because with the desk's back on the glass there is
     # only one side to sit at.  You work looking west, through the screen and
     # the pod glazing into the great room.  300 of the 700 goes to the monitor
     # and its foot; the 400 in front of it is the keyboard.
-    ('screen-w', 15920, 5150, 16220, 5830, "monitor  ·  27 inch, facing east"),
+    ('screen-w', 15990, 5150, 16290, 5830, "monitor  ·  27 inch, facing east"),
     ('swivel',   16620, 5190, 17220, 5790, "desk chair  ·  600, swivel"),
 
     # ------------------------------- Karan's pod: the two recliners
@@ -1290,11 +1295,11 @@ _ONCE = [
     # front on the line where the lower leg's carcass begins, so it can have no
     # door of its own.  A MAGIC CORNER serves it, drawn in
     # retrofit.magic_corner().  It is not a place for a sink or a hob.
-    ('sink',     8060, 8600, 8660, 9050,
+    ('sink',     8060, 8000, 8660, 8450,
      'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
-    ('shelves',  7900, 8525, 8600, 8600,
+    ('shelves',  7900, 7925, 8600, 8000,
      'serving hatch, 700 — over the sink, sill at 1050, opens into the parents pod'),
-    ('tint',     6100, 8330, 6900, 8390,
+    ('tint',     6100, 7730, 6900, 7790,
      'kitchen door  ·  one 800 leaf of tinted glass, shown parked west of the opening on the family-room face'),
     # --- the window run and the appliance corner, ONE UNBROKEN L
     # Three pieces with two 400 gaps between them, and neither gap was wanted:

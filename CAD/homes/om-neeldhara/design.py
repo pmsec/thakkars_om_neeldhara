@@ -1326,7 +1326,7 @@ _ONCE = [
     # front on the line where the lower leg's carcass begins, so it can have no
     # door of its own.  A MAGIC CORNER serves it, drawn in
     # retrofit.magic_corner().  It is not a place for a sink or a hob.
-    ('sink',     8060, 8000, 8660, 8450,
+    ('sink',     8810, 8000, 9410, 8450,
      'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
     ('shelves',  7900, 7925, 8600, 8000,
      'serving hatch, 700 — over the sink, sill at 1050, opens into the parents pod'),

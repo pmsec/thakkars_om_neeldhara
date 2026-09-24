@@ -2780,7 +2780,9 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const side = op.side ?? 1
       let n = { x: -d.y * side, y: d.x * side }
       // the open leaf must land inside a room, not in a wall or outside
-      const probe = { x: hingeAt.x + n.x * len * 0.6 + d.x * 40, y: hingeAt.y + n.y * len * 0.6 + d.y * 40 }
+      // probed well in from the hinge along the wall too: 40 off the jamb sat
+      // inside a return wall's thickness and flipped the kitchen door
+      const probe = { x: hingeAt.x + n.x * len * 0.6 + d.x * len * 0.4, y: hingeAt.y + n.y * len * 0.6 + d.y * len * 0.4 }
       if (!model.rooms.some((r) => pointInPolygon(probe, r.polygon))) n = { x: -n.x, y: -n.y }
       const dir = mode === 'open' ? n : d
       const H = Math.min((op.head ?? model.data.levels.doorHead) - 20, ceiling - 40)

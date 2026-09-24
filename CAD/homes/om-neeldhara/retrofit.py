@@ -577,6 +577,75 @@ def arch_console_par(dep=400, dep_end=250, n=140, grow=0.42, u_end=0.05):
     return [('poly', back + list(reversed(front)), 'solid')]
 
 
+POD_CONSOLE_DEP = 300           # each face: from the glass face out
+POD_CONSOLE_H = 800
+
+
+def pod_console_runs(side, face):
+    """Where the pod-screen console runs, as y ranges, for one screen ('w' or
+    'e') and one face ('pod' or 'great').
+
+    It runs the length of the curve, 2800 to just short of the south end,
+    and breaks for the arched portal (100 clear of each jamb).  On the den
+    side it also stops where Karan's work console already stands against
+    the glass — that piece carries the line there."""
+    P = D.POD_W if side == 'w' else D.POD_E
+    t0, t1 = D.POD_PORTAL_W if side == 'w' else D.POD_PORTAL_E
+    py0, py1 = bez(P, t0)[1] - 100, bez(P, t1)[1] + 100
+    # the south end: the family pod's face runs to its south wall, the great
+    # room's stops 100 clear of the kitchen bump's north face at 7800
+    y_end = 7700 if (side == 'w' and face == 'great') else 8300
+    runs = [(2800, py0), (py1, y_end)]
+    if side == 'e' and face == 'pod':
+        out = []
+        for a, b in runs:                             # cut out 4700-7100
+            if b <= 4700 or a >= 7100:
+                out.append((a, b))
+            else:
+                if a < 4700:
+                    out.append((a, 4700))
+                if b > 7100:
+                    out.append((7100, b))
+        runs = out
+    return [(a, b) for a, b in runs if b - a > 300]
+
+
+def pod_consoles(side='w', face='great', dep=None, n=60):
+    """The wood console along the pod's curved glass screen, on BOTH faces
+    of it, so the glass stands on the console's centreline (Karan's call):
+    one run in the pod, one in the great room, each `dep` from the glass
+    face out, 800 high.  Each run is its own poly.  side 'w' is the family
+    pod's screen, 'e' the den's — the den's is the mirror of the same
+    curve, so it is struck in the west frame and mirrored here."""
+    dep = POD_CONSOLE_DEP if dep is None else dep
+    P = D.POD_W
+    h = 75                                            # the screen's half thickness
+    sgn = 1 if face == 'great' else -1                # great room is east of the west curve
+    out = []
+    for a, b in pod_console_runs(side, face):
+        ys = np.linspace(a, b, n)
+        pts = [(bez_x(P, y), y) for y in ys]
+        inner, outer = [], []
+        for i, (x, y) in enumerate(pts):
+            x0, y0 = pts[max(0, i - 1)]
+            x1, y1 = pts[min(n - 1, i + 1)]
+            tx, ty = x1 - x0, y1 - y0
+            m = math.hypot(tx, ty) or 1.0
+            nx, ny = ty / m, -tx / m                  # to the east of a southward tangent
+            inner.append((x + sgn * nx * h, y + sgn * ny * h))
+            outer.append((x + sgn * nx * (h + dep), y + sgn * ny * (h + dep)))
+        poly = inner + list(reversed(outer))
+        if side == 'e':
+            poly = [(D.M(x), y) for x, y in reversed(poly)]
+        out.append(('poly', poly, 'solid'))
+    return out
+
+
+def pod_consoles_all():
+    return (pod_consoles('w', 'great') + pod_consoles('w', 'pod')
+            + pod_consoles('e', 'great') + pod_consoles('e', 'pod'))
+
+
 def arch_console_par_flank(dep=300, n=90, u0=0.05, u1=1.0):
     """The parents' console on the WEST FLANK of their bath's arch.
 

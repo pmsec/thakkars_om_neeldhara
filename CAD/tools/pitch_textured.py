@@ -302,6 +302,8 @@ def main():
         prim(p, shadow=False)
     for p in []:                        # the arch cupboard is gone
         prim(p)
+    for p in R.pod_consoles_all():        # the consoles both faces of the pod screens
+        prim(p)
     for p in R.arch_console_par_flank():  # and the console on the flank below it
         prim(p)
     for p in R.east(R.arch_console):

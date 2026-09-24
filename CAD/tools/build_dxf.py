@@ -290,6 +290,8 @@ def main():
         prim(p)
     for p in R.arch_console_par_flank():  # and the console on the flank below it
         prim(p)
+    for p in R.arch_planter_par():        # the tapering planter round the arch, pod wall to the console
+        prim(p)
     for p in R.east(R.arch_console):    # Karan's console — in his frame, mirrored
         prim(p)
     for p in R.suite_screen():                  # Karan's dressing screen

@@ -677,6 +677,29 @@ def arch_console_par_flank(dep=300, n=90, u0=0.05, u1=1.0):
     return [('poly', back + list(reversed(front)), 'solid')]
 
 
+def arch_planter_par(dep0=120, dep1=300, n=90, u_end=0.05):
+    """A TAPERING PLANTER round the outside of the parents' arch, from the pod
+    wall to where the flank console starts (Karan's call).  Struck as an
+    offset of the sweep's outer face: dep0 deep where it meets the pod wall,
+    easing to dep1 at the console's start so the two read as one run of
+    joinery, the console at 750 and the planter at 450.  Paintings with
+    picture lights hang on the curve above it (the app draws those)."""
+    h = D.T_MB / 2
+    u0 = mb_u_at_wall(-h)
+    us = np.linspace(u0, u_end, n)
+
+    def d(u):
+        t = (u - u0) / (u_end - u0)
+        return dep0 + (dep1 - dep0) * t * t * (3 - 2 * t)
+
+    back = [mb_pt(u, -h) for u in us]
+    front = [mb_pt(u, -h - d(u)) for u in us]
+    # square off on the pod wall: the first front point pushed on to X = MB_XE
+    fx, fy = front[0]
+    front[0] = (D.MB_XE, fy + (fx - D.MB_XE) * 0.0)
+    return [('poly', back + list(reversed(front)), 'green')]
+
+
 def _gm_corner(r, n=24):
     """The rounded north-west corner of the grandmother's bath at radius r
     about its centre, from the west tail (180 deg) round to the north wall

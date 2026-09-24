@@ -284,15 +284,13 @@ WALLS += [
 WALLS += [
     # CLEAR glass now, not brown (Karan's call); the line stops at 2400 and
     # nothing fixed carries it on to the pod wall
-    w('W-P-DRESS', [(-600, 5935), (2400, 5935)], 120, 'partition',
-      [op('SL-P-DRESS', 'slider', 150, 3000, head=CEIL,
-          label='Clear glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line')],
+    # ...and it runs the WHOLE divide now (Karan's call), west wall to pod
+    # wall: three 1639 leaves on a triple track close it end to end, and
+    # open they stack at the east end against the pod wall
+    w('W-P-DRESS', [(-600, 5935), (4467, 5935)], 120, 'partition',
+      [op('SL-P-DRESS', 'slider', 150, 5067, head=CEIL,
+          label='Clear glass end to end — three 1639 bypass leaves on a triple track; open they stack at the east end against the pod wall')],
       label="Parents' dressing partition", glass='clear'),
-    # the rest of the line to the pod wall is OPEN — a threshold, so the bed
-    # zone and the dressing zone stay two rooms with nothing drawn between
-    w('T-P-DRESS', [(2400, 5935), (4467, 5935)], 0, 'threshold',
-      [op('O-P-DRESS', 'threshold', 0, 2067, head=CEIL,
-          label='Open between the bed zone and the dressing zone — nothing on this line')]),
     # Karan's side has NO partition on this line: his suite runs from the terrace
     # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on
     # it), and the sheet draws nothing at 5935. The mirrored copy that used to be

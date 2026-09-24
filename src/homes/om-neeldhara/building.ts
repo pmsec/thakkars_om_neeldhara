@@ -368,23 +368,14 @@ export const building: BuildingData = {
     },
     {
       id: 'W-P-DRESS',
-      points: [{ x: -600, y: 5935 }, { x: 2400, y: 5935 }],
+      points: [{ x: -600, y: 5935 }, { x: 4467, y: 5935 }],
       thickness: 120,
       kind: 'partition',
       glass: 'clear',
       openings: [
-        { id: 'SL-P-DRESS', type: 'slider', at: [150, 3000], head: 3505, label: 'Clear glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line' },
+        { id: 'SL-P-DRESS', type: 'slider', at: [150, 5067], head: 3505, label: 'Clear glass end to end — three 1639 bypass leaves on a triple track; open they stack at the east end against the pod wall' },
       ],
       label: "Parents' dressing partition",
-    },
-    {
-      id: 'T-P-DRESS',
-      points: [{ x: 2400, y: 5935 }, { x: 4467, y: 5935 }],
-      thickness: 0,
-      kind: 'threshold',
-      openings: [
-        { id: 'O-P-DRESS', type: 'threshold', at: [0, 2067], head: 3505, label: 'Open between the bed zone and the dressing zone — nothing on this line' },
-      ],
     },
     {
       id: 'W-P-BATH-ARCH',

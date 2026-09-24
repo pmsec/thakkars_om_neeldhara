@@ -4270,7 +4270,9 @@ export function sweepArt(M: Mats, pieceRe = /arch console/i, roomId = 'R-K-SUITE
   const con = furniture.find((f) => pieceRe.test(f.label) && f.room === roomId && f.poly)
   const bath = model.roomById.get(bathId)
   if (!con?.poly || !bath) return null
-  const walls = model.walls.filter((w) => w.thickness >= 60 && w.points.length >= 2)
+  // only the curved walls (the sweeps): near the pod wall the nearest straight
+  // wall won, and the end panel wrapped through it on to the pod's face
+  const walls = model.walls.filter((w) => w.thickness >= 60 && w.points.length > 2)
   // the nearest wall centreline point to q, with that segment's outward normal
   // (away from the bath) and the wall's thickness
   const nearest = (q: { x: number; y: number }) => {
@@ -4302,8 +4304,20 @@ export function sweepArt(M: Mats, pieceRe = /arch console/i, roomId = 'R-K-SUITE
     if (run.length > best.length) best = run
   }
   if (best.length < 4) return null
-  // the arc of the console's back edge, each point moved on to the wall's face
-  const arc = best.map((i) => poly[i])
+  // the arc of the console's back edge, each point moved on to the wall's face -
+  // less any point that sits in a STRAIGHT wall's thickness (the planter's
+  // back lands on the pod wall's face, and a panel run through that corner
+  // folded a sliver of canvas into the wall)
+  const straight = model.walls.filter((w) => w.points.length === 2 && w.thickness >= 60)
+  const inStraight = (q: { x: number; y: number }): boolean => straight.some((w) => {
+    const a = w.points[0], b = w.points[1]
+    const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+    if (!L2) return false
+    const t = Math.max(0, Math.min(1, ((q.x - a.x) * (b.x - a.x) + (q.y - a.y) * (b.y - a.y)) / L2))
+    return Math.hypot(q.x - (a.x + t * (b.x - a.x)), q.y - (a.y + t * (b.y - a.y))) < w.thickness / 2 + 20
+  })
+  const arc = best.map((i) => poly[i]).filter((q) => !inStraight(q))
+  if (arc.length < 4) return null
   const acc = [0]
   for (let i = 1; i < arc.length; i++) acc.push(acc[i - 1] + Math.hypot(arc[i].x - arc[i - 1].x, arc[i].y - arc[i - 1].y))
   const total = acc[acc.length - 1]
@@ -4319,6 +4333,7 @@ export function sweepArt(M: Mats, pieceRe = /arch console/i, roomId = 'R-K-SUITE
     return { x: w.px + w.nx * (w.th / 2 + off), y: w.py + w.ny * (w.th / 2 + off) }
   }
   const g = new THREE.Group()
+  g.name = `sweep-art:${roomId}`
   const GAP = 70, MARGIN = 120
   const panelL = (total - 2 * MARGIN - 2 * GAP) / 3
   const ribbon = (d0: number, d1: number, base: number, top: number, off: number, mat: THREE.Material) => {
@@ -4661,6 +4676,7 @@ function entrySconces(M: Mats): THREE.Group | null {
  */
 function bathMirrors(M: Mats): THREE.Group {
   const g = new THREE.Group()
+  g.name = 'bath-mirrors'
   const walls = model.walls.filter((w) => w.thickness >= 60 && w.points.length >= 2)
   // distance from a point to the nearest wall centreline, and that wall's thickness
   const wallAt = (q: { x: number; y: number }): { d: number; th: number } => {
@@ -5434,6 +5450,10 @@ export function buildFixtures(M: Mats): THREE.Group {
         spout.rotation.y = -Math.atan2(uy, ux)
         spout.position.set((f.bowl.x + ux * (f.bowl.r - 10)) * S, (h + 40 + 200) * S, (f.bowl.y + uy * (f.bowl.r - 10)) * S)
         g.add(spout)
+        // a CURVED vanity (one with its drawn outline) gets its wrapping mirror
+        // from bathMirrors; this flat one, aimed from the room's centre, went
+        // clean through the parents' turned-over arch and stood out in the suite
+        if (f.poly && /vanity/i.test(f.label ?? '')) continue
         const mirW = Math.min(700, f.bowl.r * 3.4)
         const mir = new THREE.Group()
         mir.add(box(mirW + 60, 760, 20, M.trunk, 0, 0, 0))
@@ -6256,6 +6276,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       return true
     }
     applyCamHash()
+    ;(window as any).__omCamera = camera        // for the headless pixel probes
     window.addEventListener('hashchange', applyCamHash)
     orbit.update()
     const undoPageZoom = preventPageZoom(mount)

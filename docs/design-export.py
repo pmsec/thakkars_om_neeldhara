@@ -131,6 +131,27 @@ def op(id_, type_, a, b, head=2100, sill=None, label=None, extra=''):
 
 WALLS = []
 
+
+def _sl_p_from():
+    """Where the parents' pod slider starts: the y at which the arch band's
+    OUTER face (115 off the centreline, the band being 230 here) crosses the
+    pod wall's east face at 4530. The band runs on through the wall to its
+    far face, and the wall's own end must sit inside the band or its jamb
+    shows beside the arch as a bright sliver from the suite."""
+    u0 = R.mb_u_at_wall(0.0)
+    a, b = R.mb_pt(u0 + 0.08), R.mb_pt(u0)
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    L = math.hypot(dx, dy) or 1.0
+    ux, uy = dx / L, dy / L
+    nx, ny = -uy, ux                       # one normal; pick the one pointing south (outer, +y)
+    if ny < 0:
+        nx, ny = -nx, -ny
+    # outer face: c(t) + 115 n, with c(t) = b + t (ux, uy); solve x = 4530
+    t = (4530 - (b[0] + 115 * nx)) / ux
+    return round(b[1] + 115 * ny + t * uy)
+
+
+
 # --- suite / family partitions, bath walls: NEW_WALLS carried over verbatim,
 # with ids and opening types assigned by what each one is.
 WALLS += [
@@ -159,7 +180,7 @@ WALLS += [
     # its top, and the slider is the stretch between the arch cupboard and
     # the glass — SL_P.
     w('W-P-SUITE-E', [(4467, 1275), (4467, D.SCR_S)], 125, 'interior',
-      [op('SL-P-SUITE', 'slider', D.SL_P[0] - 1275, D.SL_P[1] - 1275, head=2400,
+      [op('SL-P-SUITE', 'slider', _sl_p_from() - 1275, D.SL_P[1] - 1275, head=2400,
           label='Sliding partition — suite to family room')]),
     w('W-K-SUITE-W', [(20013, 1275), (20013, 6650)], 125, 'interior',
       [op('SL-K-SUITE', 'slider', 1345, 4900, head=2400,
@@ -324,9 +345,28 @@ def _sweep_line(yw, ye):
     frame is current."""
     xw = D.MB_XW - D.T_MB / 2
     line = sweep_centreline(R.mb_wall(), ext=0.0)
-    return ([(xw, yw)] + line + [(4467, ye)]
-            if line[0][0] < line[-1][0]
-            else [(4467, ye)] + line + [(xw, yw)])
+    # the east foot runs ON through the pod wall to its far face (4530 + a
+    # little), not just to the centreline: the band is 230 and the pod wall
+    # 125, so cut at the centreline the band's end left the pod wall's own
+    # jamb showing beside the arch as a bright sliver from the suite
+    east = (4467, ye)
+    # the centreline's tangent where it meets the pod wall, from the sweep itself
+    u0 = R.mb_u_at_wall(0.0)
+    a, b = R.mb_pt(u0 + 0.08), R.mb_pt(u0)
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    k = (4560 - 4467) / dx if abs(dx) > 1e-6 else 0.0
+    foot = [east, (4560, ye + dy * k)]
+    pts = ([(xw, yw)] + line + foot
+           if line[0][0] < line[-1][0]
+           else list(reversed(foot)) + line + [(xw, yw)])
+    # no zero-length segments: the sweep's own foot lands on the wall's end
+    # point, and a repeated vertex gives the band a zero normal there, which
+    # pinches the band and breaks its triangulation
+    out = [pts[0]]
+    for q in pts[1:]:
+        if math.hypot(q[0] - out[-1][0], q[1] - out[-1][1]) > 0.5:
+            out.append(q)
+    return out
 
 
 # The three sweeps are NOT mirrors: the parents' is turned over (arch at the

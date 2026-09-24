@@ -706,6 +706,107 @@ function treeGroup(M: Mats, w: number, d: number, height: number): THREE.Group {
  * shadow gap under the top, and a long brass bar on every door. The wall
  * bed's cabinet is the same box with one blank panel and no bars.
  */
+/**
+ * The crockery closet in the family room's recess by the kitchen door: a
+ * full-height mid-century cabinet in walnut. Four tapered legs with brass
+ * ferrules, a floating carcass, solid doors below with round brass knobs, a
+ * glazed display in the middle with slim walnut frames and plates and bowls
+ * on light shelves, closed cupboards above, a shadow gap under the ceiling.
+ * Built with its front on local +z and turned to face away from the wall it
+ * backs on to.
+ */
+function crockeryCloset(f: FurnitureItem, M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const w = f.w, d = f.d
+  const cx = f.x + w / 2, cy = f.y + d / 2
+  const gaps = wallGaps(f)
+  const room = model.roomById.get(f.room)
+  const ddx = (room?.centroid.x ?? cx) - cx, ddy = (room?.centroid.y ?? cy) - cy
+  const toward = (s: 'N' | 'S' | 'E' | 'W'): number => (s === 'N' ? -ddy : s === 'S' ? ddy : s === 'E' ? ddx : -ddx)
+  const free = (['N', 'S', 'E', 'W'] as const).filter((s) => gaps[s] > 100)
+  const front = [...free].sort((a, b) => toward(b) - toward(a))[0] ?? 'N'
+  const alongX = front === 'E' || front === 'W'
+  const L = alongX ? d : w            // the face length
+  const D = alongX ? w : d            // the depth
+  const H = f.height
+  const walnut = M.walnut, light = M.teak, brass = M.brass
+  const LEG = 220
+  // legs: tapered, splayed a little, brass ferrules
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(18 * S, 26 * S, LEG * S, 10), walnut)
+    leg.position.set(sx * (L / 2 - 90) * S, (LEG / 2) * S, sz * (D / 2 - 90) * S)
+    leg.rotation.z = -sx * 0.06
+    leg.rotation.x = sz * 0.06
+    g.add(leg)
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(19 * S, 19 * S, 24 * S, 10), brass)
+    cap.position.set(sx * (L / 2 - 90 + 6) * S, 12 * S, sz * (D / 2 - 90 + 6) * S)
+    g.add(cap)
+  }
+  const top = H - 40                   // a shadow gap under the ceiling
+  const carcD = D - 20
+  // the carcass: back and sides in walnut, a lighter back panel inside the glazed part
+  g.add(box(L, top - LEG, carcD, walnut, 0, LEG + (top - LEG) / 2, -10))
+  const face = D / 2 - 10 + 1          // the door plane, just proud of the carcass
+  const lowTop = LEG + 780, midTop = lowTop + 1250
+  const rail = (h: number) => g.add(box(L, 24, 22, walnut, 0, h, face))
+  // lower: two solid doors with round brass knobs
+  for (const k of [-1, 1]) {
+    g.add(box(L / 2 - 6, lowTop - LEG - 8, 20, walnut, k * L / 4, (LEG + lowTop) / 2, face))
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(16 * S, 12, 10), brass)
+    knob.position.set((k * 40) * S, (LEG + 600) * S, (face + 22) * S)
+    g.add(knob)
+  }
+  rail(lowTop)
+  // middle: glazed display — a lighter back, three shelves, plates and bowls
+  const glassH = midTop - lowTop - 24
+  g.add(box(L - 40, glassH, 12, light, 0, (lowTop + midTop) / 2, -carcD / 2 + 12))
+  for (let i = 0; i < 3; i++) {
+    const sh = lowTop + 24 + (i + 1) * ((glassH - 24) / 3.4)
+    g.add(box(L - 48, 16, carcD - 40, light, 0, sh, -6))
+    // standing plates on a rail, a few bowls in front
+    const plates = Math.max(3, Math.floor((L - 160) / 110))
+    for (let pIdx = 0; pIdx < plates; pIdx++) {
+      const px = -(plates - 1) / 2 * 110 + pIdx * 110
+      const plate = new THREE.Mesh(new THREE.CylinderGeometry(118 * S, 118 * S, 7 * S, 24), M.porcelain)
+      plate.rotation.x = Math.PI / 2 - 0.16
+      plate.position.set(px * S, (sh + 8 + 118) * S, (-carcD / 2 + 60) * S)
+      g.add(plate)
+    }
+    if (i < 2) for (const k of [-1, 1]) {
+      const bowl = new THREE.Mesh(new THREE.CylinderGeometry(70 * S, 52 * S, 60 * S, 18, 1, true), M.porcelain)
+      bowl.position.set((k * L * 0.22) * S, (sh + 8 + 30) * S, (carcD / 2 - 160) * S)
+      g.add(bowl)
+    }
+  }
+  for (const k of [-1, 1]) {
+    // slim walnut frames with a clear pane, a small brass knob at the meeting stiles
+    const fw = L / 2 - 6, fh = midTop - lowTop - 8
+    const fc = (lowTop + midTop) / 2
+    g.add(box(fw, 30, 20, walnut, k * L / 4, lowTop + 4 + 15, face))
+    g.add(box(fw, 30, 20, walnut, k * L / 4, midTop - 4 - 15, face))
+    g.add(box(30, fh, 20, walnut, k * (L / 2 - 18), fc, face))
+    g.add(box(30, fh, 20, walnut, k * 18, fc, face))
+    const pane = box(fw - 60, fh - 60, 6, M.glass, k * L / 4, fc, face)
+    pane.castShadow = false
+    g.add(pane)
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(13 * S, 12, 10), brass)
+    knob.position.set((k * 44) * S, fc * S, (face + 20) * S)
+    g.add(knob)
+  }
+  rail(midTop)
+  // upper: two closed cupboards to the top, round knobs
+  for (const k of [-1, 1]) {
+    g.add(box(L / 2 - 6, top - midTop - 8, 20, walnut, k * L / 4, (midTop + top) / 2, face))
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(14 * S, 12, 10), brass)
+    knob.position.set((k * 40) * S, (midTop + 380) * S, (face + 22) * S)
+    g.add(knob)
+  }
+  g.add(box(L, 30, carcD + 22, walnut, 0, top - 15, 0))   // the top edge
+  g.rotation.y = front === 'S' ? 0 : front === 'N' ? Math.PI : front === 'E' ? Math.PI / 2 : -Math.PI / 2
+  place(g, cx, cy)
+  return g
+}
+
 function teakWardrobe(f: FurnitureItem, M: Mats): THREE.Group {
   const g = new THREE.Group()
   const w = f.w, d = f.d
@@ -785,6 +886,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     return m
   }
 
+  // the crockery closet by the kitchen door: its own mid-century cabinet
+  if (f.kind === 'wardrobe' && /crockery/i.test(f.label)) return crockeryCloset(f, M)
   // a piece the label names outright - a WC, a fridge, a shower tray, a lounge
   // swivel, a daybed - drawn as that thing rather than as the nearest box
   const named = importedPiece(f, { M, box, basePrism, place })

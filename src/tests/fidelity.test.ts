@@ -75,7 +75,7 @@ describe('2D↔3D fidelity', () => {
     for (const u of pantryUnits) expect(u.poly, `${u.id} lost its outline`).toBeDefined()
 
     const vanities = fixtures.filter((f) => f.id.endsWith('-VAN'))
-    expect(vanities.length).toBe(4)
+    expect(vanities.length).toBe(3)
     for (const v of vanities) expect(v.poly, `${v.id} lost its outline`).toBeDefined()
 
     // Both kitchen runs: run B (which the old size cap silently dropped) and
@@ -101,7 +101,7 @@ describe('2D↔3D fidelity', () => {
     expect(furniture.filter((f) => f.kind === 'grass').length, 'grass fields').toBeGreaterThanOrEqual(4)
     expect(furniture.filter((f) => f.kind === 'planter').length, 'planters').toBeGreaterThanOrEqual(2)
     expect(furniture.find((f) => f.label.includes('drum kit')), 'the drum kit').toBeDefined()
-    expect(fixtures.filter((f) => f.label?.includes('cabinet')).length, 'bath wall cabinets').toBe(3)
+    expect(fixtures.filter((f) => f.label?.includes('cabinet')).length, 'bath wall cabinets').toBe(2)
     // Karan's only: the parents' bath sits on the builder's toilet 01 with the shower on its pod wall, so it has no shelf unit
     expect(fixtures.filter((f) => f.label?.includes('shelves')).length, 'bath shelf units').toBe(1)
     const vans = fixtures.filter((f) => f.id.endsWith('-VAN'))

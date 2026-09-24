@@ -334,8 +334,7 @@ def _sweep_line(yw, ye):
 mb_line = _sweep_line(D.MB_YW, D.BATH_N)
 with R.karan():
     mb_line_k = [(mx(x), y) for x, y in _sweep_line(D.MB_YW, D.BATH_N)]
-with R.gm():
-    mb_line_g = _sweep_line(D.MB_YW, D.BATH_N)
+
 mb_len = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(mb_line, mb_line[1:]))
 # The sweeps are FULL curves: the sheet takes nothing out of them. Each bath is
 # entered through the door in its straight west (parents') / east (Karan's)
@@ -345,8 +344,10 @@ WALLS += [
       label="Parents' bath — arched sweep"),
     w('W-K-BATH-ARCH', mb_line_k, 230, 'interior', [],
       label="Karan's bath — arched sweep"),
-    w('W-G-BATH-ARCH', mb_line_g, 230, 'interior', [],
-      label="Grandmother's bath — arched sweep"),
+    # the grandmother's bath has NO arch: the builder's rectangle, its
+    # north-west corner rounded, the north wall running to the pod wall
+    w('W-G-BATH-N', R._gm_corner(D.GM_R) + [(4467, D.GM_NC)], 150, 'interior', [],
+      label="Grandmother's bath — north wall, rounded corner"),
 ]
 
 wcq = R.wc_wall()
@@ -502,8 +503,8 @@ ROOMS = [
      'end: 900 walk-in shower on the duct wall, WC on the pod wall, the curved vanity '
      'in the arch; its own door from the bed zone.'),
     ('R-G-BATH', "Grandmother's bath", (3640, 8330), 'wet', 'parents', True,
-     'Stone', 'The builder’s M.TOILET 02, 5’-0” x 8’-0”, with an arch added at its north '
-     'end: WC, walk-in shower, her own basin — not shared with the parents.'),
+     'Stone', 'The builder’s M.TOILET 02 exactly, 5’-0” x 8’-0”, its north-west corner '
+     'rounded: WC, walk-in shower, her own wall-hung basin — not shared with the parents.'),
     ('R-K-SUITE', 'Master suite — Karan', (mx(1500), 3500), 'habitable', 'karan', True,
      'Oak plank', 'The king bed, headboard window-jamb to window-jamb; the dressing '
      'zone south of the screen, with two hanging wardrobes and the dresser.'),
@@ -997,15 +998,6 @@ def emit_fixtures():
                 'R-K-BATH', 'STK-K-BATH', 'Curved vanity, 400 bowl',
                 poly=[(mx(q[0]), q[1]) for q in van],
                 bowl=(mx(bw[0]), bw[1], bw[2]) if bw else None)
-    # the grandmother's, in her frame: the same vanity struck off her arch
-    with R.gm():
-        van = outline_of(R.mb_console())
-        if van:
-            a, b, c, d = bbox_of(R.mb_console())
-            bw = bowl_of(R.mb_console())
-            add('FX-GM-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-                'R-G-BATH', 'STK-G-BATH', 'Curved vanity, 400 bowl', poly=van,
-                bowl=bw)
     van = outline_of(R.wc_console())
     if van:
         a, b, c, d = bbox_of(R.wc_console())
@@ -1015,12 +1007,6 @@ def emit_fixtures():
 
     # the bath wall cabinet at the west end of each sweep — same face as the
     # console, so the 3D shows one continuous run of joinery
-    with R.gm():
-        cab = outline_of(R.mb_cabinet())
-        if cab:
-            a, b, c, d = bbox_of(R.mb_cabinet(), styles=('solid',))
-            add('FX-GM-CAB', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
-                'R-G-BATH', None, 'Bath wall cabinet', poly=cab)
     cab = outline_of(R.mb_cabinet())
     if cab:
         a, b, c, d = bbox_of(R.mb_cabinet(), styles=('solid',))
@@ -1543,8 +1529,6 @@ def audit_coverage():
         take(fn.__name__, fn())
         with R.karan():
             take(fn.__name__, fn(), mirror=True)
-        with R.gm():
-            take(fn.__name__, fn())
     take('arch_console_par_flank', R.arch_console_par_flank())
     take('pod_consoles', R.pod_consoles_all())
     take('gm_curtain_rail', R.gm_curtain_rail())

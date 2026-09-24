@@ -629,7 +629,7 @@ def pod_consoles(side='w', face='great', dep=None, n=120):
     pod's screen, 'e' the den's — the den's is the mirror of the same
     curve, so it is struck in the west frame and mirrored here."""
     P = D.POD_W
-    h = 75                                            # the screen's half thickness
+    h = 10                                            # the screen's half thickness: 20 of glass (Karan's call)
     sgn = 1 if face == 'great' else -1                # great room is east of the west curve
     out = []
     for a, b in pod_console_runs(side, face):

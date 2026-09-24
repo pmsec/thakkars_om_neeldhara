@@ -185,12 +185,18 @@ WALLS += [
     # THE KITCHEN FRONT IS ONE LINE (Karan's call): the 600 step carried west
     # to the pod's duct cheek, the door and the hatch in it where they were;
     # extended past the drum face so it dies INTO the arc
-    w('W-KIT-FRONT', [(5630, 7862.5), (11450, 7862.5)], 125, 'interior',
-      [op('D-KIT', 'slider', 1270, 2070, head=2100,
-          label='Kitchen door — one 800 leaf of tinted glass, parks west on the family-room face'),
-       op('O-HATCH', 'window', 2270, 2970, head=2100, sill=1050,
+    # ...from the door's west jamb: the strip in front of the secondary duct
+    # stays with the family room, and a return on the duct cheek's line
+    # closes the kitchen's corner. The door is hinged — nothing west of it
+    # for a leaf to park on — and swings into the kitchen against the return.
+    w('W-KIT-FRONT', [(6900, 7862.5), (11450, 7862.5)], 125, 'interior',
+      [op('D-KIT', 'door', 0, 800, head=2100,
+          label='Kitchen door — hinged on the west jamb, swings into the kitchen against the return'),
+       op('O-HATCH', 'window', 1000, 1700, head=2100, sill=1050,
           label='Serving hatch — 700 over the sink, kitchen to family room')],
-      notes='Duct cheek to apse on the bump line; the 1270 x 475 in front of the secondary duct is a kitchen niche.'),
+      notes='Door jamb to apse on the bump line.'),
+    w('W-KIT-RET', [(6900, 7862.5), (6900, 8462.5)], 150, 'interior',
+      notes="The return that closes the kitchen's north-west corner, on the secondary duct cheek's line."),
     w('W-HELP-N', [(13700, 8462.5), (20013, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120,
           label='Guest WC — from the great room, west of the pod glazing')]),
@@ -1131,7 +1137,9 @@ def room_for(cx, cy):
     # the kitchen's bump reaches 11210, so the strip between is the gallery's
     if 10515 <= cx <= 13965 and cy >= 8400:
         return 'R-ENTRY'
-    if cy >= 7862.5 and 5555 < cx < 10400:
+    if cx < 6900 and cy < 8400:
+        return 'R-P-FAMILY'
+    if cy >= 7862.5 and 6900 <= cx < 10400:
         return 'R-KITCHEN'
     if cy >= 8400 and 5555 < cx < 11210:
         return 'R-KITCHEN'

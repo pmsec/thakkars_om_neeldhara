@@ -159,14 +159,21 @@ export const building: BuildingData = {
     },
     {
       id: 'W-KIT-FRONT',
-      points: [{ x: 5630, y: 7862.5 }, { x: 11450, y: 7862.5 }],
+      points: [{ x: 6900, y: 7862.5 }, { x: 11450, y: 7862.5 }],
       thickness: 125,
       kind: 'interior',
       openings: [
-        { id: 'D-KIT', type: 'slider', at: [1270, 2070], head: 2100, label: 'Kitchen door — one 800 leaf of tinted glass, parks west on the family-room face' },
-        { id: 'O-HATCH', type: 'window', at: [2270, 2970], head: 2100, sill: 1050, nonCirculating: true, label: 'Serving hatch — 700 over the sink, kitchen to family room' },
+        { id: 'D-KIT', type: 'door', at: [0, 800], head: 2100, hinge: 0, side: 1, label: 'Kitchen door — hinged on the west jamb, swings into the kitchen against the return' },
+        { id: 'O-HATCH', type: 'window', at: [1000, 1700], head: 2100, sill: 1050, nonCirculating: true, label: 'Serving hatch — 700 over the sink, kitchen to family room' },
       ],
-      notes: 'Duct cheek to apse on the bump line; the 1270 x 475 in front of the secondary duct is a kitchen niche.',
+      notes: 'Door jamb to apse on the bump line.',
+    },
+    {
+      id: 'W-KIT-RET',
+      points: [{ x: 6900, y: 7862.5 }, { x: 6900, y: 8462.5 }],
+      thickness: 150,
+      kind: 'interior',
+      notes: "The return that closes the kitchen's north-west corner, on the secondary duct cheek's line.",
     },
     {
       id: 'W-HELP-N',

@@ -416,9 +416,9 @@
 <polygon points="3213.0,1246.8 3213.0,1310.8 3229.8,1310.8 3229.8,1246.8" fill="#1b1a18" stroke="none"/>
 <polygon points="1271.0,1246.8 1271.0,1546.9 1291.3,1546.9 1291.3,1246.8" fill="#1b1a18" stroke="none"/>
 <polygon points="3054.4,1246.8 3054.4,1546.9 3074.6,1546.9 3074.6,1246.8" fill="#1b1a18" stroke="none"/>
-<polygon points="1281.2,1482.8 1452.5,1482.8 1452.5,1466.0 1281.2,1466.0" fill="#1b1a18" stroke="none"/>
 <polygon points="1560.4,1482.8 1587.4,1482.8 1587.4,1466.0 1560.4,1466.0" fill="#1b1a18" stroke="none"/>
 <polygon points="1681.8,1482.8 2034.0,1482.8 2034.0,1466.0 1681.8,1466.0" fill="#1b1a18" stroke="none"/>
+<polygon points="1442.4,1466.0 1442.4,1555.3 1462.6,1555.3 1462.6,1466.0" fill="#1b1a18" stroke="none"/>
 <polygon points="2387.4,1563.8 2547.9,1563.8 2547.9,1546.9 2387.4,1546.9" fill="#1b1a18" stroke="none"/>
 <polygon points="2655.8,1563.8 2893.2,1563.8 2893.2,1546.9 2655.8,1546.9" fill="#1b1a18" stroke="none"/>
 <polygon points="2873.0,1563.8 2873.0,1772.9 2893.2,1772.9 2893.2,1563.8" fill="#1b1a18" stroke="none"/>
@@ -840,7 +840,6 @@
 <circle cx="1649.4" cy="1523.3" r="21.9" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <rect x="1587.4" y="1482.8" width="94.4" height="10.1" fill="#ffffff" stroke="#9a9184" stroke-width="1.1"/>
 <line x1="1634.6" y1="1482.8" x2="1634.6" y2="1493.0" stroke="#9a9184" stroke-width="0.8"/>
-<rect x="1344.6" y="1456.5" width="107.9" height="8.1" fill="#e2cfae" stroke="#8a6440" stroke-width="1.0"/>
 <rect x="1668.3" y="1815.4" width="80.9" height="76.9" fill="none" stroke="#b9ae9c" stroke-width="1.0" stroke-dasharray="9 6"/>
 <circle cx="1688.6" cy="1836.6" r="14.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
 <circle cx="1729.0" cy="1836.6" r="14.6" fill="none" stroke="#9a9184" stroke-width="0.8"/>
@@ -1081,7 +1080,7 @@
 <text x="2707.0" y="1648.1" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">GUEST / SERVICE WC</text>
 <text x="2707.0" y="1681.8" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">2.7 m²  ·  29 sq ft</text>
 <text x="1405.3" y="1256.9" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">FAMILY ROOM</text>
-<text x="1405.3" y="1290.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">19.6 m²  ·  211 sq ft</text>
+<text x="1405.3" y="1290.6" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">20.3 m²  ·  218 sq ft</text>
 <text x="1405.3" y="1317.6" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">one pod  ·  glass roof over the 3665 x 2280 bay</text>
 <text x="3030.8" y="1101.7" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">MUSIC + WORK DEN</text>
 <text x="3030.8" y="1135.5" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">21.3 m²  ·  230 sq ft</text>
@@ -1090,7 +1089,7 @@
 <text x="2172.8" y="863.0" font-size="14" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">37.8 m²  ·  407 sq ft</text>
 <text x="2172.8" y="894.0" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">party wall removed  ·  6250 at the deck, 8220 at the waist, 7280 at the pods</text>
 <text x="1695.3" y="1695.3" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">KITCHEN</text>
-<text x="1695.3" y="1729.0" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">13.4 m²  ·  144 sq ft</text>
+<text x="1695.3" y="1729.0" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">12.8 m²  ·  138 sq ft</text>
 <text x="1695.3" y="1756.0" font-size="11" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">kitchen and utility as one room  ·  the dry balcony is its utility end</text>
 <text x="2632.9" y="1814.0" font-size="19" fill="#2a2724" text-anchor="middle" font-weight="bold" font-family="Helvetica,Arial,sans-serif" letter-spacing="1.4">HELP'S ROOM</text>
 <text x="2632.9" y="1847.7" font-size="13" fill="#7d7568" text-anchor="middle" font-weight="normal" font-family="Helvetica,Arial,sans-serif">7.1 m²  ·  77 sq ft</text>

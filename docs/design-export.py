@@ -498,10 +498,10 @@ ROOMS = [
     ('R-P-DRESSING', "Parents' dressing", (1200, 8000), 'circulation', 'parents', True,
      'Oak plank', 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — '
      'behind a partition of brown tinted glass end to end, three bypass leaves that stack into a third of it.'),
-    ('R-P-BATH', "Parents' bath", (3640, 2780), 'wet', 'parents', True,
-     'Stone', 'The builder’s M.TOILET 01, 5’-0” x 8’-0”, with an arch added at its south '
-     'end: 900 walk-in shower on the duct wall, WC on the pod wall, the curved vanity '
-     'in the arch; its own door from the bed zone.'),
+    ('R-P-BATH', "Parents' bath", (3640, 2400), 'wet', 'parents', True,
+     'Stone', 'On the builder’s M.TOILET 01 footprint, 5’-0” wide, shortened so its arch '
+     'stays north of the pod slider: 900 walk-in shower on the duct wall, WC on the '
+     'pod wall, the curved vanity in the arch; its own door from the bed zone.'),
     ('R-G-BATH', "Grandmother's bath", (3640, 8330), 'wet', 'parents', True,
      'Stone', 'The builder’s M.TOILET 02 exactly, 5’-0” x 8’-0”, its north-west corner '
      'rounded: WC, walk-in shower, her own wall-hung basin — not shared with the parents.'),

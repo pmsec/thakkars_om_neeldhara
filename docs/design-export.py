@@ -285,7 +285,7 @@ WALLS += [
     # CLEAR glass now, not brown (Karan's call); the line stops at 2400 and
     # nothing fixed carries it on to the pod wall
     w('W-P-DRESS', [(-600, 5935), (2400, 5935)], 120, 'partition',
-      [op('SL-P-DRESS', 'slider', 150, 3000, head=2100,
+      [op('SL-P-DRESS', 'slider', 150, 3000, head=CEIL,
           label='Clear glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line')],
       label="Parents' dressing partition", glass='clear'),
     # the rest of the line to the pod wall is OPEN — a threshold, so the bed

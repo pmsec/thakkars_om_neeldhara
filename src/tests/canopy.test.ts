@@ -163,9 +163,9 @@ describe('the bronze glass walls', () => {
         expect(p.transparent).toBe(true)
         expect(p.top).toBe(CEILING)
       }
+      // the leaves run floor to ceiling now (Karan's call): no transom over them
       const transom = ps.filter((p) => p.id.includes(':transom'))
-      expect(transom.length).toBe(1)
-      expect(transom[0].base).toBe(2100)
+      expect(transom.length).toBe(0)
       expect(ps.some((p) => p.id.includes(':leaf'))).toBe(false)
       expect(ps.some((p) => p.kind === 'lintel')).toBe(false)
     }

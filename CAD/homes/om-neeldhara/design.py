@@ -847,7 +847,11 @@ _ONCE = [
     # vertical one on the east at the shower's entry.  The basin is 550, not
     # 450: a cloakroom size on a wall with room for a proper one.
     ('shower',   MB_XW_G, 8595, 4325, 9545, 'walk-in, 1457 x 950, curtain on a bowed rail, no screen'),
-    ('basin',    MB_XW_G, 8150, MB_XW_G + 550, 8550, "basin  ·  550 x 400, wall hung"),
+    # HER BASIN IS IN THE ARCH NOW (Karan's call): the same curved vanity and
+    # mirror as the parents' and Karan's, struck off her sweep, with the
+    # wall cabinet at its west end — retrofit.mb_console/mb_cabinet in her
+    # frame.  The wall-hung basin on the west wall is gone.
+    #   ('basin',    MB_XW_G, 8150, MB_XW_G + 550, 8550, "basin  ·  550 x 400, wall hung"),
     ('seat',     MB_XW_G, 9145, MB_XW_G + 450, 9545, 'fold-down shower seat  ·  450 x 400 teak slats, at 480'),
     ('grab',     MB_XW_G, 8700, MB_XW_G + 40, 9400, 'grab bar  ·  700, west wall at 900'),
     ('grab',     MB_XW_G + 500, 9505, MB_XW_G + 1300, 9545, 'grab bar  ·  800, south wall at 900'),

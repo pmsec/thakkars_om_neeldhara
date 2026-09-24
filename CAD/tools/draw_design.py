@@ -400,7 +400,8 @@ def main():
     for p in R.wc_console():
         prim(p)
     for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
-              + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)):
+              + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)
+              + R.south(R.mb_console) + R.south(R.mb_cabinet)):   # hers too
         prim(p)
     for p in R.mb_door(D.MB_DOOR_P) + R.south(R.mb_door) + R.gm_curtain_rail():
         prim(p)                                 # the parents' door, hers, her rail

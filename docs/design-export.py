@@ -992,6 +992,15 @@ def emit_fixtures():
                 'R-K-BATH', 'STK-K-BATH', 'Curved vanity, 400 bowl',
                 poly=[(mx(q[0]), q[1]) for q in van],
                 bowl=(mx(bw[0]), bw[1], bw[2]) if bw else None)
+    # the grandmother's, in her frame: the same vanity struck off her arch
+    with R.gm():
+        van = outline_of(R.mb_console())
+        if van:
+            a, b, c, d = bbox_of(R.mb_console())
+            bw = bowl_of(R.mb_console())
+            add('FX-GM-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
+                'R-G-BATH', 'STK-G-BATH', 'Curved vanity, 400 bowl', poly=van,
+                bowl=bw)
     van = outline_of(R.wc_console())
     if van:
         a, b, c, d = bbox_of(R.wc_console())
@@ -1001,6 +1010,12 @@ def emit_fixtures():
 
     # the bath wall cabinet at the west end of each sweep — same face as the
     # console, so the 3D shows one continuous run of joinery
+    with R.gm():
+        cab = outline_of(R.mb_cabinet())
+        if cab:
+            a, b, c, d = bbox_of(R.mb_cabinet(), styles=('solid',))
+            add('FX-GM-CAB', 'counter', (a + c) / 2, (b + d) / 2, c - a, d - b,
+                'R-G-BATH', None, 'Bath wall cabinet', poly=cab)
     cab = outline_of(R.mb_cabinet())
     if cab:
         a, b, c, d = bbox_of(R.mb_cabinet(), styles=('solid',))
@@ -1519,6 +1534,8 @@ def audit_coverage():
         take(fn.__name__, fn())
         with R.karan():
             take(fn.__name__, fn(), mirror=True)
+        with R.gm():
+            take(fn.__name__, fn())
     take('arch_console_par_flank', R.arch_console_par_flank())
     take('pod_consoles', R.pod_consoles_all())
     take('gm_curtain_rail', R.gm_curtain_rail())

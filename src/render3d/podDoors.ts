@@ -65,8 +65,10 @@ export function podDoorLeaves(building: BuildingData, mode: PodDoorMode): DoorLe
         const y0l = from + (i * (span - L)) / Math.max(1, n - 1)
         out.push({ wallId: w.id, x0: xc - LEAF_T / 2, x1: xc + LEAF_T / 2, y0: y0l, y1: y0l + L, base: 0, top, handleAt: i === 0 ? 1 : -1 })
       } else {
-        // all parked in the pocket, inside the wall's own line
-        out.push({ wallId: w.id, x0: xc - LEAF_T / 2, x1: xc + LEAF_T / 2, y0: from - L, y1: from, base: 0, top, handleAt: 1 })
+        // all parked in the pocket, inside the wall's own line - and 40 back
+        // from the jamb, so no leaf's end face sits flush in the jamb plane and
+        // shows as a sliver where the parents' arch lands on this wall
+        out.push({ wallId: w.id, x0: xc - LEAF_T / 2, x1: xc + LEAF_T / 2, y0: from - L - 40, y1: from - 40, base: 0, top, handleAt: 1 })
       }
     }
   }

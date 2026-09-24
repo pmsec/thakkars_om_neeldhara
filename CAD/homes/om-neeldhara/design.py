@@ -78,6 +78,7 @@ DUCT_W0, DUCT_W1 = 4555, 5555       # main service duct - KEEP CLEAR
 T_MB = 150
 MB_XE = STRIP_W1                    # 4405 — east face, on the pod / duct line
 MB_RW = 765                         # west flank, a quarter circle
+SCR_S = 5995                        # the parents' glass line's south face, where the pod partition ends
 #
 # BOTH OF THE PARENTS' WING'S BATHS ARE BACK ON THE BUILDER'S FOOTPRINTS
 # (Karan's call): his A-101 drew M.TOILET 01 at the north end of the strip,
@@ -114,8 +115,12 @@ MB_DOOR_P = (30, 830)
 # pod wall at 6950, turns vertical at 7115 on the builder's north face; her
 # door where it always was, 800 at Y 7300-8100, from her zone.
 MB_SGN_G = 1
-MB_YW_G = 7115
-MB_CY_G = MB_YW_G - MB_RW           # 6350
+# Her crown sits ON THE GLASS LINE (Karan's call): the arch's outer face at
+# the crown lands on the dressing line's south face, so the drum meets the
+# line instead of stopping a pinch short of it.  The flank turns vertical
+# 765 further south and the tail runs from there to the outer wall.
+MB_CY_G = SCR_S + T_MB / 2          # 6070
+MB_YW_G = MB_CY_G + MB_RW           # 6835
 MB_YE_G = MB_CY_G + 600             # 6950
 MB_BE_G = MB_BE
 MB_FAR_G = WING_S
@@ -129,7 +134,6 @@ G_BATH_W = MB_XE - MB_XW            # 1530
 # north of the glass line, the dressing zone's south.  The pod slider sits on
 # this stretch of the pod wall, from the parents' arch cupboard to the glass.
 MB_MID = 5450
-SCR_S = 5995                        # the parents' glass line's south face, where the pod partition ends
 SL_P = (4100, 5875)                 # the parents' pod slider, Y: from the arch's foot on this wall to the glass line
 # Karan's sweep, as first drawn: crown 5950 at X 3165, west face 2475,
 # meets the pod wall at 6550, turns vertical at 6715, east wall from 6650,
@@ -1108,6 +1112,12 @@ _ONCE = [
     # end and has come out.  Both ends of the table stay clear, and that is what
     # lets you walk round them: the south end is the serving stance at the hatch,
     # 500 off the wall, and the north end is the run up to the sitting group.
+    # THE CROCKERY CLOSET (Karan's call): the 1120 x 600 recess in front of
+    # the secondary duct, between the kitchen's return and the pod's duct
+    # cheek, takes a full-height mid-century cabinet — walnut, on tapered
+    # legs, solid doors below, glazed display in the middle, closed cupboards
+    # above.  Its front is 30 back from the kitchen front's face.
+    ('hanging',   5735, 7830, 6795, 8400, 'crockery closet  ·  1060 x 570, full-height, mid-century walnut, glazed middle'),
     ('dining-se', 6603, 5300, 7703, 7500,
      'superellipse 1100 x 2200  ·  six, seven with the north end chair'),
     # ------------------------------------------------- the deck: the two recliners

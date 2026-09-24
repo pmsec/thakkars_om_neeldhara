@@ -616,8 +616,10 @@ POD_PORTAL = POD_PORTAL_E                 # kept for anything reading the old na
 
 # straight glazing runs: (x1, y1, x2, y2, kind)
 GLAZING = [
-    # suite <-> terrace, full-height sliding
-    (-350, 1275, SUITE_W_E, 1275, 'slider'),
+    # suite <-> terrace: the parents' is OPEN now, floor to ceiling, no
+    # doors (Karan's call) — the terrace is under the same glass roof.
+    # Karan's keeps its slider.
+    (-350, 1275, SUITE_W_E, 1275, 'open'),
     (M(SUITE_W_E), 1275, M(-350), 1275, 'slider'),
     # deck <-> great room and pods: the old 150 partition comes out, and so
     # do the sliders (Karan's call): the deck is glazed and cooled, so these
@@ -752,18 +754,18 @@ _ONCE = [
     # X 2325 — the sweep is north of this line now, so the line meets a flat
     # wall, not a curve.  2775 in all.  Tinted from the floor to the ceiling,
     # the whole length.
-    # CLEAR GLASS, NOT BROWN, AND THE WHOLE DIVIDE (Karan's call): three
-    # leaves of 1639 on a triple track run from the west wall to the pod
-    # wall, so shut they close the line end to end; open they stack at the
-    # EAST end against the pod wall, over the grandmother's arch's crown —
-    # the tracks sit 20 north of the crown's outer face, so the stack clears
-    # it.  Drawn shut.
-    ('pane',      -450, 5855, 1189, 5895,
-     "sliding screen  ·  clear glass, leaf 1 of 3, 1639, north track"),
-    ('pane',      1189, 5895, 2828, 5935,
-     "sliding screen  ·  clear glass, leaf 2 of 3, 1639, middle track"),
-    ('pane',      2828, 5935, MB_XE, 5975,
-     "sliding screen  ·  clear glass, leaf 3 of 3, 1639, south track — the three stack here, open"),
+    # CLEAR GLASS, NOT BROWN, AND THE WHOLE DIVIDE (Karan's call): FOUR
+    # leaves of 1229 on four tracks run from the west wall to the pod wall,
+    # so shut they close the line end to end; open they stack at the EAST
+    # end against the pod wall in 1229, not a third of the line.  Drawn shut.
+    ('pane',      -450, 5845, 779, 5885,
+     "sliding screen  ·  clear glass, leaf 1 of 4, 1229, track 1"),
+    ('pane',      779, 5885, 2008, 5925,
+     "sliding screen  ·  clear glass, leaf 2 of 4, 1229, track 2"),
+    ('pane',      2008, 5925, 3237, 5965,
+     "sliding screen  ·  clear glass, leaf 3 of 4, 1229, track 3"),
+    ('pane',      3237, 5965, MB_XE, 6005,
+     "sliding screen  ·  clear glass, leaf 4 of 4, 1229, track 4 — the four stack here, open"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN
@@ -1125,7 +1127,7 @@ _ONCE = [
     # between the south side table and the screen's north leaf, facing the
     # bed; one on the pod wall in the nook north of the grandmother's bath,
     # facing west into her zone.
-    ('hanging',   -450, 4750, 150, 5850, "wardrobe  ·  1100 x 600, full-height, hanging"),
+    ('hanging',   -450, 4750, 150, 5850, "wardrobe  ·  1100 x 600, hanging"),
     ('hanging',   3805, 6000, 4405, 6960, "wardrobe  ·  960 x 600, full-height, hanging"),
     # THE CROCKERY CLOSET (Karan's call): the 1120 x 600 recess in front of
     # the secondary duct, between the kitchen's return and the pod's duct

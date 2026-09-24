@@ -145,8 +145,11 @@ def pod_polys():
     east_curve = [(bez_x(D.POD_E, y), y) for y in ys]
 
     # family room: pod bay to the curve, less the walled-off service duct
+    # ...with the strip in front of the secondary duct still its own: the
+    # kitchen's front starts at the door, and a return closes its corner
     fam = ([(D.POD_W0, D.BODY_N)] + west_curve
-           + [(D.DUCT_W1 + 150, D.KIT_N), (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
+           + [(6825, D.KIT_N), (6825, 8400), (D.DUCT_W1 + 150, 8400),
+              (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
     # the den is the mirror of what the family room WAS — it still runs to
     # the body's south wall on its side
     fam_full = ([(D.POD_W0, D.BODY_N)] + [(bez_x(D.POD_W, y), y) for y in ys]
@@ -1823,10 +1826,9 @@ def lobby_polys():
     # and since this round it steps north over its eastern half as well
     # and since this round its whole front is on the bump's line, duct cheek
     # to apse, with the niche in front of the secondary duct inside it
-    kitchen = ([(D.DUCT_W1 + 150, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._A0)
+    kitchen = ([(kw, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._A0)
                + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
-                  (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470),
-                  (kw, 8400), (D.DUCT_W1 + 150, 8400)])
+                  (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
                + [(ie, COL_N), (ie, D.BAY_S)])
 

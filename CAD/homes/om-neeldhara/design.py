@@ -450,8 +450,14 @@ NEW_WALLS = [
     #     so the kitchen's north wall runs from 5630 to the apse at KIT_N, the
     #     door and the hatch in it where they were, and the 1270 x 475 in front
     #     of the secondary duct becomes a kitchen niche.
-    (DUCT_W1 + 75, KIT_N + 62.5, _BRK_K, KIT_N + 62.5, 125,
-     [(6900 - (DUCT_W1 + 75), 7700 - (DUCT_W1 + 75)), (7900 - (DUCT_W1 + 75), 8600 - (DUCT_W1 + 75))]),
+    #     ...but NOT the strip in front of the secondary duct (Karan's call): it
+    #     adds nothing to the kitchen and goes back to the family room.  The
+    #     front starts at the door's west jamb, and a 600 return on the duct
+    #     cheek's line closes the corner.  With no wall west of the door for a
+    #     leaf to park on, the door is HINGED: it swings into the kitchen and
+    #     lies back against the return.
+    (6900, KIT_N + 62.5, _BRK_K, KIT_N + 62.5, 125, [(0, 800), (1000, 1700)]),
+    (6900, KIT_N, 6900, 8462.5, T_INT, []),
     # Help's room has no door on to the great room any more — it is reached
     # from the entry gallery, and through it the WC.  The one opening left in
     # this run is the guest WC's.  The apse springs at 15000 and the pod glazing
@@ -1299,8 +1305,8 @@ _ONCE = [
      'sink  ·  west of the blind corner, and 1400 nearer the stack than it was'),
     ('shelves',  7900, 7925, 8600, 8000,
      'serving hatch, 700 — over the sink, sill at 1050, opens into the parents pod'),
-    ('tint',     6100, 7730, 6900, 7790,
-     'kitchen door  ·  one 800 leaf of tinted glass, shown parked west of the opening on the family-room face'),
+    # the kitchen door is hinged now — a gap in the wall on the sheet, the
+    # leaf drawn by the app
     # --- the window run and the appliance corner, ONE UNBROKEN L
     # Three pieces with two 400 gaps between them, and neither gap was wanted:
     # both came from setting the hob counter 400 in from each jamb of its

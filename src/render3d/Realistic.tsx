@@ -5263,7 +5263,13 @@ export function buildFixtures(M: Mats): THREE.Group {
         const sink = fixtures.find((q) => q.kind === 'sink' && q.room === f.room && pointInPolygon(q.at, poly))
         if (sink) {
           const RW = 480, RD = Math.min(410, sink.size[1])
-          const rx = sink.at.x + sink.size[0] / 2 + 60 + RW / 2, rz = sink.at.y
+          // the rack goes on the sink's east side unless something on the worktop
+          // (the microwave, the fryer) already stands there, then the west
+          const rz = sink.at.y
+          const rxE = sink.at.x + sink.size[0] / 2 + 60 + RW / 2
+          const taken = fixtures.some((q) => q !== sink && q.room === f.room && q.kind !== 'counter'
+            && Math.abs(q.at.x - rxE) < (q.size[0] + RW) / 2 && Math.abs(q.at.y - rz) < (q.size[1] + RD) / 2)
+          const rx = taken ? sink.at.x - sink.size[0] / 2 - 60 - RW / 2 : rxE
           if (pointInPolygon({ x: rx + RW / 2, y: rz + RD / 2 }, poly) && pointInPolygon({ x: rx + RW / 2, y: rz - RD / 2 }, poly)) {
             g.add(box(RW, 22, RD, M.chrome, rx, h - 8, rz))                            // the tray, let in
             for (let k = 0; k < 9; k++) g.add(box(RW - 30, 6, 6, M.gasket, rx, h + 4, rz - RD / 2 + 25 + (k * (RD - 50)) / 8))  // the grooves

@@ -208,8 +208,7 @@ def poly_rooms():
     bath_p, suite = suite_polys()                  # the parents', arch at the south
     with karan():
         bath_k, suite_k = suite_polys()            # Karan's, crown at 5950
-    with gm():
-        bath_g = bath_poly()                       # the grandmother's, crown at 6350
+    bath_g = gm_bath_poly()                        # the grandmother's: the builder's rectangle
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     suite_note = 'one room  ·  bed + dressing, joinery to be designed'
     par_note = ('two zones  ·  bed north of the glass, '
@@ -222,7 +221,7 @@ def poly_rooms():
         ('MASTER SUITE', 'KARAN', mirror_poly(suite_k), suite_note, (21300, 4400)),
         ("PARENTS' BATH", '', bath_p, 'the builder\'s 5\'-0" x 8\'-0"  ·  arch at the south',
          (3640, 2780)),
-        ("GRANDMOTHER'S BATH", '', bath_g, 'the builder\'s 5\'-0" x 8\'-0"  ·  arch at the north',
+        ("GRANDMOTHER'S BATH", '', bath_g, 'the builder\'s 5\'-0" x 8\'-0"  ·  rounded corner',
          (3640, 8330)),
         ("KARAN'S BATH", '', mirror_poly(bath_k), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (16200, 9150)),
@@ -676,6 +675,30 @@ def arch_console_par_flank(dep=300, n=90, u0=0.05, u1=1.0):
     return [('poly', back + list(reversed(front)), 'solid')]
 
 
+def _gm_corner(r, n=24):
+    """The rounded north-west corner of the grandmother's bath at radius r
+    about its centre, from the west tail (180 deg) round to the north wall
+    (270 deg)."""
+    return [(D.GM_CX + r * math.cos(math.radians(t)), D.GM_CY + r * math.sin(math.radians(t)))
+            for t in np.linspace(180, 270, n)]
+
+
+def gm_wall():
+    """Her bath's north wall: the rounded corner off the west tail, then
+    straight east to the duct cheek — one filled band."""
+    h = D.T_MB / 2
+    xe = D.MB_XE + D.T_INT / 2
+    outer = _gm_corner(D.GM_R + h) + [(xe, D.GM_NC - h)]
+    inner = _gm_corner(D.GM_R - h) + [(xe, D.GM_NC + h)]
+    return [outer + list(reversed(inner))]
+
+
+def gm_bath_poly():
+    """The grandmother's bath: the builder's rectangle with the corner."""
+    return ([(D.MB_XW, D.WING_S)] + _gm_corner(D.GM_R - D.T_MB / 2)
+            + [(D.MB_XE, D.GM_N), (D.MB_XE, D.WING_S)])
+
+
 def gm_curtain_rail(straight=600, bow=150, n=16):
     """The grandmother's shower curtain rail, at 2000, on the shower's north
     line: straight for `straight` off the west wall, past her basin, then
@@ -781,11 +804,12 @@ def suite_polys():
         suite = ([(w, 1350), (D.MB_XE, 1350)] + outer
                  + [(D.MB_XW - D.T_MB, D.WING_S), (w, D.WING_S)])
         return bath, suite
-    with gm():
-        outer_g = mb_pts(-D.T_MB / 2)          # pod wall -> her foot
+    # ...then down the pod wall to her north wall's outer face and round
+    # her corner to the west wall
     suite = ([(w, 1350), (D.MB_XW - D.T_MB, 1350), (D.MB_XW - D.T_MB, D.MB_YW)]
              + list(reversed(outer))            # foot -> pod wall, southward
-             + outer_g                          # pod wall -> her foot
+             + [(D.MB_XE, D.GM_NC - D.T_MB / 2)]
+             + list(reversed(_gm_corner(D.GM_R + D.T_MB / 2)))
              + [(D.MB_XW - D.T_MB, D.WING_S), (w, D.WING_S)])
     return bath, suite
 
@@ -2159,6 +2183,6 @@ def design_masks():
                    cy + math.sin(rad) * (r - t / 2) - C.CELL,
                    cx + math.cos(rad) * (r + t / 2) + C.CELL,
                    cy + math.sin(rad) * (r + t / 2) + C.CELL)
-    for q in wc_wall() + mb_wall() + east_polys(mb_wall) + south_polys(mb_wall):
+    for q in wc_wall() + mb_wall() + east_polys(mb_wall) + gm_wall():
         C.put_poly(wl, q)
     return fl, wl, keep_wall_mask()

@@ -171,7 +171,7 @@ def main():
             h.set_solid_fill(color=1)
 
     for q in (R.wc_wall() + R.mb_wall()          # the WC's apse and the two
-              + R.east_polys(R.mb_wall) + R.south_polys(R.mb_wall)):   # baths' sweeps
+              + R.east_polys(R.mb_wall) + R.gm_wall()):   # baths' sweeps
         poly(msp, q, 'PROP-WALL-NEW')
         h = msp.add_hatch(color=1, dxfattribs={'layer': 'PROP-WALL-NEW'})
         h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
@@ -275,8 +275,7 @@ def main():
     for p in R.wc_console():
         prim(p)
     for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
-              + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)
-              + R.south(R.mb_console) + R.south(R.mb_cabinet)):   # hers too
+              + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)):
         prim(p)
     for p in R.mb_door(D.MB_DOOR_P) + R.south(R.mb_door) + R.gm_curtain_rail():
         prim(p)                                 # the parents' door, hers, her rail

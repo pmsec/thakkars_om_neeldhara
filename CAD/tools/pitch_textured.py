@@ -209,7 +209,7 @@ def main():
             s.poly(q, fill=NEWW, stroke='none')
     for q in R.wc_wall():
         s.poly(q, fill=NEWW, stroke='none')
-    for q in R.mb_wall() + R.east_polys(R.mb_wall) + R.south_polys(R.mb_wall):
+    for q in R.mb_wall() + R.east_polys(R.mb_wall) + R.gm_wall():
         s.poly(q, fill=NEWW, stroke='none')
     for q in R.wc_door():
         s.poly(q, fill='none', stroke='#a89b88', stroke_width=1.1)
@@ -288,8 +288,7 @@ def main():
     for p in R.wc_console():
         prim(p)
     for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
-              + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)
-              + R.south(R.mb_console) + R.south(R.mb_cabinet)):   # hers too
+              + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)):
         prim(p)
     for p in R.mb_door(D.MB_DOOR_P) + R.south(R.mb_door):
         prim(p, shadow=False)

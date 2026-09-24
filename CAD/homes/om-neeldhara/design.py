@@ -114,19 +114,23 @@ MB_DOOR_P = (30, 830)
 # The grandmother's: toilet 02, the usual way up.  Crown at 6350, meets the
 # pod wall at 6950, turns vertical at 7115 on the builder's north face; her
 # door where it always was, 800 at Y 7300-8100, from her zone.
+# NO ARCH ON HERS ANY MORE (Karan's call): toilet 02 is the builder's
+# rectangle exactly, 2875-4405 x 7115-9545, with its north-west corner
+# rounded to a 400 centreline radius for the eye — retrofit.gm_wall.  The
+# tail starts where the corner has turned vertical; her door is on it.
+GM_N = 7115                         # the builder's north face
+GM_NC = GM_N - T_MB / 2             # 7040, the north wall's centreline
+GM_R = 400                          # the corner, on the centreline
+GM_CX, GM_CY = MB_XW - T_MB / 2 + GM_R, GM_NC + GM_R   # 3200, 7440 — the corner's centre
 MB_SGN_G = 1
-# Her crown sits ON THE GLASS LINE (Karan's call): the arch's outer face at
-# the crown lands on the dressing line's south face, so the drum meets the
-# line instead of stopping a pinch short of it.  The flank turns vertical
-# 765 further south and the tail runs from there to the outer wall.
-MB_CY_G = SCR_S + T_MB / 2          # 6070
-MB_YW_G = MB_CY_G + MB_RW           # 6835
+MB_YW_G = GM_CY                     # 7440 — the tail starts under the corner
+MB_CY_G = MB_YW_G - MB_RW           # the rest of her frame, kept complete for mb_door
 MB_YE_G = MB_CY_G + 600             # 6950
 MB_BE_G = MB_BE
 MB_FAR_G = WING_S
 BATH_N_G = MB_YE_G + 100            # 7050
 MB_SHELF_END_G = None
-MB_DOOR_G = (7300 - MB_YW_G, 8100 - MB_YW_G)
+MB_DOOR_G = (7500 - MB_YW_G, 8300 - MB_YW_G)   # 800, Y 7500-8300, clear of the corner
 MB_DOOR = MB_DOOR_G
 MB_XW_G = MB_XW                     # one width now: the builder's 5'-0" for both
 G_BATH_W = MB_XE - MB_XW            # 1530
@@ -866,11 +870,9 @@ _ONCE = [
     # vertical one on the east at the shower's entry.  The basin is 550, not
     # 450: a cloakroom size on a wall with room for a proper one.
     ('shower',   MB_XW_G, 8595, 4325, 9545, 'walk-in, 1457 x 950, curtain on a bowed rail, no screen'),
-    # HER BASIN IS IN THE ARCH NOW (Karan's call): the same curved vanity and
-    # mirror as the parents' and Karan's, struck off her sweep, with the
-    # wall cabinet at its west end — retrofit.mb_console/mb_cabinet in her
-    # frame.  The wall-hung basin on the west wall is gone.
-    #   ('basin',    MB_XW_G, 8150, MB_XW_G + 550, 8550, "basin  ·  550 x 400, wall hung"),
+    # Her basin is wall hung on the NORTH wall, between the rounded corner
+    # and the pan, facing south; standing at it you are west of the pan.
+    ('basin',    3150, GM_N, 3700, GM_N + 400, "basin  ·  550 x 400, wall hung, north wall"),
     ('seat',     MB_XW_G, 9145, MB_XW_G + 450, 9545, 'fold-down shower seat  ·  450 x 400 teak slats, at 480'),
     ('grab',     MB_XW_G, 8700, MB_XW_G + 40, 9400, 'grab bar  ·  700, west wall at 900'),
     ('grab',     MB_XW_G + 500, 9505, MB_XW_G + 1300, 9545, 'grab bar  ·  800, south wall at 900'),
@@ -1115,6 +1117,12 @@ _ONCE = [
     # end and has come out.  Both ends of the table stay clear, and that is what
     # lets you walk round them: the south end is the serving stance at the hatch,
     # 500 off the wall, and the north end is the run up to the sitting group.
+    # TWO FULL-HEIGHT CUPBOARDS (Karan's call): one on the parents' west wall
+    # between the south side table and the screen's north leaf, facing the
+    # bed; one on the pod wall in the nook north of the grandmother's bath,
+    # facing west into her zone.
+    ('hanging',   -450, 4750, 150, 5850, "wardrobe  ·  1100 x 600, full-height, hanging"),
+    ('hanging',   3805, 6000, 4405, 6960, "wardrobe  ·  960 x 600, full-height, hanging"),
     # THE CROCKERY CLOSET (Karan's call): the 1120 x 600 recess in front of
     # the secondary duct, between the kitchen's return and the pod's duct
     # cheek, takes a full-height mid-century cabinet — walnut, on tapered

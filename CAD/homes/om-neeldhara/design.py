@@ -671,6 +671,8 @@ _ONCE = [
     # the parents' hanging space is the full-height cupboard on the bath's
     # arch (retrofit.arch_console_par), and the partition is glass end to end.
     #
+    # THE FAMILY POD'S RECLINER AND DECK-FACING SOFA ARE GONE (Karan's call):
+    # the pod is the dining room and the way to the deck, nothing else.
     # ------------------------- the WARDROBE, in the bedroom's north-east corner
     # THE STUDY DESK IS GONE FOR GOOD (Karan's call: no desk here and none in
     # the den either).  The corner it stood in — the sealed shaft's south wall
@@ -1088,9 +1090,7 @@ _ONCE = [
     # over Y 3120-4020 of its 3555 opening.  Nothing else is near it at all
     # now, so the way through from the bedroom is the 2155 south of the chair
     # plus the 500 north of it.
-    ('recliner-w', 4900, 3120, 5700, 4020, "recliner  ·  800 x 900, facing east"),
-    ('sofa-s',    6300, 3770, 8000, 4570, "sofa  ·  1700 x 800, facing the deck"),
-
+        
     # ------------------------------------------------- parents' pod: dining
     # NOT A ROUND TABLE.  It was a 1400 round, and a round table in a pod only
     # 2894 wide is the wrong shape for the room: the seat facing the glass and

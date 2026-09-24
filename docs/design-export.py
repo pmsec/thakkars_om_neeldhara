@@ -442,7 +442,8 @@ def pod_wall(P, portal, wid, label, y_end):
                 break
         return s
     a, b = s_at(portal[0]), s_at(portal[1])
-    return w(wid, line, 150, 'curved-glass',
+    # 20 thick: it is a glass screen, not a wall (Karan's call, max 20)
+    return w(wid, line, 20, 'curved-glass',
              [op(wid.replace('W-', 'PORTAL-'), 'arch', a, b, head=2400,
                  label='Arched portal — open, no doors (Karan\'s call)')],
              label=label, glass='tinted')

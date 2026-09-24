@@ -1081,7 +1081,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         const clear = (q: { x: number; y: number }): boolean => {
           let best = Infinity
           for (const wl of model.walls) {
-            if (wl.thickness < 60) continue
+            if (wl.thickness < 60 && wl.kind !== 'curved-glass') continue
             for (let i = 1; i < wl.points.length; i++) {
               const a = wl.points[i - 1], b = wl.points[i]
               const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
@@ -3558,7 +3558,7 @@ function entryPainting(M: Mats): THREE.Group | null {
   const distToWalls = (p: { x: number; y: number }) => {
     let best = Infinity
     for (const w of model.walls) {
-      if (w.thickness < 60) continue
+      if (w.thickness < 60 && w.kind !== 'curved-glass') continue
       for (let k = 0; k < w.points.length - 1; k++) {
         const a = w.points[k]
         const b = w.points[k + 1]
@@ -6389,7 +6389,8 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     const dotList = (house.userData.anchors ?? []) as DotEntry[]
     // the solid walls as plan segments, for the line-of-sight test on the buttons
     const wallSegs: Array<[number, number, number, number]> = []
-    for (const wl of model.walls) { if (wl.thickness < 60) continue; for (let k = 1; k < wl.points.length; k++) wallSegs.push([wl.points[k - 1].x, wl.points[k - 1].y, wl.points[k].x, wl.points[k].y]) }
+    // a curved glass screen is 20 thick and still blocks a button behind it
+    for (const wl of model.walls) { if (wl.thickness < 60 && wl.kind !== 'curved-glass') continue; for (let k = 1; k < wl.points.length; k++) wallSegs.push([wl.points[k - 1].x, wl.points[k - 1].y, wl.points[k].x, wl.points[k].y]) }
     let lastPickAt = 0
     const pickAt = (cx: number, cy: number): void => {
       lastPickAt = performance.now()

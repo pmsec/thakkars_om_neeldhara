@@ -527,7 +527,7 @@ export const building: BuildingData = {
         { x: 8600.286, y: 7498.38 }, { x: 8600.236, y: 7558.627 }, { x: 8600.192, y: 7619.498 }, { x: 8600.154, y: 7680.994 }, { x: 8600.121, y: 7743.122 }, { x: 8600.093, y: 7805.885 },
         { x: 8600.093, y: 7862.5 },
       ],
-      thickness: 150,
+      thickness: 20,
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
@@ -573,7 +573,7 @@ export const building: BuildingData = {
         { x: 15879.93, y: 7869.286 }, { x: 15879.95, y: 7933.331 }, { x: 15879.965, y: 7998.023 }, { x: 15879.977, y: 8063.367 }, { x: 15879.986, y: 8129.366 }, { x: 15879.993, y: 8196.024 },
         { x: 15879.997, y: 8263.347 }, { x: 15879.999, y: 8331.337 }, { x: 15880, y: 8400 }, { x: 15880, y: 8462.5 },
       ],
-      thickness: 150,
+      thickness: 20,
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [

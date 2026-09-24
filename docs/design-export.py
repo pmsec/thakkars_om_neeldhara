@@ -249,9 +249,10 @@ CEIL = 3505
 # LINES, not walls: the glass runs floor to ceiling and the ceiling simply
 # stops at them, so the sliders' head is the ceiling and no spandrel is drawn.
 WALLS += [
-    w('G-P-TERRACE', [(-350, 1275), (2750, 1275)], 0, 'glazing',
-      [op('SL-P-TERR', 'slider', 0, 3100, head=CEIL,
-          label='Terrace sliders — full width, floor to ceiling')], pane=True),
+    # the parents' terrace line is OPEN (Karan's call): a threshold, no doors
+    w('T-P-TERRACE', [(-350, 1275), (2750, 1275)], 0, 'threshold',
+      [op('O-P-TERR', 'threshold', 0, 3100, head=CEIL,
+          label='Suite open to the terrace — no doors, floor to ceiling')]),
     w('G-K-TERRACE', [(21730, 1275), (24830, 1275)], 0, 'glazing',
       [op('SL-K-TERR', 'slider', 0, 3100, head=CEIL,
           label='Terrace sliders — full width, floor to ceiling')], pane=True),
@@ -289,7 +290,7 @@ WALLS += [
     # open they stack at the east end against the pod wall
     w('W-P-DRESS', [(-600, 5935), (4467, 5935)], 120, 'partition',
       [op('SL-P-DRESS', 'slider', 150, 5067, head=CEIL,
-          label='Clear glass end to end — three 1639 bypass leaves on a triple track; open they stack at the east end against the pod wall')],
+          label='Clear glass end to end — four 1229 bypass leaves on four tracks; open they stack at the east end against the pod wall')],
       label="Parents' dressing partition", glass='clear'),
     # Karan's side has NO partition on this line: his suite runs from the terrace
     # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on

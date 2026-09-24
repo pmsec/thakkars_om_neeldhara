@@ -296,13 +296,12 @@ export const building: BuildingData = {
       kind: 'interior',
     },
     {
-      id: 'G-P-TERRACE',
+      id: 'T-P-TERRACE',
       points: [{ x: -350, y: 1275 }, { x: 2750, y: 1275 }],
       thickness: 0,
-      kind: 'glazing',
-      renderPane: true,
+      kind: 'threshold',
       openings: [
-        { id: 'SL-P-TERR', type: 'slider', at: [0, 3100], head: 3505, label: 'Terrace sliders — full width, floor to ceiling' },
+        { id: 'O-P-TERR', type: 'threshold', at: [0, 3100], head: 3505, label: 'Suite open to the terrace — no doors, floor to ceiling' },
       ],
     },
     {
@@ -373,7 +372,7 @@ export const building: BuildingData = {
       kind: 'partition',
       glass: 'clear',
       openings: [
-        { id: 'SL-P-DRESS', type: 'slider', at: [150, 5067], head: 3505, label: 'Clear glass end to end — three 1639 bypass leaves on a triple track; open they stack at the east end against the pod wall' },
+        { id: 'SL-P-DRESS', type: 'slider', at: [150, 5067], head: 3505, label: 'Clear glass end to end — four 1229 bypass leaves on four tracks; open they stack at the east end against the pod wall' },
       ],
       label: "Parents' dressing partition",
     },

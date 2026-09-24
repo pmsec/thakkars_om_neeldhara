@@ -2229,7 +2229,7 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       // ONE PANEL: a door-sized slider that rides on the dry room's face and
       // parks over the wall beyond the opening, at whichever end has the wall
       const one = /\bone\b[^.]*\bpanel\b/i.test(op.label ?? '')
-      const n = one ? 1 : op.id === 'SL-P-DRESS' ? 3 : count || Math.max(2, Math.round(width / 1600))
+      const n = one ? 1 : count || Math.max(2, Math.round(width / 1600))
       const leaf = one ? width + 60 : width / n
       const H = Math.min((op.head ?? ceiling) - 40, ceiling - 40)
       const T = wood ? 40 : 12
@@ -2256,7 +2256,10 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       // where each leaf's centre sits, and which track it rides
       const places: Array<[number, number]> = []
       for (let k = 0; k < n; k++) {
-        const track = one ? oneTrack : (k % 2 ? 1 : -1) * ((op.id === 'SL-P-DRESS' ? T + 30 : T) + 6) / 2 * (n === 3 ? (k - 1) : 1)
+        // each leaf on its own track when they all stack at one end (the dressing
+        // screen's four), so they pass one another; paired tracks otherwise
+        const pitch = (op.id === 'SL-P-DRESS' ? T + 30 : T) + 6
+        const track = one ? oneTrack : parkAtEnd ? (k - (n - 1) / 2) * pitch : (k % 2 ? 1 : -1) * pitch / 2 * (n === 3 ? (k - 1) : 1)
         if (one) {
           places.push([mode === 'shut' ? (op.from + op.to) / 2 : (op.from + op.to) / 2 + parkSign * (leaf + 20), track])
         } else if (mode === 'shut') {

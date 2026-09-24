@@ -275,14 +275,17 @@ WALLS += [
 # --- dressing partitions: bronze translucent glass floor to ceiling, the leaf
 # pocketing into the cupboard backs; both suites
 WALLS += [
+    # CLEAR glass now, not brown (Karan's call); the line stops at 2400 and
+    # nothing fixed carries it on to the pod wall
     w('W-P-DRESS', [(-600, 5935), (2400, 5935)], 120, 'partition',
       [op('SL-P-DRESS', 'slider', 150, 3000, head=2100,
-          label='Tinted glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line')],
-      label="Parents' dressing partition", glass='tinted'),
-    # the same line carried on to the pod wall as a FIXED pane, now that the
-    # cubicle it used to stop at is gone
-    w('W-P-DRESS-2', [(2400, 5935), (4467, 5935)], 120, 'partition', [],
-      label="Parents' dressing partition — fixed pane to the pod wall", glass='tinted'),
+          label='Clear glass end to end — three 925 bypass leaves on a triple track; open they stack into a third of the line')],
+      label="Parents' dressing partition", glass='clear'),
+    # the rest of the line to the pod wall is OPEN — a threshold, so the bed
+    # zone and the dressing zone stay two rooms with nothing drawn between
+    w('T-P-DRESS', [(2400, 5935), (4467, 5935)], 0, 'threshold',
+      [op('O-P-DRESS', 'threshold', 0, 2067, head=CEIL,
+          label='Open between the bed zone and the dressing zone — nothing on this line')]),
     # Karan's side has NO partition on this line: his suite runs from the terrace
     # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on
     # it), and the sheet draws nothing at 5935. The mirrored copy that used to be
@@ -1069,7 +1072,7 @@ KIND_MAP = {
     # dado, a monitor is a slim dark panel on a desk, a mirror is a pane.
     # Mapping these to opaque solids once put a phantom WALL in Karan's
     # suite — the dressing screen as a full-height white slab.
-    'screen': 'tv', 'tint': 'screen', 'mirror': 'screen',
+    'screen': 'tv', 'tint': 'screen', 'pane': 'screen', 'mirror': 'screen',
 }
 HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
            'console': 800, 'dining': 750, 'bed': 550, 'wardrobe': 2300,
@@ -1402,8 +1405,6 @@ def emit_furniture():
     # and Karan's, drawn mirrored
     # the parents' is a FULL-HEIGHT CUPBOARD on the same curl: their hanging
     # space, now that the partition cupboards are gone
-    add_outline(R.arch_console_par(), 'wardrobe', 'R-P-SUITE',
-                'Arch cupboard — full height, on the bath sweep', 2300)
     # and, below the crown, the console with cabinets under on the west flank
     add_outline(R.arch_console_par_flank(), 'console', 'R-P-SUITE',
                 'Arch console — the west flank, cabinets under', 800)
@@ -1510,7 +1511,6 @@ def audit_coverage():
         take(fn.__name__, fn())
         with R.karan():
             take(fn.__name__, fn(), mirror=True)
-    take('arch_console_par', R.arch_console_par())
     take('arch_console_par_flank', R.arch_console_par_flank())
     take('gm_curtain_rail', R.gm_curtain_rail())
     take('help_rack', R.help_rack())

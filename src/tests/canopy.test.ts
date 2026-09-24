@@ -145,9 +145,9 @@ describe('the bellied glass', () => {
 })
 
 describe('the bronze glass walls', () => {
-  it("the parents' dressing partition and both pod screens are tinted glass", () => {
+  it("both pod screens are tinted glass; the parents' dressing partition is clear now", () => {
     const tinted = building.walls.filter((w) => w.glass === 'tinted').map((w) => w.id).sort()
-    expect(tinted).toEqual(['W-CURVE-KARAN', 'W-CURVE-PARENTS', 'W-P-DRESS', 'W-P-DRESS-2'])
+    expect(tinted).toEqual(['W-CURVE-KARAN', 'W-CURVE-PARENTS'])
   })
 
   it("the parents' dressing partition is tinted glass, with its sliding leaves left to the door states", () => {
@@ -159,7 +159,7 @@ describe('the bronze glass walls', () => {
       const ps = solids.prisms.filter((p) => p.wallId === id)
       expect(ps.length).toBeGreaterThan(0)
       for (const p of ps) {
-        expect(p.glass).toBe('tinted')
+        expect(p.glass).toBe('clear')
         expect(p.transparent).toBe(true)
         expect(p.top).toBe(CEILING)
       }

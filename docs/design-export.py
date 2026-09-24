@@ -1425,6 +1425,8 @@ def emit_furniture():
             add_outline([prim], 'console', room,
                         f"Pod screen console — {'great-room' if face == 'great' else 'pod'} face, 300 deep, the glass on its centreline",
                         R.POD_CONSOLE_H)
+    add_outline(R.arch_planter_par(), 'planter', 'R-P-SUITE',
+                'Arch planter — tapering round the outside of the arch, pod wall to the console', 450, styles=('green',))
     add_outline(R.arch_console_par_flank(), 'console', 'R-P-SUITE',
                 'Arch console — the west flank, cabinets under', 800)
     with R.karan():
@@ -1531,6 +1533,7 @@ def audit_coverage():
         with R.karan():
             take(fn.__name__, fn(), mirror=True)
     take('arch_console_par_flank', R.arch_console_par_flank())
+    take('arch_planter_par', R.arch_planter_par())
     take('pod_consoles', R.pod_consoles_all())
     take('gm_curtain_rail', R.gm_curtain_rail())
     take('help_rack', R.help_rack())

@@ -1335,6 +1335,46 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         }
         return g
       }
+      if (/arch planter/i.test(f.label) && f.poly) {
+        // the tapering planter round the parents' arch: walnut joinery to match
+        // the console beside it, soil 50 below the rim, and a full crowd of
+        // plants along its length - tall stems at the deep end, low mounds at
+        // the thin end by the pod wall, trailing tips over the front edge
+        const H = f.height || 450
+        const body = polyPiece(f.poly, 0, H, M.timber, f.room)
+        if (body) g.add(body)
+        const inner = f.poly.map((q) => ({ x: cx + (q.x - cx) * 0.92, y: cy + (q.y - cy) * 0.92 }))
+        const soil = polyPiece(inner, H - 50, H + 2, M.soil, f.room)
+        if (soil) g.add(soil)
+        // the planter's mid-line: pair the back run with the front run
+        const n = f.poly.length >> 1
+        const mids = Array.from({ length: n }, (_, i) => {
+          const a = f.poly![i], b = f.poly![f.poly!.length - 1 - i]
+          return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, half: Math.hypot(a.x - b.x, a.y - b.y) / 2 }
+        })
+        const put = (m: THREE.Mesh, x: number, h: number, y: number) => { m.position.set(x * S, h * S, y * S); g.add(m) }
+        let k = 0
+        for (let i = 2; i < n - 2; i += 3) {
+          const p = mids[i]
+          const big = p.half > 100
+          // a mound of leaves, then a taller plant every other station
+          const rr = Math.min(p.half * 0.95, 60 + p.half * 0.5)
+          put(new THREE.Mesh(new THREE.SphereGeometry(rr * S, 9, 7), k % 2 ? M.leaf : M.leafDark), p.x, H - 20 + rr * 0.6, p.y)
+          if (big && k % 2 === 0) {
+            const stemH = 320 + (k % 3) * 120
+            const stem = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 6 * S, stemH * S, 6), M.trunk)
+            put(stem, p.x, H + stemH / 2, p.y)
+            for (let j = 0; j < 5; j++) {
+              const leafM = new THREE.Mesh(new THREE.SphereGeometry(70 * S, 8, 6), j % 2 ? M.leaf : M.leafDark)
+              leafM.scale.set(1.6, 0.35, 0.9)
+              leafM.rotation.y = j * 1.3 + k
+              put(leafM, p.x + Math.cos(j * 1.3 + k) * 60, H + stemH - 60 - j * 55, p.y + Math.sin(j * 1.3 + k) * 60)
+            }
+          }
+          k++
+        }
+        return g
+      }
       // an indoor planter: a stone bed with a row of low shrubs in it
       const stoneBed = f.poly ? polyPiece(f.poly, 0, 300, M.carved, f.room) : box(w, 300, d, M.carved)
       if (stoneBed && !f.poly) place(stoneBed, cx, cy, 150)
@@ -4226,9 +4266,9 @@ function abstractCanvas(seedIn: number): HTMLCanvasElement | null {
  * edge (the run of its outline against the sweep), so the panels sit on the
  * wall the console beds on.
  */
-export function sweepArt(M: Mats): THREE.Group | null {
-  const con = furniture.find((f) => /arch console/i.test(f.label) && f.room === 'R-K-SUITE' && f.poly)
-  const bath = model.roomById.get('R-K-BATH')
+export function sweepArt(M: Mats, pieceRe = /arch console/i, roomId = 'R-K-SUITE', bathId = 'R-K-BATH', H0 = 1350, H1 = 2350, lights = false, seed0 = 41): THREE.Group | null {
+  const con = furniture.find((f) => pieceRe.test(f.label) && f.room === roomId && f.poly)
+  const bath = model.roomById.get(bathId)
   if (!con?.poly || !bath) return null
   const walls = model.walls.filter((w) => w.thickness >= 60 && w.points.length >= 2)
   // the nearest wall centreline point to q, with that segment's outward normal
@@ -4279,7 +4319,6 @@ export function sweepArt(M: Mats): THREE.Group | null {
     return { x: w.px + w.nx * (w.th / 2 + off), y: w.py + w.ny * (w.th / 2 + off) }
   }
   const g = new THREE.Group()
-  const H0 = 1350, H1 = 2350
   const GAP = 70, MARGIN = 120
   const panelL = (total - 2 * MARGIN - 2 * GAP) / 3
   const ribbon = (d0: number, d1: number, base: number, top: number, off: number, mat: THREE.Material) => {
@@ -4304,7 +4343,7 @@ export function sweepArt(M: Mats): THREE.Group | null {
   }
   for (let k = 0; k < 3; k++) {
     const d0 = MARGIN + k * (panelL + GAP), d1 = d0 + panelL
-    const cv = abstractCanvas(41 + k * 17)
+    const cv = abstractCanvas(seed0 + k * 17)
     const tex = cv ? new THREE.CanvasTexture(cv) : null
     if (tex) tex.colorSpace = THREE.SRGBColorSpace
     const art = new THREE.MeshStandardMaterial({ map: tex, color: 0xd9c9a8, roughness: 0.9 })
@@ -4314,6 +4353,25 @@ export function sweepArt(M: Mats): THREE.Group | null {
     g.add(ribbon(d0, d0 + 30, H0, H1, 44, M.walnut))
     g.add(ribbon(d1 - 30, d1, H0, H1, 44, M.walnut))
     g.add(ribbon(d0 + 30, d1 - 30, H0 + 30, H1 - 30, 24, M.plaster))   // the backing, so the frame reads deep
+    if (lights) {
+      // a picture light over each panel: a slim brass bar cantilevered off the
+      // curve on a short arm, a warm lamp under it washing the canvas
+      const pm = onFace(at((d0 + d1) / 2), 0)
+      const pn = onFace(at((d0 + d1) / 2), 100)
+      const nx = (pn.x - pm.x) / 100, ny = (pn.y - pm.y) / 100
+      const yaw = Math.atan2(nx, ny)
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(Math.min(520, panelL * 0.6) * S, 16 * S, 150 * S), M.brass)
+      bar.position.set((pm.x + nx * 75) * S, (H1 + 90) * S, (pm.y + ny * 75) * S)
+      bar.rotation.y = yaw
+      g.add(bar)
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(40 * S, 16 * S, 120 * S), M.brass)
+      arm.position.set((pm.x + nx * 60) * S, (H1 + 130) * S, (pm.y + ny * 60) * S)
+      arm.rotation.y = yaw
+      g.add(arm)
+      const lamp = new THREE.PointLight(0xffd9a3, 0.5, 2.4, 2)
+      lamp.position.set((pm.x + nx * 150) * S, (H1 + 60) * S, (pm.y + ny * 150) * S)
+      g.add(lamp)
+    }
   }
   return g
 }
@@ -5094,7 +5152,10 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     if (moss) root.add(moss)
     root.add(guitarWall(M))
     const art = sweepArt(M)
+    // and the parents' arch: three canvases over the tapering planter, lit
+    const artP = sweepArt(M, /arch planter/i, 'R-P-SUITE', 'R-P-BATH', 1200, 2300, true, 73)
     if (art) root.add(art)
+    if (artP) root.add(artP)
   }
 
   // ---- glass roofs

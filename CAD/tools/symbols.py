@@ -408,6 +408,8 @@ def symbol(kind, a, b, c, d):
         return out
     if kind == 'tint':
         return [_rr(a, b, c, d, 'tint')]
+    if kind == 'pane':                     # a clear glass leaf or pane
+        return [_rr(a, b, c, d, 'glass')]
     if kind == 'swing':
         # A door leaf drawn open, hinged at (a, b) and swinging to (a, d).
         # Most doors on this drawing are just gaps in a wall, because the swing

@@ -831,7 +831,7 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     Clockwise from the eased west end: front edge east, round the corner of the
     step, along the upper leg, round the apse, back west along the wall.
     """
-    kw = 6900                       # the kitchen's west face
+    kw = 7900                       # east of the door's pier: the run starts under the hatch, and the door lands on clear floor
     y0, y1 = D.BAY_N, D.KIT_S       # the two wall faces the counter backs on
     xr = D.KIT_BUMP_W + 125         # 8725 — the return's face, the inside corner
     xc = xr + dep                   # 9325 — the front edge's corner

@@ -130,7 +130,7 @@ G_BATH_W = MB_XE - MB_XW            # 1530
 # this stretch of the pod wall, from the parents' arch cupboard to the glass.
 MB_MID = 5450
 SCR_S = 5995                        # the parents' glass line's south face, where the pod partition ends
-SL_P = (4300, 5875)                 # the parents' pod slider, Y
+SL_P = (4100, 5875)                 # the parents' pod slider, Y: from the arch's foot on this wall to the glass line
 # Karan's sweep, as first drawn: crown 5950 at X 3165, west face 2475,
 # meets the pod wall at 6550, turns vertical at 6715, east wall from 6650,
 # shelves to 7500.
@@ -728,17 +728,15 @@ _ONCE = [
     # X 2325 — the sweep is north of this line now, so the line meets a flat
     # wall, not a curve.  2775 in all.  Tinted from the floor to the ceiling,
     # the whole length.
-    ('tint',      -450, 5875, 475, 5915,
-     "sliding screen  ·  brown tinted glass, leaf 1 of 3, 925, north track"),
-    ('tint',      475, 5915, 1400, 5955,
-     "sliding screen  ·  brown tinted glass, leaf 2 of 3, 925, middle track"),
-    ('tint',      1400, 5955, 2325, 5995,
-     "sliding screen  ·  brown tinted glass, leaf 3 of 3, 925, south track"),
-    # With the cubicle gone the line has nothing to stop at: a FIXED PANE on
-    # the south track carries it from the old bath wall to the pod wall, so
-    # the two zones still close off from each other.
-    ('tint',      2325, 5955, MB_XE, 5995,
-     "fixed pane  ·  brown tinted glass, 2080, to the pod wall"),
+    # CLEAR GLASS NOW, NOT BROWN (Karan's call): the three leaves stay, the
+    # tint goes, and the line stops where it always did at 2325 — nothing
+    # fixed carries it on to the pod wall.
+    ('pane',      -450, 5875, 475, 5915,
+     "sliding screen  ·  clear glass, leaf 1 of 3, 925, north track"),
+    ('pane',      475, 5915, 1400, 5955,
+     "sliding screen  ·  clear glass, leaf 2 of 3, 925, middle track"),
+    ('pane',      1400, 5955, 2325, 5995,
+     "sliding screen  ·  clear glass, leaf 3 of 3, 925, south track"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN

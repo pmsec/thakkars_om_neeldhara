@@ -1406,6 +1406,14 @@ def emit_furniture():
     # the parents' is a FULL-HEIGHT CUPBOARD on the same curl: their hanging
     # space, now that the partition cupboards are gone
     # and, below the crown, the console with cabinets under on the west flank
+    # the wood console along each pod's curved glass screen, both faces, so
+    # the glass stands on its centreline: one run per face per stretch
+    for side, face, room in (('w', 'great', 'R-GREAT'), ('w', 'pod', 'R-P-FAMILY'),
+                             ('e', 'great', 'R-GREAT'), ('e', 'pod', 'R-K-DEN')):
+        for prim in R.pod_consoles(side, face):
+            add_outline([prim], 'console', room,
+                        f"Pod screen console — {'great-room' if face == 'great' else 'pod'} face, 300 deep, the glass on its centreline",
+                        R.POD_CONSOLE_H)
     add_outline(R.arch_console_par_flank(), 'console', 'R-P-SUITE',
                 'Arch console — the west flank, cabinets under', 800)
     with R.karan():
@@ -1512,6 +1520,7 @@ def audit_coverage():
         with R.karan():
             take(fn.__name__, fn(), mirror=True)
     take('arch_console_par_flank', R.arch_console_par_flank())
+    take('pod_consoles', R.pod_consoles_all())
     take('gm_curtain_rail', R.gm_curtain_rail())
     take('help_rack', R.help_rack())
     with R.karan():

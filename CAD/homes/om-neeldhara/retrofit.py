@@ -196,14 +196,11 @@ def poly_rooms():
     great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
     kitchen, helps, gallery, wc = lobby_polys()
-    bath, suite = suite_polys()                    # the parents', crown at 4350
+    bath_p, suite = suite_polys()                  # the parents', arch at the south
     with karan():
         bath_k, suite_k = suite_polys()            # Karan's, crown at 5950
-    # The parents' cubicle is two baths either side of the folding divider.
-    bath_p = clip_y(bath, D.MB_DIV[0], True)
-    # hers is the narrower rectangle south of the divider, off her own tail
-    bath_g = [(D.MB_XW_G, D.MB_DIV[1]), (D.MB_XE, D.MB_DIV[1]),
-              (D.MB_XE, D.WING_S), (D.MB_XW_G, D.WING_S)]
+    with gm():
+        bath_g = bath_poly()                       # the grandmother's, crown at 6350
     pod_note = 'one pod  ·  glass roof over the 3665 x 2280 bay'
     suite_note = 'one room  ·  bed + dressing, joinery to be designed'
     par_note = ('two zones  ·  bed north of the glass, '
@@ -214,10 +211,10 @@ def poly_rooms():
         # not the mirror of the parents' anchor any more: that point is inside
         # Karan's bed.  His label sits in the open floor west of it.
         ('MASTER SUITE', 'KARAN', mirror_poly(suite_k), suite_note, (21300, 4400)),
-        ("PARENTS' BATH", '', bath_p, 'under the arch  ·  divider folds open',
-         (3440, 5600)),
-        ("GRANDMOTHER'S BATH", '', bath_g, 'her own  ·  5\'-0" clear',
-         (3350, 8330)),
+        ("PARENTS' BATH", '', bath_p, 'the builder\'s 5\'-0" x 8\'-0"  ·  arch at the south',
+         (3640, 2780)),
+        ("GRANDMOTHER'S BATH", '', bath_g, 'the builder\'s 5\'-0" x 8\'-0"  ·  arch at the north',
+         (3640, 8330)),
         ("KARAN'S BATH", '', mirror_poly(bath_k), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (16200, 9150)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
@@ -246,22 +243,47 @@ def poly_rooms():
 # set in MB_CY, MB_YE, MB_BE, MB_YW, BATH_N, MB_SHELF_END, and Karan's in the
 # same names with _K.  Everything on Karan's side is drawn inside karan(),
 # which swaps his set in for the duration — see east() and east_polys().
-_MB_K = {'MB_CY': 'MB_CY_K', 'MB_YE': 'MB_YE_K', 'MB_BE': 'MB_BE_K',
-         'MB_YW': 'MB_YW_K', 'BATH_N': 'BATH_N_K', 'MB_SHELF_END': 'MB_SHELF_END_K',
-         'MB_XW_G': 'MB_XW_G_K'}
+_MB_SET = ('MB_CY', 'MB_YE', 'MB_BE', 'MB_YW', 'BATH_N', 'MB_SHELF_END',
+           'MB_XW_G', 'MB_CX', 'MB_AE', 'MB_XW', 'MB_SGN', 'MB_FAR')
+_MB_K = {k: k + '_K' for k in _MB_SET}
+# The grandmother's frame shares the parents' width, crown X and flank
+# radii — both baths are the builder's 1530 — and swaps only the set-out
+# along the strip and which way up the arch is.
+_MB_G = {k: k + '_G' for k in ('MB_CY', 'MB_YE', 'MB_BE', 'MB_YW', 'BATH_N',
+                               'MB_SHELF_END', 'MB_SGN', 'MB_FAR')}
 
 
 @contextlib.contextmanager
-def karan():
-    """Karan's frame: his sweep's set-out in place of the parents'."""
-    saved = {k: getattr(D, k) for k in _MB_K}
-    for k, kk in _MB_K.items():
+def _frame(table):
+    saved = {k: getattr(D, k) for k in table}
+    for k, kk in table.items():
         setattr(D, k, getattr(D, kk))
     try:
         yield
     finally:
         for k, v in saved.items():
             setattr(D, k, v)
+
+
+def karan():
+    """Karan's frame: his sweep's set-out in place of the parents'."""
+    return _frame(_MB_K)
+
+
+def gm():
+    """The grandmother's frame: her sweep's set-out in place of the parents'."""
+    return _frame(_MB_G)
+
+
+def south(fn, *a, **k):
+    """`fn`'s prims in the grandmother's frame — same side, no mirror."""
+    with gm():
+        return fn(*a, **k)
+
+
+def south_polys(fn, *a, **k):
+    with gm():
+        return fn(*a, **k)
 
 
 def east(fn, *a, **k):
@@ -301,7 +323,13 @@ def mb_pt(u, off=0.0):
         tx, ty = -D.MB_RW * c, D.MB_RW * s       # d/dph, pointing west-south
         nx, ny = ty, -tx                         # right of it = into the bath
     m = math.hypot(nx, ny)
-    return x + off * nx / m, y + off * ny / m
+    x, y = x + off * nx / m, y + off * ny / m
+    # MB_SGN -1 turns the whole sweep over about its crown: the crown stays,
+    # everything else — flanks, feet, offsets, the side that is 'into the
+    # bath' — reflects, which is what a bath with its arch at the SOUTH end
+    # needs.  A reflection keeps every distance, so the offset faces are
+    # still the right faces.
+    return x, D.MB_CY + D.MB_SGN * (y - D.MB_CY)
 
 
 def mb_u_at_wall(off):
@@ -414,6 +442,8 @@ def mb_shelves(y_end=None, taper=33):
     is the only piece here with a shelf in it: towels, bath mats, the things a
     bathroom has to keep and a vanity has nowhere for."""
     y_end = D.MB_SHELF_END if y_end is None else y_end
+    if y_end is None:                                  # this bath has none
+        return []
     h = D.T_MB / 2
     u0 = mb_u_at_wall(h)
     back, front = mb_pt(u0, h), mb_pt(u0, h + mb_dep(u0))
@@ -444,7 +474,8 @@ def mb_door(door=None, hinge='S', x=None):
     # the grandmother's door (no door given) is on HER tail, 393 further east
     x = (D.MB_XW_G if door is None else D.MB_XW) if x is None else x
     door = D.MB_DOOR if door is None else door
-    y0, y1 = D.MB_YW + door[0], D.MB_YW + door[1]
+    # offsets run from the arch's foot AWAY from the crown, whichever way up
+    y0, y1 = sorted((D.MB_YW + D.MB_SGN * door[0], D.MB_YW + D.MB_SGN * door[1]))
     w = y1 - y0
     p, sgn = (y1, -1) if hinge == 'S' else (y0, 1)      # pivot, and which way
     arc = [(x + w * math.cos(math.radians(t)), p + sgn * w * math.sin(math.radians(t)))
@@ -566,23 +597,6 @@ def arch_console_par_flank(dep=300, n=90, u0=0.05, u1=1.0):
     return [('poly', back + list(reversed(front)), 'solid')]
 
 
-def bath_divider(leaves=4):
-    """The folding wooden divider across the parents' cubicle, shown SHUT.
-
-    Four leaves of 381 on a top track, hinged in pairs, folding back against
-    the duct wall; 100 thick.  Shut, two baths — the parents' under the arch
-    and the grandmother's at the south end, each with its own door.  Open,
-    one bath the length of the cubicle.  It spans HER half's width: west of
-    it, on the same line, the wall jogs from the parents' tail to hers."""
-    y0, y1 = D.MB_DIV
-    x0, x1 = D.MB_XW_G, D.MB_XE
-    out = [('poly', [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], 'wood')]
-    for k in range(1, leaves):
-        x = x0 + (x1 - x0) * k / leaves
-        out.append(('line', x, y0, x, y1, 'light'))
-    return out
-
-
 def gm_curtain_rail(straight=600, bow=150, n=16):
     """The grandmother's shower curtain rail, at 2000, on the shower's north
     line: straight for `straight` off the west wall, past her basin, then
@@ -652,7 +666,7 @@ def suite_screen():
     it, 1615 away."""
     y1, t, g = D.SCR_Y, D.T_SCR, D.SCR_GAP      # y1 is the SOUTH face
     y0 = y1 - t
-    w, e = D.M(D.MB_XW - D.T_MB), D.END_E - 150
+    w, e = D.M(D.MB_XW_K - D.T_MB), D.END_E - 150      # Karan's bath wall, not the parents'
 
     def band(a, b, lo, hi, style):
         return ('poly', [(a, lo), (b, lo), (b, hi), (a, hi)], style)
@@ -663,22 +677,37 @@ def suite_screen():
             band(w, e - g, y0 + t / 3, y1 - t / 3, 'tint')]
 
 
-def suite_polys():
-    """(bath, suite) for the west end.  Mirror them for the east.
+def bath_poly():
+    """The bath in the CURRENT frame: what is inside the sweep, run out to
+    the far end of the builder's rectangle."""
+    inner = mb_pts(D.T_MB / 2)
+    return inner + [(D.MB_XW, D.MB_FAR), (D.MB_XE, D.MB_FAR)]
 
-    The sweep is the whole boundary between the two, so neither is a rectangle
-    any more: the bath is what is south-east of it, the suite is everything
-    else in the wing."""
-    inner, outer = mb_pts(D.T_MB / 2), mb_pts(-D.T_MB / 2)
-    bath = (inner + [(D.MB_XW, D.WING_S), (D.MB_XE, D.WING_S)])
-    # the suite's east edge follows the bath's west wall; where that wall jogs
-    # east on the divider's line (the parents' cubicle, not Karan's) the suite
-    # takes the notch
-    east_edge = ([(D.MB_XW - D.T_MB, D.MB_DIV[0]), (D.MB_XW_G - D.T_MB, D.MB_DIV[0]),
-                  (D.MB_XW_G - D.T_MB, D.WING_S)]
-                 if D.MB_XW_G != D.MB_XW else [(D.MB_XW - D.T_MB, D.WING_S)])
-    suite = ([(D.END_W + 150, 1350), (D.MB_XE, 1350)] + outer
-             + east_edge + [(D.END_W + 150, D.WING_S)])
+
+def suite_polys():
+    """(bath, suite) in the CURRENT frame.
+
+    Karan's frame (one bath, arch at the north end): his bath is what is
+    south-east of the sweep, the suite everything else in the wing.
+
+    The parents' frame (MB_SGN -1): the wing holds TWO baths on the builder's
+    footprints, theirs at the north end of the strip with its arch at the
+    south, the grandmother's at the south end with hers at the north.  The
+    suite is the wing minus both, so it runs round the parents' arch, down
+    the pod wall between the two, and round the grandmother's."""
+    bath = bath_poly()
+    outer = mb_pts(-D.T_MB / 2)                # pod wall -> foot
+    w = D.END_W + 150
+    if D.MB_SGN > 0:
+        suite = ([(w, 1350), (D.MB_XE, 1350)] + outer
+                 + [(D.MB_XW - D.T_MB, D.WING_S), (w, D.WING_S)])
+        return bath, suite
+    with gm():
+        outer_g = mb_pts(-D.T_MB / 2)          # pod wall -> her foot
+    suite = ([(w, 1350), (D.MB_XW - D.T_MB, 1350), (D.MB_XW - D.T_MB, D.MB_YW)]
+             + list(reversed(outer))            # foot -> pod wall, southward
+             + outer_g                          # pod wall -> her foot
+             + [(D.MB_XW - D.T_MB, D.WING_S), (w, D.WING_S)])
     return bath, suite
 
 
@@ -1852,12 +1881,13 @@ def suite_sliders(t=60):
     wall's own east face at 4529.  The deck's south glazing starts at 4650 for
     the same reason — the panels pass through that line.
     """
-    # The parents' opening is the shorter one now — 2620 to 4575 — because
-    # their bath's sweep springs off this wall at 4950; Karan's is the full
-    # 2620 to 6175.  Each pair is two leaves of half its opening.
+    # The parents' opening is SL_P — between their arch cupboard and the
+    # glass line, now that toilet 01 backs on to the top of this wall;
+    # Karan's is the full 2620 to 6175.  Each pair is two leaves of half its
+    # opening.
     x0 = 4600
     out = []
-    for west, shut, (y0, y1) in ((True, True, (2620, D.BATH_N - 475)),
+    for west, shut, (y0, y1) in ((True, True, D.SL_P),
                                  (False, False, (2620, 6175))):
         mid = (y0 + y1) / 2
 
@@ -2048,6 +2078,6 @@ def design_masks():
                    cy + math.sin(rad) * (r - t / 2) - C.CELL,
                    cx + math.cos(rad) * (r + t / 2) + C.CELL,
                    cy + math.sin(rad) * (r + t / 2) + C.CELL)
-    for q in wc_wall() + mb_wall() + east_polys(mb_wall):
+    for q in wc_wall() + mb_wall() + east_polys(mb_wall) + south_polys(mb_wall):
         C.put_poly(wl, q)
     return fl, wl, keep_wall_mask()

@@ -331,7 +331,7 @@ def main():
             s.poly(q, fill=NEWW, stroke='none')
     for q in R.wc_wall():                # the guest WC's apse — same masonry
         s.poly(q, fill=NEWW, stroke='none')
-    for q in R.mb_wall() + R.east_polys(R.mb_wall):   # the two baths' sweeps, each its own
+    for q in R.mb_wall() + R.east_polys(R.mb_wall) + R.south_polys(R.mb_wall):   # the three sweeps
         s.poly(q, fill=NEWW, stroke='none')
     for q in R.wc_door():                # its door, curved and drawn shut
         s.poly(q, fill='none', stroke=FURN, stroke_width=1.1)
@@ -402,8 +402,8 @@ def main():
     for p in (R.mb_console() + R.mb_cabinet() + R.mb_shelves()
               + R.east(R.mb_console) + R.east(R.mb_cabinet) + R.east(R.mb_shelves)):
         prim(p)
-    for p in R.mb_door(D.MB_DOOR_P) + R.mb_door() + R.bath_divider() + R.gm_curtain_rail():
-        prim(p)                                 # the parents' two doors, the divider
+    for p in R.mb_door(D.MB_DOOR_P) + R.south(R.mb_door) + R.gm_curtain_rail():
+        prim(p)                                 # the parents' door, hers, her rail
     for p in R.help_rack():                     # the curved rack on the apse
         prim(p)
     for p in R.lofts():                         # over help's room and the guest WC, dashed

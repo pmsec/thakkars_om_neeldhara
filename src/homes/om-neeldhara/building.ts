@@ -158,27 +158,15 @@ export const building: BuildingData = {
       notes: 'Closes the suite bay off the store zone.',
     },
     {
-      id: 'W-KIT-HATCH',
-      points: [{ x: 6900, y: 8462.5 }, { x: 8725, y: 8462.5 }],
+      id: 'W-KIT-FRONT',
+      points: [{ x: 5630, y: 7862.5 }, { x: 11450, y: 7862.5 }],
       thickness: 125,
       kind: 'interior',
       openings: [
-        { id: 'D-KIT', type: 'slider', at: [0, 800], head: 2100, label: 'Kitchen door — one 800 leaf of tinted glass, parks west on the family-room face across the duct enclosure' },
-        { id: 'O-HATCH', type: 'window', at: [1000, 1700], head: 2100, sill: 1050, nonCirculating: true, label: 'Serving hatch — 700 over the sink, kitchen to family room' },
+        { id: 'D-KIT', type: 'slider', at: [1270, 2070], head: 2100, label: 'Kitchen door — one 800 leaf of tinted glass, parks west on the family-room face' },
+        { id: 'O-HATCH', type: 'window', at: [2270, 2970], head: 2100, sill: 1050, nonCirculating: true, label: 'Serving hatch — 700 over the sink, kitchen to family room' },
       ],
-    },
-    {
-      id: 'W-KIT-N',
-      points: [{ x: 8600, y: 7862.5 }, { x: 11450, y: 7862.5 }],
-      thickness: 125,
-      kind: 'interior',
-      notes: 'Extended past the drum face so it dies INTO the arc.',
-    },
-    {
-      id: 'W-KIT-NW',
-      points: [{ x: 8662.5, y: 7862.5 }, { x: 8662.5, y: 8462.5 }],
-      thickness: 125,
-      kind: 'interior',
+      notes: 'Duct cheek to apse on the bump line; the 1270 x 475 in front of the secondary duct is a kitchen niche.',
     },
     {
       id: 'W-HELP-N',
@@ -800,7 +788,7 @@ export const building: BuildingData = {
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'At the centroid of his bath’s plumbed fixtures, on the east main duct.' },
     { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 16465.434, y: 9141.59 }, room: 'R-GUEST-BATH', provenance: 'On the builder’s common-toilet zone beside the secondary duct.' },
     { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3837.586, y: 7921.384 }, room: 'R-G-BATH', provenance: 'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
-    { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7738.333, y: 10066.667 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
+    { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7738.333, y: 9866.667 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],
 
   glassRoofs: [

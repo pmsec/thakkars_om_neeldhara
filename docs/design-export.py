@@ -182,14 +182,15 @@ WALLS += [
     w('W-DUCT-E-W', [(18850, 6175), (18850, 8462.5)], 150, 'interior'),
     w('W-BAY-S', [(17505, 9545), (20013, 9545)], 150, 'interior',
       notes='Closes the suite bay off the store zone.'),
-    w('W-KIT-HATCH', [(6900, 8462.5), (8725, 8462.5)], 125, 'interior',
-      [op('D-KIT', 'slider', 0, 800, head=2100,
-          label='Kitchen door — one 800 leaf of tinted glass, parks west on the family-room face across the duct enclosure'),
-       op('O-HATCH', 'window', 1000, 1700, head=2100, sill=1050,
-          label='Serving hatch — 700 over the sink, kitchen to family room')]),
-    w('W-KIT-N', [(8600, 7862.5), (11450, 7862.5)], 125, 'interior',
-      notes='Extended past the drum face so it dies INTO the arc.'),
-    w('W-KIT-NW', [(8662.5, 7862.5), (8662.5, 8462.5)], 125, 'interior'),
+    # THE KITCHEN FRONT IS ONE LINE (Karan's call): the 600 step carried west
+    # to the pod's duct cheek, the door and the hatch in it where they were;
+    # extended past the drum face so it dies INTO the arc
+    w('W-KIT-FRONT', [(5630, 7862.5), (11450, 7862.5)], 125, 'interior',
+      [op('D-KIT', 'slider', 1270, 2070, head=2100,
+          label='Kitchen door — one 800 leaf of tinted glass, parks west on the family-room face'),
+       op('O-HATCH', 'window', 2270, 2970, head=2100, sill=1050,
+          label='Serving hatch — 700 over the sink, kitchen to family room')],
+      notes='Duct cheek to apse on the bump line; the 1270 x 475 in front of the secondary duct is a kitchen niche.'),
     w('W-HELP-N', [(13700, 8462.5), (20013, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120,
           label='Guest WC — from the great room, west of the pod glazing')]),
@@ -1120,7 +1121,7 @@ def room_for(cx, cy):
         return 'R-K-SUITE'
     if cy >= 5935 and cx > mx(2400):
         return 'R-K-SUITE'
-    if cx < 9115 and cy < 8400:
+    if cx < 9115 and cy < 7862.5:
         return 'R-P-FAMILY'
     if cx > 15365 and cy < 8400 and cx < 20013:
         return 'R-K-DEN'
@@ -1130,6 +1131,8 @@ def room_for(cx, cy):
     # the kitchen's bump reaches 11210, so the strip between is the gallery's
     if 10515 <= cx <= 13965 and cy >= 8400:
         return 'R-ENTRY'
+    if cy >= 7862.5 and 5555 < cx < 10400:
+        return 'R-KITCHEN'
     if cy >= 8400 and 5555 < cx < 11210:
         return 'R-KITCHEN'
     # help's room runs from the gallery's east leg round the apse and on under

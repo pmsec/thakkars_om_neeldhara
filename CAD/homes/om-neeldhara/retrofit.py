@@ -602,8 +602,10 @@ def pod_console_runs(side, face):
     py0, py1 = bez(P, t0)[1] - 100, bez(P, t1)[1] + 100
     # the south end: the family pod's face runs to its south wall, the great
     # room's stops 100 clear of the kitchen bump's north face at 7800
-    # the family pod and the great room both stop on the kitchen's front now
-    y_end = 7700 if side == 'w' else 8300
+    # the family pod and the great room both stop on the kitchen's front now;
+    # the den screen's great-room face stops clear of the guest WC door's
+    # swing (the door at 8462 opens out, 800 into the great room)
+    y_end = 7700 if side == 'w' else 7550 if face == 'great' else 8300
     runs = [(2800, py0), (py1, y_end)]
     return [(a, b) for a, b in runs if b - a > 300]
 

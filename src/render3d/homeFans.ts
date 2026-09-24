@@ -63,7 +63,8 @@ export const FAN_SPOTS: Record<string, FanSpot[]> = {
   'om-neeldhara': [
     // THE FAMILY ROOM: one on the bath's east wall for the recliner and the
     // sofa, one on the south wall beside the canvas for the dining table
-    { id: 'fan:h1-family', x: 4542, y: 5600, h: 2150, nx: 1, ny: 0, tx: 6300, ty: 4100, th: 650, where: 'the recliner and the sofa' },
+    // above the pod slider's north jamb (the slider is 4100-5875 now, and a fan cannot sit on a door)
+    { id: 'fan:h1-family', x: 4542, y: 3500, h: 2150, nx: 1, ny: 0, tx: 6300, ty: 4100, th: 650, where: 'the recliner and the sofa' },
     { id: 'fan:h1-dining', x: 6450, y: 8400, h: 2150, nx: 0, ny: -1, tx: 7150, ty: 6700, th: 720, where: 'the dining table' },
     // THE DEN: the duct's two faces - north for the two recliners, west for
     // the drum kit
@@ -78,11 +79,11 @@ export const FAN_SPOTS: Record<string, FanSpot[]> = {
     { id: 'fan:h1-great-3', x: 13900, y: 8400, h: 2200, nx: 0, ny: -1, tx: 13500, ty: 4300, th: 650, where: 'the rocking chair and the armchair' },
     // THE PARENTS' BED: one each side, on the west wall above the headboard's
     // two ends, clear of the window north of it
-    { id: 'fan:h1-pbed-n', x: -450, y: 2015, h: 2150, nx: 1, ny: 0, tx: 900, ty: 2500, th: 700, patchH: 720, dia: 360, where: "the parents' bed, north side" },
+    { id: 'fan:h1-pbed-n', x: -450, y: 2095, h: 2150, nx: 1, ny: 0, tx: 900, ty: 2500, th: 700, patchH: 720, dia: 360, where: "the parents' bed, north side" },
     { id: 'fan:h1-pbed-s', x: -450, y: 4310, h: 2150, nx: 1, ny: 0, tx: 900, ty: 3850, th: 700, patchH: 720, dia: 360, where: "the parents' bed, south side" },
     // KARAN'S BED: the same on the east wall
     { id: 'fan:h1-kbed-n', x: 24930, y: 3364, h: 2150, nx: -1, ny: 0, tx: 23600, ty: 3850, th: 700, patchH: 720, dia: 360, where: "Karan's bed, north side" },
-    { id: 'fan:h1-kbed-s', x: 24930, y: 5520, h: 2150, nx: -1, ny: 0, tx: 23600, ty: 5200, th: 700, patchH: 720, dia: 360, where: "Karan's bed, south side" },
+    { id: 'fan:h1-kbed-s', x: 24930, y: 5440, h: 2150, nx: -1, ny: 0, tx: 23600, ty: 5200, th: 700, patchH: 720, dia: 360, where: "Karan's bed, south side" },
     // THE GRANDMOTHER'S BED: on her bath's west wall, across the dressing to
     // the wall bed
     { id: 'fan:h1-gbed', x: 2731, y: 8330, h: 2150, nx: -1, ny: 0, tx: 800, ty: 8300, th: 650, where: "the grandmother's bed" },

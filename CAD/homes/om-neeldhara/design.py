@@ -744,15 +744,18 @@ _ONCE = [
     # X 2325 — the sweep is north of this line now, so the line meets a flat
     # wall, not a curve.  2775 in all.  Tinted from the floor to the ceiling,
     # the whole length.
-    # CLEAR GLASS NOW, NOT BROWN (Karan's call): the three leaves stay, the
-    # tint goes, and the line stops where it always did at 2325 — nothing
-    # fixed carries it on to the pod wall.
-    ('pane',      -450, 5875, 475, 5915,
-     "sliding screen  ·  clear glass, leaf 1 of 3, 925, north track"),
-    ('pane',      475, 5915, 1400, 5955,
-     "sliding screen  ·  clear glass, leaf 2 of 3, 925, middle track"),
-    ('pane',      1400, 5955, 2325, 5995,
-     "sliding screen  ·  clear glass, leaf 3 of 3, 925, south track"),
+    # CLEAR GLASS, NOT BROWN, AND THE WHOLE DIVIDE (Karan's call): three
+    # leaves of 1639 on a triple track run from the west wall to the pod
+    # wall, so shut they close the line end to end; open they stack at the
+    # EAST end against the pod wall, over the grandmother's arch's crown —
+    # the tracks sit 20 north of the crown's outer face, so the stack clears
+    # it.  Drawn shut.
+    ('pane',      -450, 5855, 1189, 5895,
+     "sliding screen  ·  clear glass, leaf 1 of 3, 1639, north track"),
+    ('pane',      1189, 5895, 2828, 5935,
+     "sliding screen  ·  clear glass, leaf 2 of 3, 1639, middle track"),
+    ('pane',      2828, 5935, MB_XE, 5975,
+     "sliding screen  ·  clear glass, leaf 3 of 3, 1639, south track — the three stack here, open"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN

@@ -715,6 +715,180 @@ function treeGroup(M: Mats, w: number, d: number, height: number): THREE.Group {
  * Built with its front on local +z and turned to face away from the wall it
  * backs on to.
  */
+/**
+ * A run of the pod-screen console: a walnut cabinet with doors and brass
+ * pulls on its room face, a recessed dark plinth, a shadow gap under the
+ * top, and the top dressed with pots and small mid-century objects, spaced
+ * along the run (Karan's call). The drawn outline is the run's footprint:
+ * the chain of points 10 off the glass is its back, the rest its front.
+ * Where the run swells for Karan's desk the front is left open for the
+ * knees and the top clear for the desk.
+ */
+function podConsole(f: FurnitureItem, M: Mats): THREE.Group | null {
+  if (!f.poly || f.poly.length < 6) return null
+  const g = new THREE.Group()
+  const H = f.height || 750
+  const glass = model.walls.filter((w) => w.kind === 'curved-glass')
+  const distGlass = (q: { x: number; y: number }): number => {
+    let best = Infinity
+    for (const w of glass) for (let k = 1; k < w.points.length; k++) {
+      const a = w.points[k - 1], b = w.points[k]
+      const L2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2
+      const t = L2 ? Math.max(0, Math.min(1, ((q.x - a.x) * (b.x - a.x) + (q.y - a.y) * (b.y - a.y)) / L2)) : 0
+      best = Math.min(best, Math.hypot(q.x - (a.x + t * (b.x - a.x)), q.y - (a.y + t * (b.y - a.y))))
+    }
+    return best
+  }
+  const poly = f.poly
+  const n = poly.length
+  const isBack = poly.map((q) => distGlass(q) < 60)
+  if (!isBack.some(Boolean) || isBack.every(Boolean)) return null
+  // the two chains, each in the outline's order
+  const chain = (want: boolean): { x: number; y: number }[] => {
+    let start = 0
+    while (!(isBack[start] === want && isBack[(start - 1 + n) % n] !== want)) { start++; if (start >= n) return [] }
+    const out: { x: number; y: number }[] = []
+    for (let k = 0; k < n && isBack[(start + k) % n] === want; k++) out.push(poly[(start + k) % n])
+    return out
+  }
+  const back = chain(true), front = chain(false)
+  if (back.length < 2 || front.length < 2) return null
+  const cxB = back.reduce((t, q) => t + q.x, 0) / back.length, cyB = back.reduce((t, q) => t + q.y, 0) / back.length
+  const cxF = front.reduce((t, q) => t + q.x, 0) / front.length, cyF = front.reduce((t, q) => t + q.y, 0) / front.length
+  // depth of the run at a front point: its distance to the glass
+  const depthAt = (q: { x: number; y: number }): number => distGlass(q)
+
+  // the carcass on a recessed plinth, the top slab, a shadow gap under it
+  const inset = (pts: { x: number; y: number }[], by: number) => pts.map((q) => {
+    const d = distGlass(q); if (d < 60) return q
+    const vx = cxB - q.x, vy = cyB - q.y; const L = Math.hypot(vx, vy) || 1
+    return { x: q.x + (vx / L) * by, y: q.y + (vy / L) * by }
+  })
+  const plinth = polyPiece(inset(poly, 40), 0, 80, M.trunk, f.room)
+  if (plinth) g.add(plinth)
+  const body = polyPiece(inset(poly, 20), 80, H - 36, M.walnut, f.room)   // the doors hang 20 back under the top's nosing
+  if (body) g.add(body)
+  const gap = polyPiece(inset(poly, 6), H - 36, H - 30, M.trunk, f.room)
+  if (gap) g.add(gap)
+  const top = polyPiece(poly, H - 30, H, M.walnut, f.room)
+  if (top) g.add(top)
+
+  // doors along the front, 420-480 wide, each a slab standing 10 proud with a
+  // vertical brass pull at its leading edge - none where the run is a desk
+  const acc = [0]
+  for (let i = 1; i < front.length; i++) acc.push(acc[i - 1] + Math.hypot(front[i].x - front[i - 1].x, front[i].y - front[i - 1].y))
+  const L = acc[acc.length - 1]
+  const at = (s: number): { x: number; y: number } => {
+    const t = Math.max(0, Math.min(L, s))
+    let i = 1
+    while (i < acc.length - 1 && acc[i] < t) i++
+    const u = (t - acc[i - 1]) / Math.max(1, acc[i] - acc[i - 1])
+    return { x: front[i - 1].x + (front[i].x - front[i - 1].x) * u, y: front[i - 1].y + (front[i].y - front[i - 1].y) * u }
+  }
+  const nDoors = Math.max(1, Math.round(L / 450))
+  const doorL = L / nDoors
+  for (let k = 0; k < nDoors; k++) {
+    const a = at(k * doorL + 6), b = at((k + 1) * doorL - 6)
+    const mid = at((k + 0.5) * doorL)
+    if (depthAt(mid) > 420) continue                       // the desk: knees, not doors
+    const dx = b.x - a.x, dy = b.y - a.y
+    const len = Math.hypot(dx, dy) || 1
+    const ux = dx / len, uy = dy / len
+    let nx = -uy, ny = ux
+    if ((cxB - mid.x) * nx + (cyB - mid.y) * ny > 0) { nx = -nx; ny = -ny }   // outward, away from the glass
+    const ang = Math.atan2(-uy, ux)                        // local x along the run
+    const put = (o: number, h: number, m: THREE.Mesh) => {
+      m.position.set((mid.x + nx * o) * S, h * S, (mid.y + ny * o) * S)
+      m.rotation.y = ang
+      g.add(m)
+    }
+    put(-12, 80 + (H - 36 - 80) / 2, box(len - 6, H - 36 - 80 - 10, 16, M.walnut))   // face 4 back from the drawn line
+    // the pull: a slim vertical brass bar near the door's leading edge
+    const pull = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, 180 * S, 8), M.brass)
+    pull.position.set((mid.x + ux * (k % 2 ? -1 : 1) * (len / 2 - 60) + nx * 2) * S, (H - 36 - 150) * S, (mid.y + uy * (k % 2 ? -1 : 1) * (len / 2 - 60) + ny * 2) * S)
+    g.add(pull)
+  }
+
+  // on the top: pots and objects, spaced along the run near the glass
+  const accB = [0]
+  for (let i = 1; i < back.length; i++) accB.push(accB[i - 1] + Math.hypot(back[i].x - back[i - 1].x, back[i].y - back[i - 1].y))
+  const LB = accB[accB.length - 1]
+  const atB = (s: number): { x: number; y: number } => {
+    const t = Math.max(0, Math.min(LB, s))
+    let i = 1
+    while (i < accB.length - 1 && accB[i] < t) i++
+    const u = (t - accB[i - 1]) / Math.max(1, accB[i] - accB[i - 1])
+    return { x: back[i - 1].x + (back[i].x - back[i - 1].x) * u, y: back[i - 1].y + (back[i].y - back[i - 1].y) * u }
+  }
+  const seed = Math.round(f.x + f.y)
+  const step = 640
+  const nSt = Math.max(1, Math.floor((LB - 300) / step))
+  const margin = (LB - (nSt - 1) * step) / 2
+  for (let k = 0; k < nSt; k++) {
+    const q = atB(margin + k * step)
+    const q2 = atB(margin + k * step + 20)
+    let nx = -(q2.y - q.y), ny = q2.x - q.x
+    const m = Math.hypot(nx, ny) || 1; nx /= m; ny /= m
+    if ((cxF - q.x) * nx + (cyF - q.y) * ny < 0) { nx = -nx; ny = -ny }   // toward the room face
+    // the top is 300 deep here (or the desk, which stays clear)
+    const fx = q.x + nx * 150, fy = q.y + ny * 150
+    const on = (o: number): boolean => pointInPolygon({ x: q.x + nx * o, y: q.y + ny * o }, poly)
+    if (!on(250)) continue                                     // the top is shallower here: not on this run
+    if (on(450)) continue                                      // the desk stretch stays clear
+    const kind = (seed + k) % 5
+    const ux = ny, uy = -nx                                   // along the run
+    const ang0 = Math.atan2(-uy, ux)
+    // (along, height, out): out is toward the room face; everything stays within the 300 top
+    const set = (o: THREE.Object3D, along: number, h: number, out: number) => { o.position.set((fx + ux * along + nx * out) * S, (H + h) * S, (fy + uy * along + ny * out) * S); g.add(o) }
+    if (kind === 0 || kind === 3) {
+      // a glazed pot with a leafy plant
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(72 * S, 56 * S, 150 * S, 18), kind === 0 ? M.porcelain : M.pot)
+      set(pot, 0, 75, 0)
+      const soil = new THREE.Mesh(new THREE.CylinderGeometry(66 * S, 66 * S, 8 * S, 18), M.soil)
+      set(soil, 0, 148, 0)
+      for (let j = 0; j < 4; j++) {
+        const a = j * 1.7 + k
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 4 * S, (200 + j * 40) * S, 6), M.trunk)
+        stem.rotation.z = Math.cos(a) * 0.25; stem.rotation.x = Math.sin(a) * 0.25
+        set(stem, Math.cos(a) * 20, 150 + (200 + j * 40) / 2, Math.sin(a) * 20)
+        const leaf = new THREE.Mesh(new THREE.SphereGeometry(50 * S, 8, 6), j % 2 ? M.leaf : M.leafDark)
+        leaf.scale.set(1.4, 0.35, 0.9); leaf.rotation.y = a
+        set(leaf, Math.cos(a) * 45, 150 + 200 + j * 40, Math.sin(a) * 45)
+      }
+    } else if (kind === 1) {
+      // a brass sculpture: a sphere balanced on a cone, on a walnut plinth
+      set(box(120, 20, 120, M.walnut), 0, 10, 0)
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(48 * S, 150 * S, 20), M.brass)
+      set(cone, 0, 20 + 75, 0)
+      const ball = new THREE.Mesh(new THREE.SphereGeometry(52 * S, 16, 12), M.brass)
+      set(ball, 0, 20 + 150 + 44, 0)
+    } else if (kind === 2) {
+      // a tall stone vase with a few dried stems
+      const prof = [[0, 0], [52, 0], [62, 60], [48, 200], [30, 300], [34, 330]].map(([r, y]) => new THREE.Vector2(r * S, y * S))
+      const vase = new THREE.Mesh(new THREE.LatheGeometry(prof, 20), M.carved)
+      set(vase, 0, 0, 0)
+      for (let j = 0; j < 3; j++) {
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(2 * S, 3 * S, 360 * S, 5), M.trunk)
+        stem.rotation.z = (j - 1) * 0.12; stem.rotation.x = 0.1 * j
+        set(stem, (j - 1) * 14, 330 + 150, 0)
+        const bud = new THREE.Mesh(new THREE.SphereGeometry(14 * S, 8, 6), M.pot)
+        set(bud, (j - 1) * 14 - (j - 1) * 40, 330 + 340, -j * 30)
+      }
+    } else {
+      // a shallow teak bowl with a small ceramic bird beside it
+      const prof = [[0, 0], [40, 0], [90, 30], [105, 60]].map(([r, y]) => new THREE.Vector2(r * S, y * S))
+      const bowl = new THREE.Mesh(new THREE.LatheGeometry(prof, 22), M.timber)
+      set(bowl, -70, 0, 0)
+      const bird = new THREE.Mesh(new THREE.SphereGeometry(40 * S, 12, 8), M.porcelain)
+      bird.scale.set(1.5, 0.9, 0.9); bird.rotation.y = ang0
+      set(bird, 130, 40, 0)
+      const head = new THREE.Mesh(new THREE.SphereGeometry(22 * S, 10, 8), M.porcelain)
+      set(head, 185, 72, 0)
+    }
+  }
+  return g
+}
+
 function crockeryCloset(f: FurnitureItem, M: Mats): THREE.Group {
   const g = new THREE.Group()
   const w = f.w, d = f.d
@@ -888,6 +1062,8 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
 
   // the crockery closet by the kitchen door: its own mid-century cabinet
   if (f.kind === 'wardrobe' && /crockery/i.test(f.label)) return crockeryCloset(f, M)
+  // the runs along the pod screens: cabinets with dressed tops
+  if (f.kind === 'console' && /pod screen console/i.test(f.label)) { const pc = podConsole(f, M); if (pc) return pc }
   // a piece the label names outright - a WC, a fridge, a shower tray, a lounge
   // swivel, a daybed - drawn as that thing rather than as the nearest box
   const named = importedPiece(f, { M, box, basePrism, place })

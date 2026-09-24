@@ -142,7 +142,7 @@ G_BATH_W = MB_XE - MB_XW            # 1530
 # north of the glass line, the dressing zone's south.  The pod slider sits on
 # this stretch of the pod wall, from the parents' arch cupboard to the glass.
 MB_MID = 5450
-SL_P = (3600, 5875)                 # the parents' pod slider, Y: from where the arch's outer face lands on this wall (3575) to the glass line — no stub of wall between (Karan's call)
+SL_P = (3575, 5875)                 # the parents' pod slider, Y: from where the arch's outer face lands on this wall (3575) to the glass line — no stub of wall between (Karan's call)
 # Karan's sweep, as first drawn: crown 5950 at X 3165, west face 2475,
 # meets the pod wall at 6550, turns vertical at 6715, east wall from 6650,
 # shelves to 7500.

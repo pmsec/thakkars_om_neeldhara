@@ -567,7 +567,7 @@ export const building: BuildingData = {
       openings: [
         { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [2155.254, 2978.772], head: 2400, label: "Arched portal — open, no doors (Karan's call)" },
       ],
-      label: 'Family pod — curved glass screen',
+      label: 'Family pod — curved glass screen; timber slat blinds on the pod side either side of the portal, lift to open',
     },
     {
       id: 'W-CURVE-KARAN',
@@ -613,7 +613,7 @@ export const building: BuildingData = {
       openings: [
         { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2400, label: "Arched portal — open, no doors (Karan's call)" },
       ],
-      label: 'Den pod — curved glass screen, wood dado below',
+      label: 'Den pod — curved glass screen, wood dado below; timber slat blinds on the pod side either side of the portal, lift to open',
     },
     {
       id: 'W-GAL-ARC-1',

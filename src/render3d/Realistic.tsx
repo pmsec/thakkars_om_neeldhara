@@ -2561,6 +2561,106 @@ function timberBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   return g
 }
 
+/**
+ * Timber slat blinds on the POD side of each curved glass screen, either side
+ * of its arched portal (Karan's call, after Ekta's kitchen blind). The curve
+ * is gentle, so each stretch is a run of 700-wide chord panels under one
+ * continuous head box line: teak head box, slats on ladder tapes, a bottom
+ * rail, one pull cord at the portal end. Shut they cover from just above the
+ * console to the head; open they stack under the head box. Each stretch is
+ * its own item with a button both sides; blinds start open (drawn up).
+ */
+function curvedBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  for (const w of model.walls) {
+    if (!/blind/i.test(w.def.label ?? '') || w.def.kind !== 'curved-glass') continue
+    const pts = w.points
+    const cum: number[] = [0]
+    for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y))
+    const L = cum[cum.length - 1]
+    const at = (s: number): { x: number; y: number } => {
+      const t = Math.max(0, Math.min(L, s))
+      let i = 1
+      while (i < cum.length - 1 && cum[i] < t) i++
+      const f = (t - cum[i - 1]) / Math.max(1, cum[i] - cum[i - 1])
+      return { x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * f, y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * f }
+    }
+    // the pod side: toward the pod this screen bounds
+    const pod = model.roomById.get(w.id === 'W-CURVE-PARENTS' ? 'R-P-FAMILY' : 'R-K-DEN')
+    // stretches: the run either side of every portal, 60 clear of its jambs
+    const cuts = w.openings.map((op) => [op.from - 60, op.to + 60] as [number, number]).sort((a, b) => a[0] - b[0])
+    const runs: Array<[number, number]> = []
+    let s0 = 40
+    for (const [a, b] of cuts) { if (a - s0 > 300) runs.push([s0, a]); s0 = b }
+    if (L - 40 - s0 > 300) runs.push([s0, L - 40])
+    const sill = 850, head = 3400
+    const out = w.thickness / 2 + 48
+    const slatW = 46, pitch = mode === 'shut' ? 50 : 9
+    const bottom = mode === 'shut' ? sill + 30 : head - 170
+    const tilt = mode === 'shut' ? 0.5 : 0.08
+    runs.forEach(([ra, rb], n) => {
+      const item = new THREE.Group()
+      const nPanels = Math.max(1, Math.round((rb - ra) / 700))
+      const panel = (rb - ra) / nPanels
+      let hEnd = head - 30
+      for (let k = 0; k < nPanels; k++) {
+        const pa = at(ra + k * panel), pb = at(ra + (k + 1) * panel)
+        const cx = (pa.x + pb.x) / 2, cy = (pa.y + pb.y) / 2
+        const dx = pb.x - pa.x, dy = pb.y - pa.y
+        const len = Math.hypot(dx, dy) || 1
+        const ux = dx / len, uy = dy / len
+        let nx = -uy, ny = ux
+        if (pod && (pod.centroid.x - cx) * nx + (pod.centroid.y - cy) * ny < 0) { nx = -nx; ny = -ny }
+        const ang = Math.atan2(ux, uy)
+        const put = (o: number, h: number, m: THREE.Object3D, tl = 0) => {
+          m.position.set((cx + nx * o) * S, h * S, (cy + ny * o) * S)
+          m.rotation.set(0, ang, tl, 'YXZ')
+          item.add(m)
+        }
+        put(out, head + 45, box(76, 90, len + 12, M.teak))                       // the head box
+        let h = head - 30
+        for (; h > bottom; h -= pitch) put(out, h, box(6, slatW, len - 30, M.teak), tilt)
+        hEnd = h
+        put(out, h + pitch - 30, box(12, 28, len - 24, M.teak))                  // the bottom rail
+        for (const e of [-0.3, 0.3]) {                                          // ladder tapes
+          const tx = cx + ux * e * len, ty = cy + uy * e * len
+          for (const side of [-22, 22]) {
+            const tape = box(3, head - h + 20, 16, M.trunk)
+            tape.position.set((tx + nx * (out + side)) * S, ((head + h) / 2) * S, (ty + ny * (out + side)) * S)
+            tape.rotation.set(0, ang, 0, 'YXZ')
+            item.add(tape)
+          }
+        }
+      }
+      // one pull cord, at the portal end of the run
+      const endS = n === 0 && runs.length > 1 ? rb - 60 : ra + 60
+      const pe = at(endS), pn = at(endS + 10)
+      let nx = -(pn.y - pe.y), ny = pn.x - pe.x
+      const m = Math.hypot(nx, ny) || 1; nx /= m; ny /= m
+      if (pod && (pod.centroid.x - pe.x) * nx + (pod.centroid.y - pe.y) * ny < 0) { nx = -nx; ny = -ny }
+      const cordL = mode === 'shut' ? 700 : Math.min(1300, head - sill - 100)
+      const cord = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 3 * S, cordL * S, 6), M.trunk)
+      cord.position.set((pe.x + nx * (out + 30)) * S, (head - cordL / 2) * S, (pe.y + ny * (out + 30)) * S)
+      item.add(cord)
+      const pull = new THREE.Mesh(new THREE.CylinderGeometry(10 * S, 8 * S, 60 * S, 8), M.teak)
+      pull.position.set((pe.x + nx * (out + 30)) * S, (head - cordL - 25) * S, (pe.y + ny * (out + 30)) * S)
+      item.add(pull)
+      void hEnd
+      const mid = at((ra + rb) / 2)
+      const mn = at((ra + rb) / 2 + 10)
+      let mx = -(mn.y - mid.y), my = mn.x - mid.x
+      const mm = Math.hypot(mx, my) || 1; mx /= mm; my /= mm
+      if (pod && (pod.centroid.x - mid.x) * mx + (pod.centroid.y - mid.y) * my < 0) { mx = -mx; my = -my }
+      tagItem(item, `blind:${w.id}:${n}`, mode, [
+        { x: mid.x + mx * 400, y: mid.y + my * 400, h: 1500 },
+        { x: mid.x - mx * 400, y: mid.y - my * 400, h: 1500 },
+      ])
+      g.add(item)
+    })
+  }
+  return g
+}
+
 export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   const ceiling = model.data.levels.ceiling
@@ -2615,6 +2715,17 @@ type ItemAnchor = { x: number; y: number; h: number }
 /** the pieces that start SHUT (or off) whatever the Doors switch says: the lift-up beds and the fans */
 function startsShut(id: string): boolean {
   return id.startsWith('liftbed') || id.startsWith('fan')
+}
+
+/**
+ * A piece's state before anyone has touched it: fans and lift-up beds start
+ * shut, the pod-screen blinds start DRAWN UP (Karan's call), everything else
+ * follows the Doors switch.
+ */
+function defaultOpen(id: string, doorsShut: boolean): boolean {
+  if (startsShut(id)) return false
+  if (id.startsWith('blind:W-CURVE')) return true
+  return !doorsShut
 }
 
 /**
@@ -4803,6 +4914,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(hingedDoors(M, mode))
     set.add(hatchSash(M, mode))
     set.add(timberBlinds(M, mode))
+    set.add(curvedBlinds(M, mode))
     set.add(awningWindows(M, mode))
     set.add(meshScreens(M, mode))
     set.add(foldingDoors(M, mode))
@@ -5761,7 +5873,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       const id = o.userData.item as string | undefined
       if (id && o.userData.mode) {
         // a lift-up bed starts shut whatever the Doors switch says
-        const open = items[id] ?? (startsShut(id) ? false : !shut)
+        const open = items[id] ?? defaultOpen(id, shut)
         o.visible = (o.userData.mode === 'open') === open
         pieces++
       }
@@ -5789,7 +5901,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
     if (id === 'wallbed') return { ...st, show3d: { ...s3, wallBedDown: !s3.wallBedDown } }
     if (id === 'dryer') return { ...st, show3d: { ...s3, dryerDown: !s3.dryerDown } }
     if (id === 'roof') return { ...st, show3d: { ...s3, roofOpen: !s3.roofOpen } }
-    const open = s3.itemOpen[id] ?? (startsShut(id) ? false : !s3.doorsShut)
+    const open = s3.itemOpen[id] ?? defaultOpen(id, s3.doorsShut)
     return { ...st, show3d: { ...s3, itemOpen: { ...s3.itemOpen, [id]: !open } } }
   })
   // EVERYTHING STARTS SHUT (Karan's call, both homes): whenever the
@@ -6448,7 +6560,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
       {showTouch && nearItems.length > 0 && (() => {
         // what each piece is, and which way it is
         const describe = (id: string) => {
-          const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : id === 'roof' ? roofOpen : (itemOpen[id] ?? (startsShut(id) ? false : !doorsShut))
+          const open = id === 'wallbed' ? wallBed : id === 'dryer' ? dryerDown : id === 'roof' ? roofOpen : (itemOpen[id] ?? defaultOpen(id, doorsShut))
           const kind = id.split(':')[0]
           const noun =
             kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'

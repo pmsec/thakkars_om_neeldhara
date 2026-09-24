@@ -403,9 +403,9 @@ def pod_wall(P, portal, wid, label, y_end):
 
 WALLS += [
     pod_wall(D.POD_W, D.POD_PORTAL_W, 'W-CURVE-PARENTS',
-             'Family pod — curved glass screen', 7862.5),
+             'Family pod — curved glass screen; timber slat blinds on the pod side either side of the portal, lift to open', 7862.5),
     pod_wall(D.POD_E, D.POD_PORTAL_E, 'W-CURVE-KARAN',
-             'Den pod — curved glass screen, wood dado below', 8462.5),
+             'Den pod — curved glass screen, wood dado below; timber slat blinds on the pod side either side of the portal, lift to open', 8462.5),
 ]
 
 # --- the entry gallery drum: solid arc segments + threshold gaps with doors

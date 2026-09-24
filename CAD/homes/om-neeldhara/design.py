@@ -100,8 +100,12 @@ MB_XW = 2875                        # the builder's west face, both baths
 MB_CX = MB_XW - T_MB / 2 + MB_RW    # 3565 — the crown's X, on the centreline
 MB_AE = 1050                        # east flank semi-axis: 840 to the pod wall at the same 0.8 as before
 MB_SGN = -1                         # the parents' arch is at the SOUTH end
-MB_YW = 3780                        # the builder's south face of toilet 01: where the flank has turned vertical
-MB_CY = MB_YW + MB_RW               # 4545 — the crown, southmost
+# THE ARCH STAYS NORTH OF THE POD SLIDER (Karan's call): its outer face at
+# the crown lands on the slider's north jamb at 4100, so from the pod the
+# way into the suite is not blocked by the drum.  That takes 520 off the
+# builder's rectangle: the straight part is 1350-3260 now, the arch beyond.
+MB_YW = 3260                        # where the flank has turned vertical
+MB_CY = MB_YW + MB_RW               # 4025 — the crown, southmost; outer face 4100
 MB_YE = MB_CY - 600                 # 3945 — where the centreline meets the pod wall
 MB_BE = 600 / (1 - _m.sqrt(1 - ((MB_XE - MB_CX) / MB_AE) ** 2))
 MB_FAR = 1350                       # the far end: the builder's duct wall
@@ -110,7 +114,7 @@ MB_SHELF_END = None                 # no linen shelves: the shower stands on the
 # The parents' door: on the straight tail, hard against the arch's foot —
 # 800, Y 2950-3750, from the bed zone.  Offsets run from MB_YW AWAY from the
 # crown, so they are the same shape as the others.
-MB_DOOR_P = (30, 830)
+MB_DOOR_P = (60, 860)               # Y 2400-3200, 50 clear of the shower
 # The grandmother's: toilet 02, the usual way up.  Crown at 6350, meets the
 # pod wall at 6950, turns vertical at 7115 on the builder's north face; her
 # door where it always was, 800 at Y 7300-8100, from her zone.
@@ -854,7 +858,7 @@ _ONCE = [
     # curved vanity in the arch at the south end.  The pan's waste runs
     # ~1300 under the builder's sunk slab to the stack in the void north of
     # the bath — his own toilet drained the same way.
-    ('shower',   MB_XW, MB_FAR, MB_XW + 900, MB_FAR + 1270, 'walk-in, 1270 x 900 on the duct wall, glass screen east and south, door on the south'),
+    ('shower',   MB_XW, MB_FAR, MB_XW + 900, MB_FAR + 1000, 'walk-in, 1000 x 900 on the duct wall, glass screen east and south, door on the south'),
     ('wc-e',     3725, 2700, 4405, 3090, "pan on the pod wall: waste runs under the sunk slab to the builder's toilet duct"),
     # SOUTH HALF, the grandmother's: the pan and the walk-in shower exactly
     # where the bath always had them, and a wall-hung basin of her own on the

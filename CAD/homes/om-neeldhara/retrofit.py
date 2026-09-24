@@ -219,8 +219,8 @@ def poly_rooms():
         # not the mirror of the parents' anchor any more: that point is inside
         # Karan's bed.  His label sits in the open floor west of it.
         ('MASTER SUITE', 'KARAN', mirror_poly(suite_k), suite_note, (21300, 4400)),
-        ("PARENTS' BATH", '', bath_p, 'the builder\'s 5\'-0" x 8\'-0"  ·  arch at the south',
-         (3640, 2780)),
+        ("PARENTS' BATH", '', bath_p, '5\'-0" wide  ·  arch at the south, north of the slider',
+         (3640, 2400)),
         ("GRANDMOTHER'S BATH", '', bath_g, 'the builder\'s 5\'-0" x 8\'-0"  ·  rounded corner',
          (3640, 8330)),
         ("KARAN'S BATH", '', mirror_poly(bath_k), bath_note, (D.M(3140), 7750)),

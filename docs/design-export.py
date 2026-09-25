@@ -158,7 +158,7 @@ WALLS += [
     # BOTH OF THE WEST WING'S BATHS ARE ON THE BUILDER'S FOOTPRINTS: the
     # parents' on his M.TOILET 01 at the north end of the strip (2875-4405 x
     # 1350-3780, backing on to the void that carries its stacks), the
-    # grandmother's on M.TOILET 02 at the south end (7115-9545).  Each has
+    # grandmother's on M.TOILET 02 at the south end (6802-9545, a foot longer).  Each has
     # its arch on the entry side — theirs at the south, hers at the north —
     # and the one cubicle with the folding divider is gone.  The parents'
     # tail runs from their arch's foot NORTH to the void wall; offsets on it
@@ -545,8 +545,8 @@ ROOMS = [
      'stays north of the pod slider: 900 walk-in shower on the duct wall, WC on the '
      'pod wall, the curved vanity in the arch; its own door from the bed zone.'),
     ('R-G-BATH', "Grandmother's bath", (3640, 8330), 'wet', 'parents', True,
-     'Stone', 'The builder’s M.TOILET 02 exactly, 5’-0” x 8’-0”, its north-west corner '
-     'rounded: WC, walk-in shower, her own wall-hung basin — not shared with the parents.'),
+     'Stone', 'The builder’s M.TOILET 02 stretched a foot north, 5’-0” x 9’-0”, its north-west '
+     'corner rounded: WC, walk-in shower, her own wall-hung basin — not shared with the parents.'),
     ('R-K-SUITE', 'Master suite — Karan', (mx(1500), 3500), 'habitable', 'karan', True,
      'Oak plank', 'The king bed, headboard window-jamb to window-jamb; the dressing '
      'zone south of the screen, with two hanging wardrobes and the dresser.'),

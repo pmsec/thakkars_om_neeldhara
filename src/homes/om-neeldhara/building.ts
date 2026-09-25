@@ -60,11 +60,11 @@ export const building: BuildingData = {
     },
     {
       id: 'W-G-BATH-W',
-      points: [{ x: 2800, y: 7440 }, { x: 2800, y: 9695 }],
+      points: [{ x: 2800, y: 7127 }, { x: 2800, y: 9695 }],
       thickness: 150,
       kind: 'interior',
       openings: [
-        { id: 'D-G-BATH', type: 'door', at: [60, 860], head: 2100, hinge: 1, side: 1, label: "Grandmother's bath door — from her zone" },
+        { id: 'D-G-BATH', type: 'door', at: [373, 1173], head: 2100, hinge: 1, side: 1, label: "Grandmother's bath door — from her zone" },
       ],
     },
     {
@@ -443,11 +443,11 @@ export const building: BuildingData = {
     {
       id: 'W-G-BATH-N',
       points: [
-        { x: 2800, y: 7440 }, { x: 2800.932, y: 7412.703 }, { x: 2803.726, y: 7385.533 }, { x: 2808.366, y: 7358.618 }, { x: 2814.833, y: 7332.081 }, { x: 2823.096, y: 7306.048 },
-        { x: 2833.115, y: 7280.64 }, { x: 2844.846, y: 7255.974 }, { x: 2858.232, y: 7232.166 }, { x: 2873.212, y: 7209.328 }, { x: 2889.715, y: 7187.565 }, { x: 2907.666, y: 7166.979 },
-        { x: 2926.979, y: 7147.666 }, { x: 2947.565, y: 7129.715 }, { x: 2969.328, y: 7113.212 }, { x: 2992.166, y: 7098.232 }, { x: 3015.974, y: 7084.846 }, { x: 3040.64, y: 7073.115 },
-        { x: 3066.048, y: 7063.096 }, { x: 3092.081, y: 7054.833 }, { x: 3118.618, y: 7048.366 }, { x: 3145.533, y: 7043.726 }, { x: 3172.703, y: 7040.932 }, { x: 3200, y: 7040 },
-        { x: 4467, y: 7040 },
+        { x: 2800, y: 7127 }, { x: 2800.932, y: 7099.703 }, { x: 2803.726, y: 7072.533 }, { x: 2808.366, y: 7045.618 }, { x: 2814.833, y: 7019.081 }, { x: 2823.096, y: 6993.048 },
+        { x: 2833.115, y: 6967.64 }, { x: 2844.846, y: 6942.974 }, { x: 2858.232, y: 6919.166 }, { x: 2873.212, y: 6896.328 }, { x: 2889.715, y: 6874.565 }, { x: 2907.666, y: 6853.979 },
+        { x: 2926.979, y: 6834.666 }, { x: 2947.565, y: 6816.715 }, { x: 2969.328, y: 6800.212 }, { x: 2992.166, y: 6785.232 }, { x: 3015.974, y: 6771.846 }, { x: 3040.64, y: 6760.115 },
+        { x: 3066.048, y: 6750.096 }, { x: 3092.081, y: 6741.833 }, { x: 3118.618, y: 6735.366 }, { x: 3145.533, y: 6730.726 }, { x: 3172.703, y: 6727.932 }, { x: 3200, y: 6727 },
+        { x: 4467, y: 6727 },
       ],
       thickness: 150,
       kind: 'interior',
@@ -742,9 +742,9 @@ export const building: BuildingData = {
     { id: 'R-VOID-W', name: 'Void store (west)', anchor: { x: 8300, y: 1900 }, category: 'storage', zone: 'shared', carpet: true, finish: 'Screed', notes: 'The retained builder void, floored as bulk storage with the builder’s agreement; a 700 door on to the deck walk. The west recliner backs on to it.' },
     { id: 'R-VOID-E', name: 'Void store (east)', anchor: { x: 16180, y: 1900 }, category: 'storage', zone: 'shared', carpet: true, finish: 'Screed', notes: 'The retained builder void, floored as bulk storage with the builder’s agreement; a 700 door on to the deck walk. The east recliner backs on to it.' },
     { id: 'R-P-SUITE', name: 'Master suite — parents', anchor: { x: 1500, y: 3500 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 193, notes: 'Bed zone north of the tinted-glass partition; opens full-width to the terrace. The bath stands in the north-east corner on the builder’s toilet footprint, its arch facing south with a full-height cupboard curled round it.' },
-    { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 143, notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — behind a partition of brown tinted glass end to end, three bypass leaves that stack into a third of it.' },
+    { id: 'R-P-DRESSING', name: "Parents' dressing", anchor: { x: 1200, y: 8000 }, category: 'circulation', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 137, notes: 'The grandmother’s Murphy bed — a queen, folded away 51 weeks a year — behind a partition of brown tinted glass end to end, three bypass leaves that stack into a third of it.' },
     { id: 'R-P-BATH', name: "Parents' bath", anchor: { x: 3640, y: 2400 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 40, notes: 'On the builder’s M.TOILET 01 footprint, 5’-0” wide, shortened so its arch stays north of the pod slider: 900 walk-in shower on the duct wall, WC on the pod wall, the curved vanity in the arch; its own door from the bed zone.' },
-    { id: 'R-G-BATH', name: "Grandmother's bath", anchor: { x: 3640, y: 8330 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 40, notes: 'The builder’s M.TOILET 02 exactly, 5’-0” x 8’-0”, its north-west corner rounded: WC, walk-in shower, her own wall-hung basin — not shared with the parents.' },
+    { id: 'R-G-BATH', name: "Grandmother's bath", anchor: { x: 3640, y: 8330 }, category: 'wet', zone: 'parents', carpet: true, finish: 'Stone', publishedSqFt: 45, notes: 'The builder’s M.TOILET 02 stretched a foot north, 5’-0” x 9’-0”, its north-west corner rounded: WC, walk-in shower, her own wall-hung basin — not shared with the parents.' },
     { id: 'R-K-SUITE', name: 'Master suite — Karan', anchor: { x: 22980, y: 3500 }, category: 'habitable', zone: 'karan', carpet: true, finish: 'Oak plank', publishedSqFt: 350, notes: 'The king bed, headboard window-jamb to window-jamb; the dressing zone south of the screen, with two hanging wardrobes and the dresser.' },
     { id: 'R-K-BATH', name: "Karan's bath", anchor: { x: 21080, y: 8000 }, category: 'wet', zone: 'karan', carpet: true, finish: 'Stone', publishedSqFt: 69, notes: 'Mirror of the parents’ bath.' },
     { id: 'R-P-FAMILY', name: 'Family room', anchor: { x: 6550, y: 5000 }, category: 'habitable', zone: 'parents', carpet: true, finish: 'Oak plank', publishedSqFt: 230, notes: 'The west pod: six-seat dining behind the curved glass screen, serving hatch straight from the kitchen.' },
@@ -765,7 +765,7 @@ export const building: BuildingData = {
     { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3745.92, y: 2748.616 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures; the stack is in the builder’s toilet void north of the bath, reached through his 750 opening — confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'At the centroid of his bath’s plumbed fixtures, on the east main duct.' },
     { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 16465.434, y: 9141.59 }, room: 'R-GUEST-BATH', provenance: 'On the builder’s common-toilet zone beside the secondary duct.' },
-    { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3696.667, y: 8068.333 }, room: 'R-G-BATH', provenance: 'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
+    { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3696.667, y: 7964 }, room: 'R-G-BATH', provenance: 'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7988.333, y: 9866.667 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],
 

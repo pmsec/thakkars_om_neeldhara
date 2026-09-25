@@ -10,7 +10,7 @@ export const fixtures: FixtureDef[] = [
   { id: 'FX-WC-1', kind: 'wc', at: { x: 4065, y: 2895 }, size: [680, 390], room: 'R-P-BATH', stack: 'STK-P-BATH', label: 'WC' },
   { id: 'FX-WC-2', kind: 'wc', at: { x: 4065, y: 7820 }, size: [680, 390], room: 'R-G-BATH', stack: 'STK-G-BATH', label: 'WC' },
   { id: 'FX-SH-3', kind: 'shower', at: { x: 3600, y: 9070 }, size: [1450, 950], room: 'R-G-BATH', stack: 'STK-G-BATH', label: 'Shower — walk-in, 1457 x 950, curtain on a bowed rail, no screen' },
-  { id: 'FX-BASIN-4', kind: 'basin', at: { x: 3425, y: 7315 }, size: [550, 400], room: 'R-G-BATH', stack: 'STK-G-BATH', label: 'Basin, 550 × 400' },
+  { id: 'FX-BASIN-4', kind: 'basin', at: { x: 3425, y: 7002 }, size: [550, 400], room: 'R-G-BATH', stack: 'STK-G-BATH', label: 'Basin, 550 × 400' },
   { id: 'FX-SEAT-5', kind: 'seat', at: { x: 3100, y: 9345 }, size: [450, 400], room: 'R-G-BATH', label: 'fold-down shower seat' },
   { id: 'FX-GRAB-6', kind: 'grab', at: { x: 2895, y: 9050 }, size: [40, 700], room: 'R-G-BATH', label: 'grab bar' },
   { id: 'FX-GRAB-7', kind: 'grab', at: { x: 3775, y: 9525 }, size: [800, 40], room: 'R-G-BATH', label: 'grab bar' },

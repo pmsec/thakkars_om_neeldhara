@@ -119,10 +119,13 @@ MB_DOOR_P = (60, 860)               # Y 2400-3200, 50 clear of the shower
 # pod wall at 6950, turns vertical at 7115 on the builder's north face; her
 # door where it always was, 800 at Y 7300-8100, from her zone.
 # NO ARCH ON HERS ANY MORE (Karan's call): toilet 02 is the builder's
-# rectangle exactly, 2875-4405 x 7115-9545, with its north-west corner
-# rounded to a 400 centreline radius for the eye — retrofit.gm_wall.  The
-# tail starts where the corner has turned vertical; her door is on it.
-GM_N = 7115                         # the builder's north face
+# rectangle, 2875-4405 wide, with its north-west corner rounded to a 400
+# centreline radius for the eye — retrofit.gm_wall.  The tail starts where
+# the corner has turned vertical; her door is on it.
+# NINE FEET LONG, NOT EIGHT (Karan's call): the north wall moves 313 north
+# of the builder's face at 7115, to 6802, so the bath is 9'-0" x 5'-0".
+# The full-height cupboard in the nook north of it gives up that 313.
+GM_N = WING_S - 2743                # 6802 — the north face, 9'-0" off the south wall
 GM_NC = GM_N - T_MB / 2             # 7040, the north wall's centreline
 GM_R = 400                          # the corner, on the centreline
 GM_CX, GM_CY = MB_XW - T_MB / 2 + GM_R, GM_NC + GM_R   # 3200, 7440 — the corner's centre
@@ -1128,7 +1131,7 @@ _ONCE = [
     # bed; one on the pod wall in the nook north of the grandmother's bath,
     # facing west into her zone.
     ('hanging',   -450, 4750, 150, 5850, "wardrobe  ·  1100 x 600, hanging"),
-    ('hanging',   3805, 6000, 4405, 6960, "wardrobe  ·  960 x 600, full-height, hanging"),
+    ('hanging',   3805, 6000, 4405, GM_N - T_MB - 5, "wardrobe  ·  647 x 600, full-height, hanging"),
     # THE CROCKERY CLOSET (Karan's call): the 1120 x 600 recess in front of
     # the secondary duct, between the kitchen's return and the pod's duct
     # cheek, takes a full-height mid-century cabinet — walnut, on tapered

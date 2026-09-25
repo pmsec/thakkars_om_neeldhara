@@ -124,7 +124,7 @@ MB_DOOR_P = (60, 860)               # Y 2400-3200, 50 clear of the shower
 # the corner has turned vertical; her door is on it.
 # NINE FEET LONG, NOT EIGHT (Karan's call): the north wall moves 313 north
 # of the builder's face at 7115, to 6802, so the bath is 9'-0" x 5'-0".
-# The full-height cupboard in the nook north of it gives up that 313.
+# The full-height cupboard north of it lies along this wall now.
 GM_N = WING_S - 2743                # 6802 — the north face, 9'-0" off the south wall
 GM_NC = GM_N - T_MB / 2             # 7040, the north wall's centreline
 GM_R = 400                          # the corner, on the centreline
@@ -759,16 +759,18 @@ _ONCE = [
     # the whole length.
     # CLEAR GLASS, NOT BROWN, AND THE WHOLE DIVIDE (Karan's call): FOUR
     # leaves of 1229 on four tracks run from the west wall to the pod wall,
-    # so shut they close the line end to end; open they stack at the EAST
-    # end against the pod wall in 1229, not a third of the line.  Drawn shut.
+    # so shut they close the line end to end; open they stack at the WEST
+    # end against the outer wall in 1229, not a third of the line (Karan's
+    # call: the stack on the window side, the way through by the pod wall
+    # kept clear).  Drawn shut.
     ('pane',      -450, 5845, 779, 5885,
-     "sliding screen  ·  clear glass, leaf 1 of 4, 1229, track 1"),
+     "sliding screen  ·  clear glass, leaf 1 of 4, 1229, track 1 — the four stack here, open"),
     ('pane',      779, 5885, 2008, 5925,
      "sliding screen  ·  clear glass, leaf 2 of 4, 1229, track 2"),
     ('pane',      2008, 5925, 3237, 5965,
      "sliding screen  ·  clear glass, leaf 3 of 4, 1229, track 3"),
     ('pane',      3237, 5965, MB_XE, 6005,
-     "sliding screen  ·  clear glass, leaf 4 of 4, 1229, track 4 — the four stack here, open"),
+     "sliding screen  ·  clear glass, leaf 4 of 4, 1229, track 4"),
 
     # THE GRANDMOTHER'S WALL BED, on the west wall of the dressing zone.
     # A cabinet 400 deep that is shut fifty-one weeks of the year, and a QUEEN
@@ -1128,10 +1130,12 @@ _ONCE = [
     # 500 off the wall, and the north end is the run up to the sitting group.
     # TWO FULL-HEIGHT CUPBOARDS (Karan's call): one on the parents' west wall
     # between the south side table and the screen's north leaf, facing the
-    # bed; one on the pod wall in the nook north of the grandmother's bath,
-    # facing west into her zone.
+    # bed; one ON THE NORTH WALL OF THE GRANDMOTHER'S BATH, the length of
+    # that wall from the rounded corner to the pod wall, facing north into
+    # her zone (Karan's call: turned to lie along the wall, not across it).
     ('hanging',   -450, 4750, 150, 5850, "wardrobe  ·  1100 x 600, hanging"),
-    ('hanging',   3805, 6000, 4405, GM_N - T_MB - 5, "wardrobe  ·  647 x 600, full-height, hanging"),
+    ('hanging',   GM_CX, GM_N - T_MB - 600, MB_XE, GM_N - T_MB,
+     "wardrobe  ·  1205 x 600, full-height, hanging, on the bath's north wall"),
     # THE CROCKERY CLOSET (Karan's call): the 1120 x 600 recess in front of
     # the secondary duct, between the kitchen's return and the pod's duct
     # cheek, takes a full-height mid-century cabinet — walnut, on tapered

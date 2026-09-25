@@ -372,7 +372,7 @@ export const building: BuildingData = {
       kind: 'partition',
       glass: 'clear',
       openings: [
-        { id: 'SL-P-DRESS', type: 'slider', at: [150, 5067], head: 3505, label: 'Clear glass end to end — four 1229 bypass leaves on four tracks; open they stack at the east end against the pod wall' },
+        { id: 'SL-P-DRESS', type: 'slider', at: [150, 5067], head: 3505, label: 'Clear glass end to end — four 1229 bypass leaves on four tracks; open they stack at the west end against the outer wall' },
       ],
       label: "Parents' dressing partition",
     },

@@ -2467,19 +2467,23 @@ function slidingGlass(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         item.add(m)
       }
       const grid = op.id === 'SL-P-DRESS'
-      // open, a stack parks at the START of the run unless the label says the end
+      // open, a stack parks at the START of the run unless the label says the end;
+      // 'stack at the west/start' parks EVERY leaf there, each on its own track
       const parkAtEnd = /stack[^.]*\bat the (east|end)\b/i.test(op.label ?? '')
+      const parkAtStart = /stack[^.]*\bat the (west|start)\b/i.test(op.label ?? '')
       // where each leaf's centre sits, and which track it rides
       const places: Array<[number, number]> = []
       for (let k = 0; k < n; k++) {
         // each leaf on its own track when they all stack at one end (the dressing
         // screen's four), so they pass one another; paired tracks otherwise
         const pitch = (op.id === 'SL-P-DRESS' ? T + 30 : T) + 6
-        const track = one ? oneTrack : parkAtEnd ? (k - (n - 1) / 2) * pitch : (k % 2 ? 1 : -1) * pitch / 2 * (n === 3 ? (k - 1) : 1)
+        const track = one ? oneTrack : parkAtEnd || parkAtStart ? (k - (n - 1) / 2) * pitch : (k % 2 ? 1 : -1) * pitch / 2 * (n === 3 ? (k - 1) : 1)
         if (one) {
           places.push([mode === 'shut' ? (op.from + op.to) / 2 : (op.from + op.to) / 2 + parkSign * (leaf + 20), track])
         } else if (mode === 'shut') {
           places.push([op.from + (k + 0.5) * leaf, track])
+        } else if (parkAtStart) {
+          places.push([op.from + leaf / 2, track])
         } else if ((n >= 4 && k >= n / 2) || parkAtEnd) {
           places.push([op.to - leaf / 2, track])
         } else {

@@ -308,10 +308,10 @@ WALLS += [
     # nothing fixed carries it on to the pod wall
     # ...and it runs the WHOLE divide now (Karan's call), west wall to pod
     # wall: three 1639 leaves on a triple track close it end to end, and
-    # open they stack at the east end against the pod wall
+    # open they stack at the west end against the outer wall
     w('W-P-DRESS', [(-600, 5935), (4467, 5935)], 120, 'partition',
       [op('SL-P-DRESS', 'slider', 150, 5067, head=CEIL,
-          label='Clear glass end to end — four 1229 bypass leaves on four tracks; open they stack at the east end against the pod wall')],
+          label='Clear glass end to end — four 1229 bypass leaves on four tracks; open they stack at the west end against the outer wall')],
       label="Parents' dressing partition", glass='clear'),
     # Karan's side has NO partition on this line: his suite runs from the terrace
     # wall to the dressing screen at 7675 (a screen, not a wall - the bed leans on

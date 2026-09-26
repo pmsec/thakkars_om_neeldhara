@@ -229,8 +229,9 @@ WALLS += [
 
 # --- the entry gallery's two straight legs (230 thick, on the columns)
 WALLS += [
-    w('W-GAL-W', [(10515, 9325), (10515, 11125)], 230, 'interior',
-      label='Entry gallery — west leg'),
+    # the west leg runs to 8400: the column is 2725 as built (OPT 04)
+    w('W-GAL-W', [(10515, 8400), (10515, 11125)], 230, 'interior',
+      label='Entry gallery — west leg, on the 230 x 2725 column'),
     w('W-GAL-E', [(13965, 9325), (13965, 11125)], 230, 'interior',
       label='Entry gallery — east leg'),
 ]
@@ -499,12 +500,14 @@ def arc_pt(a):
 
 seg_pts = [[(gx + math.cos(math.radians(a)) * gr,
              gy + math.sin(math.radians(a)) * gr) for a in seg] for seg in segs]
+# three solid runs now: the west door sits up the arch above the 2725 column,
+# so the arch is solid from the springing to the door's south jamb
 CHORDS = [
-    ('GAL-W', (10515, 9325), seg_pts[0][0], 'door',
-     'Service door — west, to the kitchen'),
-    ('GAL-N', seg_pts[0][-1], seg_pts[1][0], 'arch',
+    ('GAL-W', seg_pts[0][-1], seg_pts[1][0], 'door',
+     'Service door — west, to the kitchen, above the 2725 column; hinged on the column top, swings into the kitchen'),
+    ('GAL-N', seg_pts[1][-1], seg_pts[2][0], 'arch',
      'Arched portal to the great room — curved doors slide on the arc'),
-    ('GAL-E', seg_pts[1][-1], (13965, 9325), 'door',
+    ('GAL-E', seg_pts[2][-1], (13965, 9325), 'door',
      "Service door — east, to help's side"),
 ]
 for gid, a0, a1, typ, lab in CHORDS:
@@ -774,7 +777,7 @@ def emit_building():
                     # help's room's door hinges at the arc end so its leaf
                     # swings against the arc, clear of the rack on the leg
                     bits.append(f"hinge: {1 if o2['id'] in HINGE_AT_END else 0}")
-                    bits.append('side: 1')
+                    bits.append(f"side: {SWING_SIDE.get(o2['id'], 1)}")
                 if o2['label']:
                     bits.append(f'label: {o2["label"]!r}')
                 A('        { ' + ', '.join(bits) + ' },')
@@ -1130,6 +1133,10 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
 
 
 HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH'}
+# which way a leaf swings off its hinge: +1 is the chord's left-hand side,
+# -1 its right.  The west service door hinges on the column top and swings
+# INTO the kitchen, away from the gallery
+SWING_SIDE = {'D-GAL-W': -1}
 # the two west-frame bath doors hinge at the SOUTH jamb and swing INTO the bath
 # (retrofit.mb_door, hinge='S'), so the grandmother's wardrobe can run to the jamb;
 # hinge 1 is the wall's second point, the south end of W-P-BATH-W

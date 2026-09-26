@@ -1166,7 +1166,9 @@ _ONCE = [
     # legs, solid doors below, glazed display in the middle, closed cupboards
     # above.  Its front is 30 back from the kitchen front's face.
     ('hanging',   5735, 7830, 6795, 8400, 'crockery closet  ·  1060 x 570, full-height, mid-century walnut, glazed middle'),
-    ('dining-se', 6603, 5300, 7703, 7500,
+    # 800 further north (Karan's call): with the kitchen's front at 725 the
+    # table's end stood 175 off the wall, across the kitchen door; now 975
+    ('dining-se', 6603, 4500, 7703, 6700,
      'superellipse 1100 x 2200  ·  six, seven with the north end chair'),
     # ------------------------------------------------- the deck: the two recliners
     # From the reference sheet: TWO 2-SEAT RECLINERS BACKING ON TO THE VOIDS,

@@ -3031,6 +3031,42 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const ceiling = model.data.levels.ceiling
   for (const w of model.walls) {
     for (const op of w.openings) {
+      if (op.type === 'arch' && /pair of[^.]*doors/i.test(op.label ?? '')) {
+        // THE POD PORTALS' DOORS (Karan's call): a pair of tinted-glass leaves
+        // under the arch, walnut stiles and rails, hinged at both jambs and
+        // swinging INTO the pod, so open they stand off the screen's consoles
+        const len = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y)
+        if (len < 300) continue
+        const d = { x: (op.p2.x - op.p1.x) / len, y: (op.p2.y - op.p1.y) / len }
+        let n = { x: -d.y, y: d.x }
+        const roomOff = (sg: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + n.x * sg * 400, y: op.mid.y + n.y * sg * 400 }, r.polygon))
+        if (!/FAMILY|DEN/i.test(roomOff(1)?.def.id ?? '') && /FAMILY|DEN/i.test(roomOff(-1)?.def.id ?? '')) n = { x: -n.x, y: -n.y }
+        const H = Math.min((op.head ?? 2400) - 20, ceiling - 40)
+        const half = len / 2 - 8
+        const pair = new THREE.Group()
+        for (const [hinge, sgn] of [[op.p1, 1], [op.p2, -1]] as const) {
+          const leaf = new THREE.Group()
+          leaf.add(box(half - 90, H - 160, 10, M.tintGlass, half / 2 + 4, H / 2, 0))
+          leaf.add(box(half, 80, 34, M.wallWood, half / 2 + 4, 40, 0))
+          leaf.add(box(half, 80, 34, M.wallWood, half / 2 + 4, H - 40, 0))
+          leaf.add(box(45, H, 34, M.wallWood, 4 + 22, H / 2, 0))
+          leaf.add(box(45, H, 34, M.wallWood, half + 4 - 22, H / 2, 0))
+          for (const sz of [-1, 1]) {
+            const pull = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, 300 * S, 10), M.brass)
+            pull.position.set((half - 90) * S, 1050 * S, sz * 26 * S)
+            leaf.add(pull)
+          }
+          // shut: along the chord from its hinge to the meeting stiles; open: turned 90 into the pod
+          const dir = mode === 'open' ? n : { x: d.x * sgn, y: d.y * sgn }
+          leaf.rotation.y = -Math.atan2(dir.y, dir.x)
+          leaf.position.set(hinge.x * S, 0, hinge.y * S)
+          pair.add(leaf)
+        }
+        const fx = -op.dir.y, fy = op.dir.x
+        tagItem(pair, `door:${op.id}`, mode, [{ x: op.mid.x + fx * 320, y: op.mid.y + fy * 320, h: 1350 }, { x: op.mid.x - fx * 320, y: op.mid.y - fy * 320, h: 1350 }])
+        g.add(pair)
+        continue
+      }
       if (op.type !== 'door') continue
       const hingeAt = op.hinge === 1 ? op.p2 : op.p1
       const other = op.hinge === 1 ? op.p1 : op.p2

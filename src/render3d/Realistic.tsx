@@ -1394,18 +1394,26 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       doorFronts(g, f, M, 100, h - 60, true)
       return g
     }
-    if (f.kind === 'console' && /corner unit/i.test(f.label)) {
+    if (f.kind === 'console' && /corner unit|mandir console/i.test(f.label)) {
       const body = polyPiece(f.poly, 0, h, M.timber, f.room)
       if (body) g.add(body)
-      const mandir = /P-FAMILY|family/i.test(f.room) && w * d > 800000
+      const onWall = /mandir console/i.test(f.label)
+      const mandir = onWall || (/P-FAMILY|family/i.test(f.room) && w * d > 800000)
       if (mandir) {
         // the mandir: a carved front read as a lattice of fine lines, and a lamp
-        // niche glowing under the shelf
+        // niche glowing under the shelf — on the wall console the lattice is
+        // on its north face, the one the pod sees
         const lat = new THREE.Group()
-        const span = Math.min(w, d) * 0.55
-        for (let k = 0; k < 6; k++) lat.add(box(4, h - 160, 4, M.trunk, 0, h / 2, -span / 2 + (k * span) / 5))
-        for (let k = 0; k < 5; k++) lat.add(box(4, 4, span, M.brass, 0, 120 + k * ((h - 240) / 4), 0))
-        lat.position.set((cx - w * 0.18) * S, 0, cy * S)
+        const span = onWall ? w * 0.7 : Math.min(w, d) * 0.55
+        if (onWall) {
+          for (let k = 0; k < 8; k++) lat.add(box(4, h - 160, 4, M.trunk, -span / 2 + (k * span) / 7, h / 2, 0))
+          for (let k = 0; k < 5; k++) lat.add(box(span, 4, 4, M.brass, 0, 120 + k * ((h - 240) / 4), 0))
+          lat.position.set(cx * S, 0, (f.y + 8) * S)
+        } else {
+          for (let k = 0; k < 6; k++) lat.add(box(4, h - 160, 4, M.trunk, 0, h / 2, -span / 2 + (k * span) / 5))
+          for (let k = 0; k < 5; k++) lat.add(box(4, 4, span, M.brass, 0, 120 + k * ((h - 240) / 4), 0))
+          lat.position.set((cx - w * 0.18) * S, 0, cy * S)
+        }
         g.add(lat)
         const niche = new THREE.PointLight(0xffc98a, 0.5, 1.6, 1.6)
         niche.position.set((cx) * S, (h - 120) * S, (cy) * S)
@@ -4662,15 +4670,17 @@ export function sweepArt(M: Mats, pieceRe = /arch console/i, roomId = 'R-K-SUITE
 }
 
 function mandirIdol(M: Mats): THREE.Group | null {
-  const units = furniture.filter((f) => /corner unit/i.test(f.label) && f.room === 'R-P-FAMILY')
+  const units = furniture.filter((f) => /corner unit|mandir console/i.test(f.label) && f.room === 'R-P-FAMILY')
   if (!units.length) return null
   const unit = units.reduce((a, b) => (a.w * a.d >= b.w * b.d ? a : b))
   const cx = unit.poly ? unit.poly.reduce((t, q) => t + q.x, 0) / unit.poly.length : unit.x + unit.w / 2
   const cy = unit.poly ? unit.poly.reduce((t, q) => t + q.y, 0) / unit.poly.length : unit.y + unit.d / 2
   const top = Math.min(unit.height, 900)
+  // on the wall console the front is north (-z): the diya and the damru go that way
+  const fz = /mandir console/i.test(unit.label) ? -1 : 1
   const g = new THREE.Group()
   const at = (m: THREE.Mesh, dx: number, h: number, dz: number) => {
-    m.position.set((cx + dx) * S, (top + h) * S, (cy + dz) * S)
+    m.position.set((cx + dx) * S, (top + h) * S, (cy + dz * fz) * S)
     m.castShadow = true
     m.receiveShadow = true
     g.add(m)

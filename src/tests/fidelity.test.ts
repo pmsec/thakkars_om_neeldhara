@@ -70,8 +70,9 @@ describe('2D↔3D fidelity', () => {
   it('the curved pieces carry their drawn outlines, not just boxes', () => {
     // The regression that started this: these pieces hug curved walls and are
     // meaningless as bounding boxes. Their polys must survive re-export.
+    // (the mandir left the corner for the duct wall; the pantry is the one left)
     const pantryUnits = furniture.filter((f) => f.label === 'Corner unit')
-    expect(pantryUnits.length).toBeGreaterThanOrEqual(2)
+    expect(pantryUnits.length).toBeGreaterThanOrEqual(1)
     for (const u of pantryUnits) expect(u.poly, `${u.id} lost its outline`).toBeDefined()
 
     const vanities = fixtures.filter((f) => f.id.endsWith('-VAN'))

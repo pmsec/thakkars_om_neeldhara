@@ -161,10 +161,7 @@ def pod_polys():
     # glazing across to the apse.  Nothing comes out of the eastern half — the
     # planter that answers the bump is furniture standing on this floor, not a
     # room taken out of it, so the boundary there stays on BODY_S.
-    # ...with the kitchen front's step at the column's line: the floor
-    # follows it north before the apse takes over
-    great = (west_curve + [(D.KIT_BUMP_W, D.KIT_N), (D.KIT_JOG_X, D.KIT_N),
-                           (D.KIT_JOG_X, D.KIT_N - D.KIT_JOG)]
+    great = (west_curve + [(D.KIT_BUMP_W, D.KIT_N)]
              + gal_apse() + list(reversed(east_curve)))
     return fam, den, great
 
@@ -179,10 +176,9 @@ def gal_apse():
     Empty when the arch stays south of the great room, which is what a
     shallower one would do."""
     ro = D.GAL_RO
-    yk = D.KIT_N - D.KIT_JOG          # the stepped front's outer face
-    if D.GAL_CY - ro >= yk:
+    if D.GAL_CY - ro >= D.KIT_N:
         return []
-    return _gal_arc(ro, D._ang(D.gal_cross(yk), yk),
+    return _gal_arc(ro, D._ang(D.gal_cross(D.KIT_N), D.KIT_N),
                     540 - D._ang(D.gal_cross(D.BODY_S), D.BODY_S))
 
 
@@ -1887,10 +1883,9 @@ def lobby_polys():
     # and since this round it steps north over its eastern half as well
     # and since this round its whole front is on the bump's line, duct cheek
     # to apse, with the niche in front of the secondary duct inside it
-    # ...and its east side is the 2725 column from Y 8400 down, the stepped
-    # front meeting the apse above the west service door
-    kitchen = ([(kw, D.KIT_S), (D.KIT_JOG_X, D.KIT_S), (D.KIT_JOG_X, D.KIT_S - D.KIT_JOG)]
-               + _gal_arc(ro, D._BNKJ, D._ACW)
+    # ...and its east side is the 2725 column from Y 8400 down, the apse
+    # above it carrying the west service door
+    kitchen = ([(kw, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._ACW)
                + [(D.GAL_W, D.COL_N_W), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
                   (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)

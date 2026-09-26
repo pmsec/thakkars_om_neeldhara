@@ -808,8 +808,11 @@ function curvedCabinet(f: FurnitureItem, M: Mats, glass: { points: { x: number; 
   const rows: Array<[number, number]> = H > 2600 ? [[80, 2300], [2306, H - 36]] : [[80, H - 36]]
   for (let k = 0; k < nDoors; k++) {
     const a = at(k * doorL + 6), b = at((k + 1) * doorL - 6)
-    const mid = at((k + 0.5) * doorL)
-    if (o.desk && depthAt(mid) > 420) continue             // the desk: knees, not doors
+    if (o.desk && depthAt(at((k + 0.5) * doorL)) > 420) continue   // the desk: knees, not doors
+    // the slab sits on its own CHORD, not on the curve's midpoint: on a tight
+    // convex curve the curve stands proud of the chord by the sagitta, and a
+    // slab centred there pokes its ends out past the drawn front
+    const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
     const dx = b.x - a.x, dy = b.y - a.y
     const len = Math.hypot(dx, dy) || 1
     const ux = dx / len, uy = dy / len

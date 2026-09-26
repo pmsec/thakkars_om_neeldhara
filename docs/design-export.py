@@ -504,7 +504,7 @@ seg_pts = [[(gx + math.cos(math.radians(a)) * gr,
 # so the arch is solid from the springing to the door's south jamb
 CHORDS = [
     ('GAL-W', seg_pts[0][-1], seg_pts[1][0], 'door',
-     'Service door — west, to the kitchen, above the 2725 column; hinged on the column top, swings into the kitchen'),
+     'Service door — west, to the kitchen, above the 2725 column; hinged on the column top, swings into the gallery'),
     ('GAL-N', seg_pts[1][-1], seg_pts[2][0], 'arch',
      'Arched portal to the great room — curved doors slide on the arc'),
     ('GAL-E', seg_pts[2][-1], (13965, 9325), 'door',
@@ -1134,9 +1134,9 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
 
 HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH'}
 # which way a leaf swings off its hinge: +1 is the chord's left-hand side,
-# -1 its right.  The west service door hinges on the column top and swings
-# INTO the kitchen, away from the gallery
-SWING_SIDE = {'D-GAL-W': -1}
+# -1 its right.  Both service doors swing into the gallery, so nothing is
+# listed; the map stays for the day a door has to go the other way
+SWING_SIDE = {}
 # the two west-frame bath doors hinge at the SOUTH jamb and swing INTO the bath
 # (retrofit.mb_door, hinge='S'), so the grandmother's wardrobe can run to the jamb;
 # hinge 1 is the wall's second point, the south end of W-P-BATH-W

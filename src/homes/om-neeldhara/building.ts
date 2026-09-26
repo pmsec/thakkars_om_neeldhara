@@ -723,7 +723,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-W', type: 'door', at: [0, 584.256], head: 2100, hinge: 0, side: -1, label: 'Service door — west, to the kitchen, above the 2725 column; hinged on the column top, swings into the kitchen' },
+        { id: 'D-GAL-W', type: 'door', at: [0, 584.256], head: 2100, hinge: 0, side: 1, label: 'Service door — west, to the kitchen, above the 2725 column; hinged on the column top, swings into the gallery' },
       ],
     },
     {

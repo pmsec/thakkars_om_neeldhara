@@ -700,22 +700,35 @@ def arch_planter_par(dep0=120, dep1=300, n=90, u_end=0.05):
     return [('poly', back + list(reversed(front)), 'green')]
 
 
-def gm_wardrobe(dep=600, y_end=7450, n=24, gap=5):
+def gm_wardrobe(dep=600, dep_end=150, t_full=225, t_end=195, n=24, gap=5):
     """The grandmother's full-height wardrobe, WRAPPING her bath (Karan's
-    call): along the bath's north wall from the pod wall, round the rounded
-    corner on the wall's own radius, and down the west flank to the door's
-    jamb.  One L of cupboards, 600 deep off the wall's outer face (5 clear),
-    the corner section curved, every door facing out into her zone."""
+    call): along the bath's north wall from the pod wall and round the rounded
+    corner on the wall's own radius, 600 deep off the wall's outer face (5
+    clear), every door facing out into her zone.
+
+    ITS EDGE IS CURVED (Karan's call): full depth to the middle of the corner
+    (225 degrees), then the front sweeps in — 600 down to 150 by 195 degrees,
+    where it ends in a short radial face — and there is NO leg down the west
+    flank.  The Murphy bed folds down to X 1935 alongside that flank, and
+    with a 600 leg there the way past its foot to her bath door was 185.
+    Tapered, the nearest point of the wardrobe is 810 from the bed's corner
+    and the door's approach is clear."""
     xe = D.MB_XE                             # the pod wall
     yn = D.GM_N - D.T_MB - gap               # the north wall's outer face, 5 off
-    xw = D.MB_XW - D.T_MB - gap              # the west wall's outer face, 5 off
     rb = D.GM_R + D.T_MB / 2 + gap           # the corner's outer face, 5 off
+
+    def pt(r, t):
+        return (D.GM_CX + r * math.cos(math.radians(t)),
+                D.GM_CY + r * math.sin(math.radians(t)))
+
     back = ([(xe, yn), (D.GM_CX, yn)]
-            + list(reversed(_gm_corner(rb, n)))          # top, round to the west
-            + [(xw, y_end)])
+            + [pt(rb, t) for t in np.linspace(270, t_end, n)])
     front = ([(xe, yn - dep), (D.GM_CX, yn - dep)]
-             + list(reversed(_gm_corner(rb + dep, n)))
-             + [(xw - dep, y_end)])
+             + [pt(rb + dep, t) for t in np.linspace(270, t_full, n)])
+    for t in np.linspace(t_full, t_end, n)[1:]:          # the sweep in
+        u = (t_full - t) / (t_full - t_end)
+        u = u * u * (3 - 2 * u)                          # smoothstep
+        front.append(pt(rb + dep - (dep - dep_end) * u, t))
     return [('poly', back + list(reversed(front)), 'solid')]
 
 

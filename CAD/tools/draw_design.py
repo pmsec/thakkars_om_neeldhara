@@ -459,7 +459,7 @@ def main():
         s.poly(q, fill=WOOD, stroke=WOOD, stroke_width=0.8)
     for q in R.arch_doors():             # the door on the axis, shut
         s.poly(q, fill=WOODL, stroke=WOOD, stroke_width=1.2)
-    for p in R.gal_swing_doors():        # the two service doors, hinged glass
+    for p in R.gal_swing_doors():        # the two service doors, curved walnut leaves, drawn shut
         prim(p)
 
     # --------------------------------------------------------------- labels

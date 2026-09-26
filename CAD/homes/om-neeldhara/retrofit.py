@@ -1946,7 +1946,7 @@ def arch_haunches():
     return out
 
 
-def gal_swing_doors(leaf=40):
+def gal_swing_doors(leaf=45):
     """The two service doors: hinged glass, swinging into the gallery.
 
     Not sliding.  A pocket needs a cavity as long as the leaf and in line with
@@ -1982,10 +1982,17 @@ def gal_swing_doors(leaf=40):
                 hy + w * (uy * math.cos(math.radians(t)) + ny * math.sin(math.radians(t))))
                for t in np.linspace(0, 90, 28)]
         out.append(('poly', [(hx, hy)] + arc, 'light'))
-        out.append(('poly', [(hx + ux * h, hy + uy * h),
-                             (hx + nx * w + ux * h, hy + ny * w + uy * h),
-                             (hx + nx * w - ux * h, hy + ny * w - uy * h),
-                             (hx - ux * h, hy - uy * h)], 'glass'))
+        # the leaf, drawn SHUT: walnut, curved to the drum and flush with its
+        # inner face, 45 thick (Karan's call) — shut, the arch reads as one
+        # sweep and only the swing line says there is a door
+        ri = r - _t / 2
+        ang = np.linspace(a_h, a_t, 24)
+        inner = [(cx + math.cos(math.radians(a)) * (ri + 2),
+                  cy + math.sin(math.radians(a)) * (ri + 2)) for a in ang]
+        outer = [(cx + math.cos(math.radians(a)) * (ri + 2 + leaf),
+                  cy + math.sin(math.radians(a)) * (ri + 2 + leaf))
+                 for a in reversed(ang)]
+        out.append(('poly', inner + outer, 'wood'))
     return out
 
 

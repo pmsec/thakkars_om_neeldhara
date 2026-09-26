@@ -161,7 +161,10 @@ def pod_polys():
     # glazing across to the apse.  Nothing comes out of the eastern half — the
     # planter that answers the bump is furniture standing on this floor, not a
     # room taken out of it, so the boundary there stays on BODY_S.
-    great = (west_curve + [(D.KIT_BUMP_W, D.KIT_N)]
+    # ...with the kitchen front's 125 jog at the column's line: the floor
+    # follows it north before the apse takes over
+    great = (west_curve + [(D.KIT_BUMP_W, D.KIT_N), (D.KIT_JOG_X, D.KIT_N),
+                           (D.KIT_JOG_X, D.KIT_N - D.KIT_JOG)]
              + gal_apse() + list(reversed(east_curve)))
     return fam, den, great
 
@@ -176,9 +179,10 @@ def gal_apse():
     Empty when the arch stays south of the great room, which is what a
     shallower one would do."""
     ro = D.GAL_RO
-    if D.GAL_CY - ro >= D.KIT_N:
+    yk = D.KIT_N - D.KIT_JOG          # the jogged front's outer face
+    if D.GAL_CY - ro >= yk:
         return []
-    return _gal_arc(ro, D._ang(D.gal_cross(D.KIT_N), D.KIT_N),
+    return _gal_arc(ro, D._ang(D.gal_cross(yk), yk),
                     540 - D._ang(D.gal_cross(D.BODY_S), D.BODY_S))
 
 
@@ -970,9 +974,11 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
                  cy + math.sin(math.radians(t)) * r)
                 for t in np.linspace(t0, t1, n)]
 
-    pts = [(kw + r_ease, y1 + dep), (D.gal_cross(y1 + dep), y1 + dep)]
-    pts += _gal_arc(D.GAL_RO, D._ang(D.gal_cross(y1 + dep), y1 + dep),
-                    D._ang(D.gal_cross(y1), y1), 24)            # the apse end
+    # CUT SQUARE AT 10500 (Karan's call): the west service door moved up the
+    # arch above the 2725 column, into the stretch the apse end used to wrap,
+    # so the run stops short of the doorway in a straight end face.
+    ke = 10500
+    pts = [(kw + r_ease, y1 + dep), (ke, y1 + dep), (ke, y1)]
     pts += [(kw + r_ease, y1)]
     pts += arc(kw + r_ease, y1 + r_ease, r_ease, 270, 180)      # west end, eased
     pts += [(kw, y1 + dep - r_ease)]
@@ -1875,8 +1881,11 @@ def lobby_polys():
     # and since this round it steps north over its eastern half as well
     # and since this round its whole front is on the bump's line, duct cheek
     # to apse, with the niche in front of the secondary duct inside it
-    kitchen = ([(kw, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._A0)
-               + [(D.GAL_W, COL_N), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
+    # ...and its east side is the 2725 column from Y 8400 down, the jogged
+    # front meeting the apse above the west service door
+    kitchen = ([(kw, D.KIT_S), (D.KIT_JOG_X, D.KIT_S), (D.KIT_JOG_X, D.KIT_N)]
+               + _gal_arc(ro, D._BNKJ, D._ACW)
+               + [(D.GAL_W, D.COL_N_W), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
                   (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
                + [(ie, COL_N), (ie, D.BAY_S)])
@@ -1951,15 +1960,27 @@ def gal_swing_doors(leaf=40):
     would cost something.  And coming out of the kitchen with your hands full
     you push, which is the way you want a serving door to go.
     """
-    w, h = COL_N - D.BAY_N, leaf / 2
+    cx, cy, r, _t, gaps = D.GALLERY
+    h = leaf / 2
     out = []
-    for hx, sgn in ((D.GAL_W + D.T_GAL / 2, 1), (D.GAL_E - D.T_GAL / 2, -1)):
-        arc = [(hx + sgn * w * math.sin(math.radians(t)),
-                COL_N - w * math.cos(math.radians(t)))
+    # (hinge, tip) as angles on the centreline: each door hinges at the jamb
+    # on its column's top — the west one up the arch above the 2725 column
+    for a_h, a_t in ((gaps[2][0], gaps[2][1]), (gaps[3][1], gaps[3][0])):
+        hx, hy = cx + r * math.cos(math.radians(a_h)), cy + r * math.sin(math.radians(a_h))
+        tx, ty = cx + r * math.cos(math.radians(a_t)), cy + r * math.sin(math.radians(a_t))
+        w = math.hypot(tx - hx, ty - hy)
+        ux, uy = (tx - hx) / w, (ty - hy) / w              # shut: along the chord
+        nx, ny = -uy, ux                                   # open: swung 90 into the gallery
+        if (cx - hx) * nx + (cy - hy) * ny < 0:
+            nx, ny = -nx, -ny
+        arc = [(hx + w * (ux * math.cos(math.radians(t)) + nx * math.sin(math.radians(t))),
+                hy + w * (uy * math.cos(math.radians(t)) + ny * math.sin(math.radians(t))))
                for t in np.linspace(0, 90, 28)]
-        out.append(('poly', [(hx, COL_N)] + arc, 'light'))
-        out.append(('poly', [(hx, COL_N - h), (hx + sgn * w, COL_N - h),
-                             (hx + sgn * w, COL_N + h), (hx, COL_N + h)], 'glass'))
+        out.append(('poly', [(hx, hy)] + arc, 'light'))
+        out.append(('poly', [(hx + ux * h, hy + uy * h),
+                             (hx + nx * w + ux * h, hy + ny * w + uy * h),
+                             (hx + nx * w - ux * h, hy + ny * w - uy * h),
+                             (hx - ux * h, hy - uy * h)], 'glass'))
     return out
 
 

@@ -1489,6 +1489,8 @@ def emit_furniture():
                 'Arch planter — tapering round the outside of the arch, pod wall to the console', 450, styles=('green',))
     add_outline(R.arch_console_par_flank(), 'console', 'R-P-SUITE',
                 'Arch console — the west flank, cabinets under', 800)
+    add_outline(R.gm_wardrobe(), 'wardrobe', 'R-P-DRESSING',
+                "Wardrobe — full height, wrapping the bath's north wall and rounded corner to her door, doors facing out", 3300)
     with R.karan():
         add_outline(R.arch_console(), 'console', 'R-K-SUITE',
                     'Arch console', 800, mirror=True)
@@ -1594,6 +1596,7 @@ def audit_coverage():
             take(fn.__name__, fn(), mirror=True)
     take('arch_console_par_flank', R.arch_console_par_flank())
     take('arch_planter_par', R.arch_planter_par())
+    take('gm_wardrobe', R.gm_wardrobe())
     take('pod_consoles', R.pod_consoles_all())
     take('gm_curtain_rail', R.gm_curtain_rail())
     take('help_rack', R.help_rack())

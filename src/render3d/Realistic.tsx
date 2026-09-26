@@ -724,11 +724,28 @@ function treeGroup(M: Mats, w: number, d: number, height: number): THREE.Group {
  * Where the run swells for Karan's desk the front is left open for the
  * knees and the top clear for the desk.
  */
+type CurvedCabinetOpts = { H: number; backTol: number; doorW: number; desk: boolean; objects: boolean }
+
+// The pod screens' consoles: the glass on the centreline, the run's back 10 off it
 function podConsole(f: FurnitureItem, M: Mats): THREE.Group | null {
+  return curvedCabinet(f, M, model.walls.filter((w) => w.kind === 'curved-glass'),
+    { H: f.height || 750, backTol: 60, doorW: 450, desk: true, objects: true })
+}
+
+// The grandmother's wardrobe wrapping her bath: the back 5 off the bath's walls
+function curvedWardrobe(f: FurnitureItem, M: Mats): THREE.Group | null {
+  return curvedCabinet(f, M, model.walls.filter((w) => /^W-G-BATH-(N|W)/.test(w.id)),
+    { H: f.height || 3300, backTol: 110, doorW: 500, desk: false, objects: false })
+}
+
+// A run of cabinets whose BACK follows some walls (a glass screen, a bath's
+// walls) and whose front is the drawn outline's other chain: plinth, carcass,
+// doors along the front with brass pulls, a top; optionally dressed with pots
+// and objects, optionally leaving a desk-depth stretch open
+function curvedCabinet(f: FurnitureItem, M: Mats, glass: { points: { x: number; y: number }[] }[], o: CurvedCabinetOpts): THREE.Group | null {
   if (!f.poly || f.poly.length < 6) return null
   const g = new THREE.Group()
-  const H = f.height || 750
-  const glass = model.walls.filter((w) => w.kind === 'curved-glass')
+  const H = o.H
   const distGlass = (q: { x: number; y: number }): number => {
     let best = Infinity
     for (const w of glass) for (let k = 1; k < w.points.length; k++) {
@@ -741,7 +758,7 @@ function podConsole(f: FurnitureItem, M: Mats): THREE.Group | null {
   }
   const poly = f.poly
   const n = poly.length
-  const isBack = poly.map((q) => distGlass(q) < 60)
+  const isBack = poly.map((q) => distGlass(q) < o.backTol)
   if (!isBack.some(Boolean) || isBack.every(Boolean)) return null
   // the two chains, each in the outline's order
   const chain = (want: boolean): { x: number; y: number }[] => {
@@ -760,7 +777,7 @@ function podConsole(f: FurnitureItem, M: Mats): THREE.Group | null {
 
   // the carcass on a recessed plinth, the top slab, a shadow gap under it
   const inset = (pts: { x: number; y: number }[], by: number) => pts.map((q) => {
-    const d = distGlass(q); if (d < 60) return q
+    const d = distGlass(q); if (d < o.backTol) return q
     const vx = cxB - q.x, vy = cyB - q.y; const L = Math.hypot(vx, vy) || 1
     return { x: q.x + (vx / L) * by, y: q.y + (vy / L) * by }
   })
@@ -785,12 +802,14 @@ function podConsole(f: FurnitureItem, M: Mats): THREE.Group | null {
     const u = (t - acc[i - 1]) / Math.max(1, acc[i] - acc[i - 1])
     return { x: front[i - 1].x + (front[i].x - front[i - 1].x) * u, y: front[i - 1].y + (front[i].y - front[i - 1].y) * u }
   }
-  const nDoors = Math.max(1, Math.round(L / 450))
+  const nDoors = Math.max(1, Math.round(L / o.doorW))
   const doorL = L / nDoors
+  // full-height cupboards split at 2300: hanging below, a loft door above
+  const rows: Array<[number, number]> = H > 2600 ? [[80, 2300], [2306, H - 36]] : [[80, H - 36]]
   for (let k = 0; k < nDoors; k++) {
     const a = at(k * doorL + 6), b = at((k + 1) * doorL - 6)
     const mid = at((k + 0.5) * doorL)
-    if (depthAt(mid) > 420) continue                       // the desk: knees, not doors
+    if (o.desk && depthAt(mid) > 420) continue             // the desk: knees, not doors
     const dx = b.x - a.x, dy = b.y - a.y
     const len = Math.hypot(dx, dy) || 1
     const ux = dx / len, uy = dy / len
@@ -802,13 +821,18 @@ function podConsole(f: FurnitureItem, M: Mats): THREE.Group | null {
       m.rotation.y = ang
       g.add(m)
     }
-    put(-12, 80 + (H - 36 - 80) / 2, box(len - 6, H - 36 - 80 - 10, 16, M.walnut))   // face 4 back from the drawn line
-    // the pull: a slim vertical brass bar near the door's leading edge
-    const pull = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, 180 * S, 8), M.brass)
-    pull.position.set((mid.x + ux * (k % 2 ? -1 : 1) * (len / 2 - 60) + nx * 2) * S, (H - 36 - 150) * S, (mid.y + uy * (k % 2 ? -1 : 1) * (len / 2 - 60) + ny * 2) * S)
-    g.add(pull)
+    for (const [r0, r1] of rows) {
+      put(-12, r0 + (r1 - r0) / 2, box(len - 6, r1 - r0 - 10, 16, M.walnut))   // face 4 back from the drawn line
+      // the pull: a slim vertical brass bar near the door's leading edge — at
+      // hand height on a low run, at 1050 on a tall door, low on a loft door
+      const ph = r1 - r0 < 1000 ? r1 - 150 : r0 < 1000 ? 1050 : r0 + 200
+      const pull = new THREE.Mesh(new THREE.CylinderGeometry(5 * S, 5 * S, 180 * S, 8), M.brass)
+      pull.position.set((mid.x + ux * (k % 2 ? -1 : 1) * (len / 2 - 60) + nx * 2) * S, ph * S, (mid.y + uy * (k % 2 ? -1 : 1) * (len / 2 - 60) + ny * 2) * S)
+      g.add(pull)
+    }
   }
 
+  if (!o.objects) return g
   // on the top: pots and objects, spaced along the run near the glass
   const accB = [0]
   for (let i = 1; i < back.length; i++) accB.push(accB[i - 1] + Math.hypot(back[i].x - back[i - 1].x, back[i].y - back[i - 1].y))
@@ -1065,6 +1089,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
   if (f.kind === 'wardrobe' && /crockery/i.test(f.label)) return crockeryCloset(f, M)
   // the runs along the pod screens: cabinets with dressed tops
   if (f.kind === 'console' && /pod screen console/i.test(f.label)) { const pc = podConsole(f, M); if (pc) return pc }
+  if (f.kind === 'wardrobe' && /wrapping the bath/i.test(f.label)) { const cw = curvedWardrobe(f, M); if (cw) return cw }
   // a piece the label names outright - a WC, a fridge, a shower tray, a lounge
   // swivel, a daybed - drawn as that thing rather than as the nearest box
   const named = importedPiece(f, { M, box, basePrism, place })

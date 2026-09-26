@@ -306,6 +306,7 @@ def main():
     # The west screen stops 300 short of the east one: the kitchen's bump
     # starts on this line, so the glass lands on the bump's corner and the
     # wall carries the line the rest of the way down.
+    portal_doors = []
     for P, y_end in ((D.POD_W, D.KIT_N), (D.POD_E, D.BODY_S)):
         ts = np.array([t for t in np.linspace(0, 1, 220)
                        if bez(P, t)[1] <= y_end])
@@ -314,23 +315,27 @@ def main():
         s.path([p for p, t in zip(pts, ts) if t < a], GLAS, 5.0)
         s.path([p for p, t in zip(pts, ts) if t > b], GLAS, 5.0)
         s.path([p for p, t in zip(pts, ts) if a <= t <= b], GLAS, 1.6, dash='9 7')
-        # the portal's pair of tinted-glass doors (Karan's call), drawn OPEN:
-        # each leaf hinged at its jamb and swung 90 into the pod, its arc light
+        # the portal's single tinted-glass door (Karan's call), drawn OPEN: pull
+        # to open from the great room — hinged at the north jamb, swung 90 out
+        # into the great room, its arc light
         A, B = bez(P, a), bez(P, b)
-        cl = math.hypot(B[0] - A[0], B[1] - A[1])
-        ux, uy = (B[0] - A[0]) / cl, (B[1] - A[1]) / cl
-        nx, ny = (-uy, ux) if P is D.POD_E else (uy, -ux)      # into the pod
-        if nx * (1 if P is D.POD_E else -1) < 0:
+        J, T = (A, B) if A[1] <= B[1] else (B, A)
+        cl = math.hypot(T[0] - J[0], T[1] - J[1])
+        ux, uy = (T[0] - J[0]) / cl, (T[1] - J[1]) / cl
+        nx, ny = -uy, ux
+        if (D.MID - J[0]) * nx < 0:                  # toward the great room (the home's axis)
             nx, ny = -nx, -ny
-        half = cl / 2 - 8
-        for J, sgn in ((A, 1), (B, -1)):
-            px, py = -ny * 17, nx * 17
-            s.poly([(J[0] + px, J[1] + py), (J[0] + nx * half + px, J[1] + ny * half + py),
-                    (J[0] + nx * half - px, J[1] + ny * half - py), (J[0] - px, J[1] - py)],
-                   fill='#dde7ea', stroke=GLAS, stroke_width=1.0)
-            s.path([(J[0] + half * (ux * sgn * math.cos(math.radians(t)) + nx * math.sin(math.radians(t))),
-                     J[1] + half * (uy * sgn * math.cos(math.radians(t)) + ny * math.sin(math.radians(t))))
-                    for t in np.linspace(0, 90, 20)], FURN, 0.8)
+        L = cl - 12
+        px, py = -ny * 17, nx * 17
+        px, py = ux * 17, uy * 17
+        # drawn later, over the great room's floor and furniture, or the
+        # boards paint straight over the open leaf
+        portal_doors.append((
+            [(J[0] - px, J[1] - py), (J[0] + nx * L - px, J[1] + ny * L - py),
+             (J[0] + nx * L + px, J[1] + ny * L + py), (J[0] + px, J[1] + py)],
+            [(J[0] + L * (ux * math.cos(math.radians(t)) + nx * math.sin(math.radians(t))),
+              J[1] + L * (uy * math.cos(math.radians(t)) + ny * math.sin(math.radians(t))))
+             for t in np.linspace(0, 90, 24)]))
 
     for x1, y1, x2, y2, kind in D.GLAZING:
         if kind == 'window':
@@ -436,6 +441,9 @@ def main():
         prim(p)
     for p in R.gm_wardrobe():             # the grandmother's wardrobe, wrapping her bath
         prim(p)
+    for leaf, arc in portal_doors:        # the pod portals' pull doors, open into the great room
+        s.poly(leaf, fill='#dde7ea', stroke=GLAS, stroke_width=1.0)
+        s.path(arc, FURN, 0.8)
     for p in R.east(R.arch_console):    # Karan's console — drawn in his frame, mirrored
         prim(p)
     for p in R.suite_screen():                  # Karan's dressing screen

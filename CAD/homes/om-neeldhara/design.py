@@ -1154,15 +1154,12 @@ _ONCE = [
     # 500 off the wall, and the north end is the run up to the sitting group.
     # TWO FULL-HEIGHT CUPBOARDS (Karan's call): one on the parents' west wall
     # between the south side table and the screen's north leaf, facing the
-    # bed; one ON THE NORTH WALL OF THE GRANDMOTHER'S BATH, the length of
-    # that wall from the rounded corner to the pod wall, facing north into
-    # her zone (Karan's call: turned to lie along the wall, not across it).
+    # bed; and the grandmother's, WRAPPING HER BATH — along its north wall
+    # from the pod wall, round the rounded corner, down the west flank to her
+    # door (Karan's call), doors facing out.  Its north leg's doors open onto
+    # the slider line — accepted that they cannot open while the slider is
+    # shut across them.  Curved, so it is built in retrofit.gm_wardrobe().
     ('hanging',   -450, 4750, 150, 5850, "wardrobe  ·  1100 x 600, hanging"),
-    # Its doors face NORTH, to the terrace side, straight onto the slider
-    # line (Karan's call) — accepted that they cannot open while the slider
-    # is shut across them.
-    ('hanging',   GM_CX, GM_N - T_MB - 600, MB_XE, GM_N - T_MB,
-     "wardrobe  ·  1205 x 600, full-height, hanging, on the bath's north wall, doors north"),
     # THE CROCKERY CLOSET (Karan's call): the 1120 x 600 recess in front of
     # the secondary duct, between the kitchen's return and the pod's duct
     # cheek, takes a full-height mid-century cabinet — walnut, on tapered

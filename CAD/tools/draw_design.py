@@ -417,6 +417,8 @@ def main():
         prim(p)
     for p in R.arch_planter_par():        # the tapering planter round the arch, pod wall to the console
         prim(p)
+    for p in R.gm_wardrobe():             # the grandmother's wardrobe, wrapping her bath
+        prim(p)
     for p in R.east(R.arch_console):    # Karan's console — drawn in his frame, mirrored
         prim(p)
     for p in R.suite_screen():                  # Karan's dressing screen

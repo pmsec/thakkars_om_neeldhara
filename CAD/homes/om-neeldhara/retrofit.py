@@ -700,6 +700,25 @@ def arch_planter_par(dep0=120, dep1=300, n=90, u_end=0.05):
     return [('poly', back + list(reversed(front)), 'green')]
 
 
+def gm_wardrobe(dep=600, y_end=7450, n=24, gap=5):
+    """The grandmother's full-height wardrobe, WRAPPING her bath (Karan's
+    call): along the bath's north wall from the pod wall, round the rounded
+    corner on the wall's own radius, and down the west flank to the door's
+    jamb.  One L of cupboards, 600 deep off the wall's outer face (5 clear),
+    the corner section curved, every door facing out into her zone."""
+    xe = D.MB_XE                             # the pod wall
+    yn = D.GM_N - D.T_MB - gap               # the north wall's outer face, 5 off
+    xw = D.MB_XW - D.T_MB - gap              # the west wall's outer face, 5 off
+    rb = D.GM_R + D.T_MB / 2 + gap           # the corner's outer face, 5 off
+    back = ([(xe, yn), (D.GM_CX, yn)]
+            + list(reversed(_gm_corner(rb, n)))          # top, round to the west
+            + [(xw, y_end)])
+    front = ([(xe, yn - dep), (D.GM_CX, yn - dep)]
+             + list(reversed(_gm_corner(rb + dep, n)))
+             + [(xw - dep, y_end)])
+    return [('poly', back + list(reversed(front)), 'solid')]
+
+
 def _gm_corner(r, n=24):
     """The rounded north-west corner of the grandmother's bath at radius r
     about its centre, from the west tail (180 deg) round to the north wall

@@ -3031,40 +3031,39 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const ceiling = model.data.levels.ceiling
   for (const w of model.walls) {
     for (const op of w.openings) {
-      if (op.type === 'arch' && /pair of[^.]*doors/i.test(op.label ?? '')) {
-        // THE POD PORTALS' DOORS (Karan's call): a pair of tinted-glass leaves
-        // under the arch, walnut stiles and rails, hinged at both jambs and
-        // swinging INTO the pod, so open they stand off the screen's consoles
+      if (op.type === 'arch' && /single[^.]*door/i.test(op.label ?? '')) {
+        // THE POD PORTALS' DOOR (Karan's call): ONE tinted-glass leaf under the
+        // arch, walnut stiles and rails, pull to open from the great room —
+        // hinged at the north jamb and swinging out into the great room, so the
+        // open leaf stands off the path south to the table
         const len = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y)
         if (len < 300) continue
-        const d = { x: (op.p2.x - op.p1.x) / len, y: (op.p2.y - op.p1.y) / len }
+        const hinge = op.p1.y <= op.p2.y ? op.p1 : op.p2
+        const tip = hinge === op.p1 ? op.p2 : op.p1
+        const d = { x: (tip.x - hinge.x) / len, y: (tip.y - hinge.y) / len }
         let n = { x: -d.y, y: d.x }
-        const roomOff = (sg: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + n.x * sg * 400, y: op.mid.y + n.y * sg * 400 }, r.polygon))
-        if (!/FAMILY|DEN/i.test(roomOff(1)?.def.id ?? '') && /FAMILY|DEN/i.test(roomOff(-1)?.def.id ?? '')) n = { x: -n.x, y: -n.y }
+        const roomAt = (sg: number) => model.rooms.find((r) => pointInPolygon({ x: op.mid.x + n.x * sg * 400, y: op.mid.y + n.y * sg * 400 }, r.polygon))
+        if (roomAt(1)?.def.id !== 'R-GREAT' && roomAt(-1)?.def.id === 'R-GREAT') n = { x: -n.x, y: -n.y }
         const H = Math.min((op.head ?? 2400) - 20, ceiling - 40)
-        const half = len / 2 - 8
-        const pair = new THREE.Group()
-        for (const [hinge, sgn] of [[op.p1, 1], [op.p2, -1]] as const) {
-          const leaf = new THREE.Group()
-          leaf.add(box(half - 90, H - 160, 10, M.tintGlass, half / 2 + 4, H / 2, 0))
-          leaf.add(box(half, 80, 34, M.wallWood, half / 2 + 4, 40, 0))
-          leaf.add(box(half, 80, 34, M.wallWood, half / 2 + 4, H - 40, 0))
-          leaf.add(box(45, H, 34, M.wallWood, 4 + 22, H / 2, 0))
-          leaf.add(box(45, H, 34, M.wallWood, half + 4 - 22, H / 2, 0))
-          for (const sz of [-1, 1]) {
-            const pull = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, 300 * S, 10), M.brass)
-            pull.position.set((half - 90) * S, 1050 * S, sz * 26 * S)
-            leaf.add(pull)
-          }
-          // shut: along the chord from its hinge to the meeting stiles; open: turned 90 into the pod
-          const dir = mode === 'open' ? n : { x: d.x * sgn, y: d.y * sgn }
-          leaf.rotation.y = -Math.atan2(dir.y, dir.x)
-          leaf.position.set(hinge.x * S, 0, hinge.y * S)
-          pair.add(leaf)
+        const L = len - 12
+        const leaf = new THREE.Group()
+        leaf.add(box(L - 90, H - 160, 10, M.tintGlass, L / 2 + 6, H / 2, 0))
+        leaf.add(box(L, 80, 34, M.wallWood, L / 2 + 6, 40, 0))
+        leaf.add(box(L, 80, 34, M.wallWood, L / 2 + 6, H - 40, 0))
+        leaf.add(box(45, H, 34, M.wallWood, 6 + 22, H / 2, 0))
+        leaf.add(box(45, H, 34, M.wallWood, L + 6 - 22, H / 2, 0))
+        // a tall brass pull bar near the free edge, both faces
+        for (const sz of [-1, 1]) {
+          const pull = new THREE.Mesh(new THREE.CylinderGeometry(7 * S, 7 * S, 600 * S, 12), M.brass)
+          pull.position.set((L - 80) * S, 1050 * S, sz * 30 * S)
+          leaf.add(pull)
         }
+        const dir = mode === 'open' ? n : d
+        leaf.rotation.y = -Math.atan2(dir.y, dir.x)
+        leaf.position.set(hinge.x * S, 0, hinge.y * S)
         const fx = -op.dir.y, fy = op.dir.x
-        tagItem(pair, `door:${op.id}`, mode, [{ x: op.mid.x + fx * 320, y: op.mid.y + fy * 320, h: 1350 }, { x: op.mid.x - fx * 320, y: op.mid.y - fy * 320, h: 1350 }])
-        g.add(pair)
+        tagItem(leaf, `door:${op.id}`, mode, [{ x: op.mid.x + fx * 320, y: op.mid.y + fy * 320, h: 1350 }, { x: op.mid.x - fx * 320, y: op.mid.y - fy * 320, h: 1350 }])
+        g.add(leaf)
         continue
       }
       if (op.type !== 'door') continue

@@ -530,7 +530,7 @@ export const building: BuildingData = {
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
-        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [2155.254, 2978.772], head: 2400, label: "Arched portal — open, no doors (Karan's call)" },
+        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [1151.839, 1975.111], head: 2400, label: "Arched portal — open, no doors (Karan's call)" },
       ],
       label: 'Family pod — curved glass screen; timber slat blinds on the pod side either side of the portal, lift to open',
     },

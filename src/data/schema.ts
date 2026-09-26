@@ -33,6 +33,12 @@ export interface OpeningDef {
    * solid wall is a hole between its sill and its lintel.
    */
   glass?: 'clear' | 'tinted'
+  /**
+   * The leaf is CURVED to this circle (plan mm): the entry gallery's service
+   * doors sit in the drum's arch and their walnut leaves follow it, flush with
+   * the gallery face when shut so the arch reads as one sweep.
+   */
+  curve?: { x: number; y: number; r: number }
   label?: string
   notes?: string
 }

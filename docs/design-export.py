@@ -504,17 +504,19 @@ seg_pts = [[(gx + math.cos(math.radians(a)) * gr,
 # so the arch is solid from the springing to the door's south jamb
 CHORDS = [
     ('GAL-W', seg_pts[0][-1], seg_pts[1][0], 'door',
-     'Service door — west, to the kitchen, above the 2725 column; hinged on the column top, swings into the gallery'),
+     'Service door — west, to the kitchen, above the 2725 column; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery'),
     ('GAL-N', seg_pts[1][-1], seg_pts[2][0], 'arch',
      'Arched portal to the great room — curved doors slide on the arc'),
     ('GAL-E', seg_pts[2][-1], (13965, 9325), 'door',
-     "Service door — east, to help's side"),
+     "Service door — east, to help's side; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery"),
 ]
 for gid, a0, a1, typ, lab in CHORDS:
     L = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
     head = CEIL if typ == 'arch' else 2100   # the arch runs to the ceiling; its doors are full height
+    # the service doors' leaves are curved to the drum, flush with its inner face
+    curve = f'curve: {{ x: {gx}, y: {gy}, r: {gr} }}' if typ == 'door' else ''
     WALLS.append(w(f'T-{gid}', [a0, a1], 0, 'threshold',
-                   [op(f'D-{gid}', typ, 0, L, head=head, label=lab)]))
+                   [op(f'D-{gid}', typ, 0, L, head=head, label=lab, extra=curve)]))
 
 # ------------------------------------------------------------------ rooms
 ROOMS = [
@@ -778,6 +780,8 @@ def emit_building():
                     # swings against the arc, clear of the rack on the leg
                     bits.append(f"hinge: {1 if o2['id'] in HINGE_AT_END else 0}")
                     bits.append(f"side: {SWING_SIDE.get(o2['id'], 1)}")
+                if o2['extra']:
+                    bits.append(o2['extra'])
                 if o2['label']:
                     bits.append(f'label: {o2["label"]!r}')
                 A('        { ' + ', '.join(bits) + ' },')

@@ -723,7 +723,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-W', type: 'door', at: [0, 584.256], head: 2100, hinge: 0, side: 1, label: 'Service door — west, to the kitchen, above the 2725 column; hinged on the column top, swings into the gallery' },
+        { id: 'D-GAL-W', type: 'door', at: [0, 584.256], head: 2100, hinge: 0, side: 1, curve: { x: 12240, y: 9325.0, r: 1725.0 }, label: 'Service door — west, to the kitchen, above the 2725 column; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery' },
       ],
     },
     {
@@ -741,7 +741,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-E', type: 'door', at: [0, 773.147], head: 2100, hinge: 1, side: 1, label: "Service door — east, to help's side" },
+        { id: 'D-GAL-E', type: 'door', at: [0, 773.147], head: 2100, hinge: 1, side: 1, curve: { x: 12240, y: 9325.0, r: 1725.0 }, label: "Service door — east, to help's side; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery" },
       ],
     },
   ],

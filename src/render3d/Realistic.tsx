@@ -3016,6 +3016,65 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       const dir = mode === 'open' ? n : d
       const H = Math.min((op.head ?? model.data.levels.doorHead) - 20, ceiling - 40)
       const leafLen = len - 12
+      if (op.curve) {
+        // A CURVED LEAF: walnut, following the drum's circle, 45 thick and set
+        // flush with the gallery face (the circle's inside) so that shut, the
+        // arch reads as one continuous sweep. Built as short boxes along the
+        // arc in a group pivoted at the hinge; open, the group turns 90 about
+        // the hinge toward the swing side, like a flat leaf would.
+        const c = op.curve
+        const TD = 230                                         // the drum's thickness (the threshold itself is 0 thick)
+        const rl = c.r - TD / 2 + 24.5                         // the leaf's centreline radius: 45 thick, 2 off the inner face
+        const a0 = Math.atan2(hingeAt.y - c.y, hingeAt.x - c.x)
+        let a1 = Math.atan2(other.y - c.y, other.x - c.x)
+        while (a1 - a0 > Math.PI) a1 -= 2 * Math.PI
+        while (a0 - a1 > Math.PI) a1 += 2 * Math.PI
+        const leaf = new THREE.Group()
+        const N = 10
+        const pts: { x: number; y: number }[] = []
+        for (let k = 0; k <= N; k++) {
+          const a = a0 + (a1 - a0) * (k / N)
+          pts.push({ x: c.x + rl * Math.cos(a) - hingeAt.x, y: c.y + rl * Math.sin(a) - hingeAt.y })
+        }
+        for (let k = 1; k <= N; k++) {
+          const p = pts[k - 1], q = pts[k]
+          const sl = Math.hypot(q.x - p.x, q.y - p.y) + 3
+          const seg = box(sl, H, 45, M.wallWood)
+          seg.position.set(((p.x + q.x) / 2) * S, (H / 2) * S, ((p.y + q.y) / 2) * S)
+          seg.rotation.y = -Math.atan2(q.y - p.y, q.x - p.x)
+          leaf.add(seg)
+        }
+        // a slim vertical brass pull near the free edge, both faces
+        const e = pts[N - 1], f = pts[N]
+        const ex = -(f.y - e.y), ey = f.x - e.x
+        const em = Math.hypot(ex, ey) || 1
+        for (const sz of [-1, 1]) {
+          const pull = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, 240 * S, 10), M.brass)
+          pull.position.set((e.x * 0.35 + f.x * 0.65 + (ex / em) * sz * 30) * S, 1050 * S, (e.y * 0.35 + f.y * 0.65 + (ey / em) * sz * 30) * S)
+          leaf.add(pull)
+        }
+        // the fixed walnut panel over the door head, the drum's full 230, so
+        // the arch carries on above the leaf to the ceiling
+        for (let k = 1; k <= N; k++) {
+          const a = a0 + (a1 - a0) * ((k - 1) / N), b2 = a0 + (a1 - a0) * (k / N)
+          const p = { x: c.x + c.r * Math.cos(a), y: c.y + c.r * Math.sin(a) }
+          const q = { x: c.x + c.r * Math.cos(b2), y: c.y + c.r * Math.sin(b2) }
+          const sl = Math.hypot(q.x - p.x, q.y - p.y) + 3
+          const over = box(sl, ceiling - H, TD, M.wallWood)
+          over.position.set(((p.x + q.x) / 2) * S, (H + (ceiling - H) / 2) * S, ((p.y + q.y) / 2) * S)
+          over.rotation.y = -Math.atan2(q.y - p.y, q.x - p.x)
+          g.add(over)
+        }
+        // shut the leaf lies on the arc; open it has turned about the hinge
+        // from the chord's direction to the swing normal
+        const alpha = Math.atan2(n.y, n.x) - Math.atan2(d.y, d.x)
+        leaf.rotation.y = mode === 'open' ? -alpha : 0
+        leaf.position.set(hingeAt.x * S, 0, hingeAt.y * S)
+        const fx = -op.dir.y, fy = op.dir.x
+        tagItem(leaf, `door:${op.id}`, mode, [{ x: op.mid.x + fx * 230, y: op.mid.y + fy * 230, h: 1350 }, { x: op.mid.x - fx * 230, y: op.mid.y - fy * 230, h: 1350 }])
+        g.add(leaf)
+        continue
+      }
       const glazed = w.kind === 'threshold' || w.kind === 'glazing'
       const leaf = new THREE.Group()
       const body = box(leafLen, H, 40, glazed ? M.tintGlass : M.wallWood, leafLen / 2 + 6, H / 2, 0)
@@ -5253,8 +5312,11 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     // The entry drum and the gallery legs are wood, both faces. (They used to be a
     // second mesh scaled by 0.1 % about the scene origin, which shifted the copy a
     // dozen millimetres east and left the drum's east half showing plaster.)
+    // ...and the panels over the two service doors' heads, so the curved walnut
+    // leaves and the arch above them read as one sweep
     const galleryWood = !!p.wallId &&
-      (p.wallId.startsWith('W-GAL-ARC') || p.wallId === 'W-GAL-W' || p.wallId === 'W-GAL-E')
+      (p.wallId.startsWith('W-GAL-ARC') || p.wallId === 'W-GAL-W' || p.wallId === 'W-GAL-E'
+        || p.wallId === 'T-GAL-W' || p.wallId === 'T-GAL-E')
     const mat =
       p.glass === 'tinted' ? M.tintGlass
       : p.kind === 'glazing' ? M.glass

@@ -1277,6 +1277,11 @@ def emit_furniture():
         if 'headboard' in label.lower():
             h = 1350
         face = FACE.get(suff or '', None)
+        # joinery may SAY which way its doors face ("doors north"): that wins
+        # over the free-side guess the 3D would otherwise make
+        said = re.search(r'\bdoors (north|south|east|west)\b', lab, re.I)
+        if said:
+            face = said.group(1)[0].upper()
         # A dining group is DECOMPOSED: the table with its true drawn outline
         # (superellipse or round), and every chair the symbol draws as its own
         # item, exactly where and how many the sheet shows. The 3D renders

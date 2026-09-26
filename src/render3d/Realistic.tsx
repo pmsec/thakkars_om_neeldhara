@@ -999,7 +999,8 @@ function teakWardrobe(f: FurnitureItem, M: Mats): THREE.Group {
     const lenOf = (s: 'N' | 'S' | 'E' | 'W'): number => (s === 'N' || s === 'S' ? w : d)
     const toward = (s: 'N' | 'S' | 'E' | 'W'): number => (s === 'N' ? -ddy : s === 'S' ? ddy : s === 'E' ? ddx : -ddx)
     const free = (['N', 'S', 'E', 'W'] as const).filter((s) => gaps[s] > 100)
-    const front = [...free].sort((a, b) => lenOf(b) - lenOf(a) || toward(b) - toward(a))[0]
+    // a stated face wins (the grandmother's cupboard opens north onto the slider line)
+    const front = f.face ?? [...free].sort((a, b) => lenOf(b) - lenOf(a) || toward(b) - toward(a))[0]
       ?? (Math.abs(ddx) >= Math.abs(ddy) ? (ddx >= 0 ? 'E' : 'W') : (ddy >= 0 ? 'S' : 'N'))
     const alongX = front === 'E' || front === 'W'
     const sgn = front === 'E' || front === 'S' ? 1 : -1

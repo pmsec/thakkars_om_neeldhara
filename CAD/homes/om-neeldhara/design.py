@@ -637,7 +637,11 @@ POD_E = ((M(9115), BODY_N), (M(8608), 3708), (M(8600), 3800), (M(8600), BODY_S))
 # screen, so a door any lower there opens into the back of it.  Both keep the
 # same 823 clear opening, struck as equal arc lengths rather than equal
 # t-spans — the curve is not uniform, so equal t would not be equal door.
-POD_PORTAL_W = (0.6015, 0.7263)           # Y 4700-5523, the parents' pod
+# ...AND BACK NORTH (Karan's call): with the dining table 800 further north
+# the door at 4700-5523 opened straight into its east chairs.  It sits
+# north of the table's end now, Y 3702-4520, the same 823 of arc; the
+# family room's sofa it once hid behind is gone.
+POD_PORTAL_W = (0.3714, 0.5683)           # Y 3702-4520, the parents' pod
 POD_PORTAL_E = (0.42, 0.60)               # Y 3872-4692, the den — pinned
 POD_PORTAL = POD_PORTAL_E                 # kept for anything reading the old name
 

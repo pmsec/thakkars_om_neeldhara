@@ -2092,10 +2092,26 @@ def suite_sliders(t=60):
         out += leaves + park
     return out
 
-def corner_units():
-    """The mandir and the coffee / pantry.  They no longer share a shape.
+def mandir_console(w=1000, dep=450):
+    """The mandir, on the main duct's north wall in the family room (Karan's
+    call): a straight console the duct's own width, 450 deep, its back on the
+    duct enclosure's north face, facing north into the pod.  The idol
+    platform 480 x 340 sits centred on it, a diya either side in front."""
+    yb = 6175 - D.T_INT / 2                          # the enclosure wall's north face
+    x0 = (D.DUCT_W0 + D.DUCT_W1) / 2 - w / 2
+    x1 = x0 + w
+    cx = (x0 + x1) / 2
+    out = [('poly', [(x0, yb - dep), (x1, yb - dep), (x1, yb), (x0, yb)], 'solid'),
+           ('rect', cx - 240, yb - dep + 55, cx + 240, yb - dep + 395, 'light'),   # the platform
+           ('circle', cx - 380, yb - dep + 110, 78, 'light'),                       # a diya each side
+           ('circle', cx + 380, yb - dep + 110, 78, 'light')]
+    return out
 
-    The MANDIR is a corner unit: it fills the corner between the retained
+
+def corner_units():
+    """The coffee / pantry (the mandir used to be the other corner unit).
+
+    The MANDIR WAS a corner unit: it fills the corner between the retained
     void's back wall and the pod glazing, flush into both, and its front is an
     arch.  That corner is 40.5 degrees, not 90 — the glazing leaves it heading
     south-west — so the unit is a wedge.  Which is what a shrine wants: the
@@ -2125,42 +2141,10 @@ def corner_units():
         return [g for g, s in zip(glass, cum) if s <= dist]
 
     # ------------------------------------------------------------- mandir
-    LEG, SAG, FRAME = 1200, 200, 70
-    A, B = (cx0 - LEG, cy0), glass_at(LEG)
-    ax, ay = (A[0] + B[0]) / 2 - cx0, (A[1] + B[1]) / 2 - cy0
-    an = math.hypot(ax, ay)
-    ax, ay = ax / an, ay / an                       # corner -> front, the axis
-
-    def arch(a, b, sag):
-        c = ((a[0] + b[0]) / 2 + ax * 2 * sag, (a[1] + b[1]) / 2 + ay * 2 * sag)
-        return [bez((a, c, b), t) for t in np.linspace(0, 1, 44)]
-
-    front = arch(B, A, SAG)
-    # the arched surround, offset along the curve's OWN normal — offsetting
-    # along the axis instead pushes the ends past the two walls it sits in
-    inner = []
-    for i, (x, y) in enumerate(front):
-        a2, b2 = front[max(i - 1, 0)], front[min(i + 1, len(front) - 1)]
-        tx, ty = b2[0] - a2[0], b2[1] - a2[1]
-        tn = math.hypot(tx, ty) or 1.0
-        nx, ny = -ty / tn, tx / tn
-        if (cx0 - x) * nx + (cy0 - y) * ny < 0:     # point it at the corner
-            nx, ny = -nx, -ny
-        inner.append((x + nx * FRAME, y + ny * FRAME))
-    out = [('poly', [A, (cx0, cy0)] + glass_to(LEG) + front, 'solid'),
-           ('poly', front + list(reversed(inner)), 'soft')]
-    px, py = -ay, ax                                # across the wedge
-    # the idol platform, 480 x 340, square to the axis and standing 850 back
-    # from the corner: 20 off the glass, 73 off the void wall, 130 off the arch
-    c, W, H = (cx0 + ax * 850, cy0 + ay * 850), 240, 170
-    out.append(('poly', [(c[0] + px * W - ax * H, c[1] + py * W - ay * H),
-                         (c[0] + px * W + ax * H, c[1] + py * W + ay * H),
-                         (c[0] - px * W + ax * H, c[1] - py * W + ay * H),
-                         (c[0] - px * W - ax * H, c[1] - py * W - ay * H)],
-                'solid'))
-    for k in (-1, 1):                               # a diya each side, in front
-        out.append(('circle', cx0 + ax * 1120 + px * k * 180,
-                    cy0 + ay * 1120 + py * k * 180, 78, 'light'))
+    # The mandir is NOT in this corner any more (Karan's call): it stands on
+    # the main duct's north wall in the family room — mandir_console().  The
+    # corner behind the void is open floor.
+    out = []
 
     # ------------------------------------------------------------- pantry
     DEP = 600

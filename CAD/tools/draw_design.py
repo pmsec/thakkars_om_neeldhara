@@ -427,6 +427,8 @@ def main():
         prim(p)
     for p in R.corner_units():
         prim(p)
+    for p in R.mandir_console():       # the mandir, on the duct's north wall
+        prim(p)
     for p in R.great_room_planter():   # answers the kitchen's bump across the room
         prim(p)
     for p in R.great_room_sofa():      # the 2-seater + the tree on its end

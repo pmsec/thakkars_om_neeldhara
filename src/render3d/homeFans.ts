@@ -64,9 +64,9 @@ export const FAN_SPOTS: Record<string, FanSpot[]> = {
     // THE FAMILY ROOM: one on the bath's east wall for the recliner and the
     // sofa, one on the south wall beside the canvas for the dining table
     // above the pod slider's north jamb (the slider is 4100-5875 now, and a fan cannot sit on a door)
-    { id: 'fan:h1-family', x: 4542, y: 3500, h: 2150, nx: 1, ny: 0, tx: 7150, ty: 5600, th: 700, where: 'the dining table, north end' },
+    { id: 'fan:h1-family', x: 4542, y: 3500, h: 2150, nx: 1, ny: 0, tx: 7150, ty: 4900, th: 700, where: 'the dining table, north end' },
     // on the duct cheek, not the nook's back wall: the crockery closet stands there now
-    { id: 'fan:h1-dining', x: 5630, y: 7000, h: 2150, nx: 1, ny: 0, tx: 7150, ty: 6400, th: 720, where: 'the dining table' },
+    { id: 'fan:h1-dining', x: 5630, y: 7000, h: 2150, nx: 1, ny: 0, tx: 7150, ty: 6300, th: 720, where: 'the dining table, south end' },
     // THE DEN: the duct's two faces - north for the two recliners, west for
     // the drum kit
     { id: 'fan:h1-den', x: 19400, y: 6100, h: 2150, nx: 0, ny: -1, tx: 18000, ty: 3900, th: 650, where: 'the two recliners' },

@@ -210,21 +210,16 @@ WALLS += [
     # stays with the family room, and a return on the duct cheek's line
     # closes the kitchen's corner. The door is hinged — nothing west of it
     # for a leaf to park on — and swings into the kitchen against the return.
-    w('W-KIT-FRONT', [(6900, 7862.5), (10567.5, 7862.5)], 125, 'interior',
+    # the kitchen front's centreline, 725 north of the builder's line (KIT_N + 62.5)
+    # ...running on past the arch's centreline (11627 at this Y, inside the
+    # arch's own thickness) so the room graph closes
+    w('W-KIT-FRONT', [(6900, D.KIT_N + 62.5), (11700, D.KIT_N + 62.5)], 125, 'interior',
       [op('D-KIT', 'door', 0, 800, head=2100,
           label='Kitchen door — hinged on the west jamb, swings into the kitchen against the return'),
        op('O-HATCH', 'window', 1000, 1700, head=2100, sill=1050,
           label='Serving hatch — 700 over the sink, kitchen to family room')],
       notes='Door jamb to apse on the bump line.'),
-    # the step at the column's line and the last stretch 150 further north, so
-    # the west service door above the 2725 column is 820 wide
-    w('W-KIT-JOG', [(10567.5, 7862.5), (10567.5, 7712.5)], 125, 'interior',
-      label="Kitchen front — the 150 step on the column's line"),
-    # runs on past the arch's centreline (11627 at this Y) so the room graph
-    # closes; the end stays inside the arch's own thickness
-    w('W-KIT-FRONT-E', [(10567.5, 7712.5), (11700, 7712.5)], 125, 'interior',
-      label='Kitchen front — the stepped stretch, dying into the apse'),
-    w('W-KIT-RET', [(6900, 7862.5), (6900, 8462.5)], 150, 'interior',
+    w('W-KIT-RET', [(6900, D.KIT_N + 62.5), (6900, 8462.5)], 150, 'interior',
       notes="The return that closes the kitchen's north-west corner, on the secondary duct cheek's line."),
     w('W-HELP-N', [(13700, 8462.5), (20013, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120,
@@ -460,7 +455,7 @@ def pod_wall(P, portal, wid, label, y_end):
 
 WALLS += [
     pod_wall(D.POD_W, D.POD_PORTAL_W, 'W-CURVE-PARENTS',
-             'Family pod — curved glass screen; timber slat blinds on the pod side either side of the portal, lift to open', 7862.5),
+             'Family pod — curved glass screen; timber slat blinds on the pod side either side of the portal, lift to open', D.KIT_N + 62.5),
     pod_wall(D.POD_E, D.POD_PORTAL_E, 'W-CURVE-KARAN',
              'Den pod — curved glass screen, wood dado below; timber slat blinds on the pod side either side of the portal, lift to open', 8462.5),
 ]
@@ -1172,7 +1167,7 @@ def room_for(cx, cy):
         return 'R-K-SUITE'
     if cy >= 5935 and cx > mx(2400):
         return 'R-K-SUITE'
-    if cx < 9115 and cy < 7862.5:
+    if cx < 9115 and cy < D.KIT_N + 62.5:
         return 'R-P-FAMILY'
     if cx > 15365 and cy < 8400 and cx < 20013:
         return 'R-K-DEN'
@@ -1184,7 +1179,7 @@ def room_for(cx, cy):
         return 'R-ENTRY'
     if cx < 6900 and cy < 8400:
         return 'R-P-FAMILY'
-    if cy >= 7862.5 and 6900 <= cx < 10400:
+    if cy >= D.KIT_N + 62.5 and 6900 <= cx < 10400:
         return 'R-KITCHEN'
     if cy >= 8400 and 5555 < cx < 11210:
         return 'R-KITCHEN'

@@ -1134,8 +1134,11 @@ _ONCE = [
     # that wall from the rounded corner to the pod wall, facing north into
     # her zone (Karan's call: turned to lie along the wall, not across it).
     ('hanging',   -450, 4750, 150, 5850, "wardrobe  ·  1100 x 600, hanging"),
+    # Its doors face NORTH, to the terrace side, straight onto the slider
+    # line (Karan's call) — accepted that they cannot open while the slider
+    # is shut across them.
     ('hanging',   GM_CX, GM_N - T_MB - 600, MB_XE, GM_N - T_MB,
-     "wardrobe  ·  1205 x 600, full-height, hanging, on the bath's north wall"),
+     "wardrobe  ·  1205 x 600, full-height, hanging, on the bath's north wall, doors north"),
     # THE CROCKERY CLOSET (Karan's call): the 1120 x 600 recess in front of
     # the secondary duct, between the kitchen's return and the pod's duct
     # cheek, takes a full-height mid-century cabinet — walnut, on tapered

@@ -1,0 +1,2128 @@
+# Round 1 — the layout set out on the builder's shell
+
+**Drawing:** `out/round1-layout.dxf` — the builder's own DXF with the proposal
+added on `PROP-*` layers.
+**Review image:** `drawings/07-round1-layout.png`.
+
+Freeze the `PROP-*` layers and you have the builder's drawing back, unchanged:
+all 15 original modelspace entities, all 351 blocks and all 32 layers are
+preserved untouched.
+
+| Layer | What's on it |
+|---|---|
+| `PROP-SHELL` | the existing shell — external walls, shaft and duct enclosures, beams, parapets, chajjas |
+| `PROP-WALL-NEW` | new masonry, solid-hatched |
+| `PROP-KEEP` | shafts, ducts and voids that must stay clear |
+| `PROP-GLAZ` | glazing, sliding glass, the pod portals |
+| `PROP-SCREEN` | the entry gallery U — 230, built on the two columns, and the curved door on its axis |
+| `PROP-FURN` | fixed joinery and the layout |
+| `PROP-TEXT` | room names, areas, and the layer-state notes |
+| `PROP-DIM` | the set-out dimensions |
+| `PROP-REF-CORE` | the lift lobby, lifts and fire lift beyond the flat |
+
+## Layer states
+
+The developer's file is built from **nested blocks whose references sit on
+content layers** — both unit blocks sit on `DA_WALL`, and the block holding 31
+of the 43 columns sits on layer `0`. In CAD, switching off a block reference's
+layer hides the whole block. So `DA_WALL` off would take the shell, the beams
+and the parapets with it, and `0` off would take most of the columns.
+
+Everything that has to survive that switch is therefore copied on to
+`PROP-SHELL`. Nothing of the developer's is moved, edited or deleted.
+
+**To see the design only — turn OFF:**
+
+```
+DA_WALL              DA_TEXT IN SQ.FT      DA_DIMENSION
+DA_DOOR              DA_TEXT 2             -CG-P-DIM
+DA_WINDOW            DA_Text 1             DA_GUIDE LINE
+DA_FURNITURE         DA_TEXT               DA_DRG BORDER
+DA_FURNITURE HIDDEN  DA_LABL               boundary
+DA_DOTTED LINES      DA_CARPET AREA RERA   DA_COLUMN HATCH
+DA_ELEVATION FEATURE DA_HATCH              DA_ALUMINIUM
+DA_LINE              DA_SUNK HATCH
+```
+
+Leave **`0`**, **`DA_COLUMN`** and **`DA_BUILDING LINE`** ON — the columns and
+the slab edge live inside blocks that sit on those layers. Verified: this
+leaves 14 columns, the slab edge and every `PROP-*` layer visible in the home,
+and nothing else.
+
+**To see the developer's drawing only** — turn OFF every `PROP-*` layer.
+Verified: zero proposal entities visible, their sheet back exactly as issued.
+
+**To compare** — the developer state, plus `PROP-WALL-NEW` and `PROP-TEXT`
+switched back on. Their layout underneath, yours over it.
+
+The same three notes are written on the drawing itself, on `PROP-TEXT`, to the
+left of the title. Most CAD apps will save them as Layer States so you can
+flip between them.
+
+---
+
+## Verification
+
+`python3 tools/verify.py` runs the same audit that found the problems in A-101,
+against this layout. All checks pass:
+
+* no floor drawn anywhere the builder has no slab — **0.000 m² residual**
+* every shaft, duct and void — **0.000 m² built over**, all eight
+* the four columns that A-101 lost off the end of the plan are back inside it
+* five columns are now fully absorbed in masonry; the rest appear as **piers**
+  projecting 80–110 mm into a room, which is what they are
+* the shell is only what is genuinely built: `keep_demo()` keeps a builder wall
+  only where it runs **along** a shell edge — the slab line or a side of a
+  shaft — plus 260 for the corner return. Being merely near one is not enough,
+  or a never-built partition that passes the corner of a duct gets drawn as
+  existing fabric
+
+---
+
+## The four moves that make it fit
+
+**1. The envelope grows to the real one.** 25 680 long and 11 375 deep instead
+of 24 720 × 11 090. Every bay is set out from the builder's own dimension
+chains. The deck is 15 420, not 15 020, and its set-out is 3050 + 1535 + 3050
+per half with a 150 party wall at the centre.
+
+**2. The baths leave the service bay.** A-101 put them at X 4730–6830 and
+17 650–19 750, which is almost entirely the 1000 × 4950 open service duct.
+They move into the wing strips, at the south end, **against** that duct — which
+is what it is for: the builder's own `M.TOILET 02` and `COMMON TOILET`
+ventilate into it through windows. Each bath is now **1930 clear × 3520 at its
+deepest** (69 sq ft, against the builder's own 40) with a real openable window,
+and its north side is an arch rather than a wall — see *The master baths are
+arches too*, below.
+
+**3. The suite becomes one L-shaped room.** The wall between the suite and the
+wing strip comes out for the northern 5300, so the brief's "one room ·
+cupboards + dressing + terrace" reads properly. **350 sq ft each**, with the
+bath off the south end behind an arched wall.
+
+**And the wall between each bed and its pod comes out too**, replaced by a
+sliding glass partition. What is left as wall is the 1420 at the north end —
+nearly all of it the builder's column — and the 475 at the south. Between them,
+**3555 of opening, Y 2620 to 6175, in two interlocking leaves of 1778.** One
+leaf would need 3555 of parking and the deck is 2620 deep; two leaves stacked
+take 1778, which fits.
+
+Two things about it are forced rather than chosen:
+
+* The panels run on the **pod face** of the wall line, X 4540–4600, not on its
+  centreline. A builder column **230 × 1200 at X 4300–4530 / Y 1200–2400** sits
+  square on the route north, and only a track east of 4530 gets past it. Ten
+  millimetres of clearance, and the panels read flush with the wall's own east
+  face at 4529.
+* So they park **on the deck**, X 4540–4600 / **Y 842–2620** — beside the gym on
+  the parents' side, behind the spa on Karan's. A straight track has to stay in
+  line with its opening; reaching the 2040 between the gym and the void would
+  need an L-track slide-and-stack, and the turn would land on the grass.
+
+They stop as soon as they are clear of the opening — leading edge **flush with
+the pod's north face at 2620** — rather than running on to the parapet. They
+only have to get out of the way, and the deck beyond them is deck, not a garage.
+
+The deck's south glazing therefore starts at 4650 instead of 4530, so the panels
+have a slot to pass through.
+
+The drawing shows **both states on purpose**: the parents' pair shut, closing
+the bed off from the pod, with the parked position dashed on the deck; Karan's
+pair open and stacked on the deck, with the shut position dashed across the
+opening. Between the two halves the plan explains itself.
+
+**4. The service bay keeps only what physically fits between the two ducts.**
+Kitchen on its existing stack, entry hall between the two lobby columns,
+help's room + WC in the mirrored bay. The two dry balconies become the
+kitchen's utility end and the store, which is what the builder built them as —
+and the wall between kitchen and utility comes out, so they are one room.
+
+The entry gallery is re-centred on the home's centreline at X 12240 and sits
+inside the 3220 clear between the lobby columns.
+
+**5. The entry gallery is a U built on the two columns.** A circle standing
+free in the pocket made little sense with the builder's two **230 × 1800
+columns** in the middle of it. The U uses them: its two legs sit **exactly on
+the columns**, at the same 230, so column and wall read as one continuous
+piece rather than a thin thing stuck beside a thick one.
+
+The end is a **true semicircle**. The sag equals the half-span, 1725, which
+puts the centre on the line of the column tops — and two things follow, which
+are the whole reason for it. The tangent at the springing is **vertical**, so
+the arc leaves the column parallel to it: no radial cut against a flat leg top,
+no notch, nothing to patch. And the crown lands **1040 north of the service
+bay**, so the gallery ends in an apse you read from inside the great room.
+
+That is the second attempt. The first was a segmental arch, which springs where
+the columns actually stop but leaves its pier at 47° off vertical against a
+flat leg top — a notch outside, an overhang inside, and a springer block at
+each end to fill it. Moving the crown north instead of shortening the arc gets
+the same "springs off the column" and loses the notch. The springer blocks are
+still in the code for a shallower arch, but they draw nothing here: on a
+semicircle they collapse to a 4° patch, and with the 800 ahead of each column
+now a doorway, a patch there would be a fragment of wall standing in it.
+
+The apse breaks through the service-bay north wall, so that wall stops on each
+side of it and the apse's own curved wall is the boundary between.
+
+**3220 wide × 3260 deep. 9.4 m², 101 sq ft.**
+
+**Four ways in, and none of them is through a leg** — you cannot put a door
+through a 230 × 1800 structural column, so both legs stay solid. One is in the
+arch, two are in the 800 ahead of each column, and one is in the entrance wall.
+
+| | width | opening |
+|---|---|---|
+| entrance wall | 1050 | the front door, from the lift lobby |
+| ahead of the west column | 800 | gallery → kitchen, for staff |
+| arch, crown | 1050 | gallery → great room |
+| ahead of the east column | 800 | gallery → help's room, for staff |
+
+The two service doors are **not set out by eye**. Once the apse pushes north,
+the only stretch with the kitchen behind it is the **800 between the column top
+and the great-room wall**; north of that the arch faces the great room, and a
+door there opens into the wrong room. So each service door takes that whole 800
+— jambed by the column below and the wall above — and what is left of the arch
+is two **1400 piers** flanking the 1050 door on the axis.
+
+**They are hinged, glass, and they swing into the gallery.** Sliding was tried
+three ways and none of them pays:
+
+| | clear opening |
+|---|---|
+| curved leaf on the arch's 1725 radius | 776, but it can only slide on the face of the arch and stand proud of it |
+| pocket inside the 800, single leaf | 400 — the pocket eats half the run |
+| pocket inside the 800, three-panel telescopic | ~550, on specialist track |
+| pocket carried over the column | 800, but the leg goes 230 → 320 and the gallery loses 180 of width |
+| **hinged** | **~730, and the leg stays 230** |
+
+A pocket needs a cavity at least as long as the leaf and in line with it, and
+that 800 has nothing beyond either end — the great room north, a structural
+column south. On a serving door the width wins, and hinges are ordinary
+ironmongery on a door used twenty times a day.
+
+They swing **into the gallery**, which is 3220 × 3260 of circulation with
+nothing in it; the swing is clear through its full quarter. The far side is the
+kitchen's approach to its counter end and help's room's landing, where a leaf
+standing open would cost something. And coming out of the kitchen with your
+hands full you push.
+
+The **door on the axis** keeps its curved leaf, drawn shut on the arch's own
+1725 radius — it is 1050 wide in a curved wall, so a hinge is out and it slides
+on the face of the arc.
+
+The corners the arch leaves behind it stay open to the kitchen and to help's
+room through the builder's own **800 clear above each column** — floor in those
+rooms, not waste.
+
+The apse cost the kitchen its run-B counter length: run B stops at 9550 instead
+of 10350, because a deep apse hugs the columns and the door beside the column
+had 165 of clear approach. It now has 850, and the sink moves west with the
+counter, still at its east end.
+
+At 230 the U is masonry, not the wood screen it started as — that follows from
+asking it to match the column. Finish it in wood if you want the same effect.
+
+---
+
+## Room schedule
+
+| | m² | sq ft |
+|---|---|---|
+| GREAT ROOM | 37.8 | 407 |
+| ALL-WEATHER DECK (net of the two voids) | 35.8 | 385 |
+| MASTER SUITE — parents | 32.5 | 350 |
+| MASTER SUITE — karan | 32.5 | 350 |
+| FAMILY ROOM | 21.3 | 230 |
+| MUSIC + WORK DEN | 21.3 | 230 |
+| KITCHEN (one room with the utility) | 11.7 | 126 |
+| ENTRY GALLERY | 9.4 | 101 |
+| PARENTS' BATH | 6.5 | 69 |
+| KARAN'S BATH | 6.5 | 69 |
+| HELP'S ROOM | 4.4 | 47 |
+| TERRACE ×2 | 3.7 each | 40 each |
+| GUEST / SERVICE WC | 3.0 | 33 |
+| STORE | 2.4 | 26 |
+| **total of named rooms** | **232.6** | **2504** |
+
+The great room is 407 sq ft against A-101's 474, and reads 6250 across the
+removed party wall at the deck, 7280 at the waist and 7280 at the pods — the
+pod glazing turns once at the top and then runs straight. It gives 2.1 m² back
+to the entry gallery's apse and another 1.6 to the kitchen's bump, both of
+which project into it.
+
+---
+
+## The master baths are arches
+
+The bath used to be a rectangle in the corner of the wing strip: 1518 clear ×
+2820, north wall straight across, west wall straight down. At that width it
+could not carry a fitting on both long walls — a 550 vanity opposite a 600 pan
+left **350 between their fronts**, against the 600 you want in front of a pan.
+It was the one genuinely bad room on the drawing.
+
+Karan drew the fix: a single curve springing off the pod partition, cresting
+inside the suite, and turning down to become the bath's own west wall. The bath
+takes the ground it needs from the suite, and the suite gets a curved wall
+instead of a corner.
+
+### The set-out
+
+Two quadrants meeting at the crown with a shared horizontal tangent, so the
+join does not read. A single ellipse cannot do it — the crown is 1240 in from
+one end and only 690 from the other, and one ellipse cannot put its widest
+point off-centre like that.
+
+| | |
+|---|---|
+| east flank | ellipse, semi-axes 1550 × 1500, leaving the pod wall at about 52° |
+| west flank | quarter circle, radius 765, turning the sweep vertical |
+| crown | X 3165, Y 5950 on the centreline — 700 further into the suite than the old wall |
+| meets the pod wall at | Y 6550 on the centreline; the band spans 6432–6678 |
+| thickness | 150 throughout, offset along the curve's own normal |
+
+That last row is why the sweep needed its own machinery. The circular-arc code
+that draws the entry gallery cannot express an ellipse, so the faces are struck
+by offsetting the centreline along its own normal (`retrofit.mb_pt`), the same
+method the guest WC's apse uses.
+
+**It clears the sliding partition.** The suite-to-pod sliders close over Y
+2620–6175. The sweep's outer face reaches the pod wall at 6432, so **257 of the
+partition is left as the slider's south jamb** — a jamb, not a collision.
+
+### What the room does now
+
+| | mm | ft |
+|---|---|---|
+| clear width at the shower | 1930 | 6'-4" |
+| deepest, crown to the south wall | 3520 | 11'-7" |
+| clear floor, net of every fitting | 3.25 m² | 35 sq ft |
+| **largest circle that fits on the clear floor** | **1300** | **4'-3"** |
+| door, clear | 800 | 2'-7" |
+| in front of the pan | 1330 | 4'-4" |
+| pan to the shower screen | 355 | 1'-2" |
+| console front to the pan | 653 | 2'-2" |
+| walk-in shower | 1850 × 950 | 6'-1" × 3'-1" |
+
+**A correction on that last figure.** When the arch was first drawn I reported
+1500, and said it met the wheelchair turning circle. It did not: that reading
+came off a 16-direction probe, which overestimates. Sampled properly it was
+**1400** even before any joinery, and with the cupboard, the shelves and the
+bin in it is **1300**. So the room does not meet the 1500 standard — it is
+still far better than the guest WC, which manages 1000, and 1300 is a
+comfortable bathroom, but it is not an accessible one. The bin is worth 100 of
+that and is the one thing here you can move with your foot.
+
+### The fittings
+
+* **The arched vanity, and the mirror over it** — both struck off the sweep
+  itself, not stood against it. A straight top against a curved wall touches at
+  one point and gaps either side; these are the same curve offset inwards, so
+  they bed on the wall for their whole length. The console runs the **whole
+  arc, 2543 long**, pod wall to the foot of the west flank, and the mirror runs
+  with it — so what you face at the basin is a mirror that wraps with the room
+  rather than a flat sheet fighting it.
+  It cannot run at one depth. 520 is right at the basin end, where the east
+  flank's radius of curvature never drops below 1500; but the west flank is a
+  690 inner radius, and 520 into that leaves 170 and closes the corner off to a
+  point. So it eases over its whole length to **340 at the foot** — one
+  unbroken taper, not a deep bit and a thin bit — which still leaves 350 of
+  radius at the tightest part of the turn. The basin sits at the duct end,
+  100 clear of the wall behind, where the plumbing is.
+* **The pan** goes on the duct wall, because the soil stack is directly behind
+  it. 600 out from the wall, 620 wide.
+* **The shower** takes the whole south end — 1850 × 950 behind a glass screen.
+  At 1930 clear a full-width wet zone is simpler than a cubicle with a dead gap
+  beside it. 1850 rather than 1930 because the builder leaves a 230 × 1000
+  column on the duct's corner and 80 of it stands in that corner of the room.
+
+### And the storage, which is the rest of the run
+
+The console is not the whole of the joinery. The arch, and the two walls it
+dies into, carry a continuous run — and each piece is where it is because that
+is the one stretch of wall nothing else wants.
+
+| | | |
+|---|---|---|
+| console + mirror | 1743 on the arch | 520 deep at the basin, 395 where the cupboard starts |
+| **cupboard** | 800 on the arch, to its foot | 395 → 340 deep, one door |
+| **shelves** | 822 down the duct wall | 432 → 400 deep, stopping 120 short of the pan |
+| **bin** | 300 × 300 | in the 300 between the arch's foot and the door jamb |
+
+* **The cupboard** takes the last 800 of the arch. It is the end of the run,
+  it is out of the wet zone, and it picks up the same face as the console
+  beside it — so the two read as one length of joinery with a door on the end
+  rather than two pieces meeting.
+* **The shelves** carry the run on round the corner and down the duct wall.
+  The console's end cut *is* the shelves' top, so the joinery turns out of the
+  arch without a joint. This is the only piece with a shelf in it: towels, bath
+  mats, the things a bathroom has to keep and a vanity has nowhere for.
+* **The bin** fills the 300 of straight wall between the foot of the arch and
+  the door jamb — too short for anything hung, too shallow for anything deep,
+  and exactly a bin.
+
+### The door is drawn open
+
+Almost every door on this drawing is left as a gap in a wall, because which way
+it swings does not change the plan. This one is drawn, because Karan asked to
+see it work. **800 clear, hinged on the south jamb**, so the leaf opens back
+along the wall it is in and clears the run from the door to the shower instead
+of standing across it. Open, it reaches X 3275 — 530 short of the pan.
+
+### One wall that was missing
+
+The bath's east side is the enclosure to the builder's main service duct, and
+**it had never been drawn** — the shell arrives with the shaft simply open, so
+there was nothing there in either the builder's fabric or ours. The bath cannot
+be closed without it. It is now a 150 wall from Y 6650 to the outer wall,
+picking up exactly where the pod partition above it leaves off, so the two read
+as one line. It is also what the pan sits on.
+
+### The cost
+
+The suite pays for it: **377 → 350 sq ft** each. The bath goes **48 → 69**. Net
+across the home is −0.9 m², which is the extra masonry — a curve is longer than
+the straight line it replaces.
+
+---
+
+## Karan's wardrobes
+
+Two wardrobes on the south wall of Karan's suite, **1387 and 1388 wide, both
+600 deep**. His side only — nothing has gone into the parents' suite.
+
+**600 is the depth, and it is not a round number chosen for neatness.** A
+shoulder on a hanger is 550–580, so a rail running left-to-right needs 600 of
+carcass. Anything shallower and the doors will not shut on a coat, and the unit
+turns into shelves with a rail in it.
+
+They are set off **Y 9465, not the wall face at 9545**. The builder leaves a
+1200 × 230 column on this wall whose face stands 80 proud of it, so the run is
+scribed to the deepest obstruction and packed out behind over the stretch where
+there is no column — which is what a joiner would do anyway. The alternative is
+600 for two thirds of the run and 520 for the rest, which is worse.
+
+The run's east end butts the end wall, where the builder's 3880 window comes
+down to Y 9465. So the wardrobe's 600 return stands across the last 600 of it,
+leaving 3280. That is the only thing the wardrobes cost.
+
+### The dressing screen, the gap, and the dresser opposite it
+
+A pane of **brown tinted glass** runs from the bath wall along **Y 7795** and
+**stops 800 short of the end wall**. Everything south of it — the wardrobes,
+the space in front of them, the way into the bath — becomes one screened
+dressing area you can cross in a towel with the bedroom on the other side.
+
+| | mm | ft |
+|---|---|---|
+| the strip | 2775 × 1750 | 9'-1" × 5'-9" |
+| partition, one pane | 1980 × 120 | 6'-6" |
+| **the gap — the way in** | **795** | **2'-7"** |
+| wardrobes, two of | 990 | 3'-3" each |
+| dresser | 795 × 450 | 2'-7" × 1'-6" |
+| clear in front of the wardrobes | 1040 | 3'-5" |
+| clear in front of the dresser | 1190 | 3'-11" |
+| gap to the mirror — the light path | 1615 | 5'-4" |
+
+Those two clearances are **face to face** — wardrobe carcass to the south face
+of the partition. That face now sits exactly on the bath door's north jamb, so
+the strip is bounded by the door opening and nothing else, and the whole 120
+of partition is taken off the bedroom side.
+
+**What that means with the doors open.** 1040 is comfortable to stand and
+dress in. But a 988 unit split into two 494 leaves projects 494 when a leaf is
+open, leaving **546 beside it** — enough to reach past, not enough to stand.
+Three leaves of 329 leave 711. **Sliding doors project nothing at all** and
+keep the full 1040 whatever is open, at the cost of only ever reaching half the
+unit at a time. At 1040 the run is on the edge of wanting sliders, and the
+choice is the joiner's to make with Karan — the plan works either way.
+
+### The partition is wood at the bottom and glass above it
+
+Karan's bed backs on to this partition, so it cannot be glass all the way down.
+It is **120 thick, wood up to headboard height, tinted glass above that** —
+drawn on plan as the wood band with the glass shown as an inset stripe inside
+it: one line, two materials up it.
+
+Three reasons, and each on its own would be enough. A headboard needs something
+solid to sit against and to screw a bracket into. Glass to the floor would put
+the back of that headboard on show from the dressing side, which is the one
+view the screen exists to prevent. And a partition a king bed leans on is a
+piece of construction, not a pane — hence 120 rather than 60.
+
+The glass still runs the full length above, so the strip keeps its privacy and
+every bit of its borrowed daylight.
+
+**The gap is doing three jobs, which is why it is a gap and not a door.** It is
+the way in. It is what stops the strip being a dead end reachable only through
+the bathroom. And it is the aperture that throws the end wall's 3880 window
+across the strip onto the dresser mirror square opposite it, 1615 away. A
+sliding leaf — which is what was drawn a round ago — would have done only the
+first of those.
+
+**The screen, the gap, the joinery and the dresser are all set out on two
+lines, not four.** The glass and the wardrobe run stop at the same X (24130),
+so the pane and the joinery under it are exactly the same length; the gap and
+the dresser start at the same X and end at the same X, so the dresser sits
+square under the opening. Nothing is nearly-aligned.
+
+**The trade.** Hanging goes from 2775 to **1975** — two wardrobes of 988
+instead of two of 1387. The 800 became the dresser. The dresser is 450 deep
+rather than 600 because it is a place to sit at, not to hang in, and 450 leaves
+1220 in front of it for a stool.
+
+### The bed moves to the end wall
+
+Three rounds of trying to put a bed on the partition ended the same way: with
+the bath on one side of it, the wardrobes behind it and the way into the
+dressing area squeezing past. Four things in one corner. **The bed leaves that
+corner.**
+
+It goes to the end wall, and the reason is that the end wall carries the one
+solid stretch in the whole suite:
+
+| | |
+|---|---|
+| Y 1350 – 1950 | window, 600 |
+| **Y 1950 – 5585** | **BLANK, 3635 — the headboard wall** |
+| Y 5585 – 9465 | window, 3880 |
+
+3635 takes an 1800 bed and a **550 table each side** with 370 and 365 to spare
+at the two ends — so the whole group sits in the blank stretch without standing
+in front of either window. That is the fit that makes this position right, and
+it is the only wall in the suite where it exists.
+
+The head sits on **X 24850, not the wall face at 24930**: the builder leaves a
+230 × 1200 column here whose face is 80 proud over the bed's northern 280. Bed
+and both tables are set to that line, so the three read as one run.
+
+### The headboard is the whole wall, and it swallows the column
+
+**3635 long, window jamb to window jamb, 200 thick.** One decision, and it
+settles three separate things at once:
+
+* **The column disappears into it.** The builder leaves a 230 × 1200 column on
+  this wall standing **80 proud** over Y 1950–3150. At 200 the headboard passes
+  **120 clear in front of it**, so the column is inside the joinery and the wall
+  reads flat. Nothing is boxed out, nothing is left sticking into the room, and
+  the column is still on the drawing where the architect needs to see it.
+* **It covers no glass.** It stops precisely on the 600 window's south jamb at
+  Y 1950 and the 3880 window's north jamb at Y 5585, so it can be full height.
+
+### The bed centres on the room, not on the headboard
+
+It used to be centred on the headboard, at Y 2802–4732. That put it **602 off
+the back of the bench sofa** and left the whole southern half of the room as
+empty floor — which is exactly what it looked like.
+
+It now centres on **the two walls it lies between**: the terrace wall at
+Y 1350 and the dressing screen's north face at Y 7675. **6325 clear, an 1930
+bed, 2197 to each of them.** It moves 745 south, and the walk behind the bench
+sofa goes from 602 to **1347**.
+
+**The headboard does not move with it, and it cannot.** It is already hard on
+both window jambs; any southward shift puts full-height joinery across the
+3880 window. So the bed slides along a headboard that stays put, and the price
+is the symmetry Karan asked for earlier:
+
+| | before | now |
+|---|---|---|
+| headboard showing north of the bed | 852 | **1597** |
+| headboard showing south of the bed | 852 | **107** |
+| north side table | on the headboard | on the headboard |
+| south side table | on the headboard | **in front of the window** |
+
+That is the one thing in this round worth a second look. It stops reading as a
+board behind a bed and starts reading as **a panelled wall with the bed at one
+end of it** — which is a legitimate thing for it to be, given it is 3635 long
+and 200 thick and swallows a column, but it is not what was drawn before.
+
+If the asymmetry is worse than the centring, the alternative is to move the bed
+only **252** instead of 745 and trim the headboard to 3130 — exactly bed plus
+both tables — so both tables land on it and the bed is centred on it again.
+That costs 505 of the column left sticking out at the north end, and the bed
+ends up 492 north of the room's centre rather than on it.
+
+### The bed — square at the head, curved at the foot
+
+**1930 × 2032 — the US EASTERN KING, 76 × 80 in**, not the Indian 1800 × 2000
+that was drawn first. The wall carries it: it costs 66 of headboard each side
+and 32 of floor at the foot, and nothing else changes. The real price is that
+the mattress and every fitted sheet then have to be imported.
+
+**The foot corners come off at 594** — a third of the width — and
+**the head is square**, so the bed sits flush on the headboard instead of
+leaving two crescent gaps behind the pillows. Curve where you see it, square
+where it has to meet something.
+
+| | mm | ft |
+|---|---|---|
+| headboard | 3635 × 200 | 11'-11" × 0'-8" |
+| — showing north of the bed | 1597 | 5'-3" |
+| — showing south of the bed | 107 | 0'-4" |
+| — in front of the column's face | 120 | 0'-5" |
+| mattress | 1930 × 2032 | 6'-4" × 6'-8" |
+| foot corner radius | 594 | 1'-11" |
+| side tables, each | 550 × 450 | 1'-10" × 1'-6" |
+| clear west of the bed | 2623 | 8'-7" |
+| clear north, to the terrace wall | 2197 | 7'-2" |
+| clear south, to the dressing screen | 2197 | 7'-2" |
+
+**It sleeps 1930 across**, which is a full American king and 130 more than the
+Indian one. The round bed, for comparison, managed 1482 at the shoulders — 741
+each. Two rounded corners at the foot are the whole of what is given up here,
+and nobody sleeps in the corners of a bed.
+
+**The mattress is still not a catalogue item** — a 594 radius on two corners has
+to be cut — but the frame and base do the shaping and only the foot end is
+affected. If you would rather it were entirely off the shelf, about 250 reads
+as softened rather than arched and most makers will do it.
+
+**And the room is no longer crowded at the bottom.** The bath, the wardrobes and
+the dressing gap have the southern half to themselves; the bed has the northern
+half with 2655 of open floor beside it.
+
+### The console round the outside of the arch
+
+The bath's arch is the best wall in the bedroom and it had nothing on it. A
+console now runs **the whole of it** — off the pod partition, over the crown,
+down the straight tail and dead into the dressing partition.
+
+| | mm | ft |
+|---|---|---|
+| curved run on the arch | 2721 | 8'-11" |
+| straight tail | 960 | 3'-2" |
+| **total** | **3681** | **12'-1"** |
+| depth | 400 | 1'-4" |
+| cupboard under it | 1.58 m² | 17 sq ft |
+| wall cabinet over, at the partition end | 900 × 250 | 3'-0" × 0'-10" |
+
+It is struck as an **offset of the sweep's own outer face**, so it beds on the
+curve for its whole length — the same move as the vanity on the inside, and the
+reason both of them sit on the wall instead of touching it at a point.
+
+**Offsetting outward is the easy direction.** Pushing out from a convex curve
+only ever increases the radius, so unlike the vanity inside there is no depth
+at which this one folds on itself. 400 is a choice, not a limit.
+
+**The pod-wall end tapers from 400 to 250 and then stops against that wall in a
+431 face**, at Y 6002 — above the springing, not at it. Both of the obvious
+alternatives are wrong:
+
+* **A square 400 cut** overhangs. Offsetting outward at the springing throws
+  the front face straight *through* the pod wall, so a naive square end pushes
+  400 into the pod.
+* **A taper run out to zero** ends the console in a knife point at the corner —
+  a sliver of joinery nobody can build and nothing can stand on.
+
+Tapering to 250 and clipping the front where *it* crosses the wall does both
+jobs: the end face is a clean vertical on X 4405, and the top is still 250 wide
+where it meets the wall. Footprint 1.57 m².
+
+Cupboards under it the whole way; one wall cabinet over the straight tail at
+the partition end, drawn dashed because it is over, not in plan. The top is for
+the art and the plants.
+
+### The loose furniture
+
+Three sofas, a table and a plant, all Karan's side.
+
+**A conversation pod across the terrace opening.** Not chairs stood in the
+terrace: a **bench sofa inside the room** with its back to the bed, facing north
+through the slider, and **a single sofa at each end of the terrace** facing in,
+with a round table between them. Open the slider and the three of them are one
+group; shut it and the bench still faces the view.
+
+| | mm | ft |
+|---|---|---|
+| bench sofa, in the room | 2000 × 800 | 6'-7" × 2'-7" |
+| — off the terrace wall | 50 | 0'-2" |
+| — to the bed | 1347 | 4'-5" |
+| single sofas, each | 800 | 2'-7" |
+| — clear at each end of the terrace | 100 | 0'-4" |
+| — clear top and bottom of its 1200 depth | 200 | 0'-8" |
+| centre table, round | 750 | 2'-6" |
+| — to each single sofa | 275 | 0'-11" |
+
+The terrace is only **1200 deep and 3100 long**, and that is the whole reason
+the bench is inside rather than out. Three pieces and a table will not fit in
+1200; two singles and a table will, with 200 top and bottom and 100 at each
+end. Putting the third seat on the room's side of the glass is what makes the
+group work at all.
+
+**Karan's terrace label had to move for it.** The room label sits in the middle
+of its rectangle by default, and the middle of this one is now exactly where
+the centre table is. `ROOMS` entries carry an optional label anchor now; his
+terrace uses it, and drops into the gap between the bench and the bed.
+
+**The reading chair and its ottoman are out.** They stood in the floor between
+the arch console and the bed, and the bed has now moved 745 south into it. Two
+loose pieces in the last 2200 before the dressing screen would have turned the
+one clear run in the suite — bed to screen to bath — back into an obstacle
+course. The floor stays open instead.
+
+**A low wooden table with a big plant on it**, and it takes the north-west
+corner properly rather than sitting near it: **900 × 900 with a 1200 spread**,
+and the spread reaches **both** faces of the corner — the column's at X 20180
+and the wall under the sealed shaft at Y 1350. The table is centred under it
+with an equal 150 to each. So the plant fills the corner, and screens the
+builder's column — which stands 105 into the room — instead of standing beside
+it.
+
+Drawn plant-first, table-over: the spread is 900 against a 700 top, so the
+other way round the foliage swallows the table and you cannot see what it
+stands on.
+
+### The bath door had to move for the line
+
+It has come south until its far jamb lands flush on the shower screen at
+Y 8595, which is also where the glass meets that wall — so the screen starts
+exactly on the door frame's edge and the two read as one line rather than two
+things missing each other by a few hundred.
+
+Moving it forced the hinge over. The parents' door hinges south, so its leaf
+falls back along its own wall; Karan's cannot, because a south hinge on the new
+position swings the leaf straight across the way into the shower. **His hinges
+north**, and the open leaf lies back along the very line the screen runs on
+outside.
+
+**Karan's side only.** The parents' bath is exactly as shipped — without a
+screen to line up with, there is nothing there for the move to buy.
+
+---
+
+## The parents' suite is two rooms now
+
+The brief changed: a permanent bed for Karan's parents, a wall bed for his
+grandmother when she stays, and something between them — because the two will
+want different air, and because whoever comes out of the bath should be able to
+reach a cupboard and dress without crossing the bedroom.
+
+The west-wall cupboard run that used to be here is gone. The suite splits on a
+line the room already draws.
+
+### The partition sits on the arch's crown
+
+Its north face lands on **Y 5875**, which is exactly the crown of the bath's
+sweep — the northernmost point that arch reaches, at X 3165. So it does not cut
+the room arbitrarily: it continues a line the bath already makes, and the two
+read as one boundary.
+
+It is built of two things, and neither of them is a wall:
+
+| | |
+|---|---|
+| X −450 → 1400 | a full-height **joinery block, 720 deep** |
+| X 1400 → 2732 | **brown tinted glass**, the same as Karan's screen |
+
+**The glass is the door.** One leaf, **1332**, sliding west into a pocket formed
+in the *back* of the cupboards — the block is 720 because it is a 120 cavity in
+front of a 600 cupboard, not a 720 cupboard. Shut, the two zones are separately
+heatable, which is the whole reason the partition exists. Open, the leaf is
+inside the cupboards and the suite is one room again.
+
+**It was a masonry wall with a hinged door first, and that was wrong twice.**
+The bath's sweep comes back west to X 2325 just below the partition, so the
+passage south of the east end of the opening was only 292 deep before it met
+the arch; and a 900 leaf hinged there fouled the arch by 161. Nothing slides
+into anything now, so nothing can foul it.
+
+Above the cupboards it is glass too — tinted from 2100 to the ceiling, the whole
+length. Solid to the ceiling would make the dressing zone a cell.
+
+### The parents' bed is Karan's bed, mirrored
+
+The same bed, the same headboard treatment, the same side tables, handed so the
+head is square on the **west** wall and the rounded foot faces east down the
+room and out through the pod slider.
+
+| | mm | ft |
+|---|---|---|
+| bed | 1930 × 2032 | 6'-4" × 6'-8" |
+| foot corner radius | 594 | 1'-11" |
+| headboard | 3925 × 200 | 12'-11" × 0'-8" |
+| side tables | 550 × 450 | 1'-10" × 1'-6" |
+| to the terrace wall, and to the partition | 1297 each | 4'-3" |
+| clear east of the bed | 2623 | 8'-7" |
+
+The headboard is the **whole blank wall**, Y 1950 to 5875 — window jamb above,
+partition below. Karan's is 3635 for the same reason on his end wall, and there
+it swallows a column; here there is none, so it is simply the full stretch and
+the joinery runs on into the partition block without a break.
+
+### The grandmother's wall bed is a queen, on the column
+
+A cabinet 400 deep that is shut fifty-one weeks of the year, and a **queen,
+1500 × 2000**, that folds out of it when she is here. Not a sofa bed: nothing to
+unfold nightly, nothing to make up twice.
+
+The cabinet's south end is fixed on the 600 window's north jamb at Y 8945 —
+anything past that stands in front of glass — so 1500 of cabinet runs back to
+7445, and its northern 300 comes off the builder's column and is packed out.
+
+**A side table each side**, 500 × 480, going back to the wall face rather than
+the column's, so all three pieces share one flush front and read as a single
+2500 run. Bed up they are the dressing zone's console; bed down they are hers.
+
+| | mm | ft |
+|---|---|---|
+| bed | 1500 × 2000 | 4'-11" × 6'-7" |
+| cabinet | 1500 × 400 | 4'-11" × 1'-4" |
+| the whole run on the wall | 2500 | 8'-2" |
+| bed down, to the bath wall | 370 | 1'-3" |
+| cupboard doors to the head of the bed | 850 | 2'-9" |
+
+With the bed down you do not walk past its foot. That corner is the bed's —
+which is why the laundry basket and the dressing console both came out of this
+zone. **The mirror stays**, 940 on the bath wall in the corner, with nothing
+under it: you face east into it with the south window on your right, so the
+light is on your face and not behind it.
+
+### The console curls round this arch too
+
+The same piece as Karan's, struck as an offset of the sweep's own outer face,
+400 deep, tapering to 250 at the pod wall and stopping there in a 431 face. No
+wall cabinet — that belongs on a straight tail and this one has none.
+
+**It is cut by the sliding screen.** The leaf shuts on Y 5875–5995 and the
+console crosses that line, so a slot runs through it and the leaf slides into
+the slot and stops against the arch. The two ends of the slot are found rather
+than chosen: u 0.264 and u 0.618 are the first and last sections of the console
+whose 400 depth touches the leaf's line with 20 of tolerance either side.
+
+**There is no piece south of the slot.** The console stops there. A return below
+it would have sat in the grandmother's zone and narrowed the way in to 525 by
+the time the arch turns vertical, which is not a doorway. So the curl runs from
+the pod wall over the crown, meets the leaf, and ends.
+
+### A study desk in the north-east corner
+
+Karan's father's desk, in the one corner of the suite with two solid walls and
+nothing else wanting them — the sealed shaft's south wall above it at Y 1350 and
+the pod wall on its east at X 4405. Both are blank: the terrace slider stops at
+X 2750 and the pod's own opening does not start until Y 2620.
+
+| | mm | ft |
+|---|---|---|
+| desk, north leg | 1400 × 600 | 4'-7" × 2'-0" |
+| desk, return | 600 × 670 | 2'-0" × 2'-2" |
+| cabinets over, both legs | 350 deep | 1'-2" |
+| chair | 550 swivel | 1'-10" |
+
+The return stops dead on Y 2620, the north jamb of the pod's sliding partition,
+so the desk never stands in that opening.
+
+### The parents' pod gets a sitting group
+
+Its north half had nothing in it but the glass roof over the bay. It took four
+goes. It started as three boxes facing each other across nothing, which is a row
+of furniture, not a group; the second recliner came out because it stood in the
+route from the deck to the dining table; and the round centre table came out
+last.
+
+What is there now is an **L**, closed on the west and the south and open to the
+deck and to the great room:
+
+* **sofa 1700 × 800 mm (5′-7″ × 2′-8″)**, back to the dining end, facing north
+  through the slider
+* **one recliner 800 × 900 mm (2′-8″ × 3′-0″)** at the west end, turned in
+* **and no tables at all.** The round centre table went first, then the three
+  that replaced it — the one on the terrace line, the corner table in the
+  angle of the L, and the one on the sofa's arm
+
+**Being straight about the tables:** there is now nowhere in this group to put
+a cup down. The nearest surface is the dining table, 1130 mm (3′-8″) south of
+the sofa's back. The floor it buys is real — the pod reads as one open room
+rather than a furnished corner — but a side table is a thing you notice the
+absence of rather than the presence of, and any of them goes back in one line
+whenever it is wanted.
+
+**The deck line is completely clear.** The round centre table stood in the
+slider and left **575 mm (1′-11″)** to get out; the 500 side table that
+replaced it on that line has gone too. The pod's slider is now open end to
+end — **2850 mm (9′-4″)**.
+
+**The sofa group moved 300 mm (1′-0″) east**, because the recliner's footrest
+was finishing 60 mm (2″) off the sofa's west arm and reading as touching it.
+East was the only direction free: the recliner cannot go west, since what is
+behind it is not a wall but the suite's sliding partition and its track, and
+it cannot go north without standing in the slider that was just cleared. So
+the chair did not move — the sofa did.
+
+* **600 mm (2′-0″)** from the recliner's east face to the sofa
+* **150 mm (6″)** from the tip of its footrest, reclined — this chair is one
+  of the two specified as a **short-throw 450 mm (1′-6″)** unit rather than
+  the 600 mm (2′-0″) everything else gets; see *Real-world sizing* below
+* **641 mm (2′-1″)** east of the sofa to the pod glazing — with nothing
+  standing beside it any more, the sofa could go further east still if the gap
+  wants opening
+
+Measured: **1150 mm (3′-9″)** in front of the sofa, **1130 mm (3′-8″)** behind
+it to the dining table.
+
+**What it costs.** The recliner stands 370 mm (1′-3″) off the suite's sliding
+partition, over Y 3120–4020 of its 3555 mm (11′-8″) opening. Nothing else is
+near it at all now, so the way through from the bedroom is the **2155 mm
+(7′-1″)** south of the chair plus the 500 mm (1′-8″) north of it.
+
+### What this layout costs
+
+**The cupboards.** 1850 × 600 on the partition, against the 2820 the west wall
+used to carry. For two people that is **925 each**, and the planning minimum is
+about 1000 per adult — so the parents' hanging storage is now *below* minimum.
+It is the real price of the three-way split and it is not hidden here.
+
+Three ways back, none of them taken yet: a 790 run on the bath wall above the
+mirror; cupboards on the partition's north face as well, which puts them back
+in the bedroom; or overflow somewhere else in the home.
+
+| the suite, in two | m² | sq ft |
+|---|---|---|
+| parents, north of the partition | 21.97 | **236** |
+| — with the terrace | 25.69 | 277 |
+| grandmother, south of it | 9.76 | **105** |
+| — free floor, wall bed up | | 85 |
+| — free floor, wall bed down | | 56 |
+
+## The suite windows — a correction, and why it matters
+
+The glazing schedule used to carry **three invented windows on each wing end
+wall and a mirrored south window in Karan's suite**. None of them exist. They
+were written by assuming the two ends of the home are symmetric. **They are
+not**, and it is not a small difference:
+
+| | parents' (west) | Karan's (east) |
+|---|---|---|
+| end wall | 600 at the terrace + 600 at the south corner | 600 at the terrace + **one 3880** |
+| south wall | **3200**, the length of the strip | **nothing** |
+
+The builder gave the parents a long south window and gave Karan one enormous
+end-wall window instead. The two suites end up with almost the same glazing —
+about 4400 each — by completely different means.
+
+Everything above is read off the source drawing's own `DA_WINDOW` layer, and
+`design.py` now carries those openings verbatim, with the mirror rule
+deliberately **not** applied to them.
+
+**What this changes.** Karan's wardrobes cost no window at all: there was never
+one on that wall. It also means the same move in the parents' suite is a
+genuinely different proposition — their south wall is a real 3200 window, and
+wardrobes there would take it. Worth knowing before that round starts.
+
+**And one thing it gains.** The parents' 3200 south window runs X −450 to 2750.
+The bath's new west wall crosses it at 2325–2475, so **275 of that window now
+falls inside the parents' bath** — a south-facing slot in a room that was going
+to be lit artificially. It is narrow, but it is real daylight and a real
+openable pane, and it is there for nothing.
+
+---
+
+## The guest WC is an arch too
+
+The north-east corner of the service bay had to hold three things: a staff
+bunk room reached from the entry gallery, a guest WC reached from the great
+room, and the store. Three straight walls could not do it. The great room only
+reaches **15880** on the service-bay wall — east of that the pod glazing lands
+and it is the den — so the WC's door width and help's room's width came out of
+the same run of wall, one for one. A 600 door left help's room 920, which is a
+berth with no floor for a cupboard.
+
+So the WC's wall is a **quarter ellipse**, struck from the corner at
+(17430, 8525), semi-axes **2430 and 1675**. It springs off the great-room wall
+at 15000 and dies into the east wall at 10200. Help's room and the store wrap
+round the outside of it.
+
+An ellipse and not a circle because the two walls it has to reach are not the
+same distance away. A circle is tangent to both only as a quarter round, and a
+quarter round springing west of 15880 would run the full 2450 depth of the bay.
+The ellipse reaches west without reaching south — which is the shape of the
+problem.
+
+| | before | after |
+|---|---|---|
+| HELP'S ROOM | 2.3 m² / 25 sq ft | **4.4 / 47** |
+| GUEST / SERVICE WC | 5.7 / 61 | **3.0 / 33** |
+| STORE | 1.8 / 19 | **2.4 / 26** |
+
+It also buys the door: **880** of great-room wall in front of the WC instead of
+600, so that door is a proper **800**.
+
+**The doors.** The WC has two — 800 off the great room, and a 776 off help's
+room, curved on the apse and drawn shut like the gallery's. Help's room has
+the gallery's service door and the one into the WC; it has **no door on to the
+great room** any more. The store is entered from help's room through a 700
+opening hard against the apse, which is where a staff store should be entered
+from rather than through the guest WC as it was.
+
+**The great-room door swings OUT.** It is the only door on the sheet drawn with
+its leaf and swing, because it is the only one where the direction changes
+anything: there is no floor inside the apse to give a leaf, and the point of
+the door is to step in, wash your hands and step out.
+
+**The basin is a curved console** struck off the same ellipse, offset inwards,
+so it sits on the wall for its whole **1015** rather than touching it at one
+point. It grows out of the wall and dies back into it — a **120 ledge** at the
+door jamb, **400** deep at the bowl. At full depth from the springing it would
+leave only 425 of the 800 door to walk through; as a ledge it leaves **645**.
+A 344 bowl is set into it, and the tap has to be **wall-mounted**: there is 38
+behind the rim, and deepening the console to take a deck tap would cut the
+basin's activity space below the minimum.
+
+**Space check**, measured off the geometry rather than estimated:
+
+| | provided | minimum in general use |
+|---|---|---|
+| shower enclosure | 900 × 750 | 750 × 750 |
+| drying space in front of it | 1380 | 700 |
+| pan — space in front | 905 | 600 |
+| pan — width across it | 750 (375 each side) | 750 |
+| basin — space in front | 755 | 700 |
+| door — clear walk-through | 645 | 600 |
+| largest free circle on the floor | 1000 | — |
+
+It clears throughout, with the pan's width and the door the tightest of them.
+**It is not an accessible WC** — a wheelchair turning circle is 1500 and this
+is 1000. Nothing asked for it; it is a limit of the space, stated so nobody
+discovers it later. Confirm the figures above against the local code.
+
+**Help's room** is 4.4 m². The bunk lies **along the south wall** rather than
+standing against the west one: stood on end, the gap between its head and the
+apse was 96, because the apse leaves its springing vertically and hugs 15000
+for the first half metre. Lying down it leaves the whole northern 1550 clear
+and 755 past its foot to the store door. Cupboard on the west wall.
+
+---
+
+## The pod glazing — one bend, then straight
+
+The tinted glass between the great room and each pod leaves the deck wall at
+**65 degrees**, turns through a single arc over the top **1708** — minimum
+radius **3036** — and then runs **dead straight for the remaining 3947** to the
+service-bay wall. No inflection, no reverse, no second bend.
+
+Control points, west side; the east is the mirror:
+
+```
+(9115, 2620)  (8608, 3708)  (8600, 3800)  (8600, 8400)
+```
+
+### It used to be an S, and here is why that went
+
+The first version was a cubic with a **985 bow**, its radius swinging from 2037
+to effectively straight and back, meeting the deck wall at **41 degrees** with a
+visible kink. Three separate objections killed it, and each is worth keeping
+written down because each will come back:
+
+* **13% deviation over 6 m is the ambiguous zone.** Too curved to read as a
+  straight wall, too shallow to read as a curve — it read as *a wall that isn't
+  quite straight*. This one is at **8.8%** and does not claim to be a curve at
+  all: it is a splayed wall with an eased corner.
+* **It was off-vocabulary.** Every other curve in this home is a tight,
+  complete arc you read instantly — the bath sweep is a 765 quarter circle, the
+  entry apse a true 1725 semicircle, the guest WC a quarter ellipse. A 3 m
+  radius stretched over 6 m was the only shallow gesture in the plan, and the
+  eye calibrates on the confident ones.
+* **It gave neither pod a straight wall.** The den in particular wants one — a
+  desk, a bookcase and a sideboard all want a flat back. Each pod now has
+  **3947 of straight wall**, and a width that never varies by more than 2.
+
+### The south end lands at 8600 and cannot move
+
+It mirrors to **15880** on the service-bay wall. The guest WC's apse springs at
+15000 and this glazing lands at 15880 — **880 of wall, and the WC door is 800 of
+it.** Any curve that wants a wider mouth at the bottom takes the door out. One
+earlier re-fit did exactly that, landing 240 inside the door opening.
+
+### What it costs, and what it does not
+
+| | great room | each pod | the three together |
+|---|---|---|---|
+| the original strong S | 445 sq ft | 218 | 881 |
+| the re-drawn S | 434 | 224 | 882 |
+| **one bend, then straight** | **422** | **230** | **882** |
+
+**The three spaces together never change.** The curve creates nothing and
+destroys nothing — it only decides where the line between the great room and
+the pods sits. Whole-home total is 2504 sq ft in every version.
+
+The great room's narrow point is **20'-6" in all of them** — that is set by the
+deck end, not by the curve. What the curve buys is the swell in the middle, and
+going straight takes 3 ft off it: 27'-0" on the strong S down to 23'-11" here.
+
+---
+
+## The dining table is not round
+
+It was a 1400 round, and a round table in a pod **2894 wide** is the wrong shape
+for the room. The seat facing the glass and the seat facing the duct wall had
+**200 and 215** behind them — neither chair could be pulled out to sit in.
+
+A long table turned to run **down** the pod uses its 5780 of depth instead of
+fighting its 2894 of width.
+
+**1100 × 2200 — 3'-7" × 7'-3" — with all four edges arched.** It is a
+superellipse, `|x/A|^n + |y/B|^n = 1` at n = 5. The long edges bow so gently
+where the chairs sit — **23 out of 1100, one in 48** — that a chair meets what
+reads as a straight edge, while the two ends arch enough to carry a seat.
+
+| on the same 1100 × 2200 footprint | top area |
+|---|---|
+| true oval | 1.90 m² |
+| rectangle, corners filleted 400 | 2.28 |
+| **superellipse** | **2.30** |
+| *(the 1400 round, for reference)* | *1.54* |
+
+It beats even the filleted rectangle because the edges bow **out** instead of
+the corners being cut **in** — and a true oval loses the table exactly where the
+outer diners sit, narrowing to 2'-11" under them.
+
+| | mm | ft |
+|---|---|---|
+| table | 1100 × 2200 | 3'-7" × 7'-3" |
+| rim per person, three a side | 733 | 2'-5" |
+| clear behind the chairs, **both** sides | 559 | 1'-10" |
+| table end to the hatch wall | 500 | 1'-8" |
+
+**Six, and no end chairs.** An occasional seventh was dashed in at the north end
+and has come out. Both ends of the table stay clear, and that is what lets you
+walk round them: the south end is the serving stance at the hatch, and the north
+end is the run up to the sitting group.
+
+**This is also the clearest argument for the straight glazing.** Under the S the
+pod's width varied along its length, so where you put the table mattered — this
+same table had **178** on the glass side when it moved north far enough to seat
+an eighth. Past a straight screen the pod is a constant 2894 and the table can
+sit anywhere in it.
+
+---
+
+## The great room is furnished, and so is the deck
+
+Both came off the reference sheet.
+
+### One wooden floor, run through the slider
+
+The great room and the deck bay in front of it are **boarded as one floor**.
+That has been the working assumption since the seating was laid out — the two
+treated as a single room with a glass line across the middle of it — and the
+floor is what makes it true. Two finishes meeting at the slider would read as
+inside and outside no matter what the furniture did.
+
+| | m² | sq ft |
+|---|---|---|
+| great room | 37.80 | 407 |
+| deck bay between the voids, 6250 × 2280 | 14.25 | 153 |
+| **one boarded floor** | **52.05** | **560** |
+
+**The boards are on one grid, and that is the whole of the detail.** They run
+**north–south, across the slider rather than along it**, so every board starts
+on the deck and finishes in the great room. And both halves come off the same
+set-out, centred on X 12240 — so a board on the deck is *the same board* on
+the other side of the glass. Boards laid to two separate grids and butted at a
+threshold read as two floors joined, which is exactly what this is meant to
+stop. 190 mm (7½″) is a normal engineered-oak width and 12240 falls on a board
+centre.
+
+Because the great room is not a rectangle — its sides are the pod curves and
+its south end is the apse and the kitchen's bump — every board is clipped
+against the real room outline rather than a bounding box.
+
+**Two things this needs specified, and they are not the same product:**
+
+1. **The deck half cannot be interior engineered oak.** It is covered by the
+   high glass roof but it is still outdoors — sun through glass, blown rain,
+   temperature swing. It wants an outdoor-rated board of the same 190 mm width:
+   thermally modified ash, teak, or a high-density composite. Same width, same
+   grid, different spec, and the joint at the slider is where they meet.
+2. **The fountain now stands on timber.** It sits at X 11640–12840, entirely
+   within the boarded bay. It needs a stone or tray base under it — a
+   recirculating bowl on boards will mark them.
+
+### The grass that is left
+
+Grass picks up again beyond each void — the deck's two ends — plus the planted
+strip along the parapet.
+
+| | m² | sq ft |
+|---|---|---|
+| grass, beyond the voids | 16.81 | 181 |
+| plus the planted strip | 5.24 | 56 |
+| **green, total** | **22.05** | **237** |
+
+**Two things this needs and has not got, both worth settling before it is
+priced:**
+
+1. **The suites' sliding glass panels park on the deck**, on a track at
+   X 4540–4600 and its mirror. A track cannot run through turf — it wants a
+   hard strip, and that strip will be visible in the lawn.
+2. ~~Grass wears where people walk, and the way out of the great room crosses
+   it.~~ **Settled by the boarding.** The route out of the great room now
+   lands on timber, not turf, all the way from the slider to the parapet
+   strip. This was the first thing a landscaper would have raised and it no
+   longer arises.
+
+### The parapet edge stays inside
+
+The 340 mm (1′-2″) band along the parapet is a **grass strip inside it**, planted,
+with the trellis on the parapet above and the creepers climbing from that bed.
+It is not a trough hung off the outside.
+
+Hanging it outboard was looked at, because it is worth real floor — **5.24 m²
+(56 sq ft)** across the whole deck, **2.12 m² (23 sq ft)** in the strip in front
+of the great room, and it would take the deck's clear depth from 2280 mm (7′-6″)
+to the full 2620 mm (8′-7″). Two things said no:
+
+* **The parapet is 100 mm (4″) thick.** Slab edge at Y −250, deck inner face at
+  Y −150. Cantilevering a planted, water-filled steel trough off 100 mm of
+  parapet at the 14th floor, with wind on it, is a structural engineer's
+  problem, not a fabricator's.
+* **It would project past the building line** — the only thing in this whole
+  drawing that would. Everything else stays inside the builder's envelope,
+  which is what makes the layer-state comparison work.
+
+**Worth knowing:** 340 mm (1′-2″) is thin for a bed that has to carry creepers
+to 1.5 m. 450 mm (1′-6″) would be a comfortable root run, and it would cost the
+deck another 110 mm (4″) of depth — 1.7 m² (18 sq ft) over the full length. Say
+the word if you want that trade.
+
+### The deck: two recliners backing on to the voids
+
+The reference's own note is the instruction — *two 2-seat recliners back onto
+the voids, facing the fountain at the deck centre* — and it is a good one,
+because it turns the one thing on the deck that cannot be used for anything
+into the thing the seats lean on.
+
+Each recliner's back is on a void enclosure's inner face — **X 9115** on the
+west, **X 15365** on the east. They face each other across the fountain, with
+**1355 mm (4′-5″)** from each footrest to its rim. Each has a small table at
+its **north** arm, which is the only free side: void behind, fountain in front,
+parapet planter 510 mm (1′-8″) beyond the table.
+
+**1345 mm (4′-5″) wide and not 1400**, and that is not a rounding. The deck's
+south glazing runs at **Y 2545** between the two voids, and a seat that
+oversails it is inside the great room. So they run Y 1200–2545 — the void's own
+north edge to the glass line.
+
+They stand in front of **900 mm (3′-0″)** of the 6250 mm (20′-6″) slider at
+each end, which leaves **4450 mm (14′-7″)** of it clear to walk through.
+
+### The entry gallery gets a console and a sofa
+
+The U had two long faces and nothing against either of them. Its legs run
+Y 9325–11125 with **3220 mm (10′-7″)** between their inner faces, which is
+enough for a piece on each side and still a lane wider than the arch at the
+far end of it.
+
+| | mm | ft |
+|---|---|---|
+| console, against the west leg | 1400 × 450 | 4′-7″ × 1′-6″ |
+| console corners, eased | 110 | 4″ |
+| two chairs, against the east leg, facing west | 700 × 750 each | 2′-4″ × 2′-6″ |
+| gap between the chairs | 200 | 8″ |
+| **clear lane between console and chairs** | **2020** | **6′-8″** |
+| the great-room portal it leads to | 1050 | 3′-5″ |
+
+**A 2-seat sofa was drawn there first and taken out.** A hall is somewhere you
+sit for a minute to put a shoe on, not somewhere two people settle side by
+side. Two chairs 200 mm apart do that job and leave the east leg reading as a
+pair of pieces rather than one long lump.
+
+**The console's corners are eased and a counter's are not**, and that is the
+house rule rather than a preference: nothing standing free has a square corner
+on it, and a console in a hall stands free on every side while a kitchen
+counter is built into a run and has walls to be square against. `symbol()`
+now applies 110 mm to the four `console*` kinds only, capped at 30 per cent of
+the short side so a shallow one cannot turn into a stadium.
+
+**Everything is centred on the legs' own 1800 mm**, so the two sides read as a
+set — 200 mm (8″) of leg past the console's ends, 100 mm (4″) past the chairs'.
+
+**The mirror goes on the leg above the console** — `console-w` draws it — since
+the one thing an entry hall is actually for is the last look before you leave.
+
+**The lane is the check that matters.** It carries the walk from the front door
+to the great room, and at 2020 mm (6′-8″) — even with the console 100 mm
+deeper — it is nearly twice the width of the arched portal at the end of it.
+Nothing on this route narrows below the door it leads to.
+
+### Two wall lights on the apse, flanking the arch
+
+Art-deco sconces on the apse's inner face, one each side of the great-room
+portal.
+
+| | mm | ft |
+|---|---|---|
+| struck at | 215.5° and 324.5° on the inner face | |
+| wall points | (10929, 8390) and (13551, 8390) | |
+| each blank arc, leg to portal jamb | 1995 | 6′-7″ |
+| **curved wall to the jamb, and to the leg** | **998 each way** | **3′-3″** |
+| backplate, along the curve | 337 | 1′-1″ |
+| **projection off the wall face** | **190** | **7″** |
+
+**One at the centre of each arc.** The apse's inner face is broken by the
+portal, which takes 251°–289° of it, and by the two legs it springs from at
+180° and 360°. That leaves two blank arcs of 1995 mm (6′-7″), and each sconce
+sits at the middle of its own — equidistant from the jamb one way and the leg
+the other, on both halves.
+
+**They were pushed up to flank the arch for one round, and that was wrong.**
+The reasoning was about a door — a lamp goes beside a doorway — but this is
+not a door in a flat wall. It is a curved face with two blank stretches in it,
+and a fitting halfway along a stretch of wall is simply where a fitting goes.
+Crowded up against the opening they left 1602 mm (5′-3″) of unlit wall behind
+them and 393 mm (1′-3″) in front.
+
+Symmetric about the home's axis, like the portal, the fountain and the front
+door already are.
+
+**The projection is the number that matters on site.** 190 mm (7″) off the
+wall face is what decides whether a shoulder catches one; at about 2 m up it
+clears everything. It is the dimension to give the fitting supplier.
+
+They are on a **new `PROP-LIGHT` layer**, not on the furniture layer — a light
+fitting is not joinery and the architect will want it switchable on its own.
+
+### The west half is an L with the tree in its corner
+
+This is the arrangement from the original interior reference, finally built:
+**two seats meeting at a right angle with the planter filling the corner
+between them and the tree growing out of it.** In a U the corner is the bit
+nobody sits in; here it is the thing everyone looks at, and it doubles as the
+spacer that keeps the two legs off each other's knees.
+
+| | |
+|---|---|
+| planter and tree, the corner | X 9673–10573, Y 4637–5537 |
+| 2-seat sofa, the east leg, facing north | X 10878–12478, Y 4637–5537 |
+| single recliner, the west leg, facing east | X 9673–10573, Y 3532–4332 |
+| rocking chair, closing the group | centred (12100, 3550), aimed at the recliner |
+| console, on the sofa's back line | X 10878–12478, Y 5537–5887 |
+| rug | 3300 × 2500 mm (10′-10″ × 8′-2″) — the whole group on it |
+
+**NOTHING TOUCHES THE PLANTER.** Both seats stand **305 mm (1′-0″)** clear of
+it — the sofa off its east face, the recliner off its north.
+
+| | mm | ft |
+|---|---|---|
+| planter east face → sofa | 305 | 1′-0″ |
+| planter north face → recliner | 305 | 1′-0″ |
+
+They were flush for one round, drawn as one L of joinery. Flush was wrong: a
+soil box hard against an upholstered arm has nowhere to be wiped, nowhere for
+the planting to hang over the edge, and it reads as a lump on the end of the
+sofa rather than as the thing the seats are arranged around. Standing it off
+by a foot makes it an object again.
+
+The planter held its position and the two seats moved off it — the sofa 305 mm
+east, the recliner 305 mm north — so every clearance to the pods and the door
+is unchanged. The run also moved **500 mm (1′-8″) south** earlier in this round
+to make room for the fourth side; the console still clears the apse crown by
+**1598 mm (5′-3″)**.
+
+| conversation, seat centre to seat centre | mm | ft |
+|---|---|---|
+| **recliner ↔ rocking chair** — across the group | **2014** | **6′-7″** |
+| rocking chair ↔ far sofa seat | 1743 | 5′-9″ |
+| recliner ↔ nearest sofa seat | 1633 | 5′-4″ |
+| rocking chair ↔ nearest sofa seat | 1537 | 5′-1″ |
+
+Standing the seats off the planter also **evened the group out**: the spread
+was 1351–2049 mm when they were flush and is 1537–2014 mm now. Every seat is
+between 5′-1″ and 6′-7″ of every other. It reads close rather than loose, but
+nothing in it is awkward.
+
+**It is as spread as the space allows.** Two things pin it: the deck glass,
+**480 mm (1′-7″)** off the rocking chair's north edge, and the pair of rocking
+chairs in the east half, **359 mm (1′-2″)** off its east edge. If a looser
+group is wanted, moving that east pair further east is the only lever left.
+
+| | mm | ft |
+|---|---|---|
+| planter west face → west pod glazing | 1035 | 3′-5″ |
+| recliner west face → west pod glazing | 964 | 3′-2″ |
+| recliner north edge → deck glass | 912 | 3′-0″ |
+| the parents' door, approach | 1038 | 3′-5″ |
+
+### The two halves swapped, and the parents' door moved south
+
+The run — sofa, planter, tree, console and rug — is now in the **west** half,
+and the pair of rocking chairs in the **east**. The run kept its character in
+the move: the tree is still on the outboard end, against a pod screen, which
+meant flipping the run so the planter reads west of the sofa rather than east.
+
+| | |
+|---|---|
+| planter and tree | X 9673–10573 |
+| sofa | X 10573–12173, Y 4137–5037 |
+| console, on the back line | X 10573–12173, Y 5037–5387 |
+| rug | X 9423–12423, 3000 × 2000 mm (9′-10″ × 6′-7″) |
+| rocking chairs, pair centre | (14080, 4275), aimed at the **west** recliner |
+
+| | mm | ft |
+|---|---|---|
+| planter west face → west pod glazing | 1000 | 3′-3″ |
+| planter west face → the moved door's approach | 1038 | 3′-5″ |
+| canopy edge → west pod glazing | 594 | 1′-11″ |
+| chairs → east pod glazing | 452 | 1′-6″ |
+| chairs → den's portal approach | 924 | 3′-0″ |
+| chairs → deck glass | 479 | 1′-7″ |
+| sofa ↔ **west** deck recliner | 3261 | 10′-8″ |
+| sofa ↔ east deck recliner | 4463 | 14′-8″ |
+
+Every number the run answered to on the east side it now answers to on the
+west, at the same values — 1000 mm (3′-3″) to a pod, 3261 mm (10′-8″) to the
+recliner it pairs with. **The chairs come off worse than the run did**: their
+452 mm (1′-6″) to the east glazing is against the 1096 mm (3′-7″) they had on
+the west side, because the east pod's curve is the mirror of the one they were
+solved against and their axis no longer suits it.
+
+### The parents' pod door moved 828 mm south — and only that one
+
+| | before | after |
+|---|---|---|
+| parents' pod door | Y 3872–4692 | **Y 4700–5523** |
+| den's door | Y 3872–4692 | unchanged |
+| clear opening, both | 823 mm (2′-8″) | 823 mm (2′-8″) |
+
+**It lands in the gap between the family room's two zones.** The sitting group
+ends at Y 4570 and the dining table starts at 5700; the door now occupies
+4700–5523 — **130 mm (5″)** clear above, **177 mm (7″)** below. It used to open
+behind the sofa. It now arrives between the sitting group and the table, which
+is where you would want to enter that room from.
+
+**The den's door could not follow it, and that is a hard constraint rather than
+a choice.** Karan's work console runs **Y 4800–7000 hard against the east pod
+screen** — a door any lower there opens into the back of it. So `POD_PORTAL`
+has become `POD_PORTAL_W` and `POD_PORTAL_E`, and the two pods are no longer
+mirror images at this one point. It is the first deliberate asymmetry in the
+pods and it is recorded here so nobody "fixes" it later.
+
+**Both openings are struck as equal arc lengths, not equal t-spans.** The
+Bézier is not uniform — the same span of t buys more door low down the curve
+than high up — so setting both to 0.18 of t would have given two different
+doors. Solved instead for the t-range that reproduces the original 823 mm.
+
+### Both terraces: real grass, a tree in the middle, a jhoola beside it
+
+Each terrace is **3100 × 1200 mm (10′-2″ × 3′-11″)**, 3.72 m² (40 sq ft), and
+that shallow 1200 decides everything on it.
+
+| west to east | mm | ft |
+|---|---|---|
+| jhoola, frame | 900 × 700 | 2′-11″ × 2′-4″ |
+| gap | 150 | 6″ |
+| **tree planter, on the centre line** | **700 round** | **2′-4″** |
+| gap | 150 | 6″ |
+| single sofa, facing the tree | 800 × 800 | 2′-7″ |
+| ends, each | 150 / 200 | 6″ / 8″ |
+
+**Real grass, wall to wall.** It is outdoors under a high glass roof, so it
+grows; the deck is already turfed and this makes the two read as the same kind
+of place.
+
+**The tree is real and it is planted in a planter**, because the terrace is a
+slab and nothing roots in it. A 5–7 foot areca or a short coconut, in a 700 mm
+tub on the terrace's exact centre line — X 1200 and its mirror at 23280 — so it
+is what you see from the bed through the slider.
+
+**The canopy is drawn at 1200 mm (3′-11″), not 1900.** An areca that height
+spreads about a metre, and anything wider would have been drawn spilling
+through the slider into the bedroom. A canopy cannot pass glass.
+
+**A single-seat jhoola, not a double.** A double needs 1900 mm across and the
+tree leaves 1200 either side of itself, so a single is not a compromise — it is
+what fits. Its travel is **150 mm (6″)** each way rather than the 500 mm the
+great room's had: on a 1200 mm deep terrace anything more puts a foot through
+the parapet on one swing and the slider on the next.
+
+**The frame is 900 mm and not 1040**, and that is set by the bay rather than by
+the swing. The tree holds the centre, which leaves exactly 1200 either side; a
+900 frame in a 1200 bay leaves 150 to the end wall and 150 to the planter. At
+1040 it left 55 mm to the wall.
+
+**Karan's terrace lost its centre table.** The middle of that terrace was always
+the thing the two singles looked at, and a 750 mm round table is a poor answer
+to that where a real tree is a good one. The east single became the jhoola; the
+west single stays, facing the tree. The parents' terrace, which was empty, gets
+the same kit mirrored, so the two ends of the home read alike.
+
+### The rug comes back, with a leaf border — and an armchair with it
+
+The rug is a **cloud, 5622 × 2500 mm (18′-5″ × 8′-2″)**, with a border band
+whose inner edge is the outline drawn down to 0.74 towards the rug's own
+centre, so it follows every lobe instead of being a rectangle inside a cloud.
+**46 leaves** run along that band, alternating either side of its centre line
+so it reads as a trailing stem rather than beads on a string.
+
+**The outline is derived, not drawn.** It is the convex hull of everything
+that must sit on it, plus a 250 mm border, capped at the room's envelope, then
+swung out towards that envelope on three harmonics. Add a chair and the rug
+grows round it — the two are not set out independently.
+
+**One armchair, at (13800, 5050)**, turned to face the group's centre. It
+closes the east side, which was the one open flank.
+
+| seat to seat | mm | ft | |
+|---|---|---|---|
+| recliner ↔ rocking chair | 2988 | 9′-10″ | in band |
+| sofa west ↔ armchair | 2522 | 8′-3″ | in band |
+| sofa west ↔ rocking chair | 2401 | 7′-11″ | in band |
+| recliner ↔ sofa east | 2271 | 7′-5″ | |
+| sofa east ↔ rocking chair | 1877 | 6′-2″ | |
+| sofa east ↔ armchair | 1722 | 5′-8″ | |
+| rocking chair ↔ armchair | 1709 | 5′-7″ | |
+| recliner ↔ sofa west | 1633 | 5′-4″ | |
+| recliner ↔ armchair | 3843 | 12′-7″ | opposite ends |
+
+**A SECOND armchair does not fit, and that was searched rather than assumed.**
+Every position in the room was tested at 100 mm steps against: 420 mm off the
+deck glass and both pod screens, 450 mm clear of every other piece, and at
+least two existing seats between 1700 and 3200 mm. 245 positions pass singly.
+No two of them are 1900 mm apart without overlapping. The great room is 407 sq
+ft but it is long and shallow — the sofa, planter and console already take the
+whole south of the west half, and what is left will hold one chair.
+
+**Three side tables**, 400–450 mm square, one at the recliner, one at the
+rocking chair and one between the sofa's east end and the armchair. That was
+the thing the plan was actually missing: somewhere to put a cup down without
+leaning past the person next to you.
+
+### The group set out to standard, and what would not go
+
+The rocking chair moved to **(13080, 3500)** and the rug grew to **4600 × 2500
+mm (15′-1″ × 8′-2″)** so every seat sits fully on it.
+
+| seat to seat | mm | ft | |
+|---|---|---|---|
+| recliner ↔ rocking chair | **2988** | **9′-10″** | in band |
+| sofa west seat ↔ rocking chair | **2401** | **7′-11″** | in band |
+| recliner ↔ sofa east seat | 2271 | 7′-5″ | |
+| sofa east seat ↔ rocking chair | 1877 | 6′-2″ | |
+| recliner ↔ sofa west seat | 1633 | 5′-4″ | |
+| the sofa's own two seats | 800 | 2′-7″ | |
+
+**The standard is 2400–3000 mm (8–10 ft) between seats that FACE each other,
+3600 mm (11′-10″) as the outer limit for anyone in the group, and 450 mm
+(1′-6″) of clear floor minimum between a seat and whatever it faces.** All
+three are met: the two facing pairs are in the band, the widest pair in the
+group is 2988 mm, and the nearest clear floor is 656 mm (2′-2″).
+
+**Not every pair can be in the band, and it is worth writing down why.** The
+search was run over the chair's position and over the planter gap from 305 to
+860 mm. Nothing satisfies all six. Two pairs are fixed by the L's own geometry
+— with a 900 planter in the corner and equal gaps *g*, the recliner sits
+√2 × (850 + *g*) from the near sofa seat, so 2400 needs *g* = 847 mm, at which
+point the recliner is pushed into the deck glass. And the sofa's east seat is
+the corner of the group nearest the chair; a point 2400 from both it and the
+recliner lands at Y ≈ 2700, which is north of the glazing line.
+
+**That is a room-depth limit, not a layout mistake.** Between the deck glass at
+Y 2620 and the apse crown at 7485 there is 4865 mm (15′-11″), and a four-seat
+circle at 2400–3000 with a 1600 sofa and a corner planter does not fit in it.
+
+**What the standard actually governs is met.** The three short pairs are
+adjacent seats at 90° in an L and the two halves of one sofa — none of which
+the 2400 figure is written for — and none of them is below 1600 mm, which is
+where a group starts to feel crowded.
+
+### The parallel pair came out
+
+Two rocking chairs stood in the great room's east half, drawn on one shared
+aim so they were genuinely parallel — the aim computed once from the midpoint
+between them, because a chair that aims itself from its own seat centre cannot
+have a twin. They came out with that half of the room.
+
+The room's seating is the L now, and the single chair that closes it is the
+only rocking chair left in the great room.
+
+**What their removal gives back is the east half.** The L's chair had
+**359 mm (1′-2″)** to the nearest of the pair; it now has **2808 mm (9′-3″)**
+of clear floor east of it, out to the pod glazing. That was the tighter of the
+two things pinning the group — the deck glass at 480 mm (1′-7″) is the other —
+so **the L can now be spread east if it wants to be.**
+
+### The console has its corners eased, and things on it
+
+| | mm | ft |
+|---|---|---|
+| console | 1600 × 350 | 5′-3″ × 1′-2″ |
+| all four corners | eased 90 | 3½″ |
+| two table lamps | 260 shades | 10″ |
+| a bowl | 210 | 8″ |
+| a stack of books | 280 × 170 | 11″ × 7″ |
+| gaps between the four | 113, 115, 122 | ~4½″ |
+
+**It was a stadium for one round — bullnosed both ends — and that was too
+much.** A 175 mm half-round struck off a 350 mm depth turns a console into a
+lozenge. `counter-e` eases all four corners by **90 mm (3½″)** instead: enough
+that a hand runs along the edge, not so much that the piece stops reading as a
+console. The house rule still holds — the baths are arches, the gallery an
+apse, the dining table a superellipse, run B's nose eased 300 mm — it just
+wants the right radius for the size of thing.
+
+### Every seat in the plan has its corners eased
+
+Not curves — **90 mm (3½″) at most**, and less on anything small. Upholstery
+does not come to a point, and a plan full of sharp-cornered seats reads as a
+plan full of boxes. It applies to every sofa, recliner, chair and rocking
+chair in the home, plus the great-room sofa and its planter box, which are
+drawn as raw polygons.
+
+Each sub-rectangle caps its radius at **45 per cent of its own short side**, so
+a 190 mm back band eases to 85 mm rather than closing up into a lozenge.
+
+**And a band butted on to a bigger shape is eased only on its outer corners.**
+Round both and the two fillets leave a lens-shaped gap along a joint that is
+actually flush — which drew a sofa's back as a cushion floating behind it, and
+a recliner's footrest as a separate object. So a back band rounds the two
+corners on its far side and stays square where it meets the seat.
+
+**One lamp, not two.** A pair at the ends made the console read as a mantel —
+symmetrical, formal, and with the middle left to be filled. One lamp at one
+end with everything else running away from it reads as a shelf someone uses.
+
+| west to east | mm | ft |
+|---|---|---|
+| table lamp | 260 shade | 10″ |
+| succulent | 140 pot | 5½″ |
+| succulent | 110 pot | 4⅓″ |
+| stack of books | 280 × 160 | 11″ × 6″ |
+| bowl | 180 | 7″ |
+
+**The plants sit next to the lamp** because that is the end of the console the
+light actually reaches — a plant at the far end of an unlit 1600 mm run is a
+plant in the dark.
+
+**A console 350 mm (1′-2″) deep is a shelf, not a surface**, and the lamp sets
+the limit: a 260 mm (10″) shade leaves 45 mm (2″) either side and nothing
+wider will sit square. The bowl at 180 mm and the books at 160 mm deep come
+off the same constraint rather than off a catalogue.
+
+Spacing is 150 mm (6″) after the lamp and 90 mm (4″) between everything else,
+so the five read as one run with the lamp set slightly apart from the group.
+
+**The console stands on the boards, not the rug.** Its north face is the
+sofa's own back line at Y 5037, which is also the rug's south edge: a console
+with two legs on a rug and two off rocks every time a glass goes down on it.
+
+### The rug
+
+**3000 × 2000 mm (9′-10″ × 6′-7″) — a stock size, not a number invented to
+fit** — with the whole assembly on it, sofa and planter alike, 250 mm (10″)
+clear each side and 820 mm (2′-8″) in front of the extended footrests. It was
+drawn once at 2400 × 1700 stopping short of the planter, to keep a soil box
+off a rug, and it read as a rug sliding out from under the sofa to one side. A
+liner under the planter is a cheaper answer than an off-centre rug.
+
+### The jhoola was drawn and taken out
+
+It went into the great room's south-west quadrant for one round. It does not
+belong on the deck — between the voids the fountain sits in the middle of the
+bay with a recliner against each void, and the two gaps that leaves are
+**1625 mm (5′-4″)** each against a frame of 1900 mm (6′-3″) — and in the great
+room it was a 1900 mm frame standing in the middle of the floor to seat two
+people who now have a pair of rocking chairs instead.
+
+### The fountain's planting is out of scope, on purpose
+
+The bowl is drawn. What grows on it is not, and that is a decision rather than
+an omission.
+
+It was drawn twice. First as twelve 300 mm (12″) pots standing on the lawn on
+an 800 mm (2′-7″) radius; then, correctly, as pots hooked over the rim with
+trailing flowers falling down the outside. The second was the right *idea* and
+still the wrong *drawing*.
+
+**A 1200 mm (3′-11″) bowl is 1200 mm on the sheet however it is planted.** The
+collar told the architect nothing he has to build to, and it cost the plan the
+one thing the fountain is there to read as — water, on the home's axis, seen
+from the great room. Every version of it made a wreath that competed with the
+bowl at exactly the scale the sheet is read at.
+
+So: **planting on the fountain is a finish**, settled with whoever plants it,
+against the real object. Off this drawing.
+
+### A drawing that disagreed with itself
+
+Caught while checking this render: the sheet printed the deck as **40.4 m² /
+435 sq ft** under a note reading *net of the two retained voids*, while
+`verify.py` printed **35.8 / 385**. The sheet was using the gross rectangle.
+
+There is now one implementation — `retrofit.rect_room_area()` — used by the
+render, the DXF and the audit alike. Same rule the dimensions already follow:
+compute it once, so the label and the geometry cannot disagree.
+
+---
+
+## The music + work den gets its two things
+
+The den was named for music and work and had neither in it. It now has both:
+a **work console** along the pod's glazed screen and an **electronic drum kit**
+in the south-east corner, where the great-room wall meets the service-duct wall.
+
+### The kit
+
+A Roland TD with **four toms and three cymbals** — a big configuration. Pads,
+rack and cymbal arms want **1790 mm (5′-10″)** across, and with the throne
+behind it the whole thing is **1890 mm (6′-2″)** front to back.
+
+It nests into the corner and **the drummer faces south**, into it. That is not
+a preference, it is the only orientation that works:
+
+* **Against the east wall facing west**, the drummer would sit at about X 17200
+  — 620 mm (2′-0″) off the console. They would be in each other's laps.
+* **On the diagonal**, which is how a lot of people set a kit into a corner, a
+  1790 × 1500 kit becomes a 2330 mm (7′-8″) square, and the bay is 2895 × 2225
+  (9′-6″ × 7′-4″). It does not go.
+
+Facing south, the drummer has **3750 mm (12′-4″)** of open pod behind them,
+**150 mm (6″)** from the left crash to the duct wall, and **140 mm (6″)** from
+the kick to the great-room wall. It is drawn right-handed — floor tom and ride
+on the room side, hi-hat against the east wall. Flip it about its centreline
+for a left-hander; nothing else moves.
+
+### The console is not where it was first marked
+
+Marked at the south end it would have run Y 6175–8400, in the bay that is only
+**2895 mm (9′-6″)** wide. The arithmetic does not work there:
+
+| | |
+|---|---|
+| kit | 1790 mm (5′-10″) |
+| a chair actually in use | 600 mm (2′-0″) |
+| console | 700 mm (2′-4″) |
+| **wanted** | **3090 mm (10′-2″)** |
+| **bay gives** | **2895 mm (9′-6″)** |
+
+195 mm (8″) short — so swivelling out of the desk chair would have put its back
+on the nearest cymbal.
+
+**Moved 1375 mm (4′-6″) north** it runs Y 4800–7000 instead. That puts the
+chair in the part of the pod that is **4070 mm (13′-4″)** wide rather than
+2895 mm (9′-6″), and hands the whole south bay to the drums. It costs nothing:
+same **700 mm (2′-4″)** depth, same **2200 mm (7′-3″)** of top, and it still
+starts **108 mm (4″)** south of the pod screen's portal at Y 4692, so the way
+in from the great room is untouched. The desk chair now sits **680 mm (2′-3″)**
+clear of the drummer's throne, and the kit's westernmost cymbal is **255 mm
+(10″)** off the console's front edge.
+
+**700 deep and not 600**: a 27-inch screen on a stand plus a keyboard in front
+of it does not fit on 600 without the screen overhanging the back edge. The
+screen faces **east**, because with the desk's back on the glass there is only
+one side to sit at — you work looking west, through the screen and the pod
+glazing into the great room. 300 mm (1′-0″) of the 700 goes to the monitor and
+its foot; the 400 mm (1′-4″) in front of it is the keyboard.
+
+**Both ends are bullnosed, 350 mm (1′-2″).** This house does not do square
+corners on anything that stands free — the baths are arches, the gallery is an
+apse, the dining table is a superellipse, run B's nose is eased 300 and its far
+end is struck off the apse. The console floats along the glass with neither end
+against anything, so both get the full half-width round. It costs **0.05 m²
+(0.6 sq ft)** of top: 1.49 m² (16 sq ft) instead of 1.54.
+
+### Two recliners, not a sitting group
+
+The parents' arrangement was mirrored in here first — a sofa and a recliner in
+an L — and then taken out again. What is here instead is **two recliners side
+by side, both facing north through the deck slider**, with a small table
+between them.
+
+* **recliners 800 × 900 mm (2′-8″ × 3′-0″)** each
+* **a rectangular side table, 450 × 600 mm (1′-6″ × 2′-0″)**, between them
+* **2050 mm (6′-9″)** overall
+
+The two pods are deliberately no longer a mirrored pair, and that is the point:
+this one is a den for one or two people looking at the deck, not a room to
+receive in. An L wants somebody sitting in the return talking across the
+corner — which is what the parents' pod is for.
+
+**The pair is centred on X 18405, which is the centre of Karan's deck slider**,
+not the centre of the room. It sits square on the opening it faces, because
+that is the alignment you notice from the chairs.
+
+The table's back is **on the chairs' own back line**, not centred on the seat.
+Reclined, your elbow is near the back of the chair; a table centred on the seat
+would be level with your knees.
+
+Clearances: **780 mm (2′-7″)** from the tip of a reclined footrest to the deck
+line, **230 mm (9″)** from the chair backs to the north end of the work
+console, **815 mm (2′-8″)** west to the mandir and pantry units, **520 mm
+(1′-8″)** east to the suite's sliding partition. Karan's deck slider —
+**2850 mm (9′-4″)** — is clear end to end, like his parents'.
+
+---
+
+## The kitchen steps into the great room
+
+The kitchen was **10.5 m² / 113 sq ft** — the one room in the home with no
+slack in it. Its north wall now steps **600 north**, into the great room, over
+the whole stretch it is free to move: from **X 8600**, where the pod glazing
+lands, east to where the gallery apse comes through at **11 210**. That is
+2610 of wall, and it takes the kitchen to **11.7 m² / 126 sq ft**.
+
+The step starts exactly on the glazing and not a millimetre west of it, for a
+reason that is not tidiness: **west of 8600 the same wall is the family pod's
+south wall**, and moving it there would eat the pod. Landing on the glazing
+line also buys the drawing something — the screen comes down off the deck,
+dies on the bump's north-west corner, and wall and glass read as one line from
+the parapet to the kitchen.
+
+### And a planter answers it across the room
+
+The east side **cannot** take a bump. Behind that wall are help's room (4.4 m²)
+and the guest WC (3.0 m²), and both are already at their minimum. So what
+answers the kitchen across the great room is not a room but a thing standing in
+front of the wall: a **planter, 600 deep**, on the same two lines, with the
+same curved end where it dies into the apse. From the middle of the room the
+two read as a pair.
+
+**It is not the full mirror, and it cannot be.** The bump runs 2610; its mirror
+would run past X 15 000, where the guest WC's apse springs and its door stands.
+The planter stops there — **880 short** — and that missing 880 is exactly the
+WC door, which is the one place on this wall where symmetry was never
+available.
+
+### 600, because that is one counter deep
+
+300 was drawn first and rejected, and the reason is the counter, not the floor.
+A 300 recess behind a 600 worktop is a slot no arm reaches into — dead space,
+and the complaint that started this round.
+
+At **600** the counter can turn the corner and follow the wall. And the number
+does something better than fit: the front of the upper leg lands **exactly** on
+the back of the lower one, both on BAY_N at Y 8525. The two faces line up
+rather than nearly lining up, and the run reads as one worktop that steps.
+
+The kitchen is **11.7 m² / 126 sq ft**; the great room gives up 1.6 m² and is
+**37.8 m² / 407 sq ft**.
+
+**What it costs is the apse.** The arch's crown is at Y 7485, so with the wall
+at 7800 only **315** of it projects past the walls either side, and it barely
+reads as an apse from inside the great room. That is the trade, made knowingly.
+
+### Run B turns the corner
+
+The old run went straight past the bump — 2650 long, 600 deep, ignoring the
+fact that the wall behind its eastern end had stepped away. It now follows the
+wall: along the old line to the return, round it, and on along the new wall
+until the apse cuts it off.
+
+| | worktop |
+|---|---|
+| straight run B | 1.59 m² |
+| **turning the corner** | **2.65 m²** |
+
+Two thirds more, and no dead space behind any of it.
+
+* **leg 1** — 2425 (7′-11″) from the kitchen's west face to the step, its nose
+  eased 300 so nobody turns a sharp corner into it
+* **leg 2** — 2321 (7′-7″) along its back, against the new wall
+* **the end is struck off the apse.** The front edge meets the arch at Y 8525,
+  the back edge 463 further east at 7925, and the end face is the arc between
+  them. A square end would have to stop at the nearer of the two and throw
+  away half a metre of worktop for the sake of being a rectangle.
+
+The aisle in front of leg 2 is **1850 (6′-1″)** against 1250 in front of leg 1,
+and there is still **1086 (3′-7″)** of clear floor at the gallery's service
+door.
+
+**What it produces at the turn is an ordinary L-kitchen blind corner.** It is
+not a place for a sink or a hob, so **the sink has moved** west out of it, to
+X 8100–8660 — which also puts it 1400 mm (4′-7″) nearer the stack than it was.
+
+### The blind corner, and the magic corner that serves it
+
+**A correction first, because the number was wrong when it was first said.**
+The block where the two legs of run B stack is 600 × 1200 mm (2′-0″ × 3′-11″) —
+but only *half* of that is blind. The lower leg's half, Y 8525–9125, faces
+north into the room and opens perfectly well. What is blind is the upper leg's
+half: **600 × 600 mm (2′-0″ × 2′-0″)** at X 8725–9325 / Y 7925–8525. Its own
+front sits on Y 8525, and Y 8525 is exactly where the lower leg's carcass
+begins — so a door there would open into the back of another cupboard.
+
+So it has no door. The only way in is sideways, through the **500 mm (1′-8″)**
+door of the unit east of it at X 9325–9825, and past arm's reach is the corner
+nobody ever sees again.
+
+**A magic corner solves it.** Two tiers of wire trays: the front pair rides on
+the door, and when you swing it open the rear pair slides out from the blind
+600 and follows it into the room. Roughly **0.36 m² (4 sq ft)** of floor-level
+storage goes from unreachable to in-your-hand.
+
+It is **drawn**, not just noted — and drawn in *both states*, the way the
+sliding panels are: the trays stowed in the corner, the same trays standing
+out in the floor in front of the door, and the path between them. The floor
+they swing into is clear, because the lower leg's worktop stops at X 9325.
+
+A carousel (lazy Susan) is the cheaper fitting but it does not work here: it
+needs a bi-fold door on the corner itself, and this layout runs one leg
+straight past the other instead.
+
+### The south wall is one unbroken L too
+
+It used to be three pieces with two **400 mm (1′-4″)** gaps in it — fridge,
+gap, hob counter, gap, appliance corner. Neither gap was wanted: both came
+from setting the hob counter 400 in from each jamb of its window, and what
+they read as was two slots of floor too narrow to stand in and too shallow to
+store in.
+
+The run is now continuous from the fridge's side at X 7800 to the gallery leg —
+**2600 mm (8′-6″)** — and then turns **675 mm (2′-3″)** north up it.
+
+| | worktop |
+|---|---|
+| three pieces, two 400 gaps | 1.49 m² (16 sq ft) |
+| **one unbroken L** | **1.94 m² (21 sq ft)** |
+
+**Closing the western gap is not just worktop — it fixes a real defect.** The
+hob sits at X 8500–9100 and had only **300 mm (1′-0″)** of counter to its left,
+which is not enough to set a hot pan down on. It has **700 mm (2′-4″)** now,
+and 700 to its right before the corner. The hob itself has not moved; it is
+still centred on its window at 8800.
+
+Every corner that stands in the room is eased 200 mm (8″) like the rest of the
+kitchen. Two are not: the L's inside corner, where two worktops are mitred and
+a mason does not scoop a curve out of an internal angle; and the west end,
+which butts the fridge — 700 deep, so it stands 100 mm (4″) proud of the
+worktop and that end face is never seen.
+
+**Kitchen worktop, both runs together: 4.59 m² (49 sq ft).**
+
+---
+
+## Calls I made — overrule any of them
+
+**The lobby is enclosed to Y 11 125**, the line of the building's own outer
+wall, which gives a 3220 × 2600 pocket between the two columns. The lift
+lobby, the lift and the fire lift beyond it are drawn on the sheet for
+reference, boxed and labelled as common. Extending the flat to the lift doors would add about 4.9 m² and is a
+one-line change — say the word.
+
+**One front door, not two.** The service door I had put in the entrance wall
+west of the main one is out: the 1800 column means it could only ever have
+opened into the gallery, a few steps from the main door, so it was a second
+front door and nothing more. The kitchen now has its own 900 door off the
+great room, so service access does not depend on it. Say the word if you want
+a separate one — it would go in the kitchen's own south wall, on to the lift
+landing.
+
+**There is nothing to demolish.** You took the flats as bare shell, so every
+wall in the layout is new. What is drawn as existing is only the shell — on
+`PROP-SHELL` — the external walls and the enclosures round the shafts, ducts
+and voids, which have to be there because those are open holes in the slab,
+plus the beams, parapets and chajjas.
+
+**Dimensions carry no typed text.** Every one is computed from its two points,
+which sit on the developer's own set-out lines, so the label and the geometry
+cannot disagree. The deck reads 3050 + 1535 + 6250 + 1535 + 3050 = 15 420 —
+the developer's chain, with the two middle bays continuous because there is no
+party wall.
+
+**The recovered 960 × 275 mm** went to the master suites and the great room
+along the length, and to the service bay in depth.
+
+**The columns** are buried in walls where they land conveniently and left as
+piers where they don't. The two end-wall piers in each suite (Y 1950–3150 and
+7745–8945) are well placed to flank a bed or a wardrobe run.
+
+**The pods lose their inner corner** to the service duct — 1000 × 2225 out of
+21 m². I've walled it off and made the resulting face the media wall, with
+dining in the clear northern half and a pair of chairs in the southern half.
+
+**The furniture is stripped back to what is fixed, plumbed or built in.** The
+loose pieces inherited from A-101 were landing in odd places once the rooms
+changed shape, so they are out and will go back in deliberately.
+
+Kept — 31 pieces, the ones that prove the plan works:
+
+* **kitchen — one room with the utility, 10.9 m² / 118 sq ft.** The wall
+  between them is gone, so the builder's dry balcony is simply its utility end.
+  Three runs, all 600 deep, all with their corners eased:
+  * **run B** along the north wall, X 6900–10350, sink at the east end, and a
+    **full bullnose** on that end — you walk straight into it coming through
+    the west arch door
+  * **the hob run**, X 8200–9400, dead centre on the window, hob only with the
+    integrated dishwasher under it, 400 clear to the fridge and 400 to the
+    appliance corner
+  * **the appliance corner**, X 9800–10400, flush with the west gallery
+    column — microwave, air fryer and toaster, coffee and soda maker
+  * the fridge sits between the fridge-side gap and the hob run, X 7000–7800,
+    flush with the wall and clear of the window
+  * the utility end: washer and dryer stacked flush with the outer wall,
+    laundry basket and bin flush with the wall opposite
+* the **serving hatch** is at the west end of run B, X 6900–8000, so it opens
+  into the parents' pod — ready for the dining table to move there
+* utility — stacked washer and dryer
+* both master baths — arched vanity with the basin set into it, WC on the
+  duct wall, full-width walk-in shower
+* guest / service WC — shower, WC, basin
+* the bunk in help's room
+* **the mandir** in the parents' pod — a corner unit with an arched front,
+  flush into the corner between the retained void's back wall and the pod
+  glazing. That corner is **40.5°, not 90°** (the glazing leaves it heading
+  south-west), so the unit is a wedge, which is what a shrine wants: the idol
+  stands deep in it and you see it through the arch, and the point behind is
+  the back of the niche rather than dead worktop. 1200 legs on each wall,
+  arched front on a 1021 chord bulging 200 into the pod, and a **480 × 340**
+  idol platform on the axis — 20 off the glass, 73 off the void wall, 130 clear
+  in front. **0.64 m² / 6.9 sq ft**, against 0.24–0.54 for a normal counter
+  mandir
+* **the coffee / pantry** in Karan's pod — a straight run, the exact length of
+  the void's back wall and flush with it. It is a **trapezoid, not a
+  rectangle**: 1615 along the back but only **1051 along the front**, because
+  the glazing leans away, so full 600 depth starts 563 in. The fittings are set
+  out off *that* line and not off the back wall's length — setting out off the
+  1615 is what left the old L-shaped version with 300-wide stretches. Sink 400,
+  one machine 320, **400 of clear landing** between them, and the tapering end
+  at the glass left as an open shelf. **0.78 m² / 8.4 sq ft**
+  · 1051 is inside the 900–1200 usually wanted for a beverage point, but it
+  will not also take a 500 landing; that wants 1220
+* deck — the two grass beds, the strength trainer, the spa, the fountain and
+  the parapet planter
+* the dining table, in the great room beside the serving hatch
+
+Removed — 65 pieces, including A-101's L-shaped curved-glass changing screen
+in each suite: every side table, all the sofas, recliners and armchairs,
+the rugs, the murphy nook, all the wardrobe, cupboard, hanging-run and
+dressing-console joinery in both suites, the entry gallery's curved console and
+bench and its two joinery runs, the mirrors, the wardrobe at the foot of the
+bunk, the utility and store racks, the wall TV, the pantry counter and its two
+the drum kit, the terrace chairs, tables, drying racks and planters, and the
+plants. A-101's pantry counter is back, as the corner unit in Karan's pod.
+
+The dining table's move still stands and is worth keeping in mind: A-101 puts
+it in the parents' pod at (6420, 6900), which is now the service duct, and the
+pod's remaining half is 2350 wide against the 2520 the table and six chairs
+need. Beside the serving hatch it is also next to the kitchen.
+
+---
+
+## Settled in this round
+
+* **the two master baths** — settled and in the DXF. The arched wall, the
+  console and mirror struck off it, the cupboard on the end of the arch, the
+  shelves turning down the duct wall, the bin, the pan on the stack, the
+  full-width shower, and the door drawn open. 6.5 m² / 69 sq ft each,
+  1930 clear; see *The master baths are arches*, above
+* entry hall size — kept as drawn, with the lift lobby now shown for reference
+* **help's room, the guest WC and the store** — re-cut round the WC's elliptical
+  apse. Help's room 4.4 m², WC 3.0, store 2.4; see the section above
+* all A-101 furniture — resolved, two pieces moved (see above)
+* **the dining table** — a long table seating six, in the parents' pod at the
+  serving hatch — replaced by a 1100 × 2200 superellipse turned down the pod,
+  six seats, three a side, ends left clear, 1'-10" on both sides. See *The
+  dining table is not round*
+* **the kitchen and the utility are one space** — the wall between them is
+  removed in full, so the builder's dry balcony reads as the kitchen's utility
+  end. The kitchen is 10.5 m² / 113 sq ft
+* internal walls — the flats came as bare shell, so there is nothing to
+  demolish and no question about which existing walls are load-bearing. The
+  only fabric that has to stay is the shell, and none of the layout touches it.
+* **openings** — there is no longer any such thing here as an opening cut in
+  existing masonry, so the `PROP-OPEN` layer is gone. Every opening is a gap
+  left in a new wall and lives with that wall, which is the only way the two
+  can't disagree. Three walls that the old opening markers implied but that
+  were never actually drawn are now in: the 125 line between each suite and
+  its pod (with the 1050 slider as a gap in it), and the service-bay north
+  wall, in two runs either side of the gallery's apse (with the 1100 serving
+  hatch into the parents' pod and the guest WC's 800 door as the gaps in it).
+* **the gallery's four openings** — 1050 on the axis to the great room, 1050
+  south for the front door, and an 800 each side ahead of the column, west to
+  the kitchen and east to help's room. The two service doors are hinged glass
+  swinging into the gallery; the one on the axis is a curved slider
+* **the gallery corners** — the corners the apse leaves behind it are open to
+  the kitchen and to help's room through the builder's own 800 clear above each
+  column, so they are floor in those rooms rather than waste
+
+## Real-world sizing — the audit and what came of it
+
+Every drawn object was measured against what the thing is in a catalogue.
+Most of the plan was already right. Three groups were not, and this pass
+fixed them; a fourth was left alone deliberately.
+
+### Fixed — the plan was drawing things smaller than they are made
+
+| item | was | now |
+|---|---|---|
+| kitchen hob | 600 × 300 mm (2′-0″ × 1′-0″) | **600 × 510 mm (2′-0″ × 1′-8″)** |
+| kitchen sink | 560 × 310 mm (1′-10″ × 1′-0″) | **600 × 450 mm (2′-0″ × 1′-6″)** |
+| dishwasher | 740 × 440 mm (2′-5″ × 1′-5″) | **600 × 570 mm (2′-0″ × 1′-10″)** |
+| guest WC shower | 900 × 750 mm (3′-0″ × 2′-6″) | **900 × 900 mm (3′-0″ square)** |
+| multi-gym | 700 × 1940 mm (2′-4″ × 6′-4″) | **1200 × 2000 mm (3′-11″ × 6′-7″)** |
+| WC pan, all three | a 620 mm (2′-0″) circle | **680 × 390 mm (2′-3″ × 1′-3″)**, pan and cistern |
+| deck 2-seat recliners | 1345 × 900 mm (4′-5″ × 3′-0″) | **1600 × 900 mm (5′-3″ × 3′-0″)** |
+| recliner footrests | 240–270 mm (10″–11″) | **600 mm (2′-0″)**, two at 450 mm (1′-6″) |
+
+Karan's bed label read *1800 × 2000* against geometry that was already
+2032 × 1930. The geometry was right; the label now says **1930 × 2032 mm
+(6′-4″ × 6′-8″)**, which is a king.
+
+The **WC pan** was a circle, which is a floor drain, not a WC. It is now an
+oval pan with a cistern band behind it, sized 680 × 390 mm (2′-3″ × 1′-3″) —
+the real footprint of a back-to-wall pan. All three change together, so the
+guest WC, the parents' bath and Karan's bath all read the same.
+
+The **deck recliners** were the largest error. They ran Y 1200–2545, which
+looked tidy — the void's north edge down to the glass line — and gave each of
+two seats **672 mm (2′-2″)**. A two-seater is 1500–1700 mm (4′-11″–5′-7″)
+over all. The south end could not move, because the deck's glazing is at Y
+2545 and a seat over that line is inside the great room, so the 255 mm
+(10″) came off the north end instead: **Y 945–2545, 1600 mm (5′-3″), 800 mm
+(2′-8″) a seat.** Their arm tables came north with them and lost 50 mm (2″)
+of depth — **450 mm (1′-6″) square** now — so a foot of planted strip still
+shows north of them.
+
+### The footrests, and the two chairs that cannot have the full throw
+
+A footrest was being drawn at 30 per cent of the chair — 240–270 mm (10″–11″).
+A deployed footrest projects **450–650 mm (1′-6″–2′-2″)**. Under-drawing it
+hides exactly the clash it exists to show, so it is now an absolute **600 mm
+(2′-0″)** everywhere, with two named exceptions at **450 mm (1′-6″)**, the low
+end of the real range:
+
+* **the parents' pod recliner.** Its sofa starts at X 6300 and the seat's east
+  face is on 5700. At 600 mm the footrest lands on the sofa's arm. At 450 mm
+  it clears by **150 mm (6″)**.
+* **the great room's single recliner.** Its footrest and the great-room sofa's
+  deploy into the same corner at right angles; at 600 mm and 600 mm they
+  overlap by 39 mm (1½″). The sofa keeps its full 600 mm because two people
+  sit on it, and this chair takes the 450 mm, which leaves **111 mm (4″)**
+  between the two tips.
+
+Everything else clears with room to spare — the worst of the rest is **300 mm
+(1′-0″)**, in Karan's pod, to the table between the two chairs.
+
+### Left alone on purpose
+
+Marginal cases were not touched: the 800 mm (2′-8″) sofa depths, the 550 mm
+(1′-10″) desk chair in the parents' pod, the 1750 mm (5′-9″) spa. All are
+inside the real range, at the shallow end.
+
+### Not a gap — the basins were always there
+
+An earlier read of this drawing reported no washbasin anywhere. That was
+wrong. There is one in every bathroom; they are not in `design.py`'s furniture
+list because they are part of the curved joinery drawn in `retrofit.py` —
+`mb_console()` gives both master baths a 1743 mm (5′-9″) vanity with a 400 mm
+(1′-4″) bowl, and `wc_console()` gives the guest WC a 1015 mm (3′-4″) console
+with a 344 mm (1′-2″) bowl.
+
+## Open for the next round
+
+* the furniture, room by room, added back on purpose rather than inherited
+* the two pods' furniture beyond the dining table and the corner units
+* **the parents' bed and their loose furniture.** Their wardrobes and dressing
+  console are in — see the section above. There is no bed in that suite, and
+  nothing loose: no chairs, no terrace furniture, no plants
+* **the beds.** They are off the drawing for now — a bed sitting in the suite
+  while the joinery is being set out only argues with it. One commented line in
+  `design.py` brings each one back, mirrored, when the wardrobes are settled
+
+## Still to be confirmed, not by me
+
+* **Deck loading** — the spa, the two grass beds, the fountain and the
+  retractable glass roof, all on a 15 420 × 2620 deck along the building edge.
+* **How the glass roofs land** — the retractable roof over the deck and the
+  high roof over the two terraces.
+
+Neither is a layout question, and neither blocks the next round.

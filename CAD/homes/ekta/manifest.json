@@ -1,0 +1,56 @@
+{
+  "R-BATH": [
+    "screen",
+    "console",
+    "console"
+  ],
+  "R-BATH-EAST-ROOM": [
+    "screen",
+    "console",
+    "console",
+    "console",
+    "console",
+    "console"
+  ],
+  "R-BEDROOM": [
+    "wardrobe",
+    "sofa",
+    "bed (ghost)",
+    "table",
+    "chair"
+  ],
+  "R-KITCHEN": [
+    "table",
+    "shelves"
+  ],
+  "R-LIVING-DINING": [
+    "table",
+    "chair",
+    "chair",
+    "chair",
+    "chair",
+    "armchair",
+    "armchair (ghost)",
+    "armchair",
+    "armchair (ghost)",
+    "stool",
+    "sofa",
+    "sofa",
+    "sofa",
+    "sofa",
+    "sofa",
+    "sofa",
+    "daybed",
+    "daybed",
+    "console",
+    "console"
+  ],
+  "R-ROOM": [
+    "screen",
+    "bed",
+    "wardrobe",
+    "daybed",
+    "daybed",
+    "console"
+  ]
+}

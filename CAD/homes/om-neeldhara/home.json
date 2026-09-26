@@ -1,0 +1,11 @@
+{
+  "id": "om-neeldhara",
+  "name": "Om Neeldhara — Floor 14",
+  "subtitle": "DWG A-101 · Round 1",
+  "source": "source/floor14.dxf",
+  "sheet": "drawings/07-round1-layout.svg",
+  "paths": {
+    "drawings": "drawings",
+    "out": "out"
+  }
+}

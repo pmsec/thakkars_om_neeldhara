@@ -1,0 +1,15 @@
+column,x0,y0,x1,y1,size_mm,within_plan_envelope_pct,under_plan_masonry_pct,verdict
+"west end wall, deck side",-600,1950,-370,3150,230 x 1200,0,0,outside the plan entirely
+"west end wall, entry side",-600,7745,-370,8945,230 x 1200,0,0,outside the plan entirely
+west wing / deck line,4300,1200,4530,2400,230 x 1200,100,12,clash - stands in drawn open space
+"west wing, entry side",4325,8695,4555,9695,230 x 1000,100,24,partial - 76% in drawn open space
+parents' bath zone,5555,9320,5785,10320,230 x 1000,100,0,clash - stands in drawn open space
+"west retained void, inner face",7500,1200,7730,2700,230 x 1500,100,72,partial - 28% in drawn open space
+"lift lobby, west jamb",10400,9325,10630,11125,230 x 1800,91,13,clash - stands in drawn open space
+"lift lobby, east jamb",13850,9325,14080,11125,230 x 1800,91,19,clash - stands in drawn open space
+"east retained void, inner face",16750,1200,16980,2700,230 x 1500,100,65,partial - 35% in drawn open space
+"service-bay beam, east",17430,9320,18925,9550,1495 x 230,100,11,clash - stands in drawn open space
+"east wing, entry side",19925,8495,20155,9695,230 x 1200,100,20,partial - 80% in drawn open space
+east wing / deck line,19950,1200,20180,2400,230 x 1200,100,12,clash - stands in drawn open space
+east wing outer wall,23880,9465,25080,9695,1200 x 230,60,5,clash - stands in drawn open space
+"east end wall, deck side",24850,1950,25080,3150,230 x 1200,0,0,outside the plan entirely

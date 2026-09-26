@@ -1,0 +1,38 @@
+category,item,detail,area_m2_or_mm,x0,y0,x1,y1
+envelope,west end wall,slab beyond plan outer face,475,,,,
+envelope,east end wall,slab beyond plan outer face,450,,,,
+envelope,deck parapet,slab beyond plan outer face,125,,,,
+envelope,entry-side wall,slab beyond plan outer face,2000,,,,
+no slab under plan,"sealed shaft, wing end, west [open shaft]","parents' sealed shaft, parents' terrace",1.659,2912,88,4362,1188
+no slab under plan,"sealed shaft, wing end, east [open shaft]","karan's sealed shaft, karan's terrace",1.659,20112,88,21562,1188
+no slab under plan,"main service duct, west [open shaft]","kitchen, parents' bath, parents' pod, parents' suite band, parents' wardrobe",5.772,4562,6188,6888,10962
+no slab under plan,"main service duct, east [open shaft]","guest / service WC, karan's bath, karan's pod, karan's suite band, karan's wardrobe",5.772,17588,6188,19912,10962
+structure,column, 78% standing in open room | kitchen,0.315,10400,9325,10630,11125
+structure,column," 78% standing in open room | east pockets, entry gallery",0.315,13850,9325,14080,11125
+structure,column," 14% standing in open room | all-weather deck, parents' pod",0.049,7500,1200,7730,2700
+structure,column," 14% standing in open room | all-weather deck, karan's pod",0.049,16750,1200,16980,2700
+structure,column," 90% standing in open room | guest / service WC, karan's bath",0.304,17430,9320,18925,9550
+structure,column,OUTSIDE the plan envelope | -,0.3,24540,13060,25740,13290
+structure,column, 93% outside the plan envelope | -,0.252,23880,9465,25080,9695
+structure,column," 88% standing in open room | parents' sealed shaft, parents' suite band",0.236,4300,1200,4530,2400
+structure,column, 62% standing in open room | karan's wardrobe,0.169,19925,8495,20155,9695
+structure,column," 88% standing in open room | karan's sealed shaft, karan's suite band",0.236,19950,1200,20180,2400
+structure,column,OUTSIDE the plan envelope | -,0.27,-600,7745,-370,8945
+structure,column,OUTSIDE the plan envelope | -,0.27,24850,1950,25080,3150
+structure,column,OUTSIDE the plan envelope | -,0.27,-600,1950,-370,3150
+structure,column,100% standing in open room | parents' bath,0.225,5555,9320,5785,10320
+structure,column, 55% standing in open room | parents' wardrobe,0.124,4325,8695,4555,9695
+covers hole,"sealed shaft, wing end, west","open shaft | parents' sealed shaft, parents' terrace",1.659,2900,0,4380,1200
+covers hole,"main service duct, west","open shaft | parents' bath, parents' pod, parents' suite band, parents' wardrobe",4.726,4555,6175,5555,11125
+covers hole,"secondary duct, west","open shaft | kitchen, parents' bath",1.046,5555,8550,6900,9320
+covers hole,"sealed shaft, wing end, east","open shaft | karan's sealed shaft, karan's terrace",1.659,20100,0,21580,1200
+covers hole,"main service duct, east","open shaft | karan's bath, karan's pod, karan's suite band, karan's wardrobe",4.726,18925,6175,19925,11125
+covers hole,"secondary duct, east","open shaft | guest / service WC, karan's bath",1.046,17580,8550,18925,9320
+covers hole,lift lobby and landing,"common property | east pockets, entry gallery, kitchen, laundry + store",8.912,10400,8550,14080,12905
+annexes common area,lift lobby and landing,lift lobby / fire-lift landing,8.912,10400,8550,14080,12905
+opening on structure,main entrance door,column X 13850-14080,0.225,13850,9325,14080,11125
+fixture,workout bay on grass,column X 7500-7730,0.0,4870,470,7530,2450
+fixture,tall fridge,column X 10400-10630,0.0,9970,10040,10670,10740
+fixture,parents' bath vanity,0.59 m2 over an open shaft,0.587,5380,8480,6730,8980
+fixture,karan's bath vanity,0.59 m2 over an open shaft,0.587,17750,8480,19100,8980
+fixture,entry gallery bench,column X 13850-14080,0.0,13767,8514,14770,9577

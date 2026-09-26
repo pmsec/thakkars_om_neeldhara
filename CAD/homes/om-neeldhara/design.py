@@ -365,6 +365,14 @@ KIT_N = BODY_S - KIT_BUMP            # 8100, the bump's NORTH face
 KIT_S = KIT_N + 125                  # 8225, its face inside the kitchen
 # Where the bump dies into the apse, taken on its north face like _BRK_W above.
 _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
+# THE STEP (Karan's call): the kitchen front's LAST stretch, from the column's
+# line at 10630 to the apse, stands 150 further north, so the west service
+# door up the arch above the 2725 column is 820 wide, not 584.  Only that
+# 500 of wall moves; the step sits inside the door's reveal, the counters
+# are untouched and the great room gives up under 0.1 m2.
+KIT_JOG = 150
+KIT_JOG_X = 10630                    # the column's east face: where the step is
+_BRK_KJ = gal_cross(KIT_N - KIT_JOG) or GAL_DOOR_W
 
 # ------------------------------------------ the guest WC's arched wall
 # The guest WC is an arch on plan too: a quarter ELLIPSE struck from the
@@ -478,7 +486,11 @@ NEW_WALLS = [
     #     cheek's line closes the corner.  With no wall west of the door for a
     #     leaf to park on, the door is HINGED: it swings into the kitchen and
     #     lies back against the return.
-    (6900, KIT_N + 62.5, _BRK_K, KIT_N + 62.5, 125, [(0, 800), (1000, 1700)]),
+    (6900, KIT_N + 62.5, KIT_JOG_X, KIT_N + 62.5, 125, [(0, 800), (1000, 1700)]),
+    # the step at the column's line, and the last stretch 150 further north,
+    # dying into the apse north of the west service door
+    (KIT_JOG_X - 62.5, KIT_N + 125, KIT_JOG_X - 62.5, KIT_N - KIT_JOG, 125, []),
+    (KIT_JOG_X - 62.5, KIT_N - KIT_JOG + 62.5, _BRK_KJ, KIT_N - KIT_JOG + 62.5, 125, []),
     (6900, KIT_N, 6900, 8462.5, T_INT, []),
     # Help's room has no door on to the great room any more — it is reached
     # from the entry gallery, and through it the WC.  The one opening left in
@@ -540,11 +552,12 @@ _BN1 = 540 - _BN0
 # doors, _BN0K sets the kitchen's floor.
 _BN0K = _ang(gal_cross(KIT_S), KIT_S) if gal_cross(KIT_S) else _BN0
 # The west service door, above the 2725 column: from where the arch's outer
-# face passes the column's top to where the kitchen wall's inner face lands
-# on it — 19.3 degrees, about 600 clear.  The wall does NOT move to widen it
-# (Karan's call); the door swings into the gallery like the east one, and the
-# north counter's east end is cleared floor in front of it.
+# face passes the column's top to where the STEPPED kitchen wall's inner face
+# lands on it — 27 degrees, about 820 clear (Karan's call: the step, not the
+# 584 the unstepped wall allowed).  It swings into the gallery like the east
+# one, and the north counter's east end is cleared floor in front of it.
 _ACW = _ang(gal_cross(COL_N_W), COL_N_W)
+_BNKJ = _ang(gal_cross(KIT_S - KIT_JOG), KIT_S - KIT_JOG)
 
 # centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east).
 # The first gap wraps past 0 and kills everything below the springings.
@@ -559,14 +572,14 @@ _ACW = _ang(gal_cross(COL_N_W), COL_N_W)
 # with no thin pier between them to be nervous about.  That leaves two 1400
 # piers flanking the 1050 door on the axis.
 # ...on the EAST.  On the west the column is 2725 as built, so the door sits
-# higher: from the column's top at 8400 to the kitchen wall at 7925, about
-# 600 clear, with 30 degrees of arch below it backed solid by the column.
+# higher: from the column's top at 8400 to the stepped kitchen wall at 7775,
+# about 820 clear, with 30 degrees of arch below it backed solid by the column.
 # Its counter: the north run stops at 9500, and the hob counter's leg runs
 # up the column's kitchen face to 8600 with the small appliances on it.
 GALLERY = (GAL_CX, GAL_CY, GAL_R, T_GAL,
            [(_A1 + 0.2, _A0 - 0.2),              # below the two springings
             (_D0, _D1),                          # 1050 on the axis, great room
-            (_ACW, _BN0K),                       # ~600 service door, to the kitchen — above the 2725 column
+            (_ACW, _BNKJ),                       # ~820 service door, to the kitchen — above the 2725 column
             (_BN1, _A1 + 0.2)])                  # 776 service door, to help's room
 
 # The U's two straight legs, 230 on the column footprint: the column IS the

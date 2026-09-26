@@ -1103,7 +1103,12 @@ def hob_counter(r=200):
     """
     W, E = 7800, D.GAL_W            # the fridge's east face, the gallery leg
     N, S = 10375, D.BAY_S           # 600 deep on the south wall
-    LW, LN = 9800, 9700             # the leg: its west face, its north end
+    # The leg runs on up the column's kitchen face to 8600 (Karan's call):
+    # with the north run cut at 9500 for the service door, this is where the
+    # microwave and the air fryer stand now, and the L's inside corner is
+    # still the mitre at 9800 / 10375.  Its north end stops 200 short of the
+    # door's south jamb at 8400, so the way in from the door is clear.
+    LW, LN = 9800, 8600             # the leg: its west face, its north end
 
     def arc(cx, cy, t0, t1, n=10):
         return [(cx + math.cos(math.radians(t)) * r,
@@ -1960,12 +1965,11 @@ def gal_swing_doors(leaf=40):
     h = leaf / 2
     out = []
     # (hinge, tip, into the gallery?) as angles on the centreline.  Both
-    # doors hinge on their column's top.  The EAST one swings into the
-    # gallery as before.  The WEST one, up the arch above the 2725 column,
-    # swings INTO the kitchen (Karan's call): hinged at the column top its
-    # open leaf stands clear of the kitchen wall; hinged at the wall's jamb
-    # it could open only 50 degrees before lying on that wall.
-    for a_h, a_t, inward in ((gaps[2][0], gaps[2][1], False),
+    # doors hinge on their column's top and swing INTO the gallery (Karan's
+    # call for the west one too, up the arch above the 2725 column): the
+    # gallery is circulation with nothing in it, and the kitchen side keeps
+    # its floor for the counter's leg up the column.
+    for a_h, a_t, inward in ((gaps[2][0], gaps[2][1], True),
                              (gaps[3][1], gaps[3][0], True)):
         hx, hy = cx + r * math.cos(math.radians(a_h)), cy + r * math.sin(math.radians(a_h))
         tx, ty = cx + r * math.cos(math.radians(a_t)), cy + r * math.sin(math.radians(a_t))

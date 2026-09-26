@@ -542,8 +542,8 @@ _BN0K = _ang(gal_cross(KIT_S), KIT_S) if gal_cross(KIT_S) else _BN0
 # The west service door, above the 2725 column: from where the arch's outer
 # face passes the column's top to where the kitchen wall's inner face lands
 # on it — 19.3 degrees, about 600 clear.  The wall does NOT move to widen it
-# (Karan's call); the door swings INTO the kitchen, and the counter's east
-# end is cleared so it can.
+# (Karan's call); the door swings into the gallery like the east one, and the
+# north counter's east end is cleared floor in front of it.
 _ACW = _ang(gal_cross(COL_N_W), COL_N_W)
 
 # centre, centreline radius, thickness, gaps in degrees (Y down, 0 = east).
@@ -561,6 +561,8 @@ _ACW = _ang(gal_cross(COL_N_W), COL_N_W)
 # ...on the EAST.  On the west the column is 2725 as built, so the door sits
 # higher: from the column's top at 8400 to the kitchen wall at 7925, about
 # 600 clear, with 30 degrees of arch below it backed solid by the column.
+# Its counter: the north run stops at 9500, and the hob counter's leg runs
+# up the column's kitchen face to 8600 with the small appliances on it.
 GALLERY = (GAL_CX, GAL_CY, GAL_R, T_GAL,
            [(_A1 + 0.2, _A0 - 0.2),              # below the two springings
             (_D0, _D1),                          # 1050 on the axis, great room
@@ -1380,9 +1382,12 @@ _ONCE = [
     #     fryer, one each, and nothing else. The L's north leg by the gallery
     #     column is clear worktop with a condiment rack against the wall.
     # ...the microwave and the air fryer stood on the stretch east of the sink
-    # that is CLEARED now (Karan's call): the counter ends at 9500 so the
-    # service door, up the arch above the 2725 column, can swing into the
-    # kitchen.  They are off the plan until they have a new home.
+    # that is CLEARED now (Karan's call): the north run ends at 9500, short of
+    # the service door up the arch above the 2725 column.  They stand on the
+    # hob counter's leg up the column's kitchen face instead — 380 deep
+    # against the column, one above the other, on the stretch the leg gained.
+    ('under',    10020, 8650, 10400, 9100, 'microwave'),
+    ('under',    10020, 9200, 10400, 9580, 'air fryer'),
     # The two pod corner units — mandir and coffee / pantry — are behind the
     # retained deck void, in the corner between its back wall and the pod
     # glazing.  Their shape follows the curve, so they are built in

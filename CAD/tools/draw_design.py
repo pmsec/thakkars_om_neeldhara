@@ -314,6 +314,23 @@ def main():
         s.path([p for p, t in zip(pts, ts) if t < a], GLAS, 5.0)
         s.path([p for p, t in zip(pts, ts) if t > b], GLAS, 5.0)
         s.path([p for p, t in zip(pts, ts) if a <= t <= b], GLAS, 1.6, dash='9 7')
+        # the portal's pair of tinted-glass doors (Karan's call), drawn OPEN:
+        # each leaf hinged at its jamb and swung 90 into the pod, its arc light
+        A, B = bez(P, a), bez(P, b)
+        cl = math.hypot(B[0] - A[0], B[1] - A[1])
+        ux, uy = (B[0] - A[0]) / cl, (B[1] - A[1]) / cl
+        nx, ny = (-uy, ux) if P is D.POD_E else (uy, -ux)      # into the pod
+        if nx * (1 if P is D.POD_E else -1) < 0:
+            nx, ny = -nx, -ny
+        half = cl / 2 - 8
+        for J, sgn in ((A, 1), (B, -1)):
+            px, py = -ny * 17, nx * 17
+            s.poly([(J[0] + px, J[1] + py), (J[0] + nx * half + px, J[1] + ny * half + py),
+                    (J[0] + nx * half - px, J[1] + ny * half - py), (J[0] - px, J[1] - py)],
+                   fill='#dde7ea', stroke=GLAS, stroke_width=1.0)
+            s.path([(J[0] + half * (ux * sgn * math.cos(math.radians(t)) + nx * math.sin(math.radians(t))),
+                     J[1] + half * (uy * sgn * math.cos(math.radians(t)) + ny * math.sin(math.radians(t))))
+                    for t in np.linspace(0, 90, 20)], FURN, 0.8)
 
     for x1, y1, x2, y2, kind in D.GLAZING:
         if kind == 'window':

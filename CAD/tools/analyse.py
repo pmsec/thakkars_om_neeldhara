@@ -31,7 +31,7 @@ COLUMNS = [
     ('west wing, entry side', 4325, 8695, 4555, 9695),
     ("parents' bath zone", 5555, 9320, 5785, 10320),
     ('west retained void, inner face', 7500, 1200, 7730, 2700),
-    ('lift lobby, west jamb', 10400, 9325, 10630, 11125),
+    ('lift lobby, west jamb', 10400, 8400, 10630, 11125),   # as built (OPT 04): 2725, not the DWG's 1800
     ('lift lobby, east jamb', 13850, 9325, 14080, 11125),
     ('east retained void, inner face', 16750, 1200, 16980, 2700),
     ('service-bay beam, east', 17430, 9320, 18925, 9550),

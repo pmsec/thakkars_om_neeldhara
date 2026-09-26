@@ -131,6 +131,15 @@ def main():
     keep, _never_built = R.keep_demo()
     for x1, y1, x2, y2 in keep:
         msp.add_line(P(x1, y1), P(x2, y2), dxfattribs={'layer': 'PROP-SHELL'})
+    # AS-BUILT COLUMNS (the developer's OPT 04, later than the DWG): the DWG's
+    # own DA_COLUMN is left exactly as it came; the as-built outline goes on
+    # PROP-SHELL with a note, so the two can be read against each other.
+    for _dwg, (a, b, c, d) in C.ASBUILT_COLUMNS.get(home.current(), []):
+        box(msp, a, b, c, d, 'PROP-SHELL')
+        msp.add_text(f'COLUMN AS BUILT {c - a:.0f} x {d - b:.0f} — OPT 04, NOT THE DWG',
+                     height=80, rotation=90, dxfattribs={'layer': 'PROP-TEXT'}
+                     ).set_placement(P(a - 150, (b + d) / 2),
+                                     align=TextEntityAlignment.MIDDLE_CENTER)
 
     segs, _t = frame.load_cad(x0=40000, y0=10000, x1=135000, y1=75000)
     HOME = R.HOME

@@ -104,6 +104,19 @@ def bbox(m):
 
 
 # ------------------------------------------------------------- builder
+# AS-BUILT COLUMNS.  Where the site differs from the DWG — the developer's
+# later OPT 04 drawing — keyed by home: the DWG rectangle and the one to use
+# instead, in frame mm.  Applied inside builder_layers(), so every consumer
+# of DA_COLUMN (the clash grid, verify, the sheets, the DXF) sees the as-built
+# column and never the superseded one.
+ASBUILT_COLUMNS = {
+    # the lift lobby's west jamb runs the full depth of the builder's kitchen:
+    # 230 x 2725, Y 8400-11125, not the 230 x 1800 the DWG drew (the 925
+    # above the DWG column was a 150 wall stub there)
+    'om-neeldhara': [((10400, 9325, 10630, 11125), (10400, 8400, 10630, 11125))],
+}
+
+
 def builder_layers():
     dxf = os.path.join(SRC, 'floor14.dxf')
     if not os.path.exists(dxf):
@@ -134,6 +147,13 @@ def builder_layers():
                     out[e.dxf.layer].append(pts)
 
     walk(doc.modelspace(), None)
+    for dwg, (a, b, c, d) in ASBUILT_COLUMNS.get(home.current(), []):
+        for i, pts in enumerate(out['DA_COLUMN']):
+            xs = [q[0] for q in pts]
+            ys = [q[1] for q in pts]
+            r = (min(xs), min(ys), max(xs), max(ys))
+            if all(abs(r[k] - dwg[k]) < 5 for k in range(4)):
+                out['DA_COLUMN'][i] = [(a, b), (c, b), (c, d), (a, d)]
     return out
 
 

@@ -210,20 +210,12 @@ WALLS += [
     # stays with the family room, and a return on the duct cheek's line
     # closes the kitchen's corner. The door is hinged — nothing west of it
     # for a leaf to park on — and swings into the kitchen against the return.
-    w('W-KIT-FRONT', [(6900, 7862.5), (10567.5, 7862.5)], 125, 'interior',
+    w('W-KIT-FRONT', [(6900, 7862.5), (11450, 7862.5)], 125, 'interior',
       [op('D-KIT', 'door', 0, 800, head=2100,
           label='Kitchen door — hinged on the west jamb, swings into the kitchen against the return'),
        op('O-HATCH', 'window', 1000, 1700, head=2100, sill=1050,
           label='Serving hatch — 700 over the sink, kitchen to family room')],
       notes='Door jamb to apse on the bump line.'),
-    # the jog at the column's line and the last stretch 125 further north, so
-    # the west service door keeps its width above the 2725 column
-    w('W-KIT-JOG', [(10567.5, 7862.5), (10567.5, 7737.5)], 125, 'interior',
-      label="Kitchen front — the 125 jog on the column's line"),
-    # runs on past the arch's centreline (11565 at this Y) so the room graph
-    # closes; the end stays inside the arch's own thickness
-    w('W-KIT-FRONT-E', [(10567.5, 7737.5), (11700, 7737.5)], 125, 'interior',
-      label='Kitchen front — the jogged stretch, dying into the apse'),
     w('W-KIT-RET', [(6900, 7862.5), (6900, 8462.5)], 150, 'interior',
       notes="The return that closes the kitchen's north-west corner, on the secondary duct cheek's line."),
     w('W-HELP-N', [(13700, 8462.5), (20013, 8462.5)], 125, 'interior',
@@ -237,9 +229,8 @@ WALLS += [
 
 # --- the entry gallery's two straight legs (230 thick, on the columns)
 WALLS += [
-    # the west leg runs to 8400: the column is 2725 as built (OPT 04)
-    w('W-GAL-W', [(10515, 8400), (10515, 11125)], 230, 'interior',
-      label='Entry gallery — west leg, on the 230 x 2725 column'),
+    w('W-GAL-W', [(10515, 9325), (10515, 11125)], 230, 'interior',
+      label='Entry gallery — west leg'),
     w('W-GAL-E', [(13965, 9325), (13965, 11125)], 230, 'interior',
       label='Entry gallery — east leg'),
 ]
@@ -508,14 +499,12 @@ def arc_pt(a):
 
 seg_pts = [[(gx + math.cos(math.radians(a)) * gr,
              gy + math.sin(math.radians(a)) * gr) for a in seg] for seg in segs]
-# three solid runs now: the west door sits up the arch above the 2725 column,
-# so the arch is solid from the springing to the door's south jamb
 CHORDS = [
-    ('GAL-W', seg_pts[0][-1], seg_pts[1][0], 'door',
-     'Service door — west, to the kitchen, above the 2725 column'),
-    ('GAL-N', seg_pts[1][-1], seg_pts[2][0], 'arch',
+    ('GAL-W', (10515, 9325), seg_pts[0][0], 'door',
+     'Service door — west, to the kitchen'),
+    ('GAL-N', seg_pts[0][-1], seg_pts[1][0], 'arch',
      'Arched portal to the great room — curved doors slide on the arc'),
-    ('GAL-E', seg_pts[2][-1], (13965, 9325), 'door',
+    ('GAL-E', seg_pts[1][-1], (13965, 9325), 'door',
      "Service door — east, to help's side"),
 ]
 for gid, a0, a1, typ, lab in CHORDS:

@@ -371,40 +371,40 @@ KIT_S = KIT_N + 125                  # 8225, its face inside the kitchen
 # Where the bump dies into the apse, taken on its north face like _BRK_W above.
 _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
 
-# ------------------------------------------ the guest WC's arched wall
-# The guest WC is an arch on plan too: a quarter ELLIPSE struck from the
-# north-east corner of the service bay, springing off the great-room wall and
-# dying into the east wall.  Help's room and the store wrap round the outside
-# of it.
+# ------------------------------------------ the guest WC, on the main duct
+# THE GUEST / SERVICE WC HAS MOVED (Karan's call, on the builder's word): the
+# apse it sat in had no toilet below it and no duct beside it, and the
+# building will not have a wet room there.  It is on the builder's own toilet
+# spot now — the released east secondary duct, hard against the main service
+# duct, where the pan and the floor trap drain straight into the shaft and it
+# stacks over the toilets below.
 #
-# An ellipse and not a circle because the two walls it has to reach are not the
-# same distance away — 2430 along the great-room wall, 1495 down the east one.
-# A circle is tangent to both only if it is a quarter round, and a quarter round
-# wide enough to carry a door off the great room (it has to spring west of
-# 15880, where the pod glazing lands) would run the whole 2450 depth of the bay
-# and leave help's room a berth again.  The ellipse reaches west without
-# reaching south, which is exactly the shape of the problem.
+# It is a strip: the den's wall to the north, the builder's 1495 x 230
+# structural block to the south, the main duct to the east — 770 clear
+# between wall and block, and that is fixed.  So it is a WC and a basin, no
+# shower: the pan on the duct wall facing west, 600 in front of it, the basin
+# set into a small curved console at the far end.  A hand shower over the
+# floor trap makes it the wet-room service toilet the builder drew.
 #
-# It dies 1495 down, not 1675 as it first did: the bunk in the merged help's
-# room lies along the south wall with its head on the east wall, so its north
-# edge at 10075 runs past the duct's cheek, and the apse (and the cheek it dies
-# into) has to be out of the way above that line.  The 180 it gives up was
-# the sliver of floor south of the pan; there is still 900 in front of the pan.
-WC_CX, WC_CY = 17430, BAY_N        # the corner it is struck from
-WC_A, WC_B = 2430, 1495            # semi-axes, on the centreline of the wall
+# Its west end is still an ARC: a quarter circle of 770, struck from the
+# block's west end, bulging out into the passage, the door on it.  The
+# passage runs from the great room's door (where it always was, so the WC
+# still serves guests) east along the strip to that curved door, walled off
+# help's room, which wraps it as it wrapped the apse.
+WC_CX, WC_CY = 17430, 9320         # the corner it is struck from: the block's west end
+WC_A, WC_B = 770, 770              # a circle, on the centreline of the wall
 T_WC = 110
-WC_SPRING = WC_CX - WC_A           # 15000, on the great-room wall
-WC_DIE = WC_CY + WC_B              # 10020, on the east wall; outer face 10075
-WC_DOOR = (0.41, 0.645)            # help's room's door, as a fraction of the arc
-# There is no STORE_W any more: the wall between help's room and the store came
-# down after the walkability check, and the two are one room.  See the note
-# on the service-bay walls below.
+WC_SPRING = WC_CX - WC_A           # 16660, on the block's line
+WC_DIE = WC_CY - WC_B              # 8550, on the den's wall
+WC_DOOR = (0.25, 0.83)             # the passage's door, as a fraction of the arc: 700
+WC_PASS_W = 14945                  # the passage's west wall, on the great-room door's west jamb
+WC_PASS_S = 9395                   # its south wall, on the block's line
 
 
 def wc_y(x):
-    """y of the apse centreline where it crosses this x."""
+    """y of the WC's arc centreline where it crosses this x."""
     c = (WC_CX - x) / WC_A
-    return WC_CY + WC_B * _m.sqrt(max(0.0, 1 - c * c))
+    return WC_CY - WC_B * _m.sqrt(max(0.0, 1 - c * c))
 
 
 # ------------------------------------------------------------------- new walls
@@ -499,7 +499,11 @@ NEW_WALLS = [
     # wall, at 10075 on its outer face — which is the bunk's north edge, so the
     # bunk lies under it and past it without touching it.  Below that the room
     # runs straight through to the east wall.
-    (M(7050 - 75), BAY_N, M(7050 - 75), WC_DIE + T_WC / 2, T_INT, []),  # WC / duct
+    # the WC's passage: its west wall on the great-room door's west jamb, its
+    # south wall on the block's line, running to the block; the WC's own arc
+    # foots on that wall and its north wall is the den's
+    (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S + T_INT / 2, T_INT, []),
+    (WC_PASS_W - T_INT / 2, WC_PASS_S, WC_CX, WC_PASS_S, T_INT, []),
     # THE WALL BETWEEN HELP'S ROOM AND THE STORE IS GONE.  With it up, help's
     # room was a 4.4 m2 triangle with a 1025 west leg, and the 1900 bunk sat on
     # the only floor in front of the WC door: a 700 body could not reach the
@@ -1447,11 +1451,10 @@ _ONCE = [
     # into that wall.  The basin is not here: it is set into a curved console
     # struck off the apse itself, immediately inside the door — see
     # retrofit.wc_console().
-    ('shower',   16530, 8425, 17430, 9325, ''),   # 900 x 900
-    # Turned a quarter, so its back is on the duct wall rather than floating in
-    # the room.  700 deep from that wall, 620 wide, and it clears the apse: the
-    # arc's inner face is at about 16235 on this pan's south line.
-    ('wc-e',     16750, 9430, 17430, 9820, ''),  # 680 x 390
+    # The pan on the main duct's wall, facing west, 600 clear in front of it
+    # to the door; no shower — the strip is 770 — a hand shower over the floor
+    # trap.  The basin is in the curved console at the arc, retrofit.wc_console.
+    ('wc-e',     18095, 8740, 18775, 9130, 'pan on the main duct wall, facing west  ·  hand shower over the floor trap'),
     # ------------------------------------------------------ the entry gallery
     # THE U HAS TWO LONG FACES AND NOTHING WAS AGAINST EITHER OF THEM.  Its
     # legs run Y 9325-11125 with 3220 between their inner faces, so both can

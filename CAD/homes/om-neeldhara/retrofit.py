@@ -115,20 +115,11 @@ def keep_demo():
     return out, demo
 
 
-def help_rack(u0=0.15, u1=0.37, dep=200, n=60):
-    """The full-height rack on the OUTSIDE of the guest WC's apse, in help's
-    room: a 200 band struck off the apse's outer face, from a third of the
-    way down the arc round to the WC door's jamb.  Open shelving to the
-    ceiling, curved to the wall so it beds on it for its whole length.
-
-    Only 200 deep, and not from the springing: the neck between the gallery's
-    arc and the apse is barely a metre wide, and a 300 rack from the
-    springing left the entry door cut off from the room for a 700 body.
-    200 from u 0.15 keeps the walk from the door at 740 and over."""
-    h = D.T_WC / 2
-    us = list(np.linspace(u0, u1, n))
-    return [('poly', [wc_pt(u, h) for u in us]
-             + [wc_pt(u, h + dep) for u in reversed(us)], 'solid')]
+def help_rack():
+    """There is no curved rack any more: the apse it stood on has gone (the
+    WC moved to the main duct) and the passage that replaced it is 770 wide,
+    with nothing to spare for a rack.  Kept so every caller still works."""
+    return []
 
 
 # ------------------------------------------------------------------ design
@@ -174,13 +165,6 @@ def pod_polys():
                 + [(bez_x(D.POD_W, D.BODY_S), D.BODY_S), (D.DUCT_W1 + 150, D.BODY_S),
                    (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
     den = [(2 * D.MID - x, y) for x, y in fam_full]
-    # ...plus the RECLAIMED east secondary duct (Karan's call, with the
-    # builder's word): its north wall is gone and the den runs south into it,
-    # between the WC's wall and the main duct's cheek, to the builder's
-    # 1495 x 230 block on its south side
-    i = den.index((D.MID * 2 - (D.DUCT_W1 + 150), D.BODY_S))
-    den[i:i + 1] = [(17580, D.BODY_S), (17580, 9320), (2 * D.MID - (D.DUCT_W1 + 150), 9320),
-                    (2 * D.MID - (D.DUCT_W1 + 150), D.BODY_S)]
     # The great room's south edge is not one straight line any more: the
     # kitchen's bump takes a 300 bite out of its western half, from the pod
     # glazing across to the apse.  Nothing comes out of the eastern half — the
@@ -229,7 +213,7 @@ def poly_rooms():
     The rectangular ones live in design.ROOMS; these are the two pods and the
     great room, which are cut by the pod glazing curves."""
     fam, den, great = pod_polys()
-    kitchen, helps, gallery, wc = lobby_polys()
+    kitchen, helps, gallery, wc, passage = lobby_polys()
     bath_p, suite = suite_polys()                  # the parents', arch at the south
     with karan():
         bath_k, suite_k = suite_polys()            # Karan's, crown at 5950
@@ -249,7 +233,8 @@ def poly_rooms():
         ("GRANDMOTHER'S BATH", '', bath_g, 'the builder\'s 5\'-0" stretched to 9\'-0"  ·  rounded corner',
          (3640, 8330)),
         ("KARAN'S BATH", '', mirror_poly(bath_k), bath_note, (D.M(3140), 7750)),
-        ('GUEST / SERVICE WC', '', wc, '', (16200, 9150)),
+        ('GUEST / SERVICE WC', '', wc, '', (18100, 8935)),
+        ('WC PASSAGE', '', passage, '', (15900, 8935)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         # not the mirror of the family room's anchor: that point is on the
         # drummer's throne, and the open north half is the sofa's now.  What is
@@ -809,8 +794,8 @@ def lofts():
     live in design.FURNITURE as 'under' rows.)  A loft over a wet room is
     a real deck — a thin slab or steel framing, not a false ceiling — and
     the WC's exhaust duct has to be routed round it."""
-    _kitchen, helps, _gallery, wc = lobby_polys()
-    return [('poly', helps, 'dash'), ('poly', wc, 'dash')]
+    _kitchen, helps, _gallery, wc, passage = lobby_polys()
+    return [('poly', helps, 'dash'), ('poly', wc, 'dash'), ('poly', passage, 'dash')]
 
 
 def clip_y(poly, y, north):
@@ -915,15 +900,17 @@ def mirror_prim(p):
 
 # ------------------------------------------------- the guest WC's arched wall
 def wc_pt(u, off=0.0):
-    """A point on the WC apse, offset normal to itself.
+    """A point on the WC's arc, offset normal to itself.
 
-    u runs 0 (springing, on the great-room wall) to 1 (where it dies into the
-    east wall).  off > 0 is away from the corner the ellipse is struck from —
-    help's room's side and the store's."""
+    u runs 0 (its foot on the block's line) to 1 (where it meets the den's
+    wall).  off > 0 is away from the corner the arc is struck from — the
+    passage's side."""
     th = u * math.pi / 2
     c, s = math.cos(th), math.sin(th)
-    x, y = D.WC_CX - D.WC_A * c, D.WC_CY + D.WC_B * s
-    nx, ny = -c / D.WC_A, s / D.WC_B          # outward normal of the ellipse
+    # from the west point on the block's line (u = 0) round to the north
+    # point on the den's wall (u = 1), bulging out into the passage
+    x, y = D.WC_CX - D.WC_A * c, D.WC_CY - D.WC_B * s
+    nx, ny = -c / D.WC_A, -s / D.WC_B         # outward normal of the arc
     m = math.hypot(nx, ny)
     return x + off * nx / m, y + off * ny / m
 
@@ -949,7 +936,7 @@ def wc_wall():
             for run in runs]
 
 
-def wc_console(u0=0.0, u1=0.38, d0=120, d1=400, grow=0.20, fade=0.10):
+def wc_console(u0=0.0, u1=0.23, d0=100, d1=300, grow=0.12, fade=0.06):
     """The curved console at the WC door, with the basin set into it.
 
     A straight vanity in an apse is a lie: it touches the wall at one point and
@@ -972,8 +959,8 @@ def wc_console(u0=0.0, u1=0.38, d0=120, d1=400, grow=0.20, fade=0.10):
 
     band = ([wc_pt(u, -h) for u in us]
             + [wc_pt(u, -h - dep(u)) for u in reversed(us)])
-    bx, by = wc_pt(0.24, -h - 210)
-    return [('poly', band, 'solid'), ('circle', bx, by, 172, 'light')]
+    bx, by = wc_pt((u0 + u1) / 2 + 0.01, -h - 165)
+    return [('poly', band, 'solid'), ('circle', bx, by, 150, 'light')]
 
 
 def wc_out_door(hinge=15020, jamb=15820, y=8400):
@@ -1906,8 +1893,8 @@ def great_room_planter():
     """
     a0 = 540 - D._ang(D.gal_cross(D.KIT_N), D.KIT_N)
     a1 = 540 - D._ang(D.gal_cross(D.BODY_S), D.BODY_S)
-    box = _gal_arc(D.GAL_RO, a0, a1) + [(D.WC_SPRING, D.BODY_S),
-                                        (D.WC_SPRING, D.KIT_N)]
+    box = _gal_arc(D.GAL_RO, a0, a1) + [(15000, D.BODY_S),      # where the old WC apse sprang:
+                                        (15000, D.KIT_N)]       # the planter keeps its length
     return [('poly', box, 'green')]
 
 
@@ -1955,14 +1942,25 @@ def lobby_polys():
     # the secondary duct to the east wall — the store is part of it now, the
     # wall that split the two having come down.  The WC is what is left inside
     # the apse.  The duct's south-west corner is the notch at 17580 / 9550.
-    out = wc_pts(D.T_WC / 2)
-    helps = ([out[0]] + _gal_arc(ro, D._BN1, D._A1)
+    # Help's room wraps the WC's passage now as it wrapped the apse: the nook
+    # west of the passage (its door from the gallery lands there), the band
+    # south of it, and the bunk end under the block, one room.
+    pw, ps = D.WC_PASS_W - t, D.WC_PASS_S + t
+    helps = ([(pw, D.BAY_N)] + _gal_arc(ro, D._BN1, D._A1)
              + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (18825, D.BAY_S),
-                (18825, 9550), (17580, 9550), (17580, D.WC_DIE + D.T_WC / 2)]
-             + list(reversed(out)))
-    wc = ([(D.WC_CX, D.BAY_N), (D.WC_CX, D.WC_DIE - D.T_WC / 2)]
-          + list(reversed(wc_pts(-D.T_WC / 2))))
-    return kitchen, helps, gallery, wc
+                (18825, 9550), (D.WC_CX, 9550), (D.WC_CX, ps), (pw, ps)])
+    # the WC: the strip on the main duct plus the quarter circle at its west
+    # end, inside the arc's inner face
+    # (to the main duct wall's west face, 18775: the wall is 18775-18925)
+    inner = wc_pts(-D.T_WC / 2)
+    wc = ([(18775, D.WC_DIE), (18775, D.WC_CY), (D.WC_CX, D.WC_CY)] + inner)
+    # the passage: the great-room door's west jamb to the arc's outer face
+    # (the arc's outer face runs on into the den wall at its top: only the
+    # part below the wall's face is the passage's edge)
+    outer = [q for q in wc_pts(D.T_WC / 2) if q[1] >= D.WC_DIE]
+    passage = ([(D.WC_PASS_W + t, D.WC_DIE), (D.WC_CX, D.WC_DIE)]
+               + list(reversed(outer)) + [(D.WC_PASS_W + t, D.WC_PASS_S - t)])
+    return kitchen, helps, gallery, wc, passage
 
 
 def arch_haunches():

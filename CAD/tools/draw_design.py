@@ -358,7 +358,7 @@ def main():
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
         for q in wall_quads(x1, y1, x2, y2, t, ops):
             s.poly(q, fill=NEWW, stroke='none')
-    for q in R.wc_wall():                # the guest WC's apse — same masonry
+    for q in R.wc_wall():                # the guest WC's arc — same masonry
         s.poly(q, fill=NEWW, stroke='none')
     for q in R.mb_wall() + R.east_polys(R.mb_wall) + R.gm_wall():   # the three sweeps
         s.poly(q, fill=NEWW, stroke='none')
@@ -433,7 +433,7 @@ def main():
         prim(p)
     for p in R.mb_door(D.MB_DOOR_P) + R.south(R.mb_door) + R.gm_curtain_rail():
         prim(p)                                 # the parents' door, hers, her rail
-    for p in R.help_rack():                     # the curved rack on the apse
+    for p in R.help_rack():                     # (nothing: the apse rack went with the apse)
         prim(p)
     for p in R.lofts():                         # over help's room and the guest WC, dashed
         prim(p)
@@ -458,7 +458,10 @@ def main():
             continue
         s.rect(a, b, c, d, fill='none', stroke='#b0a89c', stroke_width=0.9,
                stroke_dasharray='6 5')
-        s.o.append(f'<text x="{s.X((a + c) / 2):.1f}" y="{s.Y((b + d) / 2) + 4:.1f}" '
+        # the note at the box's centre, or near its top in a shallow one where
+        # a room's own label wants the centre (the guest WC's strip)
+        ny = (b + d) / 2 if d - b > 1000 else b + 130
+        s.o.append(f'<text x="{s.X((a + c) / 2):.1f}" y="{s.Y(ny) + 4:.1f}" '
                    f'font-size="10" fill="#9a9184" text-anchor="middle" letter-spacing="1" '
                    f'font-family="Helvetica,Arial,sans-serif" data-keep="1">RECLAIMED DUCT</text>')
     for p in R.east(R.arch_console):    # Karan's console — drawn in his frame, mirrored

@@ -966,23 +966,20 @@ def sh_wall():
     return [[sh_pt(u, -h) for u in us] + [sh_pt(u, h) for u in reversed(us)]]
 
 
-def wc_console(dep=300, bowl_x=None):
+def wc_console(dep=300, x_end=15800, bowl_x=None):
     """The basin console in the PASSAGE (Karan's sketch): a straight run along
-    the passage's south wall, from its west wall to the WC's arc, which it
-    dies into; the bowl at the west end, square in front of the great-room
-    door, so a guest steps in and the basin is the first thing there.
+    the passage's south wall from its west wall, the bowl at the west end,
+    square in front of the great-room door, so a guest steps in and the
+    basin is the first thing there.
 
     300 deep — a slim wall-hung bowl's depth — which leaves 470 of the 770
-    passage to pass along it to the WC's door.  The east end is cut on the
-    arc's outer face, so it sits on both walls with no gap."""
-    h = D.T_WC / 2
+    passage to pass along it to the WC's door.  It stops at 15800, 780 long:
+    east of it the same wall carries help's room's door into the passage
+    (design.NEW_WALLS), which is how help reaches the WC without crossing
+    the great room."""
     xw = D.WC_PASS_W + D.T_INT / 2                      # the west wall's inner face
     ys, yf = D.WC_PASS_S - D.T_INT / 2, D.WC_PASS_S - D.T_INT / 2 - dep   # the south wall's face, the front
-    # the arc's outer face between the front line and the wall
-    # (wc_pts runs foot-upward: reversed, so the band goes west wall, front,
-    # down the arc to its foot on the south wall)
-    arc = [q for q in wc_pts(h, 200) if yf <= q[1] <= ys]
-    band = [(xw, ys), (xw, yf)] + list(reversed(arc))
+    band = [(xw, ys), (xw, yf), (x_end, yf), (x_end, ys)]
     if bowl_x is None:
         bowl_x = (15020 + 15820) / 2                     # the great-room door's centre
     return [('poly', band, 'solid'), ('circle', bowl_x, (ys + yf) / 2, 150, 'light')]

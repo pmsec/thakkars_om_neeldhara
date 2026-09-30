@@ -389,7 +389,8 @@ _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
 # closes the shower off the den, the rose on the duct wall.  The basin is
 # NOT inside: it is in the passage, in a console along the passage's south
 # wall with the bowl square in front of the great-room door, so a guest
-# washes their hands without going into the wet room.
+# washes their hands without going into the wet room.  Help's room has its
+# own door into the passage, in that same south wall east of the console.
 #
 # Its west end is still an ARC: a quarter circle of 770, struck from the
 # block's west end, bulging out into the passage, the door on it.  The
@@ -514,7 +515,13 @@ NEW_WALLS = [
     # south wall on the block's line, running to the block; the WC's own arc
     # foots on that wall and its north wall is the den's
     (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S + T_INT / 2, T_INT, []),
-    (WC_PASS_W - T_INT / 2, WC_PASS_S, WC_CX, WC_PASS_S, T_INT, []),
+    # ...with HELP'S ROOM'S DOOR in it (Karan's call): 700 at X 15850-16550,
+    # east of the basin console and short of the arc's foot, swinging south
+    # into help's room — help reaches the WC through the passage, not the
+    # great room.  (The WC's other sides are the duct, the structural block
+    # and the shower apse: the passage is the only way in.)
+    (WC_PASS_W - T_INT / 2, WC_PASS_S, WC_CX, WC_PASS_S, T_INT,
+     [(15850 - (WC_PASS_W - T_INT / 2), 16550 - (WC_PASS_W - T_INT / 2))]),
     # the stub that joins the three curves' ends at the den wall: the passage
     # arc dies into its south face, the shower apse springs off its north
     # face, both on x = WC_CX; the duct wall east of it is demolished

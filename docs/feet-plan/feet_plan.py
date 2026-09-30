@@ -229,8 +229,10 @@ def main():
     def text_w(txt, size):
         return len(txt) * size * 0.56 / px_mm      # model mm
 
-    def overlaps(box):
-        x0, y0, x1, y1 = box
+    def overlaps(box, m=70.0):
+        # (with a 70 margin: the widths are estimates, and two labels that
+        # only just miss on paper read as one)
+        x0, y0, x1, y1 = box[0] - m, box[1] - m, box[2] + m, box[3] + m
         return any(not (x1 < b[0] or b[2] < x0 or y1 < b[1] or b[3] < y0) for b in placed)
 
     def emit(cx, cy, lines, rot=False):
@@ -275,7 +277,9 @@ def main():
     def whole_room_loft(f):
         if 'loft' not in (f.get('label') or '').lower() or f['room'] not in room_poly:
             return False
-        return area(outline(f)) > 0.8 * area(room_poly[f['room']])
+        # (0.7, not more: the room polygon runs to the wall centrelines and a
+        # 770 passage's loft is only 78% of it)
+        return area(outline(f)) > 0.7 * area(room_poly[f['room']])
     pieces = [f for f in pieces if not whole_room_loft(f)]
 
     # small pieces choose first — they have the fewest places to go — and the
@@ -372,23 +376,31 @@ def main():
         while fn > 13 and max(text_w(name, fn), text_w(dims, fd)) > 0.92 * (x1 - x0):
             fn -= 1
             fd = max(12, fd - 1)
-        lines = [(name, fn, 'bold', '#1f1d1a'), (dims, fd, 'normal', '#2c5c61')]
-        hw = max(text_w(name, fn), text_w(dims, fd)) / 2
-        hh = (fn + fd) * 1.18 / px_mm / 2
         G = np.array([(x, y) for x in np.arange(x0, x1, 60.0) for y in np.arange(y0, y1, 60.0)])
         G = G[[inside(tuple(p), poly) for p in G]]
         if not len(G):
             continue
         order = np.argsort(-edge_dist(G, poly))
         spot = None
-        for use_obst in (True, False):
-            for i in order:
-                cx, cy = G[i]
-                if free(cx, cy, hw, hh, poly, use_obst):
-                    spot = (cx, cy)
+        while True:
+            # (a room's box is wider than its usable inside where a curved
+            # wall bulges into it — the WC passage — so when nothing fits at
+            # this size, shrink a step and look again, down to legible)
+            lines = [(name, fn, 'bold', '#1f1d1a'), (dims, fd, 'normal', '#2c5c61')]
+            hw = max(text_w(name, fn), text_w(dims, fd)) / 2
+            hh = (fn + fd) * 1.18 / px_mm / 2
+            for use_obst in (True, False):
+                for i in order:
+                    cx, cy = G[i]
+                    if free(cx, cy, hw, hh, poly, use_obst):
+                        spot = (cx, cy)
+                        break
+                if spot:
                     break
-            if spot:
+            if spot or fn <= 13:
                 break
+            fn -= 1
+            fd = max(12, fd - 1)
         if spot is None:
             spot = tuple(G[order[0]])
             rot = (y1 - y0) > (x1 - x0)

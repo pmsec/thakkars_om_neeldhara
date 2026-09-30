@@ -617,7 +617,7 @@ ROOMS = [
      'duct, full-height racks on three walls, a loft over the whole room at 2500, '
      'its own door off the gallery.'),
     ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
-     'Stone', 'From the great room’s door east along the strip to the WC’s curved door, the basin in a curved console on the arc’s outer face; walled off help’s room. A loft over it at 2300.'),
+     'Stone', 'From the great room’s door east along the strip to the WC’s curved door, the basin in a console along its south wall, square in front of the door; walled off help’s room. A loft over it at 2300.'),
     ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
      'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.'),
 ]
@@ -1088,9 +1088,9 @@ def emit_fixtures():
     van = outline_of(R.wc_console())
     if van:
         a, b, c, d = bbox_of(R.wc_console())
-        # in the PASSAGE, on the arc's outer face — outside the wet room
+        # in the PASSAGE, along its south wall, the bowl in front of the door
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-WC-PASS', 'STK-GUEST', 'Curved console on the arc, 300 bowl', poly=van,
+            'R-WC-PASS', 'STK-GUEST', 'Console on the south wall, 300 bowl in front of the door', poly=van,
             bowl=bowl_of(R.wc_console()))
 
     # the bath wall cabinet at the west end of each sweep — same face as the

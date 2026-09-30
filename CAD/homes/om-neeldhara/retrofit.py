@@ -16,6 +16,7 @@ import sys
 import numpy as np
 
 import clash as C
+import immovables as IMM
 import design as D
 import frame
 
@@ -85,6 +86,23 @@ def keep_demo():
     # THE VOID STORES' DOORS: a 700 cut through each void's north enclosure,
     # on to the deck walk — the recliners back on to the east/west faces, so
     # the north face is the only one with clear deck in front of it.
+    # THE RECLAIMED DUCTS' ENCLOSURES come down: a shell segment inside one of
+    # the demolition boxes by x, starting at or below the duct's north wall and
+    # reaching below it, goes to demo
+    def reclaimed(x1, y1, x2, y2):
+        L = math.hypot(x2 - x1, y2 - y1) or 1.0
+        for a, b, c, d in getattr(IMM, 'RECLAIM_DEMO', []):
+            ix = max(0.0, min(max(x1, x2), c) - max(min(x1, x2), a))
+            iy = max(0.0, min(max(y1, y2), d) - max(min(y1, y2), b))
+            inside = ix if abs(x2 - x1) >= abs(y2 - y1) else iy
+            if (min(x1, x2) >= a - 1 and max(x1, x2) <= c + 1 if abs(x2 - x1) < abs(y2 - y1)
+                    else min(y1, y2) >= b - 1 and max(y1, y2) <= d + 1) and inside > 0.6 * L:
+                return True
+        return False
+    keep2 = []
+    for seg in keep:
+        (demo.append(seg) if reclaimed(*seg) else keep2.append(seg))
+    keep = keep2
     out = []
     for x1, y1, x2, y2 in keep:
         for gx0, gx1 in D.VOID_DOORS:
@@ -156,6 +174,13 @@ def pod_polys():
                 + [(bez_x(D.POD_W, D.BODY_S), D.BODY_S), (D.DUCT_W1 + 150, D.BODY_S),
                    (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
     den = [(2 * D.MID - x, y) for x, y in fam_full]
+    # ...plus the RECLAIMED east secondary duct (Karan's call, with the
+    # builder's word): its north wall is gone and the den runs south into it,
+    # between the WC's wall and the main duct's cheek, to the builder's
+    # 1495 x 230 block on its south side
+    i = den.index((D.MID * 2 - (D.DUCT_W1 + 150), D.BODY_S))
+    den[i:i + 1] = [(17580, D.BODY_S), (17580, 9320), (2 * D.MID - (D.DUCT_W1 + 150), 9320),
+                    (2 * D.MID - (D.DUCT_W1 + 150), D.BODY_S)]
     # The great room's south edge is not one straight line any more: the
     # kitchen's bump takes a 300 bite out of its western half, from the pod
     # glazing across to the apse.  Nothing comes out of the eastern half — the
@@ -1917,9 +1942,12 @@ def lobby_polys():
     # to apse, with the niche in front of the secondary duct inside it
     # ...and its east side is the 2725 column from Y 8400 down, the apse
     # above it carrying the west service door
+    # ...and the RECLAIMED secondary duct (Karan's call, with the builder's
+    # word): its floor is the kitchen's, from the family wall's south face
+    # down to the utility end, the duct's east and south walls gone
     kitchen = ([(kw, D.KIT_S)] + _gal_arc(ro, D._BN0K, D._ACW)
                + [(D.GAL_W, D.COL_N_W), (D.GAL_W, D.BAY_S), (kw, D.BAY_S),
-                  (kw, 11025), (5705, 11025), (5705, 9470), (kw, 9470)])
+                  (kw, 11025), (5705, 11025), (5705, 8550), (kw, 8550)])
     gallery = ([(iw, D.BAY_S), (iw, COL_N)] + _gal_arc(ri, D._A0, D._A1)
                + [(ie, COL_N), (ie, D.BAY_S)])
 

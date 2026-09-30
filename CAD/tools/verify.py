@@ -22,6 +22,12 @@ def main():
     bl = max(lay['DA_BUILDING LINE'], key=len)
     slab = C.blank()
     C.put_poly(slab, bl)
+    # the reclaimed secondary ducts are outside the builder's building line —
+    # open shafts have no slab — and are floored with his agreement, so they
+    # count as slab here
+    for name, x0, y0, x1, y1, kind in C.NAMED:
+        if kind == 'reclaimed duct':
+            C.put_rect(slab, x0, y0, x1, y1)
     cols = [('column', r) for r in C.rects(lay['DA_COLUMN'])] + \
            [('beam', r) for r in C.beam_rects()]
 
@@ -50,6 +56,10 @@ def main():
     for name, x0, y0, x1, y1, kind in C.NAMED:
         if kind == 'void store':
             print(f'  n/a   {name:28s} {kind:11s} floored as a store, '
+                  f'with the builder\'s agreement')
+            continue
+        if kind == 'reclaimed duct':
+            print(f'  n/a   {name:28s} {kind:14s} reclaimed into the room beside it, '
                   f'with the builder\'s agreement')
             continue
         m = C.blank()

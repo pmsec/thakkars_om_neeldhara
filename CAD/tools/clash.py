@@ -56,7 +56,9 @@ mirror = IMM.mirror
 NAMED = IMM.NAMED
 # A 'void store' is a builder zone the design IS allowed to floor: the two
 # retained deck voids, with the builder's agreement, as bulk storage.
-NO_FLOOR = [z for z in NAMED if z[5] != 'void store']
+# ...and a 'reclaimed duct' likewise: a secondary duct the builder has released,
+# floored into the room beside it.
+NO_FLOOR = [z for z in NAMED if z[5] not in ('void store', 'reclaimed duct')]
 COMMON = IMM.COMMON
 
 

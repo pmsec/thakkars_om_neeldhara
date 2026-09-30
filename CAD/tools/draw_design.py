@@ -241,6 +241,11 @@ def main():
     for piece in flat_pieces:
         if len(piece) >= 3:
             s.poly(piece, fill=SLAB, stroke='none')
+    # the reclaimed secondary ducts are outside the builder's building line —
+    # a shaft has no slab — and get one with his agreement: slab here too
+    for name, a, b, c, d, kind in C.NAMED:
+        if kind == 'reclaimed duct':
+            s.rect(a, b, c, d, fill=SLAB, stroke='none')
     for a, b in zip(bl, bl[1:] + bl[:1]):
         for seg in (clip_seg(a, b, None, None, None, FLAT_S),
                     clip_seg(a, b, None, FLAT_S, WEST_BAY_E, WEST_BAY_S)):
@@ -281,6 +286,8 @@ def main():
     # -------------------------------------------------- keep-clear zones
     s.begin_layer('keepclear')
     for name, a, b, c, d, kind in C.NAMED:
+        if kind == 'reclaimed duct':      # floored into the room beside it: drawn later, minimally
+            continue
         s.rect(a, b, c, d, fill='#ffffff', stroke=KEEP, stroke_width=2.2,
                stroke_dasharray='9 6')
         if kind == 'void store':          # floored, with the builder's agreement: outline only
@@ -444,6 +451,16 @@ def main():
     for leaf, arc in portal_doors:        # the pod portals' pull doors, open into the great room
         s.poly(leaf, fill='#dde7ea', stroke=GLAS, stroke_width=1.0)
         s.path(arc, FURN, 0.8)
+    # the reclaimed secondary ducts: a thin dashed outline and a small note,
+    # nothing more (Karan's call) — the floor is the room's now
+    for name, a, b, c, d, kind in C.NAMED:
+        if kind != 'reclaimed duct':
+            continue
+        s.rect(a, b, c, d, fill='none', stroke='#b0a89c', stroke_width=0.9,
+               stroke_dasharray='6 5')
+        s.o.append(f'<text x="{s.X((a + c) / 2):.1f}" y="{s.Y((b + d) / 2) + 4:.1f}" '
+                   f'font-size="10" fill="#9a9184" text-anchor="middle" letter-spacing="1" '
+                   f'font-family="Helvetica,Arial,sans-serif" data-keep="1">RECLAIMED DUCT</text>')
     for p in R.east(R.arch_console):    # Karan's console — drawn in his frame, mirrored
         prim(p)
     for p in R.suite_screen():                  # Karan's dressing screen

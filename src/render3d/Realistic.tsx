@@ -5767,10 +5767,23 @@ export function buildFixtures(M: Mats): THREE.Group {
         bowl.position.set(f.bowl.x * S, (h + 40 + 70) * S, f.bowl.y * S)
         bowl.castShadow = true
         g.add(bowl)
-        // toward the wall: away from the room's centre
+        // toward the wall: the one the bowl sits against when there is one
+        // within 200 (the guest WC's passage console backs on to the south
+        // wall while the room's centre lies east of it), else away from the
+        // room's centre
         const room = model.roomById.get(f.room)
-        const dx = f.bowl.x - (room?.centroid.x ?? f.bowl.x)
-        const dy = f.bowl.y - (room?.centroid.y ?? f.bowl.y)
+        let dx = f.bowl.x - (room?.centroid.x ?? f.bowl.x)
+        let dy = f.bowl.y - (room?.centroid.y ?? f.bowl.y)
+        let mirOff = f.bowl.r + 200                      // the mirror's plane, out from the bowl's centre
+        {
+          const bg = wallGaps({ x: f.bowl.x - f.bowl.r, y: f.bowl.y - f.bowl.r, w: 2 * f.bowl.r, d: 2 * f.bowl.r } as unknown as FurnitureItem)
+          const near = (['N', 'S', 'E', 'W'] as const).reduce((b, k) => (bg[k] < bg[b] ? k : b), 'N' as 'N' | 'S' | 'E' | 'W')
+          if (bg[near] <= 200) {
+            dx = near === 'E' ? 1 : near === 'W' ? -1 : 0
+            dy = near === 'S' ? 1 : near === 'N' ? -1 : 0
+            mirOff = f.bowl.r + bg[near] - 14            // on the wall's face, not inside it
+          }
+        }
         const L = Math.hypot(dx, dy) || 1
         const ux = dx / L
         const uy = dy / L
@@ -5786,12 +5799,16 @@ export function buildFixtures(M: Mats): THREE.Group {
         // from bathMirrors; this flat one, aimed from the room's centre, went
         // clean through the parents' turned-over arch and stood out in the suite
         if (f.poly && /vanity/i.test(f.label ?? '')) continue
-        const mirW = Math.min(700, f.bowl.r * 3.4)
+        // ...and a straight console's is LANDSCAPE over the bowl (Karan's
+        // sketch for the guest WC's passage): 900 x 600, its foot 250 over the rim
+        const landscape = /console/i.test(f.label ?? '')
+        const mirW = landscape ? 900 : Math.min(700, f.bowl.r * 3.4)
+        const mirH = landscape ? 600 : 700
         const mir = new THREE.Group()
-        mir.add(box(mirW + 60, 760, 20, M.trunk, 0, 0, 0))
-        mir.add(box(mirW, 700, 24, M.mirror, 0, 0, 0))
+        mir.add(box(mirW + 60, mirH + 60, 20, M.trunk, 0, 0, 0))
+        mir.add(box(mirW, mirH, 24, M.mirror, 0, 0, 0))
         mir.rotation.y = -Math.atan2(uy, ux) + Math.PI / 2
-        mir.position.set((f.bowl.x + ux * (f.bowl.r + 200)) * S, 1550 * S, (f.bowl.y + uy * (f.bowl.r + 200)) * S)
+        mir.position.set((f.bowl.x + ux * mirOff) * S, 1550 * S, (f.bowl.y + uy * mirOff) * S)
         g.add(mir)
       }
       continue

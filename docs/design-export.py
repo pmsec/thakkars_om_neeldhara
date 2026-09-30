@@ -239,7 +239,10 @@ WALLS += [
     w('W-WC-PASS-W', [(D.WC_PASS_W, 8462.5), (D.WC_PASS_W, D.WC_PASS_S)], 150, 'interior',
       notes="The WC passage's west wall, on the great-room door's west jamb."),
     # ...ending on the block's own centreline, so the graph closes there
+    # ...carrying help's room's door, east of the basin console
     w('W-WC-PASS-S', [(D.WC_PASS_W, D.WC_PASS_S), (D.WC_CX, D.WC_PASS_S), (D.WC_CX, 9435)], 150, 'interior',
+      [op('D-HELP-PASS', 'door', 15850 - D.WC_PASS_W, 16550 - D.WC_PASS_W,
+          label="Help's room — into the WC passage, hinged west, swings into help's room")],
       notes="The WC passage's south wall, on the line of the builder's block; the WC's arc foots on it."),
 ]
 
@@ -615,9 +618,9 @@ ROOMS = [
     ('R-HELP', "Help's room", (14700, 9200), 'habitable', 'service', True,
      'Vinyl', 'Live-in, with the store as its east end: one room. Bunk under the '
      'duct, full-height racks on three walls, a loft over the whole room at 2500, '
-     'its own door off the gallery.'),
+     'its own door off the gallery and a door into the WC passage.'),
     ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
-     'Stone', 'From the great room’s door east along the strip to the WC’s curved door, the basin in a console along its south wall, square in front of the door; walled off help’s room. A loft over it at 2300.'),
+     'Stone', 'From the great room’s door east along the strip to the WC’s curved door, the basin in a console along its south wall, square in front of the door; help’s room’s door in that wall east of it. A loft over it at 2300.'),
     ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
      'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.'),
 ]
@@ -1090,7 +1093,7 @@ def emit_fixtures():
         a, b, c, d = bbox_of(R.wc_console())
         # in the PASSAGE, along its south wall, the bowl in front of the door
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-WC-PASS', 'STK-GUEST', 'Console on the south wall, 300 bowl in front of the door', poly=van,
+            'R-WC-PASS', 'STK-GUEST', 'Console on the south wall, 300 bowl in front of the door, mirror over it', poly=van,
             bowl=bowl_of(R.wc_console()))
 
     # the bath wall cabinet at the west end of each sweep — same face as the
@@ -1179,7 +1182,10 @@ HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH', 'D-WC-HELP'}
 # which way a leaf swings off its hinge: +1 is the chord's left-hand side,
 # -1 its right.  Both service doors swing into the gallery, so nothing is
 # listed; the map stays for the day a door has to go the other way
-SWING_SIDE = {}
+# the guest WC's great-room door opens OUT into the great room (Karan's call,
+# and the sheet draws it so): -1 is the north side of a west-to-east wall;
+# help's door in the passage's south wall swings south into help's room
+SWING_SIDE = {'D-WC-GREAT': -1, 'D-HELP-PASS': 1}
 # the two west-frame bath doors hinge at the SOUTH jamb and swing INTO the bath
 # (retrofit.mb_door, hinge='S'), so the grandmother's wardrobe can run to the jamb;
 # hinge 1 is the wall's second point, the south end of W-P-BATH-W

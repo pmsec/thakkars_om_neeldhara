@@ -176,7 +176,7 @@ export const building: BuildingData = {
       thickness: 125,
       kind: 'interior',
       openings: [
-        { id: 'D-WC-GREAT', type: 'door', at: [1320, 2120], head: 2100, hinge: 0, side: 1, label: 'Guest WC — from the great room, west of the pod glazing' },
+        { id: 'D-WC-GREAT', type: 'door', at: [1320, 2120], head: 2100, hinge: 0, side: -1, label: 'Guest WC — from the great room, west of the pod glazing' },
       ],
     },
     {
@@ -191,6 +191,9 @@ export const building: BuildingData = {
       points: [{ x: 14945, y: 9395 }, { x: 17430, y: 9395 }, { x: 17430, y: 9435 }],
       thickness: 150,
       kind: 'interior',
+      openings: [
+        { id: 'D-HELP-PASS', type: 'door', at: [905, 1605], head: 2100, hinge: 0, side: 1, label: "Help's room — into the WC passage, hinged west, swings into help's room" },
+      ],
       notes: "The WC passage's south wall, on the line of the builder's block; the WC's arc foots on it.",
     },
     {
@@ -773,15 +776,15 @@ export const building: BuildingData = {
     { id: 'R-DUCT-E', name: 'Main service duct (east)', anchor: { x: 19400, y: 6900 }, category: 'void', zone: 'core', carpet: false, finish: 'Riser', notes: 'The den’s corner units back on to it; the secondary duct beside it is reclaimed into the den.' },
     { id: 'R-KITCHEN', name: 'Kitchen', anchor: { x: 7800, y: 10000 }, category: 'wet', zone: 'service', carpet: true, finish: 'Stone', publishedSqFt: 155, notes: 'One working room, kitchen and utility together; hatch to the family room. The secondary duct is reclaimed into it, with the builder’s agreement.' },
     { id: 'R-ENTRY', name: 'Entry gallery', anchor: { x: 12240, y: 10000 }, category: 'circulation', zone: 'shared', carpet: true, finish: 'Stone', publishedSqFt: 101, notes: 'The drum: a U of 230 walls on the two columns, curved doors sliding on the arc, console and two chairs, sconces at the arc centres.' },
-    { id: 'R-HELP', name: "Help's room", anchor: { x: 14700, y: 9200 }, category: 'habitable', zone: 'service', carpet: true, finish: 'Vinyl', publishedSqFt: 77, notes: 'Live-in, with the store as its east end: one room. Bunk under the duct, full-height racks on three walls, a loft over the whole room at 2500, its own door off the gallery.' },
-    { id: 'R-WC-PASS', name: 'WC passage', anchor: { x: 15900, y: 8935 }, category: 'circulation', zone: 'shared', carpet: true, finish: 'Stone', notes: 'From the great room’s door east along the strip to the WC’s curved door, the basin in a console along its south wall, square in front of the door; walled off help’s room. A loft over it at 2300.' },
+    { id: 'R-HELP', name: "Help's room", anchor: { x: 14700, y: 9200 }, category: 'habitable', zone: 'service', carpet: true, finish: 'Vinyl', publishedSqFt: 77, notes: 'Live-in, with the store as its east end: one room. Bunk under the duct, full-height racks on three walls, a loft over the whole room at 2500, its own door off the gallery and a door into the WC passage.' },
+    { id: 'R-WC-PASS', name: 'WC passage', anchor: { x: 15900, y: 8935 }, category: 'circulation', zone: 'shared', carpet: true, finish: 'Stone', notes: 'From the great room’s door east along the strip to the WC’s curved door, the basin in a console along its south wall, square in front of the door; help’s room’s door in that wall east of it. A loft over it at 2300.' },
     { id: 'R-GUEST-BATH', name: 'Guest / service WC', anchor: { x: 18200, y: 8935 }, category: 'wet', zone: 'shared', carpet: true, finish: 'Stone', notes: 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.' },
   ],
 
   stacks: [
     { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3745.92, y: 2748.616 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures; the stack is in the builder’s toilet void north of the bath, reached through his 750 opening — confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'At the centroid of his bath’s plumbed fixtures, on the east main duct.' },
-    { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 17558.521, y: 8710 }, room: 'R-GUEST-BATH', provenance: 'On the main service duct, the WC’s east wall — the pan and the floor trap drain straight into the shaft.' },
+    { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 17415, y: 8710 }, room: 'R-GUEST-BATH', provenance: 'On the main service duct, the WC’s east wall — the pan and the floor trap drain straight into the shaft.' },
     { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3696.667, y: 7964 }, room: 'R-G-BATH', provenance: 'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7988.333, y: 9825 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],

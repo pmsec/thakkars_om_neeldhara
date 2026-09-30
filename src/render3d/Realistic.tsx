@@ -2298,9 +2298,14 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
         bell.position.set(px * S, (h + 12) * S, py * S)
         g.add(bell)
       }
+      // the rubber mat the kit stands on: the footprint itself, 10 thick
+      g.add(box(w, 10, d, M.gasket, cx, 5, cy))
       const throne = parts.find((p) => p.role === 'throne')
       const toms = parts.filter((p) => p.role === 'tom')
       for (const p of parts) {
+        // every stand's tripod reaches as far as the drawn circle, no further:
+        // on the compact kit the throne and the crashes sit at the mat's edge
+        const reach = Math.min(260, p.r * 0.95)
         switch (p.role) {
           case 'kick': {
             // the kick pad stands upright, its face to the drummer (toward the throne)
@@ -2340,7 +2345,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
             post(p.x, p.y, 0, 940, 12)
             for (let k = 0; k < 3; k++) {
               const a = (k / 3) * Math.PI * 2
-              tube(p.x, p.y, 420, p.x + Math.sin(a) * 260, p.y + Math.cos(a) * 260, 0, 8)
+              tube(p.x, p.y, 420, p.x + Math.sin(a) * reach, p.y + Math.cos(a) * reach, 0, 8)
             }
             cymbal(p.x, p.y, p.r, 900, 0)
             cymbal(p.x, p.y, p.r, 940, 0.06)
@@ -2359,8 +2364,10 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
           case 'throne':
             post(p.x, p.y, 0, 520, 20)
             for (let k = 0; k < 3; k++) {
+              // the tripod's reach follows the drawn circle: on the compact kit the
+              // throne is at the mat's back edge and its legs must stay on the mat
               const a = (k / 3) * Math.PI * 2
-              tube(p.x, p.y, 300, p.x + Math.sin(a) * 260, p.y + Math.cos(a) * 260, 0, 9)
+              tube(p.x, p.y, 300, p.x + Math.sin(a) * reach, p.y + Math.cos(a) * reach, 0, 9)
             }
             {
               const seat = new THREE.Mesh(new THREE.CylinderGeometry(p.r * 0.68 * S, p.r * 0.62 * S, 80 * S, 24), M.fabricDark)

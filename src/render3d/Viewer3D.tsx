@@ -976,13 +976,17 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
     case 'basket':
       cyl(Math.min(w, d) / 2 - 10, Math.min(f.height, 620), MAT.furniture, 0, Math.min(f.height, 620) / 2, 0, 18)
       break
-    case 'drumkit':
-      cyl(Math.min(w, d) * 0.28, 500, MAT.furniture, 0, 250, d * 0.1, 20)
-      cyl(190, 300, MAT.furniture, -w * 0.26, 620, -d * 0.1, 16)
-      cyl(190, 300, MAT.furniture, w * 0.02, 640, -d * 0.2, 16)
-      cyl(240, 40, MAT.mullion, -w * 0.3, 980, d * 0.16, 16)
-      cyl(260, 40, MAT.mullion, w * 0.28, 1020, -d * 0.26, 16)
+    case 'drumkit': {
+      // everything in proportion to the footprint (the kit's 4 x 3 ft mat),
+      // so no drum or cymbal reaches past it
+      const u = Math.min(w, d)
+      cyl(u * 0.2, 500, MAT.furniture, 0, 250, d * 0.1, 20)
+      cyl(u * 0.12, 300, MAT.furniture, -w * 0.2, 620, -d * 0.1, 16)
+      cyl(u * 0.12, 300, MAT.furniture, w * 0.02, 640, -d * 0.2, 16)
+      cyl(u * 0.15, 40, MAT.mullion, -w * 0.3, 980, d * 0.16, 16)
+      cyl(u * 0.15, 40, MAT.mullion, w * 0.28, 1020, -d * 0.26, 16)
       break
+    }
     case 'guitar':
       cyl(30, 950, MAT.furniture, 0, 475, 0, 8)
       g.add(sphere(190, MAT.wood, 0, 340, 0, clip))

@@ -1420,19 +1420,20 @@ def emit_furniture():
     # The drum kit ships every drawn circle - pads, cymbals, throne - as parts,
     # each with a role read off its style and size, so the 3D builds the real
     # kit on the sheet's own layout. The footprint takes the cymbals in too.
+    # ...and its 4 x 3 ft mat (a dashed rectangle) is the footprint
     kit = R.drum_kit()
-    ROLE = {('soft', 250): 'throne', ('solid', 175): 'snare', ('solid', 280): 'kick',
-            ('solid', 150): 'tom', ('solid', 215): 'floortom',
-            ('light', 175): 'hihat', ('light', 250): 'ride', ('light', 210): 'crash'}
-    kb = bbox_of(kit, ('solid', 'soft', 'light'))
+    ROLE = {('soft', 170): 'throne', ('solid', 140): 'snare', ('solid', 180): 'kick',
+            ('solid', 110): 'tom', ('solid', 150): 'floortom',
+            ('light', 120): 'hihat', ('light', 150): 'ride', ('light', 140): 'crash'}
+    kb = bbox_of(kit, ('solid', 'soft', 'light', 'dash'))
     if kb:
         a, b, c, d = kb
-        parts = [(px, py, r, ROLE.get((st, int(round(r))), 'pad'))
-                 for (_, px, py, r, st) in kit]
+        parts = [(p_[1], p_[2], p_[3], ROLE.get((p_[4], int(round(p_[3]))), 'pad'))
+                 for p_ in kit if p_[0] == 'circle']
         seen['FN-DRUMKIT'] = seen.get('FN-DRUMKIT', 0) + 1
         fid = f"FN-DRUMKIT-{seen['FN-DRUMKIT']}"
         items.append((fid, 'drumkit', a, b, c - a, d - b, 'R-K-DEN',
-                      'Electronic drum kit, Roland TD-27', 1300, None, None, None, 0,
+                      'Electronic drum kit, Roland TD-27, on its 4 x 3 ft mat', 1300, None, None, None, 0,
                       parts))
         EXPORTED.append((fid, (a, b, c, d), None))
     # corner units piece by piece, each with its TRUE drawn polygon — the

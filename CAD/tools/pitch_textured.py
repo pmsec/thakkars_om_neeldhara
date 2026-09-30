@@ -207,7 +207,7 @@ def main():
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
         for q in wall_quads(x1, y1, x2, y2, t, ops):
             s.poly(q, fill=NEWW, stroke='none')
-    for q in R.wc_wall():
+    for q in R.wc_wall() + R.sh_wall() + R.pass_corner():
         s.poly(q, fill=NEWW, stroke='none')
     for q in R.mb_wall() + R.east_polys(R.mb_wall) + R.gm_wall():
         s.poly(q, fill=NEWW, stroke='none')

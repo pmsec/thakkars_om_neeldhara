@@ -358,7 +358,7 @@ def main():
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
         for q in wall_quads(x1, y1, x2, y2, t, ops):
             s.poly(q, fill=NEWW, stroke='none')
-    for q in R.wc_wall() + R.sh_wall():  # the guest WC's arc and shower apse — same masonry
+    for q in R.wc_wall() + R.sh_wall() + R.pass_corner():  # the WC's shower apse, the passage's rounded corner — same masonry
         s.poly(q, fill=NEWW, stroke='none')
     for q in R.mb_wall() + R.east_polys(R.mb_wall) + R.gm_wall():   # the three sweeps
         s.poly(q, fill=NEWW, stroke='none')

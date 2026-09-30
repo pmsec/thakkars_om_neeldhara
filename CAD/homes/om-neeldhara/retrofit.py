@@ -955,6 +955,22 @@ def sh_wall():
     return [[sh_pt(u, -h) for u in us] + [sh_pt(u, h) for u in reversed(us)]]
 
 
+def _pass_corner(r, n=24, a0=180, a1=90):
+    """The passage's rounded south-west corner at radius r about its centre,
+    from the west wall (180 deg) round to the south wall (90 deg)."""
+    cx, cy = D.WC_PASS_W + D.PASS_R, D.WC_PASS_S - D.PASS_R
+    return [(cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a)))
+            for a in np.linspace(a0, a1, n)]
+
+
+def pass_corner():
+    """The passage's south-west corner as one filled band, rounded (Karan's
+    call): the west and south walls stop short of it and this quarter ring
+    joins them, 375 on the face help's room sees, 225 inside."""
+    h = D.T_INT / 2
+    return [_pass_corner(D.PASS_R + h) + list(reversed(_pass_corner(D.PASS_R - h)))]
+
+
 def wc_console(dep=300, x_end=15800, bowl_x=None):
     """The basin console in the PASSAGE (Karan's sketch): a straight run along
     the passage's south wall from its west wall, the bowl at the west end,
@@ -968,7 +984,9 @@ def wc_console(dep=300, x_end=15800, bowl_x=None):
     the great room; the WC's own flat door is at the passage's east end."""
     xw = D.WC_PASS_W + D.T_INT / 2                      # the west wall's inner face
     ys, yf = D.WC_PASS_S - D.T_INT / 2, D.WC_PASS_S - D.T_INT / 2 - dep   # the south wall's face, the front
-    band = [(xw, ys), (xw, yf), (x_end, yf), (x_end, ys)]
+    # its back corner follows the passage's rounded inside corner
+    band = ([(xw, yf), (xw, D.WC_PASS_S - D.PASS_R)] + _pass_corner(D.PASS_R - D.T_INT / 2)
+            + [(x_end, ys), (x_end, yf)])
     if bowl_x is None:
         bowl_x = (15020 + 15820) / 2                     # the great-room door's centre
     return [('poly', band, 'solid'), ('circle', bowl_x, (ys + yf) / 2, 150, 'light')]
@@ -1989,7 +2007,8 @@ def lobby_polys():
     pw, ps = D.WC_PASS_W - t, D.WC_PASS_S + t
     helps = ([(pw, D.BAY_N)] + _gal_arc(ro, D._BN1, D._A1)
              + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (18825, D.BAY_S),
-                (18825, 9550), (D.WC_CX, 9550), (D.WC_CX, ps), (pw, ps)])
+                (18825, 9550), (D.WC_CX, 9550), (D.WC_CX, ps)]
+             + _pass_corner(D.PASS_R + t, a0=90, a1=180))       # the rounded corner
     # the WC: the strip on the main duct, from its west wall's inner face
     # (to the main duct wall's west face, 18775: the wall is 18775-18925)
     # ...and the shower apse north of the strip, inside the ellipse's inner face
@@ -1999,8 +2018,8 @@ def lobby_polys():
     # the passage: a straight run, the great-room door's west jamb to the
     # WC's west wall, the den's wall to the block's line
     xe = D.WC_CX - D.T_INT / 2
-    passage = [(D.WC_PASS_W + t, D.WC_DIE), (xe, D.WC_DIE), (xe, D.WC_PASS_S - t),
-               (D.WC_PASS_W + t, D.WC_PASS_S - t)]
+    passage = ([(D.WC_PASS_W + t, D.WC_DIE), (xe, D.WC_DIE), (xe, D.WC_PASS_S - t)]
+               + _pass_corner(D.PASS_R - t, a0=90, a1=180))     # the rounded corner
     return kitchen, helps, gallery, wc, passage
 
 
@@ -2324,6 +2343,6 @@ def design_masks():
                    cy + math.sin(rad) * (r - t / 2) - C.CELL,
                    cx + math.cos(rad) * (r + t / 2) + C.CELL,
                    cy + math.sin(rad) * (r + t / 2) + C.CELL)
-    for q in wc_wall() + mb_wall() + east_polys(mb_wall) + gm_wall():
+    for q in wc_wall() + sh_wall() + pass_corner() + mb_wall() + east_polys(mb_wall) + gm_wall():
         C.put_poly(wl, q)
     return fl, wl, keep_wall_mask()

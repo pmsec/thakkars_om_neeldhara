@@ -407,6 +407,8 @@ WC_DIE = WC_CY - WC_B              # 8550, on the den's wall
 WC_DOOR_Y = (8580, 9280)           # the flat door: the den-wall jamb (hinge) to the block jamb
 WC_PASS_W = 14945                  # the passage's west wall, on the great-room door's west jamb
 WC_PASS_S = 9395                   # its south wall, on the block's line
+PASS_R = 300                       # its south-west corner, rounded (Karan's call): on the centreline,
+                                   # 375 on the outer face in help's room, 225 inside
 # the shower apse: a quarter ellipse struck from the den's south-east corner,
 # its foot on the WC's west corner (the arc's own x) and its apex on the main
 # duct wall, bulging north-west into the den
@@ -519,14 +521,15 @@ NEW_WALLS = [
     # the WC's passage: its west wall on the great-room door's west jamb, its
     # south wall on the block's line, running to the WC's west wall; its
     # north wall is the den's
-    (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S + T_INT / 2, T_INT, []),
+    # (both stop short of the corner, which retrofit.pass_corner rounds)
+    (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S - PASS_R, T_INT, []),
     # ...with HELP'S ROOM'S DOOR in it (Karan's call): 700 at X 15850-16550,
     # east of the basin console, swinging south
     # into help's room — help reaches the WC through the passage, not the
     # great room.  (The WC's other sides are the duct, the structural block
     # and the shower apse: the passage is the only way in.)
-    (WC_PASS_W - T_INT / 2, WC_PASS_S, WC_CX, WC_PASS_S, T_INT,
-     [(15850 - (WC_PASS_W - T_INT / 2), 16550 - (WC_PASS_W - T_INT / 2))]),
+    (WC_PASS_W + PASS_R, WC_PASS_S, WC_CX, WC_PASS_S, T_INT,
+     [(15850 - (WC_PASS_W + PASS_R), 16550 - (WC_PASS_W + PASS_R))]),
     # the WC's west wall, on x = WC_CX from the den's face to the block, the
     # shower apse springing off its north end; its FLAT DOOR in it, the whole
     # 770 of the strip bar the jambs.  (The duct wall east of it is demolished.)

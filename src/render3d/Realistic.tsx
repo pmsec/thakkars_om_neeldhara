@@ -23,7 +23,7 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { getModel } from '../geometry/model'
 import { pointInPolygon } from '../geometry/vec'
-import { barrelProfile, buildSolids } from '../geometry/solid'
+import { archRise, barrelProfile, buildSolids, type Prism } from '../geometry/solid'
 import polygonClipping from 'polygon-clipping'
 import { gableGeometry, gableJamb, vaultGeometry } from './canopy'
 import { EXTRUDED_KINDS, renderFootprints } from '../geometry/fidelity'
@@ -552,6 +552,134 @@ function box(
   m.castShadow = true
   m.receiveShadow = true
   return m
+}
+
+// ------------------------------------------------- arches and soft edges
+/**
+ * The outline of a round-headed leaf or panel: x from 0 to L, straight sides
+ * up to H, then the arch rising `rise` over the head - a semicircle when rise
+ * is half the width, the flatter segment otherwise. `inset` pulls the sides
+ * and the arc in (concentric), `insetBottom` the foot, for a frame's hole or
+ * the pane inside it.
+ */
+function archShape(L: number, H: number, rise: number, inset = 0, insetBottom = 0): THREE.Shape {
+  const sh = new THREE.Shape()
+  const x0 = inset, x1 = L - inset, y0 = insetBottom
+  if (rise <= 2) {
+    sh.moveTo(x0, y0); sh.lineTo(x1, y0); sh.lineTo(x1, H - inset); sh.lineTo(x0, H - inset); sh.closePath()
+    return sh
+  }
+  const a = L / 2, cx = L / 2
+  const Rc = (rise * rise + a * a) / (2 * rise)
+  const cy = H + rise - Rc
+  const R = Rc - inset
+  const ys = cy + Math.sqrt(Math.max(0, R * R - (a - inset) * (a - inset)))
+  sh.moveTo(x0, y0)
+  sh.lineTo(x1, y0)
+  sh.lineTo(x1, ys)
+  sh.absarc(cx, cy, R, Math.atan2(ys - cy, x1 - cx), Math.atan2(ys - cy, x0 - cx), false)
+  sh.lineTo(x0, y0)
+  sh.closePath()
+  return sh
+}
+/** A round-headed slab, T thick, its shape's origin at (x, y, z), centred on z. */
+function archedSlab(L: number, H: number, rise: number, T: number, mat: THREE.Material, x = 0, y = 0, z = 0, hole?: { inset: number; insetBottom: number }, outline?: { inset: number; insetBottom: number }): THREE.Mesh {
+  const sh = archShape(L, H, rise, outline?.inset ?? 0, outline?.insetBottom ?? 0)
+  if (hole) sh.holes.push(archShape(L, H, rise, hole.inset, hole.insetBottom))
+  const geo = new THREE.ExtrudeGeometry(sh, { depth: T, bevelEnabled: false, curveSegments: 24 })
+  geo.translate(0, 0, -T / 2)
+  geo.scale(S, S, S)
+  const m = new THREE.Mesh(geo, mat)
+  m.position.set(x * S, y * S, z * S)
+  m.castShadow = true
+  m.receiveShadow = true
+  return m
+}
+/** The height of a leaf's arched top at `x` along it: 0 at the springing, `rise` at the crown. */
+function archY(x: number, L: number, rise: number): number {
+  if (rise <= 2) return 0
+  const a = L / 2, Rc = (rise * rise + a * a) / (2 * rise)
+  return Math.max(0, Math.sqrt(Math.max(0, Rc * Rc - (x - a) * (x - a))) - (Rc - rise))
+}
+/**
+ * SOFT EDGES (Karan's call): every corner of a wall's plan outline - the ends
+ * at a jamb, an outside corner - filleted at radius r, so the vertical edges
+ * read as soft curves. A vertex on a smooth run (a bend under 8 degrees) is
+ * left alone; a corner whose edges are too short takes what they allow.
+ */
+function roundedPolygon(poly: { x: number; y: number }[], r: number): { x: number; y: number }[] {
+  const n = poly.length
+  if (n < 3) return poly
+  const out: { x: number; y: number }[] = []
+  for (let i = 0; i < n; i++) {
+    const p = poly[i], a = poly[(i + n - 1) % n], b = poly[(i + 1) % n]
+    const e1 = { x: a.x - p.x, y: a.y - p.y }, e2 = { x: b.x - p.x, y: b.y - p.y }
+    const l1 = Math.hypot(e1.x, e1.y), l2 = Math.hypot(e2.x, e2.y)
+    if (l1 < 1 || l2 < 1) { out.push(p); continue }
+    const cos = (e1.x * e2.x + e1.y * e2.y) / (l1 * l2)
+    const turn = Math.PI - Math.acos(Math.max(-1, Math.min(1, cos)))
+    const d = Math.min(r, l1 / 2 - 0.5, l2 / 2 - 0.5)
+    if (turn < (8 * Math.PI) / 180 || d < 6) { out.push(p); continue }
+    const t1 = { x: p.x + (e1.x / l1) * d, y: p.y + (e1.y / l1) * d }
+    const t2 = { x: p.x + (e2.x / l2) * d, y: p.y + (e2.y / l2) * d }
+    const K = 5
+    for (let k = 0; k <= K; k++) {
+      const u = k / K, v = 1 - u
+      out.push({ x: v * v * t1.x + 2 * u * v * p.x + u * u * t2.x, y: v * v * t1.y + 2 * u * v * p.y + u * u * t2.y })
+    }
+  }
+  return out
+}
+/**
+ * A door's arched lintel as one piece: the plan band the solids give it,
+ * stood up as a vertical extrusion with the arch cut out of its underside,
+ * its edges bevelled soft. With `fanlight`, the tympanum is tinted glass on a
+ * slim walnut rail, for an opening whose leaves stay flat (the sliders).
+ */
+function archedLintel(p: Prism, mat: THREE.Material, M: Mats): THREE.Group | null {
+  const pts = p.polygon
+  const n = pts.length
+  if (n < 4 || !p.archProfile) return null
+  const half = n / 2
+  const a = pts[0], b = pts[half - 1]
+  const cx = (a.x + b.x + pts[half].x + pts[n - 1].x) / 4, cy = (a.y + b.y + pts[half].y + pts[n - 1].y) / 4
+  const w = Math.hypot(b.x - a.x, b.y - a.y)
+  const th = Math.hypot(pts[n - 1].x - a.x, pts[n - 1].y - a.y)
+  if (w < 60 || th < 10) return null
+  const ux = (b.x - a.x) / w, uy = (b.y - a.y) / w
+  const base = p.base, top = p.top, rise = Math.min(p.archProfile.rise, top - base - 40)
+  const hw = w / 2, Rc = (rise * rise + hw * hw) / (2 * rise), acy = base + rise - Rc
+  const aL = Math.atan2(base - acy, -hw), aR = Math.atan2(base - acy, hw)
+  const g = new THREE.Group()
+  const sh = new THREE.Shape()
+  sh.moveTo(-hw, top)
+  sh.lineTo(-hw, base)
+  sh.absarc(0, acy, Rc, aL, aR, true)
+  sh.lineTo(hw, top)
+  sh.closePath()
+  const bt = Math.min(22, th / 4)
+  const geo = new THREE.ExtrudeGeometry(sh, { depth: th - 2 * bt, bevelEnabled: true, bevelThickness: bt, bevelSize: bt, bevelOffset: -bt, bevelSegments: 3, curveSegments: 32 })
+  geo.translate(0, 0, -(th - 2 * bt) / 2)
+  geo.scale(S, S, S)
+  const m = new THREE.Mesh(geo, mat)
+  m.castShadow = true
+  m.receiveShadow = true
+  g.add(m)
+  if (p.archProfile.fanlight) {
+    const fl = new THREE.Shape()
+    fl.moveTo(-hw, base)
+    fl.absarc(0, acy, Rc, aL, aR, true)
+    fl.lineTo(-hw, base)
+    fl.closePath()
+    const fg = new THREE.ExtrudeGeometry(fl, { depth: 12, bevelEnabled: false, curveSegments: 32 })
+    fg.translate(0, 0, -6)
+    fg.scale(S, S, S)
+    g.add(new THREE.Mesh(fg, M.tintGlass))
+    g.add(box(w, 40, Math.min(th, 60), M.wallWood, 0, base + 20, 0))
+  }
+  g.rotation.y = -Math.atan2(uy, ux)
+  g.position.set(cx * S, 0, cy * S)
+  return g
 }
 
 /** Model (x, y) to scene (x, +y): prismGeometry's shape negation and its
@@ -3356,11 +3484,11 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         const H = Math.min((op.head ?? 2400) - 20, ceiling - 40)
         const L = len - 12
         const leaf = new THREE.Group()
-        leaf.add(box(L - 90, H - 160, 10, M.tintGlass, L / 2 + 6, H / 2, 0))
-        leaf.add(box(L, 80, 34, M.wallWood, L / 2 + 6, 40, 0))
-        leaf.add(box(L, 80, 34, M.wallWood, L / 2 + 6, H - 40, 0))
-        leaf.add(box(45, H, 34, M.wallWood, 6 + 22, H / 2, 0))
-        leaf.add(box(45, H, 34, M.wallWood, L + 6 - 22, H / 2, 0))
+        // ROUND ON TOP (Karan's call): a walnut frame with an arched head, the
+        // tinted pane inside it, under the transom's matching arch
+        const rise = Math.max(0, archRise(len, op.head ?? 2400, ceiling) - 12)
+        leaf.add(archedSlab(L, H, rise, 34, M.wallWood, 6, 0, 0, { inset: 60, insetBottom: 80 }))
+        leaf.add(archedSlab(L, H, rise, 10, M.tintGlass, 6, 0, 0, undefined, { inset: 59, insetBottom: 79 }))
         // a tall brass pull bar near the free edge, both faces
         for (const sz of [-1, 1]) {
           const pull = new THREE.Mesh(new THREE.CylinderGeometry(7 * S, 7 * S, 600 * S, 12), M.brass)
@@ -3416,11 +3544,15 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
           const a = a0 + (a1 - a0) * (k / N)
           pts.push({ x: c.x + rl * Math.cos(a) - hingeAt.x, y: c.y + rl * Math.sin(a) - hingeAt.y })
         }
+        // round on top: each slab rises to the leaf's own arch at its place along it
+        const riseC = Math.max(0, archRise(len, op.head ?? model.data.levels.doorHead, ceiling) - 12)
+        const hAt = (k: number) => H + archY(((k - 0.5) / N) * len, len, riseC)
         for (let k = 1; k <= N; k++) {
           const p = pts[k - 1], q = pts[k]
           const sl = Math.hypot(q.x - p.x, q.y - p.y) + 3
-          const seg = box(sl, H, 45, M.wallWood)
-          seg.position.set(((p.x + q.x) / 2) * S, (H / 2) * S, ((p.y + q.y) / 2) * S)
+          const hk = hAt(k)
+          const seg = box(sl, hk, 45, M.wallWood)
+          seg.position.set(((p.x + q.x) / 2) * S, (hk / 2) * S, ((p.y + q.y) / 2) * S)
           seg.rotation.y = -Math.atan2(q.y - p.y, q.x - p.x)
           leaf.add(seg)
         }
@@ -3441,8 +3573,9 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
           const p = { x: c.x + c.r * Math.cos(a), y: c.y + c.r * Math.sin(a) }
           const q = { x: c.x + c.r * Math.cos(b2), y: c.y + c.r * Math.sin(b2) }
           const sl = Math.hypot(q.x - p.x, q.y - p.y) + 3
-          const over = box(sl, ceiling - H, TD, M.wallWood)
-          over.position.set(((p.x + q.x) / 2) * S, (H + (ceiling - H) / 2) * S, ((p.y + q.y) / 2) * S)
+          const hk = hAt(k) + 12                                          // the arch over the leaf's arch
+          const over = box(sl, ceiling - hk, TD, M.wallWood)
+          over.position.set(((p.x + q.x) / 2) * S, (hk + (ceiling - hk) / 2) * S, ((p.y + q.y) / 2) * S)
           over.rotation.y = -Math.atan2(q.y - p.y, q.x - p.x)
           g.add(over)
         }
@@ -3458,7 +3591,9 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
       }
       const glazed = w.kind === 'threshold' || w.kind === 'glazing'
       const leaf = new THREE.Group()
-      const body = box(leafLen, H, 40, glazed ? M.tintGlass : M.wallWood, leafLen / 2 + 6, H / 2, 0)
+      // ROUND ON TOP (Karan's call): the leaf's head follows the opening's arch, 12 under it
+      const riseF = Math.max(0, archRise(len, op.head ?? model.data.levels.doorHead, ceiling) - 12)
+      const body = archedSlab(leafLen, H, riseF, 40, glazed ? M.tintGlass : M.wallWood, 6, 0, 0)
       leaf.add(body)
       if (!glazed) {
         // two recessed panels, read as thin dark lines
@@ -5806,7 +5941,14 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
       : p.kind === 'screen' ? M.wallWood
       : galleryWood ? M.wallWood
       : wallMaterial() ?? M.plaster
-    const mesh = new THREE.Mesh(prismGeometry(p.polygon, p.base, p.top), mat)
+    // a door's arched head is one real arch, not a flat prism; every other
+    // wall piece gets its plan corners filleted, so its vertical edges are soft
+    if (p.archProfile && !/:arch:\d+$/.test(p.id)) {
+      const arch = archedLintel(p, mat, M)
+      if (arch) { root.add(arch); continue }
+    }
+    const soft = p.kind === 'wall-exterior' || p.kind === 'wall-interior' || p.kind === 'wall-partition' || p.kind === 'lintel' || p.kind === 'screen'
+    const mesh = new THREE.Mesh(prismGeometry(soft ? roundedPolygon(p.polygon, 30) : p.polygon, p.base, p.top), mat)
     mesh.castShadow = mat === M.plaster || mat === M.wallWood
     mesh.receiveShadow = true
     root.add(mesh)

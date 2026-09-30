@@ -46,6 +46,19 @@ export type SolidKind =
   | 'balustrade'
   | 'screen'
 
+/**
+ * THE ARCHED HEADS (Karan's call): every door, pod portal and the sliding
+ * partitions from the pods to the suites is round on top. The arch springs at
+ * the opening's head and rises a half-width - a semicircle - unless the
+ * ceiling is too close, when it is the segment that leaves 120 under the slab.
+ */
+export function archRise(width: number, head: number, ceiling: number): number {
+  return Math.max(0, Math.min(width / 2, ceiling - head - 120))
+}
+export function archedOpening(op: { type: string; head?: number }, ceiling: number): boolean {
+  return (op.type === 'door' || op.type === 'arch' || op.type === 'slider') && (op.head ?? 0) < ceiling - 60
+}
+
 export interface Prism {
   id: string
   kind: SolidKind
@@ -53,8 +66,11 @@ export interface Prism {
   polygon: Poly
   base: number
   top: number
-  /** Set for the arched portal head, whose underside is curved rather than flat. */
-  archProfile?: { springing: number; rise: number }
+  /** Set for an arched head, whose underside is curved rather than flat: the
+   *  gallery's portal (sliced, on its curve) and every door's lintel (one prism,
+   *  drawn as a real arch by the walkthrough). `fanlight` asks for a glazed
+   *  tympanum, for an opening whose leaves stay flat-topped (a slider). */
+  archProfile?: { springing: number; rise: number; fanlight?: boolean }
   wallId?: string
   transparent?: boolean
   /** Glass tint, carried from the wall so both renderers pick the same material. */
@@ -334,7 +350,12 @@ export function buildSolids(model: BuiltModel): SolidModel {
         // both states from the opening, so the static solid carries only the transom
         // above its head. A fixed pane here once left glass standing in an open portal.
         if (head < ceiling) {
+          const n0 = prisms.length
           pushRun(prisms, w, runPoints, accPts, from, to, head, ceiling, kind, solidThickness, transparent, ':transom')
+          if (archedOpening(op, ceiling)) {
+            const rise = archRise(to - from, head, ceiling)
+            for (let i = n0; i < prisms.length; i++) prisms[i].archProfile = { springing: head, rise, fanlight: op.type === 'slider' }
+          }
         }
         cursor = Math.max(cursor, to)
         continue
@@ -343,7 +364,12 @@ export function buildSolids(model: BuiltModel): SolidModel {
         pushRun(prisms, w, runPoints, accPts, from, to, 0, sill, kind, solidThickness, transparent, ':sill')
       }
       if (head < ceiling) {
+        const n0 = prisms.length
         pushRun(prisms, w, runPoints, accPts, from, to, head, ceiling, 'lintel', solidThickness, false, ':lintel')
+        if (archedOpening(op, ceiling)) {
+          const rise = archRise(to - from, head, ceiling)
+          for (let i = n0; i < prisms.length; i++) prisms[i].archProfile = { springing: head, rise, fanlight: op.type === 'slider' }
+        }
       }
       if (op.glass && op.type !== 'door') {
         // the pane the opening asks for, sill to head, a nominal 20 mm on the

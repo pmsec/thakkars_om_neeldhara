@@ -3094,7 +3094,7 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         // arc in a group pivoted at the hinge; open, the group turns 90 about
         // the hinge toward the swing side, like a flat leaf would.
         const c = op.curve
-        const TD = 230                                         // the drum's thickness (the threshold itself is 0 thick)
+        const TD = w.thickness > 0 ? w.thickness : 230          // the wall's thickness (a threshold is 0 thick: the drum's 230)
         const rl = c.r - TD / 2 + 24.5                         // the leaf's centreline radius: 45 thick, 2 off the inner face
         const a0 = Math.atan2(hingeAt.y - c.y, hingeAt.x - c.x)
         let a1 = Math.atan2(other.y - c.y, other.x - c.x)
@@ -3125,8 +3125,9 @@ export function hingedDoors(M: Mats, mode: 'open' | 'shut'): THREE.Group {
           leaf.add(pull)
         }
         // the fixed walnut panel over the door head, the drum's full 230, so
-        // the arch carries on above the leaf to the ceiling
-        for (let k = 1; k <= N; k++) {
+        // the arch carries on above the leaf to the ceiling — on a threshold
+        // only; a real wall builds its own lintel
+        for (let k = 1; k <= N && w.kind === 'threshold'; k++) {
           const a = a0 + (a1 - a0) * ((k - 1) / N), b2 = a0 + (a1 - a0) * (k / N)
           const p = { x: c.x + c.r * Math.cos(a), y: c.y + c.r * Math.sin(a) }
           const q = { x: c.x + c.r * Math.cos(b2), y: c.y + c.r * Math.sin(b2) }

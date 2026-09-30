@@ -103,7 +103,7 @@ ROOM_NAMES = {
     'R-GREAT': 'GREAT ROOM', 'R-DUCT-WM': 'MAIN SERVICE DUCT', 'R-DUCT-W': 'SECONDARY DUCT',
     'R-DEAD-W': 'DEAD SLAB', 'R-DUCT-E': 'MAIN SERVICE DUCT', 'R-DUCT-SE': 'SECONDARY DUCT / RISER',
     'R-KITCHEN': 'KITCHEN + UTILITY', 'R-ENTRY': 'ENTRY GALLERY', 'R-HELP': "HELP'S ROOM",
-    'R-GUEST-BATH': 'GUEST WC',
+    'R-GUEST-BATH': 'GUEST WC', 'R-WC-PASS': 'WC PASSAGE',
 }
 SHAFTS = {'R-SHAFT-W', 'R-SHAFT-E', 'R-DUCT-WM', 'R-DUCT-W', 'R-DUCT-E', 'R-DUCT-SE'}
 OUTDOOR_H = "11'-6\" to 20'-0\""          # under the glass vault: pod line to its crown
@@ -261,6 +261,14 @@ def main():
         lab = (f.get('label') or '').lower()
         if f['kind'] in ('counter', 'fridge', 'laundry') or (f['kind'] == 'basin' and f.get('poly')):
             pieces.append(f)
+    # a loft that is its whole room's outline says nothing the room's own label
+    # does not: only the lofts over a part of a room (the kitchen's strip) stay
+    room_poly = {r['id']: [(q['x'], q['y']) for q in r['polygon']] for r in data['rooms']}
+    def whole_room_loft(f):
+        if 'loft' not in (f.get('label') or '').lower() or f['room'] not in room_poly:
+            return False
+        return area(outline(f)) > 0.8 * area(room_poly[f['room']])
+    pieces = [f for f in pieces if not whole_room_loft(f)]
 
     # small pieces choose first — they have the fewest places to go — and the
     # big overhead lofts last, since they overlie what is under them

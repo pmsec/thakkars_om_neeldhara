@@ -228,16 +228,17 @@ WALLS += [
       notes='Door jamb to apse on the bump line.'),
     w('W-KIT-RET', [(6900, D.KIT_N + 62.5), (6900, 8462.5)], 150, 'interior',
       notes="The return that closes the kitchen's north-west corner, on the secondary duct cheek's line."),
-    # ...stopping at the WC's wall: east of it the secondary duct is RECLAIMED
-    # into the den (Karan's call, with the builder's agreement) and its north
-    # wall is gone, so the den runs south into it
-    w('W-HELP-N', [(13700, 8462.5), (17580, 8462.5)], 125, 'interior',
+    w('W-HELP-N', [(13700, 8462.5), (18850, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120,
           label='Guest WC — from the great room, west of the pod glazing')]),
-    w('W-STORE-W', [(17505, 8462.5), (17505, D.WC_DIE + D.T_WC / 2)], 150, 'interior',
-      notes="The secondary duct's west cheek. The partition that used to run south "
-            "from the apse at 16800 and split the store off help's room is gone: "
-            "the two are one room."),
+    # THE GUEST / SERVICE WC IS ON THE MAIN DUCT NOW (Karan's call): its
+    # passage's west wall on the great-room door's west jamb, its south wall
+    # on the builder's block line, running to the block
+    w('W-WC-PASS-W', [(D.WC_PASS_W, 8462.5), (D.WC_PASS_W, D.WC_PASS_S)], 150, 'interior',
+      notes="The WC passage's west wall, on the great-room door's west jamb."),
+    # ...ending on the block's own centreline, so the graph closes there
+    w('W-WC-PASS-S', [(D.WC_PASS_W, D.WC_PASS_S), (D.WC_CX, D.WC_PASS_S), (D.WC_CX, 9435)], 150, 'interior',
+      notes="The WC passage's south wall, on the line of the builder's block; the WC's arc foots on it."),
 ]
 
 # --- the entry gallery's two straight legs (230 thick, on the columns)
@@ -407,6 +408,10 @@ WALLS += [
 
 wcq = R.wc_wall()
 wc_line = sweep_centreline(wcq)
+# the arc's north end meets the den's wall TANGENTIALLY (the circle's top
+# point), so the tangent extension would run east along the wall instead of
+# into it: send it north into the wall so the graph closes there
+wc_line[-1] = (D.WC_CX, 8462.5 - 10)
 wc_len = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(wc_line, wc_line[1:]))
 
 
@@ -425,15 +430,17 @@ def _along(line, pt):
     return s
 
 
-# The apse carries ONE door, help's room's, exactly where the sheet takes it out
-# of the wall (D.WC_DOOR, a parameter range on the ellipse). The great room's
-# way into the WC is the 800 opening in the straight wall at y 8462.5.
+# The WC's arc carries its door, exactly where the sheet takes it out of the
+# wall (D.WC_DOOR, a parameter range on the circle): a curved walnut leaf,
+# hinged at the den-wall end, swinging out into the passage. The great room's
+# 800 opening in the straight wall at y 8462.5 opens into that passage.
 _wc_door = (_along(wc_line, R.wc_pt(D.WC_DOOR[0])), _along(wc_line, R.wc_pt(D.WC_DOOR[1])))
 WALLS += [
     w('W-WC-SWEEP', wc_line, D.T_WC, 'interior',
       [op('D-WC-HELP', 'door', min(_wc_door), max(_wc_door), head=2100,
-          label="Guest WC — from help's room, on the apse")],
-      label='Guest WC — quarter-ellipse sweep'),
+          label='Guest WC — from the passage, a curved leaf on the arc',
+          extra=f'curve: {{ x: {D.WC_CX}, y: {D.WC_CY}, r: {D.WC_A} }}')],
+      label='Guest WC — quarter-circle arc, bulging into the passage'),
 ]
 
 # --- pod screens: the real curves, flattened, with the real portals
@@ -596,8 +603,10 @@ ROOMS = [
      'Vinyl', 'Live-in, with the store as its east end: one room. Bunk under the '
      'duct, full-height racks on three walls, a loft over the whole room at 2500, '
      'its own door off the gallery.'),
-    ('R-GUEST-BATH', 'Guest / service WC', (16500, 9000), 'wet', 'shared', True,
-     'Stone', 'Behind the quarter-ellipse sweep: curved console, WC, 900 shower; a loft over it at 2300.'),
+    ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
+     'Stone', 'From the great room’s door east along the strip to the WC’s curved door; walled off help’s room. A loft over it at 2300.'),
+    ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
+     'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, basin in a small curved console at the arc, hand shower over the floor trap; a loft over it at 2300.'),
 ]
 
 # The sheet publishes the parents' suite as ONE figure, bed zone and dressing
@@ -631,6 +640,7 @@ PUB_P_BATH = _sheet_sqft(_POLY_ROOMS[("PARENTS' BATH", '')])
 # the kitchen and the den grew by their reclaimed secondary ducts: published
 # from the sheet's own polygons, like the baths
 PUB_KITCHEN = _sheet_sqft(_POLY_ROOMS[('KITCHEN', '')])
+
 PUB_K_DEN = _sheet_sqft(_POLY_ROOMS[('MUSIC + WORK DEN', '')])
 PUB_G_BATH = _sheet_sqft(_POLY_ROOMS[("GRANDMOTHER'S BATH", '')])
 
@@ -644,7 +654,7 @@ STACKS = [
     ('STK-K-BATH', "Karan's bath stack", 'R-K-BATH',
      'At the centroid of his bath’s plumbed fixtures, on the east main duct.'),
     ('STK-GUEST', 'Guest WC stack', 'R-GUEST-BATH',
-     'On the builder’s common-toilet zone beside the secondary duct.'),
+     'On the main service duct, the WC’s east wall — the pan and the floor trap drain straight into the shaft.'),
     ('STK-G-BATH', "Grandmother's bath stack", 'R-G-BATH',
      'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.'),
     ('STK-KITCHEN', 'Kitchen stack', 'R-KITCHEN',
@@ -810,7 +820,9 @@ def emit_building():
     A('  cages: [],')
     A('')
     A('  rooms: [')
-    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-K-SUITE': 350, 'R-P-BATH': PUB_P_BATH, 'R-G-BATH': PUB_G_BATH, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': PUB_K_DEN, 'R-GREAT': 407, 'R-KITCHEN': PUB_KITCHEN, 'R-ENTRY': 101, 'R-HELP': 77, 'R-GUEST-BATH': 29}
+    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-K-SUITE': 350, 'R-P-BATH': PUB_P_BATH, 'R-G-BATH': PUB_G_BATH, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': PUB_K_DEN, 'R-GREAT': 407, 'R-KITCHEN': PUB_KITCHEN, 'R-ENTRY': 101, 'R-HELP': 77}
+    # (the guest WC and its passage have no Rev 4 figure: the builder's 29 was
+    # his own toilet on this spot, not ours)
     # One floor runs out through the sliding glass: the deck is finished as the
     # great room is, and whatever the great room's floor is dressed as, the
     # deck follows.
@@ -963,7 +975,7 @@ def emit_fixtures():
         base = kind.split('-')[0]
         cx, cy = (a + c) / 2, (b + d) / 2
         if base == 'wc':
-            room, stack = (('R-GUEST-BATH', 'STK-GUEST') if 15000 < cx < 18500
+            room, stack = (('R-GUEST-BATH', 'STK-GUEST') if 15000 < cx < 19000 and cy < 9400
                            else ('R-P-BATH', 'STK-P-BATH') if cx < M and cy < D.MB_MID
                            else ('R-G-BATH', 'STK-G-BATH') if cx < M
                            else ('R-K-BATH', 'STK-K-BATH'))
@@ -1064,7 +1076,7 @@ def emit_fixtures():
     if van:
         a, b, c, d = bbox_of(R.wc_console())
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-GUEST-BATH', 'STK-GUEST', 'Curved console, 344 bowl', poly=van,
+            'R-GUEST-BATH', 'STK-GUEST', 'Curved console, 300 bowl', poly=van,
             bowl=bowl_of(R.wc_console()))
 
     # the bath wall cabinet at the west end of each sweep — same face as the
@@ -1149,7 +1161,7 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
            'screen': 2100, 'tv': 1300}
 
 
-HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH'}
+HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH', 'D-WC-HELP'}
 # which way a leaf swings off its hinge: +1 is the chord's left-hand side,
 # -1 its right.  Both service doors swing into the gallery, so nothing is
 # listed; the map stays for the day a door has to go the other way
@@ -1195,12 +1207,14 @@ def room_for(cx, cy):
         return 'R-KITCHEN'
     # help's room runs from the gallery's east leg round the apse and on under
     # the secondary duct to the east wall — the old store is its east end
-    if 13965 < cx < 16800 and cy >= 8400:
-        return 'R-HELP'
-    if cx >= 16800 and cy >= 9550:
-        return 'R-HELP'
-    if cx >= 15000 and cy >= 8400:
+    # the WC strip on the main duct, then its passage west of the arc, then
+    # help's room wrapping both
+    if cx >= D.WC_CX and 8400 <= cy < D.WC_PASS_S:
         return 'R-GUEST-BATH'
+    if D.WC_PASS_W <= cx < D.WC_CX and 8400 <= cy < D.WC_PASS_S:
+        return 'R-WC-PASS'
+    if cx > 13965 and cy >= 8400:
+        return 'R-HELP'
     return 'R-GREAT'
 
 
@@ -1473,7 +1487,9 @@ def emit_furniture():
     lofts = R.lofts()
     add_outline(lofts[:1], 'shelves', 'R-HELP', 'Loft, 2500 up', 900,
                 styles=('dash',), lift=2500)
-    add_outline(lofts[1:], 'shelves', 'R-GUEST-BATH', 'Loft, 2300 up', 1100,
+    add_outline(lofts[1:2], 'shelves', 'R-GUEST-BATH', 'Loft, 2300 up', 1100,
+                styles=('dash',), lift=2300)
+    add_outline(lofts[2:], 'shelves', 'R-WC-PASS', 'Loft, 2300 up', 1100,
                 styles=('dash',), lift=2300)
 
     # the curved full-height rack on the outside of the guest WC's apse

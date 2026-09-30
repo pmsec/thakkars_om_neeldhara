@@ -387,8 +387,9 @@ _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
 # strip's west corner and the main duct, and a quarter-ellipse wall struck
 # from the den's corner — 1345 along the den wall, 1000 up the duct wall —
 # closes the shower off the den, the rose on the duct wall.  The basin is
-# NOT inside: it is in the passage, in a curved console on the outer face
-# of the arc, so a guest washes their hands without going into the wet room.
+# NOT inside: it is in the passage, in a console along the passage's south
+# wall with the bowl square in front of the great-room door, so a guest
+# washes their hands without going into the wet room.
 #
 # Its west end is still an ARC: a quarter circle of 770, struck from the
 # block's west end, bulging out into the passage, the door on it.  The

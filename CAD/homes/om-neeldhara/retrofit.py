@@ -966,35 +966,26 @@ def sh_wall():
     return [[sh_pt(u, -h) for u in us] + [sh_pt(u, h) for u in reversed(us)]]
 
 
-def wc_console(u0=0.0, u1=0.23, d0=100, d1=300, grow=0.12, fade=0.06):
-    """The curved console in the PASSAGE, on the arc's outer face, with the
-    basin set into it — outside the WC's door, so a guest washes their hands
-    without going into the wet room, and the WC keeps its 770 for the pan and
-    the shower.
+def wc_console(dep=300, bowl_x=None):
+    """The basin console in the PASSAGE (Karan's sketch): a straight run along
+    the passage's south wall, from its west wall to the WC's arc, which it
+    dies into; the bowl at the west end, square in front of the great-room
+    door, so a guest steps in and the basin is the first thing there.
 
-    A straight vanity in an apse is a lie: it touches the wall at one point and
-    gaps either side of it.  This one is struck off the same ellipse, offset
-    inwards, so it sits on the wall for its whole length.  The offset is safe —
-    400 against a radius of curvature of 1154 at the springing, which is the
-    tightest the apse ever gets.
-
-    It GROWS out of the wall rather than starting at full depth.  It begins on
-    the passage's south wall, at the arc's foot, and fades back into the arc
-    just short of the door's jamb, so the leaf (which swings out into the
-    passage, hinged at the other end) clears it.  Its face is 300 off the arc
-    at the bowl: the 770 passage keeps 470 beside it, and the person at the
-    basin stands in the passage's length, not across it."""
+    300 deep — a slim wall-hung bowl's depth — which leaves 470 of the 770
+    passage to pass along it to the WC's door.  The east end is cut on the
+    arc's outer face, so it sits on both walls with no gap."""
     h = D.T_WC / 2
-    us = list(np.linspace(u0, u1, 60))
-
-    def dep(u):                                          # out of the wall, and
-        s = min(1.0, (u - u0) / grow, (u1 - u) / fade)   # back into it again
-        return d0 + (d1 - d0) * s * s * (3 - 2 * s)      # smoothstep
-
-    band = ([wc_pt(u, h) for u in us]
-            + [wc_pt(u, h + dep(u)) for u in reversed(us)])
-    bx, by = wc_pt((u0 + u1) / 2 + 0.01, h + 165)
-    return [('poly', band, 'solid'), ('circle', bx, by, 150, 'light')]
+    xw = D.WC_PASS_W + D.T_INT / 2                      # the west wall's inner face
+    ys, yf = D.WC_PASS_S - D.T_INT / 2, D.WC_PASS_S - D.T_INT / 2 - dep   # the south wall's face, the front
+    # the arc's outer face between the front line and the wall
+    # (wc_pts runs foot-upward: reversed, so the band goes west wall, front,
+    # down the arc to its foot on the south wall)
+    arc = [q for q in wc_pts(h, 200) if yf <= q[1] <= ys]
+    band = [(xw, ys), (xw, yf)] + list(reversed(arc))
+    if bowl_x is None:
+        bowl_x = (15020 + 15820) / 2                     # the great-room door's centre
+    return [('poly', band, 'solid'), ('circle', bowl_x, (ys + yf) / 2, 150, 'light')]
 
 
 def wc_out_door(hinge=15020, jamb=15820, y=8400):

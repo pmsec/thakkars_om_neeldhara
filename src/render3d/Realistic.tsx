@@ -2942,6 +2942,148 @@ function timberBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
  * console to the head; open they stack under the head box. Each stretch is
  * its own item with a button both sides; blinds start open (drawn up).
  */
+/**
+ * The fabric of the portal blind: off-white linen with a climbing-branch
+ * design in taupe, olive and old gold inside a double rule border - one
+ * composition the height of the blind, not a repeat, so it reads as a
+ * panel between the two timber blinds when it is down.
+ */
+let _blindFabric: THREE.MeshStandardMaterial | null = null
+function blindFabric(): THREE.MeshStandardMaterial {
+  if (_blindFabric) return _blindFabric
+  const c = document.createElement('canvas')
+  c.width = 512
+  c.height = 1792
+  const g = c.getContext('2d')!
+  const W = c.width, H = c.height
+  g.fillStyle = '#f2ece1'
+  g.fillRect(0, 0, W, H)
+  let seed = 7
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff }
+  for (let i = 0; i < 9000; i++) {                                      // the weave
+    g.fillStyle = `rgba(110, 92, 70, ${0.03 + rnd() * 0.05})`
+    g.fillRect(rnd() * W, rnd() * H, 2, 1)
+  }
+  g.strokeStyle = '#a99274'                                             // the double rule border
+  g.lineWidth = 3
+  g.strokeRect(26, 26, W - 52, H - 52)
+  g.lineWidth = 1
+  g.strokeRect(38, 38, W - 76, H - 76)
+  const stemX = (y: number) => W / 2 + 74 * Math.sin((H - 90 - y) / 235)
+  g.strokeStyle = '#8b775a'                                             // the stem, root to tip
+  g.lineWidth = 4
+  g.lineCap = 'round'
+  g.beginPath()
+  for (let y = H - 90; y >= 84; y -= 6) (y === H - 90 ? g.moveTo(stemX(y), y) : g.lineTo(stemX(y), y))
+  g.stroke()
+  const leaf = (x: number, y: number, ang: number, len: number, fill: string) => {
+    g.save()
+    g.translate(x, y)
+    g.rotate(ang)
+    g.fillStyle = fill
+    g.beginPath()
+    g.moveTo(0, 0)
+    g.quadraticCurveTo(len * 0.45, -len * 0.3, len, 0)
+    g.quadraticCurveTo(len * 0.45, len * 0.3, 0, 0)
+    g.fill()
+    g.strokeStyle = 'rgba(90, 76, 52, 0.55)'
+    g.lineWidth = 1
+    g.beginPath()
+    g.moveTo(0, 0)
+    g.lineTo(len * 0.92, 0)
+    g.stroke()
+    g.restore()
+  }
+  const inks = ['rgba(154, 164, 124, 0.9)', 'rgba(201, 168, 106, 0.9)', 'rgba(128, 138, 104, 0.9)']
+  let side = 1, k = 0
+  for (let y = H - 150; y >= 150; y -= 88) {                             // alternating leaves off the stem
+    const x = stemX(y)
+    const slope = (74 * Math.cos((H - 90 - y) / 235)) / 235
+    const up = Math.atan2(-1, -slope)                                    // along the stem, upward
+    leaf(x, y, up + side * 1.05, 92 + (k % 3) * 14, inks[k % 3])
+    if (k % 2 === 0) leaf(x, y - 30, up + side * 0.55, 62, inks[(k + 1) % 3])
+    side = -side
+    k++
+    if (k % 4 === 3) {                                                    // a few berries
+      g.fillStyle = 'rgba(176, 108, 82, 0.85)'
+      for (let j = 0; j < 3; j++) { g.beginPath(); g.arc(x - side * (18 + j * 11), y + 26 + (j % 2) * 9, 5, 0, Math.PI * 2); g.fill() }
+    }
+  }
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.anisotropy = 4
+  _blindFabric = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0, side: THREE.DoubleSide })
+  return _blindFabric
+}
+
+/**
+ * THE THIRD BLIND (Karan's call): a full-length off-white fabric roller
+ * blind over each pod's portal door, on the pod side between the two timber
+ * blinds, its climbing-branch design showing when it is down. Shut it drops
+ * to 120 off the floor in a teak cassette; open it is a roll under the
+ * cassette with a short drop. Starts drawn up like its neighbours.
+ */
+function portalBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  for (const w of model.walls) {
+    if (!/blind/i.test(w.def.label ?? '') || w.def.kind !== 'curved-glass') continue
+    const pts = w.points
+    const cum: number[] = [0]
+    for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y))
+    const L = cum[cum.length - 1]
+    const at = (s: number): { x: number; y: number } => {
+      const tt = Math.max(0, Math.min(L, s))
+      let i = 1
+      while (i < cum.length - 1 && cum[i] < tt) i++
+      const f = (tt - cum[i - 1]) / Math.max(1, cum[i] - cum[i - 1])
+      return { x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * f, y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * f }
+    }
+    const pod = model.roomById.get(w.id === 'W-CURVE-PARENTS' ? 'R-P-FAMILY' : 'R-K-DEN')
+    w.openings.forEach((op, k) => {
+      if (!/door/i.test(op.label ?? '')) return
+      const pa = at(op.from), pb = at(op.to)
+      const cx = (pa.x + pb.x) / 2, cy = (pa.y + pb.y) / 2
+      const dx = pb.x - pa.x, dy = pb.y - pa.y
+      const len = Math.hypot(dx, dy) || 1
+      const ux = dx / len, uy = dy / len
+      let nx = -uy, ny = ux
+      if (pod && (pod.centroid.x - cx) * nx + (pod.centroid.y - cy) * ny < 0) { nx = -nx; ny = -ny }
+      const ang = Math.atan2(ux, uy)
+      const item = new THREE.Group()
+      const put = (o: number, h: number, m: THREE.Object3D) => {
+        m.position.set((cx + nx * o) * S, h * S, (cy + ny * o) * S)
+        m.rotation.set(0, ang, 0, 'YXZ')
+        item.add(m)
+      }
+      const head = Math.min(3400, op.head ?? 3400), out = w.thickness / 2 + 48
+      const width = len + 60
+      put(out, head + 45, box(76, 90, width + 12, M.teak))                            // the cassette
+      const fabric = blindFabric()
+      if (mode === 'shut') {
+        const top = head - 4, bottom = 120
+        put(out, (top + bottom) / 2, box(8, top - bottom, width - 40, fabric))       // the panel, design out
+        put(out, bottom - 14, box(14, 28, width - 30, M.teak))                        // the bottom bar
+      } else {
+        const roll = new THREE.Mesh(new THREE.CylinderGeometry(42 * S, 42 * S, (width - 40) * S, 18), fabric)
+        roll.rotation.z = Math.PI / 2
+        put(out, head - 46, roll)
+        put(out + 30, head - 88 - 90, box(8, 180, width - 40, fabric))                // a short drop
+        put(out + 30, head - 88 - 194, box(14, 28, width - 30, M.teak))
+      }
+      const cordL = mode === 'shut' ? 700 : 1300
+      const cord = new THREE.Mesh(new THREE.CylinderGeometry(3 * S, 3 * S, cordL * S, 6), M.trunk)
+      cord.position.set((pb.x + nx * (out + 34)) * S, (head - cordL / 2) * S, (pb.y + ny * (out + 34)) * S)
+      item.add(cord)
+      tagItem(item, `blind:${w.id}:portal${k}`, mode, [
+        { x: cx + nx * 350, y: cy + ny * 350, h: 1500 },
+        { x: cx - nx * 350, y: cy - ny * 350, h: 1500 },
+      ])
+      g.add(item)
+    })
+  }
+  return g
+}
+
 function curvedBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   for (const w of model.walls) {
@@ -5527,6 +5669,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(hatchSash(M, mode))
     set.add(timberBlinds(M, mode))
     set.add(curvedBlinds(M, mode))
+    set.add(portalBlinds(M, mode))
     set.add(awningWindows(M, mode))
     set.add(meshScreens(M, mode))
     set.add(foldingDoors(M, mode))

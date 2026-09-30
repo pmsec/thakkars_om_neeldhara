@@ -217,6 +217,14 @@ def main():
 
     px_mm = s.sc                                    # sheet px per model mm
     placed = []                                     # label boxes already on the sheet (model mm)
+    # the sheet's own kept notes are labels already down: nothing lands on them
+    for m in re.finditer(r'<text x="([-\d.]+)" y="([-\d.]+)" font-size="([\d.]+)"[^>]*data-keep="1"[^>]*>([^<]*)</text>',
+                         ''.join(body)):
+        kx, ky, fs, txt = float(m[1]), float(m[2]), float(m[3]), m[4]
+        kw, kh = len(txt) * fs * 0.66 / px_mm, fs * 1.3 / px_mm
+        cx, cy = (kx - s.pad) / s.sc + s.x0, (ky - fs * 0.35 - s.pad) / s.sc + s.y0
+        placed.append((cx - kw / 2, cy - kh / 2, cx + kw / 2, cy + kh / 2))
+    kept_polys = [[(a, b), (c, b), (c, d), (a, d)] for a, b, c, d in placed]
 
     def text_w(txt, size):
         return len(txt) * size * 0.56 / px_mm      # model mm
@@ -329,6 +337,7 @@ def main():
         if f['kind'] in ('rug', 'grass', 'shower', 'grab', 'rail', 'tree', 'screen') or any(k in lab for k in FLOOR_OR_OVERHEAD):
             continue
         obstacles.append(outline(f))
+    obstacles += kept_polys                         # ...and the sheet's kept notes
 
     def free(cx, cy, hw, hh, poly, use_obst):
         pts = [(cx + dx * hw, cy + dy * hh) for dx in (-1, -0.5, 0, 0.5, 1) for dy in (-1, 0, 1)]

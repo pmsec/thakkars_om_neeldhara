@@ -3254,7 +3254,7 @@ type ArtSpot = { x: number; y: number; nx: number; ny: number; w: number; seed: 
 // (x, y) on the wall's face, (nx, ny) into the room, the canvas's width and a seed - per home
 const ART_SPOTS: Record<string, ArtSpot[]> = {
   'om-neeldhara': [
-    { x: 18300, y: 8400, nx: 0, ny: -1, w: 900, seed: 23 },     // den, south wall over the kit; the guitars hang west of it
+    { x: 19275, y: 6175, nx: 0, ny: -1, w: 900, seed: 23 },     // den, the main duct's north face, over the recliners' backs (the south wall's corner is the guest WC's shower apse now)
     { x: 20900, y: 1350, nx: 0, ny: 1, w: 800, seed: 37 },      // Karan's suite, over the plant table
     { x: 14450, y: 8400, nx: 0, ny: -1, w: 700, seed: 41 },     // great room, between the drum and the WC door
   ],
@@ -4421,24 +4421,31 @@ function guitarWall(M: Mats): THREE.Group {
     }
     into.add(box(W + 4, 4, 5, cream, 0, L, depth + 5))                               // the nut
   }
-  const hanger = (x: number, h: number): void => {
+  const hanger = (x: number, h: number, into: THREE.Group = g): void => {
     const plate = box(40, 110, 12, M.graphite)
     plate.position.set(x * S, h * S, (WALL - 6) * S)
-    g.add(plate)
+    into.add(plate)
     for (const e of [-1, 1]) {
       const prong = box(12, 12, 80, M.graphite)
       prong.position.set((x + e * 38) * S, (h + 20) * S, (WALL - 46) * S)
-      g.add(prong)
+      into.add(prong)
     }
   }
-  const hang = (inst: THREE.Group, x: number, hookH: number, neckL: number, depth: number, tilt: number) => {
+  const hang = (inst: THREE.Group, x: number, hookH: number, neckL: number, depth: number, tilt: number, into: THREE.Group = g) => {
     // the headstock sits between the prongs: its top 140 above the nut, so the nut is 100 under the hook
     inst.position.set(x * S, (hookH - 100) * S, (WALL - 34 - depth) * S)
     inst.rotation.set(0, Math.PI, tilt)
     void neckL
-    g.add(inst)
-    hanger(x, hookH)
+    into.add(inst)
+    hanger(x, hookH, into)
   }
+  // THE GUEST WC'S SHOWER APSE took the den's south-east corner (its outer
+  // face foots at x 17375), and the kit turned on to the main duct wall. The
+  // two guitars stay on the south wall, in the pocket between the pod glass
+  // and the apse; the ukulele hangs on the duct wall's west face over the
+  // kit, which faces it - that group is built on the same plane and turned
+  // 90 on to x = 18775.
+  const west = new THREE.Group()
   // ---- the electric: a red double-cutaway, cream pickguard, three pickups, a maple neck
   {
     const e = new THREE.Group()
@@ -4458,7 +4465,7 @@ function guitarWall(M: Mats): THREE.Group {
       e.add(knob)
     }
     neckAndStrings(e, 640, 44, D, 6, -305, maple, maple)
-    hang(e, 16650, 1880, 640, D, 0.03)
+    hang(e, 16560, 1880, 640, D, 0.03)
   }
   // ---- the acoustic: a dreadnought, spruce top over mahogany, a soundhole and rosette
   {
@@ -4478,7 +4485,7 @@ function guitarWall(M: Mats): THREE.Group {
     a.add(box(150, 24, 10, rosewood, 0, -345, D + 6))                                  // the bridge
     a.add(box(80, 6, 5, cream, 0, -340, D + 12))                                       // the saddle
     neckAndStrings(a, 560, 46, D, 6, -340, mahogany, mahogany)
-    hang(a, 17080, 1900, 560, D, -0.03)
+    hang(a, 17000, 1900, 560, D, -0.03)
   }
   // ---- the ukulele: a soprano in koa, half the acoustic, four strings
   {
@@ -4491,8 +4498,11 @@ function guitarWall(M: Mats): THREE.Group {
     u.add(hole)
     u.add(box(70, 14, 8, rosewood, 0, -170, D + 5))
     neckAndStrings(u, 240, 36, D, 4, -170, koa, koa, 0.6)
-    hang(u, 17480, 1720, 240, D, 0.05)
+    hang(u, 17480, 1720, 240, D, 0.05, west)
   }
+  west.rotation.y = Math.PI / 2                                     // local z (the wall's plane) -> x, local x -> -z
+  west.position.set((18775 - WALL) * S, 0, (17480 + 6760) * S)      // the plane on x = 18775, the uke at y = 6760
+  g.add(west)
   return g
 }
 

@@ -228,7 +228,9 @@ WALLS += [
       notes='Door jamb to apse on the bump line.'),
     w('W-KIT-RET', [(6900, D.KIT_N + 62.5), (6900, 8462.5)], 150, 'interior',
       notes="The return that closes the kitchen's north-west corner, on the secondary duct cheek's line."),
-    w('W-HELP-N', [(13700, 8462.5), (18850, 8462.5)], 125, 'interior',
+    # ...ending on the WC's stub at WC_CX: east of that the duct's north wall
+    # is demolished and the WC's floor runs into its shower apse
+    w('W-HELP-N', [(13700, 8462.5), (D.WC_CX, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120,
           label='Guest WC — from the great room, west of the pod glazing')]),
     # THE GUEST / SERVICE WC IS ON THE MAIN DUCT NOW (Karan's call): its
@@ -443,6 +445,17 @@ WALLS += [
       label='Guest WC — quarter-circle arc, bulging into the passage'),
 ]
 
+# THE SHOWER APSE (Karan's call): the stub on x = WC_CX from the den wall's
+# centreline to the den's face, then the quarter ellipse struck from the den's
+# corner, foot to apex, its tangent end sent into the main duct wall
+# (it starts where the passage arc's line ends, 10 inside the den wall's
+# centreline, so the two touch at a point and never run along one line)
+_sh = [wc_line[-1]] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
+WALLS += [
+    w('W-WC-APSE', _sh, D.T_WC, 'interior', [],
+      label='Guest WC — the shower apse, a quarter ellipse into the den'),
+]
+
 # --- pod screens: the real curves, flattened, with the real portals
 def pod_wall(P, portal, wid, label, y_end):
     ts = [t / 200 for t in range(201)]
@@ -582,8 +595,8 @@ ROOMS = [
      'Oak plank', 'The west pod: six-seat dining behind the curved glass screen, serving '
      'hatch straight from the kitchen.'),
     ('R-K-DEN', 'Music + work den', (18000, 5000), 'habitable', 'karan', True,
-     'Oak plank', 'The east pod: Karan’s work console on the screen, e-drums in the '
-     'corner, two recliners facing the deck.'),
+     'Oak plank', 'The east pod: Karan’s work console on the screen, e-drums on the '
+     'duct wall north of the guest WC’s shower apse, two recliners facing the deck.'),
     ('R-GREAT', 'Great room', (12240, 5000), 'habitable', 'shared', True,
      'Oak plank', 'The heart. Party wall gone; one floor with the deck through a 6250 '
      'opening with no doors; the apse and its two sconces at the south.'),
@@ -604,9 +617,9 @@ ROOMS = [
      'duct, full-height racks on three walls, a loft over the whole room at 2500, '
      'its own door off the gallery.'),
     ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
-     'Stone', 'From the great room’s door east along the strip to the WC’s curved door; walled off help’s room. A loft over it at 2300.'),
+     'Stone', 'From the great room’s door east along the strip to the WC’s curved door, the basin in a curved console on the arc’s outer face; walled off help’s room. A loft over it at 2300.'),
     ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
-     'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, basin in a small curved console at the arc, hand shower over the floor trap; a loft over it at 2300.'),
+     'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.'),
 ]
 
 # The sheet publishes the parents' suite as ONE figure, bed zone and dressing
@@ -1075,8 +1088,9 @@ def emit_fixtures():
     van = outline_of(R.wc_console())
     if van:
         a, b, c, d = bbox_of(R.wc_console())
+        # in the PASSAGE, on the arc's outer face — outside the wet room
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-GUEST-BATH', 'STK-GUEST', 'Curved console, 300 bowl', poly=van,
+            'R-WC-PASS', 'STK-GUEST', 'Curved console on the arc, 300 bowl', poly=van,
             bowl=bowl_of(R.wc_console()))
 
     # the bath wall cabinet at the west end of each sweep — same face as the
@@ -1191,6 +1205,10 @@ def room_for(cx, cy):
         return 'R-K-SUITE'
     if cx < 9115 and cy < D.KIT_N + 62.5:
         return 'R-P-FAMILY'
+    # the guest WC's shower apse, cut out of the den's south-east corner
+    if (cx >= D.WC_CX and cy <= D.SH_CY
+            and ((D.SH_CX - cx) / D.SH_A) ** 2 + ((D.SH_CY - cy) / D.SH_B) ** 2 < 1):
+        return 'R-GUEST-BATH'
     if cx > 15365 and cy < 8400 and cx < 20013:
         return 'R-K-DEN'
     if 9115 <= cx <= 15365 and cy < 8400:

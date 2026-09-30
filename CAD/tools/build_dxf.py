@@ -308,7 +308,7 @@ def main():
         prim(p)
     for p in R.suite_screen():                  # Karan's dressing screen
         prim(p)
-    for p in R.wc_out_door() + R.wc_flat_door():
+    for p in R.wc_out_door() + R.wc_flat_door() + R.help_pass_door():
         prim(p)
     for p in R.corner_units():
         prim(p)

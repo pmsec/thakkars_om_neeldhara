@@ -1008,6 +1008,19 @@ def wc_flat_door():
             ('line', hx, hy, hx - w, hy, 'solid')]
 
 
+def help_pass_door(hinge=15850, jamb=16550):
+    """Help's room's door into the WC passage, in the passage's south wall:
+    hinged west, swinging SOUTH into help's room, drawn open against the
+    wall's help's-room face so the passage (and the basin console beside the
+    opening) keep their floor."""
+    w = jamb - hinge
+    y = D.WC_PASS_S + D.T_INT / 2                        # the wall's help's-room face
+    arc = [(hinge + w * math.cos(math.radians(a)), y + w * math.sin(math.radians(a)))
+           for a in np.linspace(0, 90, 24)]
+    return [('poly', [(hinge, y)] + arc, 'light'),
+            ('line', hinge, y, hinge, y + w, 'solid')]
+
+
 def kitchen_counter(dep=600, r_end=300, r_ease=200):
     """Run B, turning the corner of the kitchen's bump.
 

@@ -23,10 +23,13 @@ def mirror(z):
 
 _WEST = [
     ("sealed shaft, wing end",   2900,    0,  4380, 1200, 'open shaft'),
-    # The builder has agreed the two retained deck voids can be floored and
-    # used as bulk storage: they are 'void store', not 'void' — still his
+    # RECLAIMED (Karan's word from the builder): the two retained deck voids
+    # are floored and their enclosures come down (the outboard column stands,
+    # and the pod wall they backed on to) — open deck now, 'reclaimed void'.
+    # Still the builder's zones, still drawn, as a minimal dashed outline and
+    # a small note.  (Before this they were 'void store', bulk storage.)
     # zones, still drawn, but Round 1 is allowed a floor and a door in them.
-    ("retained deck void",       7730, 1350,  8965, 2470, 'void store'),
+    ("retained deck void",       7730, 1350,  8965, 2470, 'reclaimed void'),
     ("main service duct",        4555, 6175,  5555, 11125, 'open shaft'),
     # RECLAIMED (Karan's call, with the builder's word): the two secondary
     # ducts are not needed as shafts and may be floored — the west one into
@@ -42,7 +45,12 @@ _WEST = [
 # NORTH wall, the shower apse opening the WC into the den through it (its
 # west and south walls are the WC's and stay).  The east box stops short of
 # the main duct wall so that wall's own lines are untouched.
-RECLAIM_DEMO = [(5780, 8560, 7060, 9600), (17540, 8390, 18800, 8560)]
+# ...and the deck voids' enclosures: each void's north wall and the north
+# stub of its inboard wall.  Its south wall is the pod's own and stays; the
+# south stub of the inboard wall is the great room's jamb and stays; the
+# outboard side is a column.  The east box is the west one mirrored.
+RECLAIM_DEMO = [(5780, 8560, 7060, 9600), (17540, 8390, 18800, 8560),
+                (7720, 1190, 9125, 1530), (24480 - 9125, 1190, 24480 - 7720, 1530)]
 
 NAMED = ([(n + ', west', a, b, c, d, k) for n, a, b, c, d, k in _WEST]
          + [mirror((n + ', east', a, b, c, d, k)) for n, a, b, c, d, k in _WEST])

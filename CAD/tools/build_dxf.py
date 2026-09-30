@@ -164,7 +164,7 @@ def main():
     for name, a, b, c, d, kind in C.NAMED:
         box(msp, a, b, c, d, 'PROP-KEEP')
         note = (f"{name.upper()} — RECLAIMED, FLOORED WITH THE BUILDER'S AGREEMENT  {c - a:.0f}x{d - b:.0f}"
-                if kind == 'reclaimed duct' else
+                if kind in ('reclaimed duct', 'reclaimed void') else
                 f'{name.upper()} — {kind.upper()} — KEEP CLEAR  {c - a:.0f}x{d - b:.0f}')
         msp.add_text(note,
                      height=90, rotation=90,

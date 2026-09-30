@@ -58,7 +58,7 @@ NAMED = IMM.NAMED
 # retained deck voids, with the builder's agreement, as bulk storage.
 # ...and a 'reclaimed duct' likewise: a secondary duct the builder has released,
 # floored into the room beside it.
-NO_FLOOR = [z for z in NAMED if z[5] not in ('void store', 'reclaimed duct')]
+NO_FLOOR = [z for z in NAMED if z[5] not in ('void store', 'reclaimed duct', 'reclaimed void')]
 COMMON = IMM.COMMON
 
 

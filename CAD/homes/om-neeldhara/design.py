@@ -193,15 +193,15 @@ SCR_GAP = 795                       # left open at the end-wall end
 
 
 
-# The two retained deck voids stay exactly as built: opening plus the builder's
-# own enclosure (a 230 column on the outboard face, 150 walls elsewhere).
+# The two retained deck voids as built: opening plus the builder's own
+# enclosure (a 230 column on the outboard face, 150 walls elsewhere).
 VOID_KEEP = [(7500, 1200, 9115, 2620), (2 * 12240 - 9115, 1200, 2 * 12240 - 7500, 2620)]
-# THE VOIDS ARE STORES NOW.  The builder has agreed they can be floored and
-# used as bulk storage — the one thing this home was short of — so each gets
-# a floor and a 700 door cut through its north enclosure on to the deck walk
-# (the recliners back on to their inner faces).  The store inside each is the
-# builder's own opening, 1235 x 1120.  See immovables ('void store').
-VOID_DOORS = [(8000, 8700), (2 * 12240 - 8700, 2 * 12240 - 8000)]
+# THE VOIDS ARE OPEN DECK NOW (Karan's word from the builder): floored, their
+# north walls and the north stubs of their inboard walls demolished, the
+# racks gone.  What stands: the outboard column, the pod wall each backed
+# on to, and the south stub of the inboard wall — the great room's jamb.
+# See immovables ('reclaimed void', RECLAIM_DEMO).  They were bulk stores
+# with 700 doors before this.
 
 
 def M(v):
@@ -274,12 +274,8 @@ ROOMS = [
     ("MUSIC + WORK DEN", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay",
      None),
     ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck", None),
-    ("VOID STORE", "WEST", [(7730, 1350, 8965, 2470)],
-     "floored  ·  door to the deck walk", None),
-    ("VOID STORE", "EAST", [(M(8965), 1350, M(7730), 2470)],
-     "floored  ·  door to the deck walk", None),
     ("ALL-WEATHER DECK", "", [(POD_W0, DECK_N, M(POD_W0), DECK_S)],
-     "15 420 long × 2620 deep  ·  net of the two retained voids", None),  # voids below
+     "15 420 long × 2620 deep  ·  the two voids reclaimed into it", None),
     # KITCHEN, ENTRY GALLERY and HELP'S ROOM are not rectangles — the gallery
     # is a free-standing drum and the two rooms run up to it.  See
     # retrofit.lobby_polys().
@@ -887,12 +883,7 @@ _ONCE = [
     ('sofa-e',   1750, 200, 2550, 1000,
      'single sofa  ·  800, facing west at the tree  ·  200 clear each side'),
 
-    # ------------------------- THE VOID STORES: an aluminium rack in each
-    # A slotted-angle aluminium rack across the back (south) wall of each
-    # void, 400 deep, 2400 high, the void's full 1235 width; 720 of standing
-    # room between it and the door in the north wall.
-    ('shelves',  7730, 2070, 8965, 2470, 'aluminium rack  ·  400 deep, 2400 high'),
-    ('shelves',  15515, 2070, 16750, 2470, 'aluminium rack  ·  400 deep, 2400 high'),
+    # (the void stores' aluminium racks are gone: the voids are open deck)
 
     # ------------------------- THE PARENTS' CUBICLE: TWO BATHS
     # The vanities are NOT here — the parents' is a curved console struck off
@@ -1102,11 +1093,16 @@ _ONCE = [
     #     answer and is NOT drawn, because it is not what was asked for.
     ('grass',    POD_W0, DECK_N + 340, 7500, DECK_S, 'real grass, the whole deck'),
     ('grass',    7500, DECK_N + 340, 9115, 1200, 'real grass, north of the void'),
+    # ...and into the reclaimed void itself, round its column and the jamb stub
+    ('grass',    7730, 1200, 9115, 2270, 'real grass, the reclaimed void'),
+    ('grass',    7730, 2270, 8965, DECK_S, 'real grass, the reclaimed void'),
     # NOTHING BETWEEN THE VOIDS.  X 9115-15365 is the bay the great room walks
     # out on to, and it is boarded, not grassed — the same floor as the room
     # inside, on the same board grid, run through the slider.  See
     # retrofit.wood_floor().  The grass picks up again beyond each void.
     ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
+    ('grass',    15365, 1200, 16750, 2270, 'real grass, the reclaimed void'),
+    ('grass',    15515, 2270, 16750, DECK_S, 'real grass, the reclaimed void'),
     ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
     ('gym',      4760, 340, 5960, 2340, 'all-in-one strength trainer  ·  1200 x 2000'),
     ('spa',      17930, 400, 19680, 2150, '4-seat spa'),

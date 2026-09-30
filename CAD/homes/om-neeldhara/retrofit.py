@@ -103,16 +103,8 @@ def keep_demo():
     for seg in keep:
         (demo.append(seg) if reclaimed(*seg) else keep2.append(seg))
     keep = keep2
-    out = []
-    for x1, y1, x2, y2 in keep:
-        for gx0, gx1 in D.VOID_DOORS:
-            if abs(y1 - y2) < 5 and 1150 < y1 < 1400 and min(x1, x2) < gx0 and max(x1, x2) > gx1:
-                lo, hi = min(x1, x2), max(x1, x2)
-                out += [(lo, y1, gx0, y2), (gx1, y1, hi, y2)]
-                break
-        else:
-            out.append((x1, y1, x2, y2))
-    return out, demo
+    # (the void stores' 700 doors are gone with the voids' north walls)
+    return keep, demo
 
 
 def help_rack():
@@ -206,8 +198,7 @@ def rect_room_area(name, rects):
     cannot disagree.
     """
     a = sum((c - x) * (d - y) for x, y, c, d in rects) / 1e6
-    if 'DECK' in name:
-        a -= sum((c - x) * (d - y) for x, y, c, d in D.VOID_KEEP) / 1e6
+    # (the deck's two voids are reclaimed into it: nothing comes off any more)
     return a
 
 
@@ -2299,8 +2290,6 @@ def design_masks():
     when testing the design against those zones."""
     fl, wl = C.blank(), C.blank()
     for name, _, rects, _, _anchor in D.ROOMS:
-        if name == 'VOID STORE':
-            continue                       # after the voids are cut, below
         for a, b, c, d in rects:
             C.put_rect(fl, a, b, c, d)
     for _n, _s, p, _note, _xy in poly_rooms():
@@ -2323,14 +2312,7 @@ def design_masks():
                        min(ay_, by_) - (t / 2 if uy == 0 else 0),
                        max(ax_, bx_) + (t / 2 if ux == 0 else 0),
                        max(ay_, by_) + (t / 2 if uy == 0 else 0))
-    # the two retained voids come out of the deck with their enclosures, and
-    # the stores inside them — floored with the builder's agreement — go back
-    for a, b, c, d in D.VOID_KEEP:
-        C.put_rect(fl, a, b, c, d, False)
-    for name, _, rects, _, _anchor in D.ROOMS:
-        if name == 'VOID STORE':
-            for a, b, c, d in rects:
-                C.put_rect(fl, a, b, c, d)
+    # (the two deck voids are reclaimed into the deck: they stay in its floor)
 
     cx, cy, r, t, gaps = D.GALLERY
     for a in np.arange(0, 360, 0.5):

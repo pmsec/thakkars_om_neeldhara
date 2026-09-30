@@ -3193,8 +3193,11 @@ function portalBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         put(out, (top + bottom) / 2, box(8, top - bottom, width - 40, fabric))       // the panel, design out
         put(out, bottom - 14, box(14, 28, width - 30, M.teak))                        // the bottom bar
       } else {
-        const roll = new THREE.Mesh(new THREE.CylinderGeometry(42 * S, 42 * S, (width - 40) * S, 18), fabric)
-        roll.rotation.z = Math.PI / 2
+        // the roll lies along the cassette: its axis turned on to z before
+        // `put` sets the wall's yaw (which would have overwritten a rotation)
+        const rollGeo = new THREE.CylinderGeometry(42 * S, 42 * S, (width - 40) * S, 18)
+        rollGeo.rotateX(Math.PI / 2)
+        const roll = new THREE.Mesh(rollGeo, fabric)
         put(out, head - 46, roll)
         put(out + 30, head - 88 - 90, box(8, 180, width - 40, fabric))                // a short drop
         put(out + 30, head - 88 - 194, box(14, 28, width - 30, M.teak))

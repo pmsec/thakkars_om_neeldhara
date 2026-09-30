@@ -209,7 +209,9 @@ def main():
             if item == '</g>':
                 skipping = False
             continue
-        item = re.sub(r'<text\b[^>]*>.*?</text>', '', item, flags=re.S)
+        # (a <text data-keep="1"> is the sheet's own minimal note — the
+        # reclaimed ducts' — and stays)
+        item = re.sub(r'<text\b(?![^>]*data-keep)[^>]*>.*?</text>', '', item, flags=re.S)
         body.append(item)
     s.o = body
 

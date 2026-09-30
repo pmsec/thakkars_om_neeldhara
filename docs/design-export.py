@@ -187,8 +187,8 @@ WALLS += [
           label='Sliding partition — suite to den')]),
     w('W-FAM-S', [(4467, 8462.5), (6900, 8462.5)], 125, 'interior',
       notes="Family room's south wall, bath bay to the hatch wall."),
-    w('W-DUCT-W-E', [(6900, 8462.5), (6900, 9395)], 150, 'interior'),
-    w('W-DUCT-W-S', [(5630, 9395), (6900, 9395)], 150, 'interior'),
+    # (the west secondary duct's east and south walls are gone: the duct is
+    # RECLAIMED into the kitchen, with the builder's agreement — Karan's call)
     # THE MAIN SERVICE DUCTS are the builder's open shafts, 1000 x 4950, from
     # 6175 all the way to the south face (immovables.py; the DWG shows them
     # so). Each pod is walled off its duct for the duct's full length: the
@@ -200,8 +200,15 @@ WALLS += [
     w('W-BAY-W', [(5630, 6175), (5630, 9620)], 150, 'interior',
       notes='East cheek of the main service duct and west cheek of the kitchen bay; ends on the envelope centreline mitre.'),
     w('W-DUCT-E-N', [(18850, 6175), (20013, 6175)], 150, 'interior'),
-    w('W-DUCT-E-W', [(18850, 6175), (18850, 8462.5)], 150, 'interior'),
-    w('W-BAY-S', [(17505, 9545), (20013, 9545)], 150, 'interior',
+    # the main duct's west cheek runs the duct's full length now: the east
+    # secondary duct beside it is RECLAIMED into help's room (Karan's call,
+    # with the builder's agreement), so the shaft needs its own wall
+    w('W-DUCT-E-W', [(18850, 6175), (18850, 9545)], 150, 'interior'),
+    # the builder's 1495 x 230 block between the east secondary duct and the
+    # bunk end, as the wall it is
+    w('W-BAY-BLOCK', [(17430, 9435), (18850, 9435)], 230, 'interior',
+      notes="The builder's structural block, 1495 x 230, on the reclaimed duct's south side."),
+    w('W-BAY-S', [(18850, 9545), (20013, 9545)], 150, 'interior',
       notes='Closes the suite bay off the store zone.'),
     # THE KITCHEN FRONT IS ONE LINE (Karan's call): the 600 step carried west
     # to the pod's duct cheek, the door and the hatch in it where they were;
@@ -221,7 +228,10 @@ WALLS += [
       notes='Door jamb to apse on the bump line.'),
     w('W-KIT-RET', [(6900, D.KIT_N + 62.5), (6900, 8462.5)], 150, 'interior',
       notes="The return that closes the kitchen's north-west corner, on the secondary duct cheek's line."),
-    w('W-HELP-N', [(13700, 8462.5), (20013, 8462.5)], 125, 'interior',
+    # ...stopping at the WC's wall: east of it the secondary duct is RECLAIMED
+    # into the den (Karan's call, with the builder's agreement) and its north
+    # wall is gone, so the den runs south into it
+    w('W-HELP-N', [(13700, 8462.5), (17580, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120,
           label='Guest WC — from the great room, west of the pod glazing')]),
     w('W-STORE-W', [(17505, 8462.5), (17505, D.WC_DIE + D.T_WC / 2)], 150, 'interior',
@@ -573,16 +583,12 @@ ROOMS = [
 
     ('R-DUCT-WM', 'Main service duct (west)', (5050, 7300), 'void', 'core', False,
      'Riser', 'The builder’s open shaft, 1000 x 4950, walled off the family room for its full length; the parents’ bath backs on to it.'),
-    ('R-DUCT-W', 'Secondary duct (west)', (6265, 8900), 'void', 'core', False,
-     'Riser', 'The kitchen’s wet wall backs on to it.'),
     ('R-DEAD-W', 'Dead slab behind the bath', (5050, 9100), 'void', 'core', False,
      'Inaccessible', 'Between the bath bay and the kitchen bay; no door, no use.'),
     ('R-DUCT-E', 'Main service duct (east)', (19400, 6900), 'void', 'core', False,
-     'Riser', 'The den’s corner units back on to it.'),
-    ('R-DUCT-SE', 'Secondary duct / riser bay', (18200, 9000), 'void', 'core', False,
-     'Riser', 'Between help’s room’s store end and Karan’s bath.'),
+     'Riser', 'The den’s corner units back on to it; the secondary duct beside it is reclaimed into the den.'),
     ('R-KITCHEN', 'Kitchen', (7800, 10000), 'wet', 'service', True,
-     'Stone', 'One working room, kitchen and utility together; hatch to the family room.'),
+     'Stone', 'One working room, kitchen and utility together; hatch to the family room. The secondary duct is reclaimed into it, with the builder’s agreement.'),
     ('R-ENTRY', 'Entry gallery', (12240, 10000), 'circulation', 'shared', True,
      'Stone', 'The drum: a U of 230 walls on the two columns, curved doors sliding on '
      'the arc, console and two chairs, sconces at the arc centres.'),
@@ -622,6 +628,10 @@ PUB_P_SUITE_N = _sheet_sqft(_clip_y(_PAR_SUITE, 5935, True))
 PUB_P_SUITE_S = _sheet_sqft(_clip_y(_PAR_SUITE, 5935, False))
 # the two baths in the parents' cubicle, as the sheet schedules them
 PUB_P_BATH = _sheet_sqft(_POLY_ROOMS[("PARENTS' BATH", '')])
+# the kitchen and the den grew by their reclaimed secondary ducts: published
+# from the sheet's own polygons, like the baths
+PUB_KITCHEN = _sheet_sqft(_POLY_ROOMS[('KITCHEN', '')])
+PUB_K_DEN = _sheet_sqft(_POLY_ROOMS[('MUSIC + WORK DEN', '')])
 PUB_G_BATH = _sheet_sqft(_POLY_ROOMS[("GRANDMOTHER'S BATH", '')])
 
 # Stack positions are DERIVED: each sits at the centroid of the plumbed
@@ -800,7 +810,7 @@ def emit_building():
     A('  cages: [],')
     A('')
     A('  rooms: [')
-    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-K-SUITE': 350, 'R-P-BATH': PUB_P_BATH, 'R-G-BATH': PUB_G_BATH, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': 230, 'R-GREAT': 407, 'R-KITCHEN': 126, 'R-ENTRY': 101, 'R-HELP': 77, 'R-GUEST-BATH': 29}
+    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-K-SUITE': 350, 'R-P-BATH': PUB_P_BATH, 'R-G-BATH': PUB_G_BATH, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': PUB_K_DEN, 'R-GREAT': 407, 'R-KITCHEN': PUB_KITCHEN, 'R-ENTRY': 101, 'R-HELP': 77, 'R-GUEST-BATH': 29}
     # One floor runs out through the sliding glass: the deck is finished as the
     # great room is, and whatever the great room's floor is dressed as, the
     # deck follows.

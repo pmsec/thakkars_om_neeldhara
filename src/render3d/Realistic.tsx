@@ -3084,6 +3084,166 @@ function portalBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   return g
 }
 
+/**
+ * CARVED TEAK OVER THE GLASS (Karan's call, after a lotus-pond relief he
+ * sent): open-work carving on the GREAT-ROOM face of his pod's curved glass
+ * screen, between the console top and the head, in chord panels either side
+ * of the portal. No back plate - lotus leaves, flowers, buds and reeds on
+ * their stems, rooted in a bottom rail and reaching a top rail, and the
+ * glass shows through everything between them. Every leaf and flower is a
+ * bevelled extrusion, tilted a little, so it reads as relief and not as a
+ * cut-out.
+ */
+function carvedScreen(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const w = model.walls.find((wl) => wl.id === 'W-CURVE-KARAN')
+  if (!w) return g
+  const pts = w.points
+  const cum: number[] = [0]
+  for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y))
+  const L = cum[cum.length - 1]
+  const at = (s: number): { x: number; y: number } => {
+    const tt = Math.max(0, Math.min(L, s))
+    let i = 1
+    while (i < cum.length - 1 && cum[i] < tt) i++
+    const f = (tt - cum[i - 1]) / Math.max(1, cum[i] - cum[i - 1])
+    return { x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * f, y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * f }
+  }
+  const pod = model.roomById.get('R-K-DEN')
+  const cuts = w.openings.map((op) => [op.from - 60, op.to + 60] as [number, number]).sort((a, b) => a[0] - b[0])
+  const runs: Array<[number, number]> = []
+  let s0 = 40
+  for (const [a, b] of cuts) { if (a - s0 > 300) runs.push([s0, a]); s0 = b }
+  if (L - 40 - s0 > 300) runs.push([s0, L - 40])
+  const BOT = 820, TOP = 3380, out = w.thickness / 2 + 34
+  const wood = M.teak
+  let seed = 11
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff }
+  const extrude = (sh: THREE.Shape, depth: number): THREE.Mesh => {
+    const geo = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: true, bevelThickness: 6, bevelSize: 6, bevelSegments: 2, curveSegments: 16 })
+    geo.scale(S, S, S)
+    const m = new THREE.Mesh(geo, wood)
+    m.castShadow = true
+    return m
+  }
+  const leafShape = (R: number): THREE.Shape => {                    // a lotus pad: a lobed disc with a notch
+    const sh = new THREE.Shape()
+    const n = 64
+    for (let i = 0; i <= n; i++) {
+      const a = (i / n) * Math.PI * 2
+      const notch = Math.exp(-Math.pow(((a + Math.PI / 2) % (Math.PI * 2)) - Math.PI, 2) * 6) * 0.35
+      const r = R * (1 - 0.07 * Math.cos(7 * a) - notch)
+      ;(i === 0 ? sh.moveTo : sh.lineTo).call(sh, r * Math.cos(a), r * Math.sin(a))
+    }
+    return sh
+  }
+  const petalShape = (len: number, wid: number): THREE.Shape => {
+    const sh = new THREE.Shape()
+    sh.moveTo(0, 0)
+    sh.bezierCurveTo(wid, len * 0.3, wid * 0.8, len * 0.85, 0, len)
+    sh.bezierCurveTo(-wid * 0.8, len * 0.85, -wid, len * 0.3, 0, 0)
+    return sh
+  }
+  runs.forEach(([ra, rb]) => {
+    const nPanels = Math.max(1, Math.round((rb - ra) / 720))
+    const panel = (rb - ra) / nPanels
+    for (let k = 0; k < nPanels; k++) {
+      const pa = at(ra + k * panel), pb = at(ra + (k + 1) * panel)
+      const cx = (pa.x + pb.x) / 2, cy = (pa.y + pb.y) / 2
+      const dx = pb.x - pa.x, dy = pb.y - pa.y
+      const len = Math.hypot(dx, dy) || 1
+      const ux = dx / len, uy = dy / len
+      let nx = -uy, ny = ux
+      if (pod && (pod.centroid.x - cx) * nx + (pod.centroid.y - cy) * ny > 0) { nx = -nx; ny = -ny }   // the great room's side
+      // a local frame: x along the chord, y up, z out into the great room
+      const frame = new THREE.Group()
+      frame.position.set(cx * S, 0, cy * S)
+      frame.rotation.y = -Math.atan2(uy, ux)
+      g.add(frame)
+      const put = (m: THREE.Object3D, x: number, y: number, z: number, rx = 0, ry = 0, rz = 0) => {
+        m.position.set(x * S, y * S, (out + z) * S)
+        m.rotation.set(rx, ry, rz, 'YXZ')
+        frame.add(m)
+      }
+      // the rails, top and bottom, and the stiles at the panel's ends
+      put(box(len - 8, 70, 36, wood, 0, 0, 0), 0, TOP + 35, 0)
+      put(box(len - 8, 90, 40, wood, 0, 0, 0), 0, BOT - 45, 0)
+      for (const e of [-1, 1]) put(box(30, TOP - BOT + 160, 36, wood, 0, 0, 0), e * (len / 2 - 19), (TOP + BOT) / 2, 0)
+      // the stems: tubes from the bottom rail up to each element
+      const stem = (x0: number, x1: number, y1: number, bow: number, r = 9) => {
+        const curve = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(x0 * S, (BOT - 10) * S, (out + 6) * S),
+          new THREE.Vector3(((x0 + x1) / 2 + bow) * S, ((BOT + y1) / 2) * S, (out + 14) * S),
+          new THREE.Vector3(x1 * S, y1 * S, (out + 10) * S),
+        ])
+        const m = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, r * S, 8, false), wood)
+        m.castShadow = true
+        frame.add(m)
+      }
+      const half = len / 2 - 60
+      // one big pad and one smaller, a flower, a bud, and reeds - each panel its own arrangement
+      // a pad with its veins carved proud of the face, radiating from the eye
+      const pad = (R: number, depth: number): THREE.Group => {
+        const grp = new THREE.Group()
+        grp.add(extrude(leafShape(R), depth))
+        const eye = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.09 * S, R * 0.07 * S, 10 * S, 10), wood)
+        eye.rotation.x = Math.PI / 2
+        eye.position.z = (depth + 8) * S
+        grp.add(eye)
+        for (let i = 0; i < 9; i++) {
+          const a = (i / 9) * Math.PI * 2 + 0.2
+          const vl = R * 0.78
+          const v = box(vl, 7, 7, wood, 0, 0, 0)
+          v.position.set(Math.cos(a) * (vl / 2 + R * 0.08) * S, Math.sin(a) * (vl / 2 + R * 0.08) * S, (depth + 6) * S)
+          v.rotation.z = a
+          grp.add(v)
+        }
+        return grp
+      }
+      const bigX = (rnd() - 0.5) * half, bigY = BOT + 900 + rnd() * 700, bigR = 250 + rnd() * 70
+      put(pad(bigR, 26), bigX, bigY, 8, -0.28 + rnd() * 0.2, 0, rnd() * 6.3)
+      stem(bigX * 0.4, bigX, bigY - bigR * 0.1, 60)
+      const smX = -bigX * 0.8 + (rnd() - 0.5) * 200, smY = BOT + 300 + rnd() * 400, smR = 150 + rnd() * 60
+      put(pad(smR, 22), smX, smY, 6, 0.35, 0, rnd() * 6.3)
+      stem(smX * 0.6, smX, smY, -40)
+      const flX = Math.max(-half, Math.min(half, -bigX * 0.5 + (rnd() - 0.5) * 300)), flY = TOP - 380 - rnd() * 500
+      {
+        const fl = new THREE.Group()
+        for (let i = 0; i < 9; i++) {
+          const p = extrude(petalShape(150 + (i % 2) * 30, 48), 14)
+          p.rotation.z = (i / 9) * Math.PI * 2
+          p.rotation.x = 0.35
+          fl.add(p)
+        }
+        for (let i = 0; i < 6; i++) {
+          const p = extrude(petalShape(95, 34), 12)
+          p.rotation.z = (i / 6) * Math.PI * 2 + 0.3
+          p.rotation.x = 0.7
+          p.position.z = 14 * S
+          fl.add(p)
+        }
+        const pod2 = new THREE.Mesh(new THREE.CylinderGeometry(34 * S, 26 * S, 30 * S, 12), wood)
+        pod2.rotation.x = Math.PI / 2
+        pod2.position.z = 30 * S
+        fl.add(pod2)
+        put(fl, flX, flY, 10, -0.5, 0, rnd() * 6.3)
+        stem(flX * 0.3, flX, flY - 60, -80)
+      }
+      const budX = Math.max(-half, Math.min(half, bigX + (rnd() > 0.5 ? 1 : -1) * (bigR + 120))), budY = bigY + 350 + rnd() * 300
+      const bud = new THREE.Mesh(new THREE.SphereGeometry(48 * S, 12, 10), wood)
+      bud.scale.set(1, 2.1, 0.7)
+      put(bud, budX, budY, 22, 0.2, 0, 0.25)
+      stem(budX * 0.5, budX, budY - 90, 30, 7)
+      for (let i = 0; i < 3; i++) {                                     // reeds
+        const rx = (rnd() - 0.5) * (len - 200), rh = 700 + rnd() * 1500
+        const reed = box(14, rh, 10, wood, 0, 0, 0)
+        put(reed, rx, BOT + rh / 2, 4, 0, 0, (rnd() - 0.5) * 0.12)
+      }
+    }
+  })
+  return g
+}
+
 function curvedBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   for (const w of model.walls) {
@@ -5739,6 +5899,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     if (moss) root.add(moss)
     const pillar = apsePillar(M)
     if (pillar) root.add(pillar)
+    root.add(carvedScreen(M))
     root.add(guitarWall(M))
     const art = sweepArt(M)
     // and the parents' arch: three canvases over the tapering planter, lit

@@ -924,20 +924,9 @@ def wc_pts(off=0.0, n=90):
 
 
 def wc_wall():
-    """The apse as filled bands, with help's room's door taken out of it."""
-    h = D.T_WC / 2
-    runs, cur = [], []
-    for u in np.linspace(0, 1, 200):
-        if D.WC_DOOR[0] <= u <= D.WC_DOOR[1]:
-            if len(cur) > 1:
-                runs.append(cur)
-            cur = []
-        else:
-            cur.append(u)
-    if len(cur) > 1:
-        runs.append(cur)
-    return [[wc_pt(u, -h) for u in run] + [wc_pt(u, h) for u in reversed(run)]
-            for run in runs]
+    """The arc is gone (Karan's call: a flat door instead of the curved one).
+    Kept so every caller still works."""
+    return []
 
 
 # ------------------------------------------------- the shower apse, into the den
@@ -976,7 +965,7 @@ def wc_console(dep=300, x_end=15800, bowl_x=None):
     passage to pass along it to the WC's door.  It stops at 15800, 780 long:
     east of it the same wall carries help's room's door into the passage
     (design.NEW_WALLS), which is how help reaches the WC without crossing
-    the great room."""
+    the great room; the WC's own flat door is at the passage's east end."""
     xw = D.WC_PASS_W + D.T_INT / 2                      # the west wall's inner face
     ys, yf = D.WC_PASS_S - D.T_INT / 2, D.WC_PASS_S - D.T_INT / 2 - dep   # the south wall's face, the front
     band = [(xw, ys), (xw, yf), (x_end, yf), (x_end, ys)]
@@ -1000,11 +989,23 @@ def wc_out_door(hinge=15020, jamb=15820, y=8400):
             ('line', hinge, y, hinge, y - w, 'solid')]
 
 
-def wc_door(leaf=60):
-    """Help's room's door into the WC, curved on the apse and drawn shut."""
-    us = np.linspace(*D.WC_DOOR, 30)
-    return [[wc_pt(u, -leaf / 2) for u in us]
-            + [wc_pt(u, leaf / 2) for u in reversed(us)]]
+def wc_door():
+    """The curved leaf is gone with the arc; see wc_flat_door."""
+    return []
+
+
+def wc_flat_door():
+    """The guest WC's flat door at the passage's east end, in the WC's west
+    wall: hinged on the den-wall jamb, swinging OUT into the passage, drawn
+    open against the passage's north wall — the strip inside is 770 deep and
+    a leaf swinging in would clip the pan."""
+    hy, jy = D.WC_DOOR_Y
+    w = jy - hy
+    hx = D.WC_CX - D.T_INT / 2                          # the wall's passage face
+    arc = [(hx - w * math.sin(math.radians(a)), hy + w * math.cos(math.radians(a)))
+           for a in np.linspace(0, 90, 24)]
+    return [('poly', [(hx, hy)] + arc, 'light'),
+            ('line', hx, hy, hx - w, hy, 'solid')]
 
 
 def kitchen_counter(dep=600, r_end=300, r_ease=200):
@@ -1982,22 +1983,17 @@ def lobby_polys():
     helps = ([(pw, D.BAY_N)] + _gal_arc(ro, D._BN1, D._A1)
              + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (18825, D.BAY_S),
                 (18825, 9550), (D.WC_CX, 9550), (D.WC_CX, ps), (pw, ps)])
-    # the WC: the strip on the main duct plus the quarter circle at its west
-    # end, inside the arc's inner face
+    # the WC: the strip on the main duct, from its west wall's inner face
     # (to the main duct wall's west face, 18775: the wall is 18775-18925)
-    # ...and the shower apse north of the strip, inside the ellipse's inner
-    # face, the stub's inner face (x = WC_CX + 55) joining the two curves
-    inner = wc_pts(-D.T_WC / 2)
-    xs = D.WC_CX + D.T_WC / 2
-    wc = ([(18775, D.SH_CY - D.SH_B + D.T_WC / 2), (18775, D.WC_CY), (D.WC_CX, D.WC_CY)]
-          + [q for q in inner if q[0] <= xs] + [(xs, inner[-1][1]), (xs, D.SH_CY)]
+    # ...and the shower apse north of the strip, inside the ellipse's inner face
+    xs = D.WC_CX + D.T_INT / 2
+    wc = ([(18775, D.SH_CY - D.SH_B + D.T_WC / 2), (18775, D.WC_CY), (xs, D.WC_CY), (xs, D.SH_CY)]
           + [q for q in sh_pts(-D.T_WC / 2) if q[0] >= xs])
-    # the passage: the great-room door's west jamb to the arc's outer face
-    # (the arc's outer face runs on into the den wall at its top: only the
-    # part below the wall's face is the passage's edge)
-    outer = [q for q in wc_pts(D.T_WC / 2) if q[1] >= D.WC_DIE]
-    passage = ([(D.WC_PASS_W + t, D.WC_DIE), (D.WC_CX, D.WC_DIE)]
-               + list(reversed(outer)) + [(D.WC_PASS_W + t, D.WC_PASS_S - t)])
+    # the passage: a straight run, the great-room door's west jamb to the
+    # WC's west wall, the den's wall to the block's line
+    xe = D.WC_CX - D.T_INT / 2
+    passage = [(D.WC_PASS_W + t, D.WC_DIE), (xe, D.WC_DIE), (xe, D.WC_PASS_S - t),
+               (D.WC_PASS_W + t, D.WC_PASS_S - t)]
     return kitchen, helps, gallery, wc, passage
 
 

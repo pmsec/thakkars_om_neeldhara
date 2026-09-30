@@ -392,17 +392,19 @@ _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
 # washes their hands without going into the wet room.  Help's room has its
 # own door into the passage, in that same south wall east of the console.
 #
-# Its west end is still an ARC: a quarter circle of 770, struck from the
-# block's west end, bulging out into the passage, the door on it.  The
+# THE ARC AT ITS WEST END IS GONE (Karan's call): it carried a curved door,
+# and he wants a FLAT door.  The WC's west wall is straight now, on the line
+# of the block's west end, from the den's wall to the block, and the door is
+# in it: 700, hinged on the den-wall jamb, swinging OUT into the passage —
+# the strip is 770 deep and a leaf swinging in would clip the pan.  The
 # passage runs from the great room's door (where it always was, so the WC
-# still serves guests) east along the strip to that curved door, walled off
-# help's room, which wraps it as it wrapped the apse.
-WC_CX, WC_CY = 17430, 9320         # the corner it is struck from: the block's west end
-WC_A, WC_B = 770, 770              # a circle, on the centreline of the wall
-T_WC = 110
-WC_SPRING = WC_CX - WC_A           # 16660, on the block's line
+# still serves guests) straight east to that door, walled off help's room.
+WC_CX, WC_CY = 17430, 9320         # the west wall's line: the block's west end; the block's north face
+WC_A, WC_B = 770, 770              # (the old arc's radius; wc_pt still speaks it)
+T_WC = 110                         # the shower apse's wall
+WC_SPRING = WC_CX - WC_A           # 16660 (the old arc's foot; the planter line still uses it)
 WC_DIE = WC_CY - WC_B              # 8550, on the den's wall
-WC_DOOR = (0.25, 0.83)             # the passage's door, as a fraction of the arc: 700
+WC_DOOR_Y = (8580, 9280)           # the flat door: the den-wall jamb (hinge) to the block jamb
 WC_PASS_W = 14945                  # the passage's west wall, on the great-room door's west jamb
 WC_PASS_S = 9395                   # its south wall, on the block's line
 # the shower apse: a quarter ellipse struck from the den's south-east corner,
@@ -512,20 +514,20 @@ NEW_WALLS = [
     # bunk lies under it and past it without touching it.  Below that the room
     # runs straight through to the east wall.
     # the WC's passage: its west wall on the great-room door's west jamb, its
-    # south wall on the block's line, running to the block; the WC's own arc
-    # foots on that wall and its north wall is the den's
+    # south wall on the block's line, running to the WC's west wall; its
+    # north wall is the den's
     (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S + T_INT / 2, T_INT, []),
     # ...with HELP'S ROOM'S DOOR in it (Karan's call): 700 at X 15850-16550,
-    # east of the basin console and short of the arc's foot, swinging south
+    # east of the basin console, swinging south
     # into help's room — help reaches the WC through the passage, not the
     # great room.  (The WC's other sides are the duct, the structural block
     # and the shower apse: the passage is the only way in.)
     (WC_PASS_W - T_INT / 2, WC_PASS_S, WC_CX, WC_PASS_S, T_INT,
      [(15850 - (WC_PASS_W - T_INT / 2), 16550 - (WC_PASS_W - T_INT / 2))]),
-    # the stub that joins the three curves' ends at the den wall: the passage
-    # arc dies into its south face, the shower apse springs off its north
-    # face, both on x = WC_CX; the duct wall east of it is demolished
-    (WC_CX, BODY_S, WC_CX, WC_CY - WC_B + T_WC / 2, T_WC, []),
+    # the WC's west wall, on x = WC_CX from the den's face to the block, the
+    # shower apse springing off its north end; its FLAT DOOR in it, the whole
+    # 770 of the strip bar the jambs.  (The duct wall east of it is demolished.)
+    (WC_CX, BODY_S, WC_CX, WC_CY, T_INT, [(WC_DOOR_Y[0] - BODY_S, WC_DOOR_Y[1] - BODY_S)]),
     # THE WALL BETWEEN HELP'S ROOM AND THE STORE IS GONE.  With it up, help's
     # room was a 4.4 m2 triangle with a 1025 west leg, and the 1900 bunk sat on
     # the only floor in front of the WC door: a 700 body could not reach the

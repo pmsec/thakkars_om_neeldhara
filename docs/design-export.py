@@ -132,6 +132,27 @@ def op(id_, type_, a, b, head=2100, sill=None, label=None, extra=''):
 WALLS = []
 
 
+def _polyline_at(line, x):
+    """Distance along a polyline to where its (final, straight) run crosses x."""
+    acc = 0.0
+    for a, b in zip(line, line[1:]):
+        seg = math.hypot(b[0] - a[0], b[1] - a[1])
+        if a[1] == b[1] and min(a[0], b[0]) <= x <= max(a[0], b[0]):
+            return acc + abs(x - a[0])
+        acc += seg
+    raise ValueError(x)
+
+
+# the WC passage's west + south walls as one polyline round its rounded corner
+_pass_line = ([(D.WC_PASS_W, 8462.5), (D.WC_PASS_W, D.WC_PASS_S - D.PASS_R)]
+              + [(x, y) for x, y in R._pass_corner(D.PASS_R, 20)][1:-1]
+              + [(D.WC_PASS_W + D.PASS_R, D.WC_PASS_S), (D.WC_CX, D.WC_PASS_S), (D.WC_CX, 9435)])
+
+
+def _pass_at(x):
+    return _polyline_at(_pass_line, x)
+
+
 def _sl_p_from():
     """Where the parents' pod slider starts: the y at which the arch band's
     OUTER face (115 off the centreline, the band being 230 here) crosses the
@@ -236,14 +257,14 @@ WALLS += [
     # THE GUEST / SERVICE WC IS ON THE MAIN DUCT NOW (Karan's call): its
     # passage's west wall on the great-room door's west jamb, its south wall
     # on the builder's block line, running to the block
-    w('W-WC-PASS-W', [(D.WC_PASS_W, 8462.5), (D.WC_PASS_W, D.WC_PASS_S)], 150, 'interior',
-      notes="The WC passage's west wall, on the great-room door's west jamb."),
-    # ...ending on the block's own centreline, so the graph closes there
-    # ...carrying help's room's door, east of the basin console
-    w('W-WC-PASS-S', [(D.WC_PASS_W, D.WC_PASS_S), (D.WC_CX, D.WC_PASS_S), (D.WC_CX, 9435)], 150, 'interior',
-      [op('D-HELP-PASS', 'door', 15850 - D.WC_PASS_W, 16550 - D.WC_PASS_W,
+    # ...and its south wall on the builder's block line, running to the WC's
+    # west wall, carrying help's room's door east of the basin console; the
+    # two are ONE polyline, joined by the rounded south-west corner (Karan's
+    # call), 300 on the centreline
+    w('W-WC-PASS', _pass_line, 150, 'interior',
+      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16550),
           label="Help's room — into the WC passage, hinged west, swings into help's room")],
-      notes="The WC passage's south wall, on the line of the builder's block; it runs to the WC's west wall."),
+      notes="The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall."),
 ]
 
 # --- the entry gallery's two straight legs (230 thick, on the columns)

@@ -180,21 +180,19 @@ export const building: BuildingData = {
       ],
     },
     {
-      id: 'W-WC-PASS-W',
-      points: [{ x: 14945, y: 8462.5 }, { x: 14945, y: 9395 }],
-      thickness: 150,
-      kind: 'interior',
-      notes: "The WC passage's west wall, on the great-room door's west jamb.",
-    },
-    {
-      id: 'W-WC-PASS-S',
-      points: [{ x: 14945, y: 9395 }, { x: 17430, y: 9395 }, { x: 17430, y: 9435 }],
+      id: 'W-WC-PASS',
+      points: [
+        { x: 14945, y: 8462.5 }, { x: 14945, y: 9095 }, { x: 14946.025, y: 9119.774 }, { x: 14949.092, y: 9144.378 }, { x: 14954.18, y: 9168.646 }, { x: 14961.255, y: 9192.41 },
+        { x: 14970.268, y: 9215.509 }, { x: 14981.158, y: 9237.784 }, { x: 14993.85, y: 9259.084 }, { x: 15008.258, y: 9279.264 }, { x: 15024.283, y: 9298.184 }, { x: 15041.816, y: 9315.717 },
+        { x: 15060.736, y: 9331.742 }, { x: 15080.916, y: 9346.15 }, { x: 15102.216, y: 9358.842 }, { x: 15124.491, y: 9369.732 }, { x: 15147.59, y: 9378.745 }, { x: 15171.354, y: 9385.82 },
+        { x: 15195.622, y: 9390.908 }, { x: 15220.226, y: 9393.975 }, { x: 15245, y: 9395 }, { x: 17430, y: 9395 }, { x: 17430, y: 9435 },
+      ],
       thickness: 150,
       kind: 'interior',
       openings: [
-        { id: 'D-HELP-PASS', type: 'door', at: [905, 1605], head: 2100, hinge: 0, side: 1, label: "Help's room — into the WC passage, hinged west, swings into help's room" },
+        { id: 'D-HELP-PASS', type: 'door', at: [1708.605, 2408.605], head: 2100, hinge: 0, side: 1, label: "Help's room — into the WC passage, hinged west, swings into help's room" },
       ],
-      notes: "The WC passage's south wall, on the line of the builder's block; it runs to the WC's west wall.",
+      notes: "The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall.",
     },
     {
       id: 'W-GAL-W',

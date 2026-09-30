@@ -1467,11 +1467,12 @@ _ONCE = [
     # retrofit.wc_console().
     # The pan on the main duct's wall, facing west, 600 clear in front of it
     # to the door.  The shower is in the apse north of it, on the same duct
-    # wall: 800 x 800 in the corner the ellipse is struck from, no screen —
-    # the whole WC is the wet room, the floor trap between the two.  The
-    # basin is outside, in the passage: retrofit.wc_console.
+    # wall: 750 x 750 in the corner the ellipse is struck from (the largest
+    # square inside the ellipse's inner face: its far corner is 35 inside),
+    # no screen — the whole WC is the wet room, the floor trap between the
+    # two.  The basin is outside, in the passage: retrofit.wc_console.
     ('wc-e',     18095, 8740, 18775, 9130, 'pan on the main duct wall, facing west  ·  floor trap between pan and shower'),
-    ('shower',   SH_CX - 800, SH_CY - 800, SH_CX, SH_CY, 'walk-in, 800 x 800 in the apse on the duct wall, no screen'),
+    ('shower',   SH_CX - 750, SH_CY - 750, SH_CX, SH_CY, 'walk-in, 750 x 750 in the apse on the duct wall, no screen'),
     # ------------------------------------------------------ the entry gallery
     # THE U HAS TWO LONG FACES AND NOTHING WAS AGAINST EITHER OF THEM.  Its
     # legs run Y 9325-11125 with 3220 between their inner faces, so both can

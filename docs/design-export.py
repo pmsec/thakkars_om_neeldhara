@@ -447,7 +447,7 @@ WALLS += [
     w('W-WC-APSE', _sh, D.T_WC, 'interior',
       [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=2100,
           label="Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage")],
-      label="Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den"),
+      label="Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den, its den face in walnut slats floor to ceiling: a pillar in the pod, the guitars on it, three spots at its crown"),
 ]
 
 # --- pod screens: the real curves, flattened, with the real portals

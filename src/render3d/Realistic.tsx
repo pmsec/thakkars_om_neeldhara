@@ -4362,6 +4362,88 @@ function mossWall(M: Mats): THREE.Group | null {
  * built as the thing: an extruded body, a neck with frets and a headstock
  * with its tuners, strings from bridge to nut, pickups or a soundhole.
  */
+/**
+ * The guest WC's shower apse as the den sees it: the quarter ellipse on the
+ * wall's centreline (centre at the den's corner, half-axes read off
+ * W-WC-APSE) and the wall's half thickness. Null in a home without it.
+ */
+type ApseCurve = { cx: number; cy: number; a: number; b: number; half: number }
+function apseCurve(): ApseCurve | null {
+  const w = model.walls.find((wl) => wl.id === 'W-WC-APSE')
+  if (!w) return null
+  const ell = w.points.filter((p) => p.y < 8400 && p.x <= 18775.5)
+  if (ell.length < 4) return null
+  const cx = 18775, cy = 8400
+  return { cx, cy, a: cx - Math.min(...ell.map((p) => p.x)), b: cy - Math.min(...ell.map((p) => p.y)), half: (w.thickness || 110) / 2 }
+}
+/** A point on the apse at angle th (0 at the foot on the den wall, pi/2 at the apex on the duct), pushed `off` out toward the den, with that outward normal. */
+function apsePoint(c: ApseCurve, th: number, off: number): { x: number; y: number; nx: number; ny: number } {
+  const cs = Math.cos(th), sn = Math.sin(th)
+  const nx0 = -cs / c.a, ny0 = -sn / c.b, m = Math.hypot(nx0, ny0)
+  const nx = nx0 / m, ny = ny0 / m
+  return { x: c.cx - c.a * cs + off * nx, y: c.cy - c.b * sn + off * ny, nx, ny }
+}
+
+/**
+ * THE APSE AS A PILLAR (Karan's call): its den face clad in vertical walnut
+ * slats floor to ceiling on a dark plinth, so the curve reads as one big
+ * timber column in the pod rather than a bathroom wall, and three warm
+ * recessed spots in the ceiling in front of it washing the slats.
+ */
+function apsePillar(M: Mats): THREE.Group | null {
+  const c = apseCurve()
+  if (!c) return null
+  const g = new THREE.Group()
+  const H = model.data.levels.ceiling
+  const SLAT = 88, GAP = 12, T = 28, PLINTH = 60
+  const N = 720
+  const step = (i: number) => (i / N) * (Math.PI / 2)
+  let L = 0
+  let prev = apsePoint(c, 0, c.half)
+  for (let i = 1; i <= N; i++) {
+    const p = apsePoint(c, step(i), c.half)
+    L += Math.hypot(p.x - prev.x, p.y - prev.y)
+    prev = p
+  }
+  const n = Math.max(1, Math.round(L / (SLAT + GAP)))
+  const pitch = L / n
+  let acc = 0, next = pitch / 2
+  prev = apsePoint(c, 0, c.half)
+  for (let i = 1; i <= N; i++) {
+    const th = step(i)
+    const p = apsePoint(c, th, c.half)
+    acc += Math.hypot(p.x - prev.x, p.y - prev.y)
+    prev = p
+    if (acc < next) continue
+    next += pitch
+    const q = apsePoint(c, th, c.half + T / 2 + 2)
+    const tx = q.ny, ty = -q.nx                                    // the tangent, along the face
+    const psi = Math.atan2(-ty, tx)
+    const slat = box(SLAT, H - PLINTH - 40, T, M.wallWood, 0, 0, 0)
+    slat.rotation.y = psi
+    slat.position.set(q.x * S, ((H - 40 + PLINTH) / 2) * S, q.y * S)
+    g.add(slat)
+    const base = box(pitch + 2, PLINTH, T + 6, M.gasket, 0, 0, 0)
+    base.rotation.y = psi
+    base.position.set(q.x * S, (PLINTH / 2) * S, q.y * S)
+    g.add(base)
+  }
+  // the accent lights: three recessed spots at the crown, 320 out from the slats
+  for (const deg of [18, 50, 80]) {
+    const q = apsePoint(c, (deg * Math.PI) / 180, c.half + T + 320)
+    const can = new THREE.Mesh(new THREE.CylinderGeometry(42 * S, 42 * S, 10 * S, 20), M.gasket)
+    can.position.set(q.x * S, (H - 6) * S, q.y * S)
+    g.add(can)
+    const glow = new THREE.Mesh(new THREE.CylinderGeometry(24 * S, 24 * S, 4 * S, 16), new THREE.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffd7a3, emissiveIntensity: 1.6 }))
+    glow.position.set(q.x * S, (H - 12) * S, q.y * S)
+    g.add(glow)
+    const light = new THREE.PointLight(0xffd7a3, 0.9, 3.0, 1.7)
+    light.position.set(q.x * S, (H - 160) * S, q.y * S)
+    g.add(light)
+  }
+  return g
+}
+
 function guitarWall(M: Mats): THREE.Group {
   const g = new THREE.Group()
   const WALL = 8400                                                 // the den's south wall face
@@ -4446,13 +4528,23 @@ function guitarWall(M: Mats): THREE.Group {
     into.add(inst)
     hanger(x, hookH, into)
   }
-  // THE GUEST WC'S SHOWER APSE took the den's south-east corner (its outer
-  // face foots at x 17375), and the kit turned on to the main duct wall. The
-  // two guitars stay on the south wall, in the pocket between the pod glass
-  // and the apse; the ukulele hangs on the duct wall's west face over the
-  // kit, which faces it - that group is built on the same plane and turned
-  // 90 on to x = 18775.
-  const west = new THREE.Group()
+  // THE INSTRUMENTS HANG ON THE APSE (Karan's call), the walnut-slatted
+  // curve that reads as a pillar in the pod: each is built on the flat
+  // plane z = WALL as before, inside a group that carries that plane on to
+  // the curve at its own angle - the point on the slats' face becomes the
+  // group's local (0, y, WALL), facing out into the den. Without an apse
+  // (another home) they fall back to the flat wall at their old x.
+  const curve = apseCurve()
+  const onCurve = (deg: number): THREE.Group => {
+    const grp = new THREE.Group()
+    g.add(grp)
+    if (!curve) return grp
+    const q = apsePoint(curve, (deg * Math.PI) / 180, curve.half + 32)
+    const phi = Math.atan2(-q.nx, -q.ny)
+    grp.rotation.y = phi
+    grp.position.set((q.x - Math.sin(phi) * WALL) * S, 0, (q.y - Math.cos(phi) * WALL) * S)
+    return grp
+  }
   // ---- the electric: a red double-cutaway, cream pickguard, three pickups, a maple neck
   {
     const e = new THREE.Group()
@@ -4472,7 +4564,7 @@ function guitarWall(M: Mats): THREE.Group {
       e.add(knob)
     }
     neckAndStrings(e, 640, 44, D, 6, -305, maple, maple)
-    hang(e, 16560, 1880, 640, D, 0.03)
+    hang(e, curve ? 0 : 16560, 1880, 640, D, 0.03, onCurve(54))
   }
   // ---- the acoustic: a dreadnought, spruce top over mahogany, a soundhole and rosette
   {
@@ -4492,7 +4584,7 @@ function guitarWall(M: Mats): THREE.Group {
     a.add(box(150, 24, 10, rosewood, 0, -345, D + 6))                                  // the bridge
     a.add(box(80, 6, 5, cream, 0, -340, D + 12))                                       // the saddle
     neckAndStrings(a, 560, 46, D, 6, -340, mahogany, mahogany)
-    hang(a, 17000, 1900, 560, D, -0.03)
+    hang(a, curve ? 0 : 17000, 1900, 560, D, -0.03, onCurve(26))
   }
   // ---- the ukulele: a soprano in koa, half the acoustic, four strings
   {
@@ -4505,11 +4597,8 @@ function guitarWall(M: Mats): THREE.Group {
     u.add(hole)
     u.add(box(70, 14, 8, rosewood, 0, -170, D + 5))
     neckAndStrings(u, 240, 36, D, 4, -170, koa, koa, 0.6)
-    hang(u, 17480, 1720, 240, D, 0.05, west)
+    hang(u, curve ? 0 : 17480, 1720, 240, D, 0.05, onCurve(78))
   }
-  west.rotation.y = Math.PI / 2                                     // local z (the wall's plane) -> x, local x -> -z
-  west.position.set((18775 - WALL) * S, 0, (17480 + 6760) * S)      // the plane on x = 18775, the uke at y = 6760
-  g.add(west)
   return g
 }
 
@@ -5505,6 +5594,8 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     if (petals) root.add(petals)
     const moss = mossWall(M)
     if (moss) root.add(moss)
+    const pillar = apsePillar(M)
+    if (pillar) root.add(pillar)
     root.add(guitarWall(M))
     const art = sweepArt(M)
     // and the parents' arch: three canvases over the tapering planter, lit

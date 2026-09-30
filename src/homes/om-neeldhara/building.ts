@@ -476,7 +476,7 @@ export const building: BuildingData = {
       openings: [
         { id: 'D-WC-FLAT', type: 'door', at: [115, 815], head: 2100, hinge: 1, side: 1, label: "Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage" },
       ],
-      label: 'Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den',
+      label: 'Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den, its den face in walnut slats floor to ceiling: a pillar in the pod, the guitars on it, three spots at its crown',
     },
     {
       id: 'W-CURVE-PARENTS',

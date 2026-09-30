@@ -1050,8 +1050,8 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     return [('poly', pts, 'solid')]
 
 
-def drum_kit(cx=18455, kick_y=6600, face='east'):
-    """Karan's electronic kit, on the den's duct wall, ON ITS MAT.
+def drum_kit(cx=16812, kick_y=8176, face='south'):
+    """Karan's electronic kit, in the den's south-west pocket, ON ITS MAT.
 
     THE KIT IS SIZED TO ITS MAT NOW (Karan's word): it stands on a 4 x 3 ft
     floor mat, 1219 x 914, and every pad, cymbal and the throne is inside
@@ -1061,13 +1061,15 @@ def drum_kit(cx=18455, kick_y=6600, face='east'):
     mat's back edge.  The mat is drawn as a dashed rectangle and is the
     kit's footprint.
 
-    It faces EAST into the main duct wall, the kick 136 off it (the mat's
-    edge), the rest of the pod behind the drummer; the mat's south edge
-    clears the guest WC's shower apse by 140 at its nearest.  `face` =
-    'south' gives the same layout turned to face south, for the record.
+    It stands in the pocket between the pod screen console and the guest
+    WC's shower apse, FACING SOUTH into the den's south wall (Karan's word),
+    the mat's front edge 40 off the wall, 13 clear of the console's face and
+    of the apse's foot either side — which is why the apse's foot moved 60
+    east.  The guitars hang on that wall above it.  `face` = 'east' gives
+    the same layout turned to face the duct wall, for the record.
 
-    Drawn right-handed: facing east, the drummer's right is SOUTH, so the
-    floor tom and the ride are on the south side and the hi-hat is north.
+    Drawn right-handed: facing south, the drummer's right is WEST, so the
+    floor tom and the ride are on the west side and the hi-hat is east.
     Flip it about the kick's line for a left-hander; nothing else moves.
     """
     def P(dx, dy):

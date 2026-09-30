@@ -411,8 +411,11 @@ WC_PASS_S = 9395                   # its south wall, on the block's line
 # its foot on the WC's west corner (the arc's own x) and its apex on the main
 # duct wall, bulging north-west into the den
 SH_CX, SH_CY = 18775, BODY_S       # the den's corner: the duct wall's face, the den wall's face
-SH_A = SH_CX - WC_CX               # 1345 along the den wall
-SH_B = 1000                        # 1000 up the duct wall
+# its foot is 60 east of the WC wall's centreline — still within that wall's
+# thickness — so the pocket west of it takes the drum kit's 4 ft mat: from
+# the pod screen console's face at 16190 to the apse's outer foot is 1245
+SH_A = SH_CX - WC_CX - 60          # 1285 along the den wall
+SH_B = 1040                        # 1040 up the duct wall (the 750 shower's corner stays inside)
 
 
 def wc_y(x):

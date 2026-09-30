@@ -419,7 +419,9 @@ WALLS += [
 # so hinge 1), swinging out into the passage — the strip inside is 770 deep.
 # (it starts where the passage's south wall turns down to the block, so the
 # two touch at a node and never run along one line)
-_sh = [(D.WC_CX, D.WC_PASS_S), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)][1:] + [(18850, D.SH_CY - D.SH_B)]
+# (the apse's foot is 60 east of the wall's line, within its thickness: a
+# short jog along the den's face joins the two)
+_sh = [(D.WC_CX, D.WC_PASS_S), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
 WALLS += [
     w('W-WC-APSE', _sh, D.T_WC, 'interior',
       [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=2100,
@@ -566,8 +568,8 @@ ROOMS = [
      'Oak plank', 'The west pod: six-seat dining behind the curved glass screen, serving '
      'hatch straight from the kitchen.'),
     ('R-K-DEN', 'Music + work den', (18000, 5000), 'habitable', 'karan', True,
-     'Oak plank', 'The east pod: Karan’s work console on the screen, e-drums on the '
-     'duct wall north of the guest WC’s shower apse, two recliners facing the deck.'),
+     'Oak plank', 'The east pod: Karan’s work console on the screen, e-drums on their '
+     'mat in the south-west pocket beside the guest WC’s shower apse, two recliners facing the deck.'),
     ('R-GREAT', 'Great room', (12240, 5000), 'habitable', 'shared', True,
      'Oak plank', 'The heart. Party wall gone; one floor with the deck through a 6250 '
      'opening with no doors; the apse and its two sconces at the south.'),

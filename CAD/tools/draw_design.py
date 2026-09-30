@@ -358,7 +358,7 @@ def main():
     for x1, y1, x2, y2, t, ops in D.NEW_WALLS:
         for q in wall_quads(x1, y1, x2, y2, t, ops):
             s.poly(q, fill=NEWW, stroke='none')
-    for q in R.wc_wall():                # the guest WC's arc — same masonry
+    for q in R.wc_wall() + R.sh_wall():  # the guest WC's arc and shower apse — same masonry
         s.poly(q, fill=NEWW, stroke='none')
     for q in R.mb_wall() + R.east_polys(R.mb_wall) + R.gm_wall():   # the three sweeps
         s.poly(q, fill=NEWW, stroke='none')
@@ -458,9 +458,10 @@ def main():
             continue
         s.rect(a, b, c, d, fill='none', stroke='#b0a89c', stroke_width=0.9,
                stroke_dasharray='6 5')
-        # the note at the box's centre, or near its top in a shallow one where
-        # a room's own label wants the centre (the guest WC's strip)
-        ny = (b + d) / 2 if d - b > 1000 else b + 130
+        # the note at the box's centre, or along its bottom edge in a shallow
+        # one where a room's own label wants the centre (the guest WC's strip:
+        # the band under the pan, above the builder's block)
+        ny = (b + d) / 2 if d - b > 1000 else d - 110
         s.o.append(f'<text x="{s.X((a + c) / 2):.1f}" y="{s.Y(ny) + 4:.1f}" '
                    f'font-size="10" fill="#9a9184" text-anchor="middle" letter-spacing="1" '
                    f'font-family="Helvetica,Arial,sans-serif" data-keep="1">RECLAIMED DUCT</text>')

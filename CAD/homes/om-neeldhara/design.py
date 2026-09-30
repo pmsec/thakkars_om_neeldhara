@@ -381,10 +381,14 @@ _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
 #
 # It is a strip: the den's wall to the north, the builder's 1495 x 230
 # structural block to the south, the main duct to the east — 770 clear
-# between wall and block, and that is fixed.  So it is a WC and a basin, no
-# shower: the pan on the duct wall facing west, 600 in front of it, the basin
-# set into a small curved console at the far end.  A hand shower over the
-# floor trap makes it the wet-room service toilet the builder drew.
+# between wall and block, and that is fixed.  The pan is on the duct wall
+# facing west, 600 in front of it.  THE SHOWER IS IN AN APSE INTO THE DEN
+# (Karan's call): the duct enclosure's north wall comes down between the
+# strip's west corner and the main duct, and a quarter-ellipse wall struck
+# from the den's corner — 1345 along the den wall, 1000 up the duct wall —
+# closes the shower off the den, the rose on the duct wall.  The basin is
+# NOT inside: it is in the passage, in a curved console on the outer face
+# of the arc, so a guest washes their hands without going into the wet room.
 #
 # Its west end is still an ARC: a quarter circle of 770, struck from the
 # block's west end, bulging out into the passage, the door on it.  The
@@ -399,6 +403,12 @@ WC_DIE = WC_CY - WC_B              # 8550, on the den's wall
 WC_DOOR = (0.25, 0.83)             # the passage's door, as a fraction of the arc: 700
 WC_PASS_W = 14945                  # the passage's west wall, on the great-room door's west jamb
 WC_PASS_S = 9395                   # its south wall, on the block's line
+# the shower apse: a quarter ellipse struck from the den's south-east corner,
+# its foot on the WC's west corner (the arc's own x) and its apex on the main
+# duct wall, bulging north-west into the den
+SH_CX, SH_CY = 18775, BODY_S       # the den's corner: the duct wall's face, the den wall's face
+SH_A = SH_CX - WC_CX               # 1345 along the den wall
+SH_B = 1000                        # 1000 up the duct wall
 
 
 def wc_y(x):
@@ -504,6 +514,10 @@ NEW_WALLS = [
     # foots on that wall and its north wall is the den's
     (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S + T_INT / 2, T_INT, []),
     (WC_PASS_W - T_INT / 2, WC_PASS_S, WC_CX, WC_PASS_S, T_INT, []),
+    # the stub that joins the three curves' ends at the den wall: the passage
+    # arc dies into its south face, the shower apse springs off its north
+    # face, both on x = WC_CX; the duct wall east of it is demolished
+    (WC_CX, BODY_S, WC_CX, WC_CY - WC_B + T_WC / 2, T_WC, []),
     # THE WALL BETWEEN HELP'S ROOM AND THE STORE IS GONE.  With it up, help's
     # room was a 4.4 m2 triangle with a 1025 west leg, and the 1900 bunk sat on
     # the only floor in front of the WC door: a 700 body could not reach the
@@ -1452,9 +1466,12 @@ _ONCE = [
     # struck off the apse itself, immediately inside the door — see
     # retrofit.wc_console().
     # The pan on the main duct's wall, facing west, 600 clear in front of it
-    # to the door; no shower — the strip is 770 — a hand shower over the floor
-    # trap.  The basin is in the curved console at the arc, retrofit.wc_console.
-    ('wc-e',     18095, 8740, 18775, 9130, 'pan on the main duct wall, facing west  ·  hand shower over the floor trap'),
+    # to the door.  The shower is in the apse north of it, on the same duct
+    # wall: 800 x 800 in the corner the ellipse is struck from, no screen —
+    # the whole WC is the wet room, the floor trap between the two.  The
+    # basin is outside, in the passage: retrofit.wc_console.
+    ('wc-e',     18095, 8740, 18775, 9130, 'pan on the main duct wall, facing west  ·  floor trap between pan and shower'),
+    ('shower',   SH_CX - 800, SH_CY - 800, SH_CX, SH_CY, 'walk-in, 800 x 800 in the apse on the duct wall, no screen'),
     # ------------------------------------------------------ the entry gallery
     # THE U HAS TWO LONG FACES AND NOTHING WAS AGAINST EITHER OF THEM.  Its
     # legs run Y 9325-11125 with 3220 between their inner faces, so both can

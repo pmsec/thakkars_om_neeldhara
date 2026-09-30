@@ -165,6 +165,10 @@ def pod_polys():
                 + [(bez_x(D.POD_W, D.BODY_S), D.BODY_S), (D.DUCT_W1 + 150, D.BODY_S),
                    (D.DUCT_W1 + 150, 6175), (D.POD_W0, 6175)])
     den = [(2 * D.MID - x, y) for x, y in fam_full]
+    # ...less the guest WC's shower apse in its south-east corner: the corner
+    # point (18775, BODY_S) becomes the ellipse's outer face, foot to apex
+    ci = den.index((2 * D.MID - D.DUCT_W1 - 150, D.BODY_S))
+    den[ci:ci + 1] = list(reversed(sh_pts(D.T_WC / 2)))
     # The great room's south edge is not one straight line any more: the
     # kitchen's bump takes a 300 bite out of its western half, from the pod
     # glazing across to the apse.  Nothing comes out of the eastern half — the
@@ -789,8 +793,8 @@ def lofts():
 
     Help's room: the whole room, at 2500 — not 2300, because the bunk's top
     berth is at about 1550 and whoever sits up on it wants 950 of headroom.
-    900 of loft under the 3505 ceiling.  The guest WC: the whole apse, at
-    2300, 1100 of loft.  (The utility strip's lofts are plain rectangles and
+    900 of loft under the 3505 ceiling.  The guest WC: the strip and its
+    shower apse, at 2300, 1100 of loft.  (The utility strip's lofts are plain rectangles and
     live in design.FURNITURE as 'under' rows.)  A loft over a wet room is
     a real deck — a thin slab or steel framing, not a false ceiling — and
     the WC's exhaust duct has to be routed round it."""
@@ -936,8 +940,37 @@ def wc_wall():
             for run in runs]
 
 
+# ------------------------------------------------- the shower apse, into the den
+def sh_pt(u, off=0.0):
+    """A point on the shower apse's quarter ellipse, offset normal to itself.
+
+    u runs 0 (its foot on the den wall, at the WC's west corner) to 1 (its
+    apex on the main duct wall).  off > 0 is outward — the den's side."""
+    th = u * math.pi / 2
+    c, s = math.cos(th), math.sin(th)
+    x, y = D.SH_CX - D.SH_A * c, D.SH_CY - D.SH_B * s
+    nx, ny = -c / D.SH_A, -s / D.SH_B
+    m = math.hypot(nx, ny)
+    return x + off * nx / m, y + off * ny / m
+
+
+def sh_pts(off=0.0, n=90):
+    return [sh_pt(u, off) for u in np.linspace(0, 1, n)]
+
+
+def sh_wall():
+    """The shower apse as one filled band: no door in it, the shower is
+    reached from the WC's own floor, which runs straight into it."""
+    h = D.T_WC / 2
+    us = list(np.linspace(0, 1, 120))
+    return [[sh_pt(u, -h) for u in us] + [sh_pt(u, h) for u in reversed(us)]]
+
+
 def wc_console(u0=0.0, u1=0.23, d0=100, d1=300, grow=0.12, fade=0.06):
-    """The curved console at the WC door, with the basin set into it.
+    """The curved console in the PASSAGE, on the arc's outer face, with the
+    basin set into it — outside the WC's door, so a guest washes their hands
+    without going into the wet room, and the WC keeps its 770 for the pan and
+    the shower.
 
     A straight vanity in an apse is a lie: it touches the wall at one point and
     gaps either side of it.  This one is struck off the same ellipse, offset
@@ -945,11 +978,12 @@ def wc_console(u0=0.0, u1=0.23, d0=100, d1=300, grow=0.12, fade=0.06):
     400 against a radius of curvature of 1154 at the springing, which is the
     tightest the apse ever gets.
 
-    It GROWS out of the wall rather than starting at full depth.  It begins at
-    the door jamb, and at 400 deep there it would leave only 425 of the 800
-    door to walk through; as a 120 ledge it leaves 645, and it is at full depth
-    by the time it reaches the bowl.  So the basin is the first thing your hand
-    reaches and there is still a door to walk through."""
+    It GROWS out of the wall rather than starting at full depth.  It begins on
+    the passage's south wall, at the arc's foot, and fades back into the arc
+    just short of the door's jamb, so the leaf (which swings out into the
+    passage, hinged at the other end) clears it.  Its face is 300 off the arc
+    at the bowl: the 770 passage keeps 470 beside it, and the person at the
+    basin stands in the passage's length, not across it."""
     h = D.T_WC / 2
     us = list(np.linspace(u0, u1, 60))
 
@@ -957,9 +991,9 @@ def wc_console(u0=0.0, u1=0.23, d0=100, d1=300, grow=0.12, fade=0.06):
         s = min(1.0, (u - u0) / grow, (u1 - u) / fade)   # back into it again
         return d0 + (d1 - d0) * s * s * (3 - 2 * s)      # smoothstep
 
-    band = ([wc_pt(u, -h) for u in us]
-            + [wc_pt(u, -h - dep(u)) for u in reversed(us)])
-    bx, by = wc_pt((u0 + u1) / 2 + 0.01, -h - 165)
+    band = ([wc_pt(u, h) for u in us]
+            + [wc_pt(u, h + dep(u)) for u in reversed(us)])
+    bx, by = wc_pt((u0 + u1) / 2 + 0.01, h + 165)
     return [('poly', band, 'solid'), ('circle', bx, by, 150, 'light')]
 
 
@@ -1027,8 +1061,17 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     return [('poly', pts, 'solid')]
 
 
-def drum_kit(cx=17780, kick_y=7980):
-    """Karan's electronic kit, in the den's south-east corner.
+def drum_kit(cx=18355, kick_y=6350, face='east'):
+    """Karan's electronic kit, on the den's duct wall.
+
+    IT HAS TURNED (the guest WC's shower apse took the south-east corner):
+    the kick is on the main duct wall, 140 off it, and the DRUMMER FACES EAST
+    into that wall, the rest of the pod behind them as before.  The kit's
+    south edge (the ride) clears the apse's outer face by 190 at its nearest,
+    and the throne sits 310 south of the desk chair.  `face` = 'south' gives
+    the old corner layout for the record.
+
+    THE ORIGINAL NOTE, which still says why the kit is the shape it is:
 
     A Roland TD with FOUR TOMS and THREE CYMBALS, which is a big configuration
     — the pads and arms want about 1790 across and 1500 front to back, and the
@@ -1052,6 +1095,8 @@ def drum_kit(cx=17780, kick_y=7980):
     150 and the kick clears the great-room wall by 140.
     """
     def pad(dx, dy, r, style='solid'):
+        if face == 'east':               # forward is +x, the drummer's right +y
+            dx, dy = dy, -dx
         return ('circle', cx + dx, kick_y + dy, r, style)
 
     return [
@@ -1952,8 +1997,13 @@ def lobby_polys():
     # the WC: the strip on the main duct plus the quarter circle at its west
     # end, inside the arc's inner face
     # (to the main duct wall's west face, 18775: the wall is 18775-18925)
+    # ...and the shower apse north of the strip, inside the ellipse's inner
+    # face, the stub's inner face (x = WC_CX + 55) joining the two curves
     inner = wc_pts(-D.T_WC / 2)
-    wc = ([(18775, D.WC_DIE), (18775, D.WC_CY), (D.WC_CX, D.WC_CY)] + inner)
+    xs = D.WC_CX + D.T_WC / 2
+    wc = ([(18775, D.SH_CY - D.SH_B + D.T_WC / 2), (18775, D.WC_CY), (D.WC_CX, D.WC_CY)]
+          + [q for q in inner if q[0] <= xs] + [(xs, inner[-1][1]), (xs, D.SH_CY)]
+          + [q for q in sh_pts(-D.T_WC / 2) if q[0] >= xs])
     # the passage: the great-room door's west jamb to the arc's outer face
     # (the arc's outer face runs on into the den wall at its top: only the
     # part below the wall's face is the passage's edge)

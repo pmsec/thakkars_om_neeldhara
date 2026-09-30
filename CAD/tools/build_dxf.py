@@ -182,7 +182,7 @@ def main():
             h.paths.add_polyline_path([P(x, y) for x, y in q], is_closed=True)
             h.set_solid_fill(color=1)
 
-    for q in (R.wc_wall() + R.mb_wall()          # the WC's apse and the two
+    for q in (R.wc_wall() + R.sh_wall() + R.mb_wall()   # the WC's arc, its shower apse, and the two
               + R.east_polys(R.mb_wall) + R.gm_wall()):   # baths' sweeps
         poly(msp, q, 'PROP-WALL-NEW')
         h = msp.add_hatch(color=1, dxfattribs={'layer': 'PROP-WALL-NEW'})

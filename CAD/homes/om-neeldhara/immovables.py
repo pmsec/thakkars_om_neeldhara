@@ -38,9 +38,11 @@ _WEST = [
 
 # The enclosure walls that come down with a reclaimed duct: a builder's shell
 # segment with most of its length inside one of these boxes is demolished —
-# the west duct's east and south walls, into the kitchen.  The east duct keeps
-# its walls: they are the WC's.
-RECLAIM_DEMO = [(5780, 8560, 7060, 9600)]
+# the west duct's east and south walls, into the kitchen; the east duct's
+# NORTH wall, the shower apse opening the WC into the den through it (its
+# west and south walls are the WC's and stay).  The east box stops short of
+# the main duct wall so that wall's own lines are untouched.
+RECLAIM_DEMO = [(5780, 8560, 7060, 9600), (17540, 8390, 18800, 8560)]
 
 NAMED = ([(n + ', west', a, b, c, d, k) for n, a, b, c, d, k in _WEST]
          + [mirror((n + ', east', a, b, c, d, k)) for n, a, b, c, d, k in _WEST])

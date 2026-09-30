@@ -289,19 +289,22 @@ WALLS += [
 ]
 
 # --- the two retained deck voids (between deck and pods): RECLAIMED into
-# the deck (Karan's word from the builder). What stands of each enclosure:
-# the outboard column (230 x 1500), the pod wall it backed on to, and the
-# south stub of its inboard wall, which is the great room's jamb.
+# the deck (Karan's word from the builder), every enclosure wall down — the
+# wall to the pod too, so each pod opens to the deck across the void's full
+# width. What stands: the outboard column (230 x 1500). The pod's edge to
+# the void is a threshold line, column to the great room's opening.
 for vid, (a, b, c, d) in (('W', D.VOID_KEEP[0]), ('E', D.VOID_KEEP[1])):
     col_x = a + 115 if vid == 'W' else c - 115
     jamb_x = c - 75 if vid == 'W' else a + 75
     WALLS += [
         w(f'W-VOID-{vid}-COL', [(col_x, b), (col_x, d)], 230, 'interior',
           notes='The retained void’s outboard column, 230 x 1500 — it stands; the void round it is deck.'),
-        w(f'W-VOID-{vid}-S', [(col_x, d), (c, d)] if vid == 'W' else [(a, d), (col_x, d)], 150, 'interior',
-          notes='The pod wall the void backed on to, from the column.'),
-        w(f'W-VOID-{vid}-JAMB', [(jamb_x, 2270), (jamb_x, d)], 150, 'interior',
-          notes='The south stub of the void’s inboard wall: the great room opening’s jamb.'),
+        w(f'T-VOID-{vid}', [(col_x, 2545), (c, 2545)] if vid == 'W' else [(a, 2545), (col_x, 2545)], 0, 'threshold',
+          [op(f'O-VOID-{vid}', 'threshold', 0, abs(c - col_x) if vid == 'W' else abs(col_x - a), head=3505,   # (CEIL is defined below)
+              label='Pod open to the reclaimed void — no wall, floor to ceiling')]),
+        # ...and the 75 between the thresholds' line and the screen's foot: a
+        # closed boundary line, so the graph meets the curved screen's end
+        w(f'T-VOID-{vid}-JOIN', [(c if vid == 'W' else a, 2545), (c if vid == 'W' else a, 2620)], 0, 'threshold'),
     ]
 
 # The ceiling. The sheet carries no clear-height figure (the DWG is a bare
@@ -336,10 +339,8 @@ WALLS += [
     w('T-FAMILY-DECK', [(4650, 2545), (7615, 2545)], 0, 'threshold',
       [op('O-FAM-DECK', 'threshold', 0, 2965, head=CEIL,
           label='Family room open to the deck — no doors, floor to ceiling')]),
-    # (the line runs into the two jamb stubs' centrelines, 75 each side, so the
-    # graph closes on them; the 6250 opening itself is between their faces)
-    w('T-GREAT-DECK', [(9040, 2545), (15440, 2545)], 0, 'threshold',
-      [op('O-GREAT-DECK', 'threshold', 75, 6325, head=CEIL,
+    w('T-GREAT-DECK', [(9115, 2545), (15365, 2545)], 0, 'threshold',
+      [op('O-GREAT-DECK', 'threshold', 0, 6250, head=CEIL,
           label='Great room open to the deck — 6250 clear, no doors, floor to ceiling')]),
     w('T-DEN-DECK', [(16865, 2545), (19830, 2545)], 0, 'threshold',
       [op('O-DEN-DECK', 'threshold', 0, 2965, head=CEIL,
@@ -457,11 +458,18 @@ WALLS += [
 ]
 
 # --- pod screens: the real curves, flattened, with the real portals
-def pod_wall(P, portal, wid, label, y_end):
+def pod_wall(P, portal, wid, label, y_end, start=None):
     ts = [t / 200 for t in range(201)]
     line = [R.bez(P, t) for t in ts if R.bez(P, t)[1] <= y_end]
     ts = ts[:len(line)]
     line.append((line[-1][0], y_end))
+    # the screen's north end runs on to the deck thresholds' node (the void's
+    # wall it ended against is gone): a short straight stub, its length added
+    # to the portal's distances along the line
+    d0 = 0.0
+    if start is not None:
+        d0 = math.hypot(line[0][0] - start[0], line[0][1] - start[1])
+        line = [start] + line
     # arc-length distances of the portal's t range
     def s_at(tv):
         s = 0.0
@@ -475,7 +483,7 @@ def pod_wall(P, portal, wid, label, y_end):
                 s += seg * max(0.0, (tv - t0) / (t1 - t0))
                 break
         return s
-    a, b = s_at(portal[0]), s_at(portal[1])
+    a, b = s_at(portal[0]) + d0, s_at(portal[1]) + d0
     # 20 thick: it is a glass screen, not a wall (Karan's call, max 20)
     return w(wid, line, 20, 'curved-glass',
              [op(wid.replace('W-', 'PORTAL-'), 'arch', a, b, head=2400,

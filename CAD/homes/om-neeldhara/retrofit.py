@@ -1050,56 +1050,48 @@ def kitchen_counter(dep=600, r_end=300, r_ease=200):
     return [('poly', pts, 'solid')]
 
 
-def drum_kit(cx=18355, kick_y=6350, face='east'):
-    """Karan's electronic kit, on the den's duct wall.
+def drum_kit(cx=18455, kick_y=6600, face='east'):
+    """Karan's electronic kit, on the den's duct wall, ON ITS MAT.
 
-    IT HAS TURNED (the guest WC's shower apse took the south-east corner):
-    the kick is on the main duct wall, 140 off it, and the DRUMMER FACES EAST
-    into that wall, the rest of the pod behind them as before.  The kit's
-    south edge (the ride) clears the apse's outer face by 190 at its nearest,
-    and the throne sits 310 south of the desk chair.  `face` = 'south' gives
-    the old corner layout for the record.
+    THE KIT IS SIZED TO ITS MAT NOW (Karan's word): it stands on a 4 x 3 ft
+    floor mat, 1219 x 914, and every pad, cymbal and the throne is inside
+    that.  The earlier layout was a big four-tom configuration spread over
+    1790 x 1890; this is the compact one — kick, snare, two rack toms over
+    the kick, a floor tom, hi-hat, ride and two crashes, the throne at the
+    mat's back edge.  The mat is drawn as a dashed rectangle and is the
+    kit's footprint.
 
-    THE ORIGINAL NOTE, which still says why the kit is the shape it is:
+    It faces EAST into the main duct wall, the kick 136 off it (the mat's
+    edge), the rest of the pod behind the drummer; the mat's south edge
+    clears the guest WC's shower apse by 140 at its nearest.  `face` =
+    'south' gives the same layout turned to face south, for the record.
 
-    A Roland TD with FOUR TOMS and THREE CYMBALS, which is a big configuration
-    — the pads and arms want about 1790 across and 1500 front to back, and the
-    throne another 500 behind that.  It nests into the corner made by the
-    great-room wall at Y 8400 and the service-duct wall at X 18775, and the
-    DRUMMER FACES SOUTH, into that corner, with the whole of the rest of the
-    pod open behind them.
-
-    Facing south is the only orientation that works.  Against the east wall
-    facing west the drummer would sit at about X 17200, which is 620 off the
-    console — they would be in each other's laps.  On the diagonal, which is
-    how a lot of people set a kit into a corner, a 1790 x 1500 kit turns into
-    a 2330 square and the bay is only 2895 x 2225.
-
-    Drawn right-handed: facing south, the drummer's right is WEST, so the
-    floor tom and the ride are on the room side and the hi-hat is against the
-    east wall.  Flip it about cx for a left-hander; nothing else moves.
-
-    cx is 17780 and not the bay's own centre, because a cymbal that touches a
-    wall rings against it.  At 17780 the left crash clears the duct wall by
-    150 and the kick clears the great-room wall by 140.
+    Drawn right-handed: facing east, the drummer's right is SOUTH, so the
+    floor tom and the ride are on the south side and the hi-hat is north.
+    Flip it about the kick's line for a left-hander; nothing else moves.
     """
-    def pad(dx, dy, r, style='solid'):
+    def P(dx, dy):
         if face == 'east':               # forward is +x, the drummer's right +y
             dx, dy = dy, -dx
-        return ('circle', cx + dx, kick_y + dy, r, style)
+        return (cx + dx, kick_y + dy)
 
+    def pad(dx, dy, r, style='solid'):
+        return ('circle', *P(dx, dy), r, style)
+
+    # the mat: 1219 across, 914 front (the kick's face) to back (the throne)
+    mat = [P(-610, 184), P(610, 184), P(610, -730), P(-610, -730)]
     return [
-        pad(0, -1360, 250, 'soft'),      # throne
-        pad(125, -800, 175),             # snare, just off centre
-        pad(0, 0, 280),                  # kick, 140 off the great-room wall
-        pad(-325, -400, 150),            # rack tom 1
-        pad(0, -500, 150),               # rack tom 2
-        pad(325, -400, 150),             # rack tom 3
-        pad(-560, -680, 215),            # floor tom, drummer's right
-        pad(575, -830, 175, 'light'),    # hi-hat, drummer's left
-        pad(-695, -280, 250, 'light'),   # ride, over the floor tom
-        pad(-645, -1030, 210, 'light'),  # crash, right
-        pad(635, -260, 210, 'light'),    # crash, left
+        ('poly', mat, 'dash'),           # the 4 x 3 ft mat, the kit's footprint
+        pad(0, -560, 170, 'soft'),       # throne, at the mat's back edge
+        pad(230, -340, 140),             # snare, between the knees, off centre
+        pad(0, 0, 180),                  # kick
+        pad(-170, -150, 110),            # rack tom 1, over the kick
+        pad(170, -150, 110),             # rack tom 2
+        pad(-400, -330, 150),            # floor tom, drummer's right
+        pad(480, -420, 120, 'light'),    # hi-hat, drummer's left
+        pad(-450, -80, 150, 'light'),    # ride, over the floor tom
+        pad(-340, -560, 140, 'light'),   # crash, right
+        pad(400, -560, 140, 'light'),    # crash, left
     ]
 
 

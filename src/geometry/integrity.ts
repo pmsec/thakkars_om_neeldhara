@@ -488,7 +488,6 @@ export function runIntegrity(model: BuiltModel = getModel()): IntegrityReport {
     // grandmother's) — see the asymmetry note below.
     const pairs: Array<[string, string, number, number]> = [
       ['R-SHAFT-W', 'R-SHAFT-E', 5000, 1],
-      ['R-VOID-W', 'R-VOID-E', 5000, 1],
       ['R-P-TERRACE', 'R-K-TERRACE', 5000, 1],
     ]
     const rows: string[] = []

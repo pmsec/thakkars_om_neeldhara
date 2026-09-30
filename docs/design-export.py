@@ -288,18 +288,20 @@ WALLS += [
     w('W-SHAFT-E-S', [(19875, 1275), (21730, 1275)], 150, 'interior'),
 ]
 
-# --- the two retained deck voids (between deck and pods)
-# The builder has agreed they can be floored and used as bulk storage, so each
-# has a 700 door cut through its north enclosure on to the deck walk.
-for vid, (a, b, c, d), (g0, g1) in (('W', D.VOID_KEEP[0], D.VOID_DOORS[0]),
-                                     ('E', D.VOID_KEEP[1], D.VOID_DOORS[1])):
+# --- the two retained deck voids (between deck and pods): RECLAIMED into
+# the deck (Karan's word from the builder). What stands of each enclosure:
+# the outboard column (230 x 1500), the pod wall it backed on to, and the
+# south stub of its inboard wall, which is the great room's jamb.
+for vid, (a, b, c, d) in (('W', D.VOID_KEEP[0]), ('E', D.VOID_KEEP[1])):
+    col_x = a + 115 if vid == 'W' else c - 115
+    jamb_x = c - 75 if vid == 'W' else a + 75
     WALLS += [
-        w(f'W-VOID-{vid}-N', [(a, b), (c, b)], 150, 'interior',
-          [op(f'D-VOID-{vid}', 'door', g0 - a, g1 - a,
-              label='Void store — 700 door on to the deck walk')]),
-        w(f'W-VOID-{vid}-W', [(a, b), (a, d)], 150, 'interior'),
-        w(f'W-VOID-{vid}-E', [(c, b), (c, d)], 150, 'interior'),
-        w(f'W-VOID-{vid}-S', [(a, d), (c, d)], 150, 'interior'),
+        w(f'W-VOID-{vid}-COL', [(col_x, b), (col_x, d)], 230, 'interior',
+          notes='The retained void’s outboard column, 230 x 1500 — it stands; the void round it is deck.'),
+        w(f'W-VOID-{vid}-S', [(col_x, d), (c, d)] if vid == 'W' else [(a, d), (col_x, d)], 150, 'interior',
+          notes='The pod wall the void backed on to, from the column.'),
+        w(f'W-VOID-{vid}-JAMB', [(jamb_x, 2270), (jamb_x, d)], 150, 'interior',
+          notes='The south stub of the void’s inboard wall: the great room opening’s jamb.'),
     ]
 
 # The ceiling. The sheet carries no clear-height figure (the DWG is a bare
@@ -329,14 +331,18 @@ WALLS += [
     # Each is a THRESHOLD line (no solid, nothing drawn but a dashed room
     # boundary) carrying one threshold opening the full length, which is what
     # joins the rooms in the circulation graph. Nothing stands in it.
-    w('T-FAMILY-DECK', [(4650, 2545), (7500, 2545)], 0, 'threshold',
-      [op('O-FAM-DECK', 'threshold', 0, 2850, head=CEIL,
+    # (each runs to its void column's centreline, which the reclaimed void's
+    # column wall rises from)
+    w('T-FAMILY-DECK', [(4650, 2545), (7615, 2545)], 0, 'threshold',
+      [op('O-FAM-DECK', 'threshold', 0, 2965, head=CEIL,
           label='Family room open to the deck — no doors, floor to ceiling')]),
-    w('T-GREAT-DECK', [(9115, 2545), (15365, 2545)], 0, 'threshold',
-      [op('O-GREAT-DECK', 'threshold', 0, 6250, head=CEIL,
+    # (the line runs into the two jamb stubs' centrelines, 75 each side, so the
+    # graph closes on them; the 6250 opening itself is between their faces)
+    w('T-GREAT-DECK', [(9040, 2545), (15440, 2545)], 0, 'threshold',
+      [op('O-GREAT-DECK', 'threshold', 75, 6325, head=CEIL,
           label='Great room open to the deck — 6250 clear, no doors, floor to ceiling')]),
-    w('T-DEN-DECK', [(16980, 2545), (19830, 2545)], 0, 'threshold',
-      [op('O-DEN-DECK', 'threshold', 0, 2850, head=CEIL,
+    w('T-DEN-DECK', [(16865, 2545), (19830, 2545)], 0, 'threshold',
+      [op('O-DEN-DECK', 'threshold', 0, 2965, head=CEIL,
           label='Den open to the deck — no doors, floor to ceiling')]),
     w('W-DECK-W-STUB', [(4467, 2545), (4650, 2545)], 150, 'interior'),
     w('W-DECK-E-STUB', [(19830, 2545), (20013, 2545)], 150, 'interior'),
@@ -558,12 +564,6 @@ ROOMS = [
      'Sealed', 'Builder shaft, sealed. 1480 × 1200.'),
     ('R-SHAFT-E', 'Sealed shaft (east)', (20800, 600), 'void', 'core', False,
      'Sealed', 'Builder shaft, sealed. 1480 × 1200.'),
-    ('R-VOID-W', 'Void store (west)', (8300, 1900), 'storage', 'shared', True,
-     'Screed', 'The retained builder void, floored as bulk storage with the builder’s '
-     'agreement; a 700 door on to the deck walk. The west recliner backs on to it.'),
-    ('R-VOID-E', 'Void store (east)', (mx(8300), 1900), 'storage', 'shared', True,
-     'Screed', 'The retained builder void, floored as bulk storage with the builder’s '
-     'agreement; a 700 door on to the deck walk. The east recliner backs on to it.'),
 
     ('R-P-SUITE', 'Master suite — parents', (1500, 3500), 'habitable', 'parents', True,
      'Oak plank', 'Bed zone north of the tinted-glass partition; opens full-width to the '
@@ -1191,9 +1191,6 @@ SWING_SIDE = {'D-WC-GREAT': -1, 'D-HELP-PASS': 1}
 def room_for(cx, cy):
     if cy < 1275 and (cx < 2900 or cx > mx(2900)):
         return 'R-P-TERRACE' if cx < M else 'R-K-TERRACE'
-    for a, b, c, d in D.VOID_KEEP:
-        if a < cx < c and b < cy < d:
-            return 'R-VOID-W' if cx < M else 'R-VOID-E'
     if cy < 2545 and 4530 <= cx <= 19950:
         return 'R-DECK'
     if cy < 5935 and cx < 4467:

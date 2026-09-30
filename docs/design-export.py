@@ -243,7 +243,7 @@ WALLS += [
     w('W-WC-PASS-S', [(D.WC_PASS_W, D.WC_PASS_S), (D.WC_CX, D.WC_PASS_S), (D.WC_CX, 9435)], 150, 'interior',
       [op('D-HELP-PASS', 'door', 15850 - D.WC_PASS_W, 16550 - D.WC_PASS_W,
           label="Help's room — into the WC passage, hinged west, swings into help's room")],
-      notes="The WC passage's south wall, on the line of the builder's block; the WC's arc foots on it."),
+      notes="The WC passage's south wall, on the line of the builder's block; it runs to the WC's west wall."),
 ]
 
 # --- the entry gallery's two straight legs (230 thick, on the columns)
@@ -411,52 +411,20 @@ WALLS += [
       label="Grandmother's bath — north wall, rounded corner"),
 ]
 
-wcq = R.wc_wall()
-wc_line = sweep_centreline(wcq)
-# the arc's north end meets the den's wall TANGENTIALLY (the circle's top
-# point), so the tangent extension would run east along the wall instead of
-# into it: send it north into the wall so the graph closes there
-wc_line[-1] = (D.WC_CX, 8462.5 - 10)
-wc_len = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(wc_line, wc_line[1:]))
-
-
-def _along(line, pt):
-    """Distance along a polyline to its point nearest `pt`."""
-    best, s, acc = None, 0.0, 0.0
-    for a, b in zip(line, line[1:]):
-        seg = math.hypot(b[0] - a[0], b[1] - a[1])
-        if seg:
-            t = max(0.0, min(1.0, ((pt[0] - a[0]) * (b[0] - a[0]) + (pt[1] - a[1]) * (b[1] - a[1])) / seg ** 2))
-            q = (a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]))
-            d = math.hypot(q[0] - pt[0], q[1] - pt[1])
-            if best is None or d < best:
-                best, s = d, acc + t * seg
-        acc += seg
-    return s
-
-
-# The WC's arc carries its door, exactly where the sheet takes it out of the
-# wall (D.WC_DOOR, a parameter range on the circle): a curved walnut leaf,
-# hinged at the den-wall end, swinging out into the passage. The great room's
-# 800 opening in the straight wall at y 8462.5 opens into that passage.
-_wc_door = (_along(wc_line, R.wc_pt(D.WC_DOOR[0])), _along(wc_line, R.wc_pt(D.WC_DOOR[1])))
+# THE WC'S WEST WALL AND ITS SHOWER APSE (Karan's calls), one polyline: up
+# x = WC_CX from the block's centreline (where the passage's south wall ends)
+# to the den's face, then the quarter ellipse struck from the den's corner,
+# foot to apex, its tangent end sent into the main duct wall.  The FLAT DOOR
+# is in the straight leg: hinged on the den-wall jamb (the leg's far end,
+# so hinge 1), swinging out into the passage — the strip inside is 770 deep.
+# (it starts where the passage's south wall turns down to the block, so the
+# two touch at a node and never run along one line)
+_sh = [(D.WC_CX, D.WC_PASS_S), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)][1:] + [(18850, D.SH_CY - D.SH_B)]
 WALLS += [
-    w('W-WC-SWEEP', wc_line, D.T_WC, 'interior',
-      [op('D-WC-HELP', 'door', min(_wc_door), max(_wc_door), head=2100,
-          label='Guest WC — from the passage, a curved leaf on the arc',
-          extra=f'curve: {{ x: {D.WC_CX}, y: {D.WC_CY}, r: {D.WC_A} }}')],
-      label='Guest WC — quarter-circle arc, bulging into the passage'),
-]
-
-# THE SHOWER APSE (Karan's call): the stub on x = WC_CX from the den wall's
-# centreline to the den's face, then the quarter ellipse struck from the den's
-# corner, foot to apex, its tangent end sent into the main duct wall
-# (it starts where the passage arc's line ends, 10 inside the den wall's
-# centreline, so the two touch at a point and never run along one line)
-_sh = [wc_line[-1]] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
-WALLS += [
-    w('W-WC-APSE', _sh, D.T_WC, 'interior', [],
-      label='Guest WC — the shower apse, a quarter ellipse into the den'),
+    w('W-WC-APSE', _sh, D.T_WC, 'interior',
+      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=2100,
+          label="Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage")],
+      label="Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den"),
 ]
 
 # --- pod screens: the real curves, flattened, with the real portals
@@ -620,7 +588,7 @@ ROOMS = [
      'duct, full-height racks on three walls, a loft over the whole room at 2500, '
      'its own door off the gallery and a door into the WC passage.'),
     ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
-     'Stone', 'From the great room’s door east along the strip to the WC’s curved door, the basin in a console along its south wall, square in front of the door; help’s room’s door in that wall east of it. A loft over it at 2300.'),
+     'Stone', 'From the great room’s door straight east to the WC’s flat door, the basin in a console along its south wall, square in front of the door; help’s room’s door in that wall east of it; the WC’s flat door at its east end. A loft over it at 2300.'),
     ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
      'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.'),
 ]
@@ -1132,6 +1100,12 @@ def emit_fixtures():
     for sid, pts_ in groups.items():
         STACK_POS[sid] = (sum(p[0] for p in pts_) / len(pts_),
                           sum(p[1] for p in pts_) / len(pts_))
+    # the guest WC's basin is outside its room, in the passage, and pulls the
+    # group's centroid into the WC's west wall: the stack sits just inside
+    # the wall's face, where the pan and the floor trap actually are
+    if 'STK-GUEST' in STACK_POS:
+        gx, gy = STACK_POS['STK-GUEST']
+        STACK_POS['STK-GUEST'] = (max(gx, D.WC_CX + D.T_INT / 2 + 60), gy)
 
     o = []
     A = o.append
@@ -1178,7 +1152,7 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
            'screen': 2100, 'tv': 1300}
 
 
-HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH', 'D-WC-HELP'}
+HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH', 'D-WC-FLAT'}
 # which way a leaf swings off its hinge: +1 is the chord's left-hand side,
 # -1 its right.  Both service doors swing into the gallery, so nothing is
 # listed; the map stays for the day a door has to go the other way
@@ -1231,7 +1205,7 @@ def room_for(cx, cy):
         return 'R-KITCHEN'
     # help's room runs from the gallery's east leg round the apse and on under
     # the secondary duct to the east wall — the old store is its east end
-    # the WC strip on the main duct, then its passage west of the arc, then
+    # the WC strip on the main duct, then its passage west of its flat door, then
     # help's room wrapping both
     if cx >= D.WC_CX and 8400 <= cy < D.WC_PASS_S:
         return 'R-GUEST-BATH'

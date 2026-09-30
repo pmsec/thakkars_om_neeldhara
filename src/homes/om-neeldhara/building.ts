@@ -194,7 +194,7 @@ export const building: BuildingData = {
       openings: [
         { id: 'D-HELP-PASS', type: 'door', at: [905, 1605], head: 2100, hinge: 0, side: 1, label: "Help's room — into the WC passage, hinged west, swings into help's room" },
       ],
-      notes: "The WC passage's south wall, on the line of the builder's block; the WC's arc foots on it.",
+      notes: "The WC passage's south wall, on the line of the builder's block; it runs to the WC's west wall.",
     },
     {
       id: 'W-GAL-W',
@@ -459,35 +459,9 @@ export const building: BuildingData = {
       label: "Grandmother's bath — north wall, rounded corner",
     },
     {
-      id: 'W-WC-SWEEP',
-      points: [
-        { x: 16659.447, y: 9459.999 }, { x: 16660, y: 9320 }, { x: 16660.024, y: 9313.922 }, { x: 16660.096, y: 9307.845 }, { x: 16660.216, y: 9301.768 }, { x: 16660.384, y: 9295.692 },
-        { x: 16660.6, y: 9289.618 }, { x: 16660.863, y: 9283.546 }, { x: 16661.175, y: 9277.476 }, { x: 16661.535, y: 9271.409 }, { x: 16661.942, y: 9265.344 }, { x: 16662.398, y: 9259.284 },
-        { x: 16662.901, y: 9253.226 }, { x: 16663.452, y: 9247.174 }, { x: 16664.05, y: 9241.125 }, { x: 16664.697, y: 9235.082 }, { x: 16665.391, y: 9229.044 }, { x: 16666.133, y: 9223.011 },
-        { x: 16666.922, y: 9216.985 }, { x: 16667.759, y: 9210.965 }, { x: 16668.643, y: 9204.951 }, { x: 16669.575, y: 9198.945 }, { x: 16670.555, y: 9192.947 }, { x: 16671.581, y: 9186.956 },
-        { x: 16672.655, y: 9180.974 }, { x: 16673.776, y: 9175 }, { x: 16674.944, y: 9169.035 }, { x: 16676.159, y: 9163.08 }, { x: 16677.421, y: 9157.135 }, { x: 16678.73, y: 9151.199 },
-        { x: 16680.086, y: 9145.275 }, { x: 16681.489, y: 9139.361 }, { x: 16682.938, y: 9133.458 }, { x: 16684.433, y: 9127.567 }, { x: 16685.976, y: 9121.688 }, { x: 16687.564, y: 9115.821 },
-        { x: 16689.199, y: 9109.967 }, { x: 16690.88, y: 9104.126 }, { x: 16692.607, y: 9098.299 }, { x: 16694.38, y: 9092.485 }, { x: 16696.199, y: 9086.686 }, { x: 16698.063, y: 9080.901 },
-        { x: 16699.973, y: 9075.131 }, { x: 16701.929, y: 9069.376 }, { x: 16703.93, y: 9063.637 }, { x: 16705.976, y: 9057.914 }, { x: 16708.067, y: 9052.207 }, { x: 16710.203, y: 9046.517 },
-        { x: 16712.385, y: 9040.844 }, { x: 16714.61, y: 9035.188 }, { x: 16716.881, y: 9029.55 }, { x: 17231.688, y: 8575.976 }, { x: 17237.567, y: 8574.433 }, { x: 17243.458, y: 8572.938 },
-        { x: 17249.361, y: 8571.489 }, { x: 17255.275, y: 8570.086 }, { x: 17261.199, y: 8568.73 }, { x: 17267.135, y: 8567.421 }, { x: 17273.08, y: 8566.159 }, { x: 17279.035, y: 8564.944 },
-        { x: 17285, y: 8563.776 }, { x: 17290.974, y: 8562.655 }, { x: 17296.956, y: 8561.581 }, { x: 17302.947, y: 8560.555 }, { x: 17308.945, y: 8559.575 }, { x: 17314.951, y: 8558.643 },
-        { x: 17320.965, y: 8557.759 }, { x: 17326.985, y: 8556.922 }, { x: 17333.011, y: 8556.133 }, { x: 17339.044, y: 8555.391 }, { x: 17345.082, y: 8554.697 }, { x: 17351.125, y: 8554.05 },
-        { x: 17357.174, y: 8553.452 }, { x: 17363.226, y: 8552.901 }, { x: 17369.284, y: 8552.398 }, { x: 17375.344, y: 8551.942 }, { x: 17381.409, y: 8551.535 }, { x: 17387.476, y: 8551.175 },
-        { x: 17393.546, y: 8550.863 }, { x: 17399.618, y: 8550.6 }, { x: 17405.692, y: 8550.384 }, { x: 17411.768, y: 8550.216 }, { x: 17417.845, y: 8550.096 }, { x: 17423.922, y: 8550.024 },
-        { x: 17430, y: 8550 }, { x: 17430, y: 8452.5 },
-      ],
-      thickness: 110,
-      kind: 'interior',
-      openings: [
-        { id: 'D-WC-HELP', type: 'door', at: [441.906, 1119.412], head: 2100, hinge: 1, side: 1, curve: { x: 17430, y: 9320, r: 770 }, label: 'Guest WC — from the passage, a curved leaf on the arc' },
-      ],
-      label: 'Guest WC — quarter-circle arc, bulging into the passage',
-    },
-    {
       id: 'W-WC-APSE',
       points: [
-        { x: 17430, y: 8452.5 }, { x: 17430, y: 8400 }, { x: 17430.477, y: 8373.379 }, { x: 17431.906, y: 8346.778 }, { x: 17434.288, y: 8320.214 }, { x: 17437.62, y: 8293.707 },
+        { x: 17430, y: 9395 }, { x: 17430, y: 8400 }, { x: 17430.477, y: 8373.379 }, { x: 17431.906, y: 8346.778 }, { x: 17434.288, y: 8320.214 }, { x: 17437.62, y: 8293.707 },
         { x: 17441.899, y: 8267.274 }, { x: 17447.124, y: 8240.937 }, { x: 17453.29, y: 8214.711 }, { x: 17460.392, y: 8188.617 }, { x: 17468.427, y: 8162.673 }, { x: 17477.387, y: 8136.897 },
         { x: 17487.267, y: 8111.308 }, { x: 17498.06, y: 8085.923 }, { x: 17509.758, y: 8060.761 }, { x: 17522.353, y: 8035.839 }, { x: 17535.835, y: 8011.176 }, { x: 17550.196, y: 7986.788 },
         { x: 17565.425, y: 7962.693 }, { x: 17581.511, y: 7938.907 }, { x: 17598.444, y: 7915.449 }, { x: 17616.21, y: 7892.334 }, { x: 17634.797, y: 7869.579 }, { x: 17654.193, y: 7847.2 },
@@ -501,7 +475,10 @@ export const building: BuildingData = {
       ],
       thickness: 110,
       kind: 'interior',
-      label: 'Guest WC — the shower apse, a quarter ellipse into the den',
+      openings: [
+        { id: 'D-WC-FLAT', type: 'door', at: [115, 815], head: 2100, hinge: 1, side: 1, label: "Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage" },
+      ],
+      label: 'Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den',
     },
     {
       id: 'W-CURVE-PARENTS',
@@ -777,14 +754,14 @@ export const building: BuildingData = {
     { id: 'R-KITCHEN', name: 'Kitchen', anchor: { x: 7800, y: 10000 }, category: 'wet', zone: 'service', carpet: true, finish: 'Stone', publishedSqFt: 155, notes: 'One working room, kitchen and utility together; hatch to the family room. The secondary duct is reclaimed into it, with the builder’s agreement.' },
     { id: 'R-ENTRY', name: 'Entry gallery', anchor: { x: 12240, y: 10000 }, category: 'circulation', zone: 'shared', carpet: true, finish: 'Stone', publishedSqFt: 101, notes: 'The drum: a U of 230 walls on the two columns, curved doors sliding on the arc, console and two chairs, sconces at the arc centres.' },
     { id: 'R-HELP', name: "Help's room", anchor: { x: 14700, y: 9200 }, category: 'habitable', zone: 'service', carpet: true, finish: 'Vinyl', publishedSqFt: 77, notes: 'Live-in, with the store as its east end: one room. Bunk under the duct, full-height racks on three walls, a loft over the whole room at 2500, its own door off the gallery and a door into the WC passage.' },
-    { id: 'R-WC-PASS', name: 'WC passage', anchor: { x: 15900, y: 8935 }, category: 'circulation', zone: 'shared', carpet: true, finish: 'Stone', notes: 'From the great room’s door east along the strip to the WC’s curved door, the basin in a console along its south wall, square in front of the door; help’s room’s door in that wall east of it. A loft over it at 2300.' },
+    { id: 'R-WC-PASS', name: 'WC passage', anchor: { x: 15900, y: 8935 }, category: 'circulation', zone: 'shared', carpet: true, finish: 'Stone', notes: 'From the great room’s door straight east to the WC’s flat door, the basin in a console along its south wall, square in front of the door; help’s room’s door in that wall east of it; the WC’s flat door at its east end. A loft over it at 2300.' },
     { id: 'R-GUEST-BATH', name: 'Guest / service WC', anchor: { x: 18200, y: 8935 }, category: 'wet', zone: 'shared', carpet: true, finish: 'Stone', notes: 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.' },
   ],
 
   stacks: [
     { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3745.92, y: 2748.616 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures; the stack is in the builder’s toilet void north of the bath, reached through his 750 opening — confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'At the centroid of his bath’s plumbed fixtures, on the east main duct.' },
-    { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 17415, y: 8710 }, room: 'R-GUEST-BATH', provenance: 'On the main service duct, the WC’s east wall — the pan and the floor trap drain straight into the shaft.' },
+    { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 17565, y: 8710 }, room: 'R-GUEST-BATH', provenance: 'On the main service duct, the WC’s east wall — the pan and the floor trap drain straight into the shaft.' },
     { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3696.667, y: 7964 }, room: 'R-G-BATH', provenance: 'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7988.333, y: 9825 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],

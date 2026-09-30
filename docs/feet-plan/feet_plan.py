@@ -131,7 +131,7 @@ def piece_name(f):
                       ('curved console', 'VANITY'), ('bath wall cabinet', 'BATH CABINET'),
                       ('bath shelves', 'BATH SHELVES'), ('tall fridge', 'FRIDGE'),
                       ('washer and dryer', 'WASHER + DRYER'), ('wardrobe', 'WARDROBE'),
-                      ('console', 'CONSOLE')):
+                      ('drum kit', 'DRUM KIT + MAT'), ('console', 'CONSOLE')):
         if key in low:
             return name
     return {'bed': 'BED', 'dining': 'DINING TABLE', 'wardrobe': 'WARDROBE',
@@ -140,7 +140,7 @@ def piece_name(f):
 
 # the pieces that get a label, and the heights the fixtures are built to
 FURN_KINDS = {'bed', 'wardrobe', 'console', 'sofa', 'dining', 'lounger', 'shelves',
-              'planter', 'bench', 'table', 'armchair'}
+              'planter', 'bench', 'table', 'armchair', 'drumkit'}
 SKIP_LABEL = ('side table', 'bin', 'planted strip', 'desk chair', 'chair', 'clothes dryer')
 FIX_H = {'counter': 940, 'basin': 890, 'fridge': 1900, 'laundry': 1800}
 STRIP = {'console', 'wardrobe', 'shelves', 'planter', 'counter', 'basin'}

@@ -3147,9 +3147,10 @@ function blindFabric(): THREE.MeshStandardMaterial {
 /**
  * THE THIRD BLIND (Karan's call): a full-length off-white fabric roller
  * blind over each pod's portal door, on the pod side between the two timber
- * blinds, its climbing-branch design showing when it is down. Shut it drops
- * to 120 off the floor in a teak cassette; open it is a roll under the
- * cassette with a short drop. Starts drawn up like its neighbours.
+ * blinds, its climbing-branch design showing when it is down. Its cassette
+ * hangs on the timber blinds' head line (Karan's call), over the transom,
+ * so the three read as one head; shut it drops to 120 off the floor, open
+ * it is a roll under the cassette with a short drop. Starts drawn up.
  */
 function portalBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
@@ -3183,7 +3184,7 @@ function portalBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
         m.rotation.set(0, ang, 0, 'YXZ')
         item.add(m)
       }
-      const head = Math.min(3400, op.head ?? 3400), out = w.thickness / 2 + 48
+      const head = 3400, out = w.thickness / 2 + 48                                     // the timber blinds' own head line, not the door's
       const width = len + 60
       put(out, head + 45, box(76, 90, width + 12, M.teak))                            // the cassette
       const fabric = blindFabric()

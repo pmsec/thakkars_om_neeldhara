@@ -197,13 +197,13 @@ WALLS += [
     # are measured from the foot, the way the other two doors are.
     # runs to the void wall's CENTRELINE at 1275, so the planar graph closes
     w('W-P-BATH-W', [(D.MB_XW - 75, D.MB_YW), (D.MB_XW - 75, 1275)], 150, 'interior',
-      [op('D-P-BATH', 'door', D.MB_DOOR_P[0], D.MB_DOOR_P[1],
-          label="Parents' bath door — from the bed zone, hard against the arch")]),
+      [op('D-P-BATH', 'door', D.MB_DOOR_P[0], D.MB_DOOR_P[1], head=full_head(800),
+          label="Parents' bath door — from the bed zone, hard against the arch; full height")]),
     w('W-G-BATH-W', [(D.MB_XW - 75, D.MB_YW_G), (D.MB_XW - 75, 9695)], 150, 'interior',
-      [op('D-G-BATH', 'door', D.MB_DOOR_G[0], D.MB_DOOR_G[1],
-          label="Grandmother's bath door — from her zone")]),
+      [op('D-G-BATH', 'door', D.MB_DOOR_G[0], D.MB_DOOR_G[1], head=full_head(800),
+          label="Grandmother's bath door — from her zone; full height")]),
     w('W-K-BATH-E', [(22080, 6715), (22080, 9695)], 150, 'interior',
-      [op('D-K-BATH', 'door', 1080, 1880, label="Karan's bath door")]),
+      [op('D-K-BATH', 'door', 1080, 1880, head=full_head(800), label="Karan's bath door; full height")]),
     # From the glass line south: the main duct's open end and then the
     # grandmother's bath's east wall, the pan on it and the stack behind.
     w('W-P-BATH-E', [(4467, D.SCR_S), (4467, 9695)], 150, 'interior'),
@@ -253,8 +253,8 @@ WALLS += [
     # ...running on past the arch's centreline (11627 at this Y, inside the
     # arch's own thickness) so the room graph closes
     w('W-KIT-FRONT', [(6900, D.KIT_N + 62.5), (11700, D.KIT_N + 62.5)], 125, 'interior',
-      [op('D-KIT', 'door', 0, 800, head=2100,
-          label='Kitchen door — hinged on the west jamb, swings into the kitchen against the return'),
+      [op('D-KIT', 'door', 0, 800, head=full_head(800),
+          label='Kitchen door — hinged on the west jamb, swings into the kitchen against the return; full height'),
        op('O-HATCH', 'window', 1000, 1700, head=2100, sill=1050,
           label='Serving hatch — 700 over the sink, kitchen to family room')],
       notes='Door jamb to apse on the bump line.'),

@@ -55,7 +55,7 @@ export const building: BuildingData = {
       thickness: 150,
       kind: 'interior',
       openings: [
-        { id: 'D-P-BATH', type: 'door', at: [60, 860], head: 2100, hinge: 1, side: 1, label: "Parents' bath door — from the bed zone, hard against the arch" },
+        { id: 'D-P-BATH', type: 'door', at: [60, 860], head: 2985.0, hinge: 1, side: 1, label: "Parents' bath door — from the bed zone, hard against the arch; full height" },
       ],
     },
     {
@@ -64,7 +64,7 @@ export const building: BuildingData = {
       thickness: 150,
       kind: 'interior',
       openings: [
-        { id: 'D-G-BATH', type: 'door', at: [373, 1173], head: 2100, hinge: 1, side: 1, label: "Grandmother's bath door — from her zone" },
+        { id: 'D-G-BATH', type: 'door', at: [373, 1173], head: 2985.0, hinge: 1, side: 1, label: "Grandmother's bath door — from her zone; full height" },
       ],
     },
     {
@@ -73,7 +73,7 @@ export const building: BuildingData = {
       thickness: 150,
       kind: 'interior',
       openings: [
-        { id: 'D-K-BATH', type: 'door', at: [1080, 1880], head: 2100, hinge: 0, side: 1, label: "Karan's bath door" },
+        { id: 'D-K-BATH', type: 'door', at: [1080, 1880], head: 2985.0, hinge: 0, side: 1, label: "Karan's bath door; full height" },
       ],
     },
     {
@@ -158,7 +158,7 @@ export const building: BuildingData = {
       thickness: 125,
       kind: 'interior',
       openings: [
-        { id: 'D-KIT', type: 'door', at: [0, 800], head: 2100, hinge: 0, side: 1, label: 'Kitchen door — hinged on the west jamb, swings into the kitchen against the return' },
+        { id: 'D-KIT', type: 'door', at: [0, 800], head: 2985.0, hinge: 0, side: 1, label: 'Kitchen door — hinged on the west jamb, swings into the kitchen against the return; full height' },
         { id: 'O-HATCH', type: 'window', at: [1000, 1700], head: 2100, sill: 1050, nonCirculating: true, label: 'Serving hatch — 700 over the sink, kitchen to family room' },
       ],
       notes: 'Door jamb to apse on the bump line.',

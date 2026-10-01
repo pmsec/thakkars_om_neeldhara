@@ -506,7 +506,7 @@ export const building: BuildingData = {
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
-        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [1151.839, 1975.111], head: 2400, label: "Arched portal — a single tinted-glass door under the arch, pull to open from the great room: hinged at the north jamb, swinging into the great room (Karan's call)" },
+        { id: 'PORTAL-CURVE-PARENTS', type: 'arch', at: [1151.839, 1975.111], head: 2973.364125603413, label: "Arched portal — a single tinted-glass door under the arch, pull to open from the great room: hinged at the north jamb, swinging into the great room (Karan's call); full height" },
       ],
       label: 'Family pod — curved glass screen; timber slat blinds on the pod side either side of the portal, lift to open',
     },
@@ -552,7 +552,7 @@ export const building: BuildingData = {
       kind: 'curved-glass',
       glass: 'tinted',
       openings: [
-        { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2400, label: "Arched portal — a single tinted-glass door under the arch, pull to open from the great room: hinged at the north jamb, swinging into the great room (Karan's call)" },
+        { id: 'PORTAL-CURVE-KARAN', type: 'arch', at: [1323.578, 2146.76], head: 2973.4090827633054, label: "Arched portal — a single tinted-glass door under the arch, pull to open from the great room: hinged at the north jamb, swinging into the great room (Karan's call); full height" },
       ],
       label: 'Den pod — curved glass screen, wood dado below; timber slat blinds on the pod side either side of the portal, lift to open',
     },
@@ -691,7 +691,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-W', type: 'door', at: [0, 774.614], head: 2100, hinge: 0, side: 1, curve: { x: 12240, y: 9325.0, r: 1725.0 }, label: 'Service door — west, to the kitchen, above the 2725 column; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery' },
+        { id: 'D-GAL-W', type: 'door', at: [0, 774.614], head: 2997.6928504458315, hinge: 0, side: 1, curve: { x: 12240, y: 9325.0, r: 1725.0 }, label: 'Service door — west, to the kitchen, above the 2725 column; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery' },
       ],
     },
     {
@@ -709,7 +709,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-E', type: 'door', at: [0, 773.147], head: 2100, hinge: 1, side: 1, curve: { x: 12240, y: 9325.0, r: 1725.0 }, label: "Service door — east, to help's side; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery" },
+        { id: 'D-GAL-E', type: 'door', at: [0, 773.147], head: 2998.4263433726405, hinge: 1, side: 1, curve: { x: 12240, y: 9325.0, r: 1725.0 }, label: "Service door — east, to help's side; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery" },
       ],
     },
   ],

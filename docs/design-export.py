@@ -127,7 +127,7 @@ def w(id_, points, th, kind, openings=(), label=None, notes=None, pane=None,
 # FULL-HEIGHT DOORS (Karan's call, agreed door by door): the arch's crown sits
 # 120 under the 3505 ceiling and the springing a half-width below that, so
 # the round top is kept and the leaf reaches the slab
-def full_head(width):
+def full_head(width):  # leaf head: the arched crown clears the slab by 120
     return 3505 - 120 - width / 2
 
 
@@ -489,8 +489,8 @@ def pod_wall(P, portal, wid, label, y_end):
     a, b = s_at(portal[0]), s_at(portal[1])
     # 20 thick: it is a glass screen, not a wall (Karan's call, max 20)
     return w(wid, line, 20, 'curved-glass',
-             [op(wid.replace('W-', 'PORTAL-'), 'arch', a, b, head=2400,
-                 label='Arched portal — a single tinted-glass door under the arch, pull to open from the great room: hinged at the north jamb, swinging into the great room (Karan\'s call)')],
+             [op(wid.replace('W-', 'PORTAL-'), 'arch', a, b, head=full_head(b - a),
+                 label='Arched portal — a single tinted-glass door under the arch, pull to open from the great room: hinged at the north jamb, swinging into the great room (Karan\'s call); full height')],
              label=label, glass='tinted')
 
 
@@ -556,7 +556,7 @@ CHORDS = [
 ]
 for gid, a0, a1, typ, lab in CHORDS:
     L = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
-    head = CEIL if typ == 'arch' else 2100   # the arch runs to the ceiling; its doors are full height
+    head = CEIL if typ == 'arch' else full_head(L)   # the arch runs to the ceiling; its doors too
     # the service doors' leaves are curved to the drum, flush with its inner face
     curve = f'curve: {{ x: {gx}, y: {gy}, r: {gr} }}' if typ == 'door' else ''
     WALLS.append(w(f'T-{gid}', [a0, a1], 0, 'threshold',

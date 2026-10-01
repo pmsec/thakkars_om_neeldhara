@@ -3152,6 +3152,151 @@ function blindFabric(): THREE.MeshStandardMaterial {
  * so the three read as one head; shut it drops to 120 off the floor, open
  * it is a roll under the cassette with a short drop. Starts drawn up.
  */
+/**
+ * CARVED CORNER BRACKETS (Karan's call): at the top corners of every open
+ * portal to the deck - the full-height thresholds with no doors - a small
+ * walnut piece either side, a quarter-arch spandrel hung from the head on
+ * the jamb, 600 each way and 60 thick: a solid moulded border round a
+ * fretted infill of vines and rosettes, carved through, so the sky shows
+ * through the flowers. Built in the portal's plane, one at each jamb.
+ */
+let _fret: THREE.CanvasTexture | null = null
+function fretAlpha(): THREE.CanvasTexture {
+  // white where the wood stays, black where the carving cuts through; a
+  // 200 mm tile of six-petal rosettes on a lattice of vines with leaves
+  if (_fret) return _fret
+  const c = document.createElement('canvas')
+  c.width = c.height = 256
+  const g = c.getContext('2d')!
+  g.fillStyle = '#000'
+  g.fillRect(0, 0, 256, 256)
+  g.fillStyle = '#fff'
+  g.strokeStyle = '#fff'
+  g.lineCap = 'round'
+  const rosette = (cx: number, cy: number, r: number) => {
+    for (let k = 0; k < 6; k++) {
+      const a = (k / 6) * Math.PI * 2
+      g.save()
+      g.translate(cx, cy)
+      g.rotate(a)
+      g.beginPath()
+      g.ellipse(r * 0.58, 0, r * 0.42, r * 0.2, 0, 0, Math.PI * 2)
+      g.fill()
+      g.restore()
+    }
+    g.beginPath()
+    g.arc(cx, cy, r * 0.26, 0, Math.PI * 2)
+    g.fill()
+  }
+  const leaf = (x: number, y: number, ang: number, len: number) => {
+    g.save()
+    g.translate(x, y)
+    g.rotate(ang)
+    g.beginPath()
+    g.moveTo(0, 0)
+    g.quadraticCurveTo(len * 0.5, -len * 0.32, len, 0)
+    g.quadraticCurveTo(len * 0.5, len * 0.32, 0, 0)
+    g.fill()
+    g.restore()
+  }
+  // the vines: two sine runs across and two down, wrapping at the tile edge
+  g.lineWidth = 9
+  for (const off of [64, 192]) {
+    g.beginPath()
+    for (let x = -8; x <= 264; x += 4) (x === -8 ? g.moveTo(x, off + 22 * Math.sin((x / 256) * Math.PI * 2)) : g.lineTo(x, off + 22 * Math.sin((x / 256) * Math.PI * 2)))
+    g.stroke()
+    g.beginPath()
+    for (let y = -8; y <= 264; y += 4) (y === -8 ? g.moveTo(off + 22 * Math.sin((y / 256) * Math.PI * 2), y) : g.lineTo(off + 22 * Math.sin((y / 256) * Math.PI * 2), y))
+    g.stroke()
+  }
+  // leaves off the vines, alternating sides
+  for (const off of [64, 192]) {
+    for (let i = 0; i < 4; i++) {
+      const x = 32 + i * 64
+      const y = off + 22 * Math.sin((x / 256) * Math.PI * 2)
+      leaf(x, y, (i % 2 ? 1 : -1) * 0.9 + 0.3, 30)
+      leaf(y, x, (i % 2 ? -1 : 1) * 0.9 + Math.PI / 2 + 0.3, 30)
+    }
+  }
+  // rosettes where the vines cross, and one in each open field
+  for (const cx of [64, 192]) for (const cy of [64, 192]) rosette(cx, cy, 30)
+  for (const [cx, cy] of [[128, 128], [0, 128], [256, 128], [128, 0], [128, 256], [0, 0], [256, 0], [0, 256], [256, 256]]) rosette(cx, cy, 22)
+  const t = new THREE.CanvasTexture(c)
+  t.wrapS = t.wrapT = THREE.RepeatWrapping
+  t.repeat.set(1 / 200, 1 / 200)                      // the shape's UVs are in mm
+  _fret = t
+  return t
+}
+function portalBrackets(M: Mats): THREE.Group {
+  const g = new THREE.Group()
+  const ceiling = model.data.levels.ceiling
+  const R = 600, D = 110, T = 60, B = 55                // reach, the end's depth, thickness, border
+  const rho = R - D                                     // the inner arc, about (R, -R)
+  // the bracket's outline: the corner at the origin, the head along +x, the
+  // jamb down -y, a short square end on each, the concave quarter arc between
+  const outline = new THREE.Shape()
+  outline.moveTo(0, 0)
+  outline.lineTo(R, 0)
+  outline.lineTo(R, -D)
+  outline.absarc(R, -R, rho, Math.PI / 2, Math.PI, false)
+  outline.lineTo(0, -R)
+  outline.closePath()
+  // the fretted field inside the border
+  const s = Math.sqrt((rho + B) * (rho + B) - B * B)
+  const y1 = -R + s, x1 = R - s
+  const field = new THREE.Shape()
+  field.moveTo(B, -B)
+  field.lineTo(R - B, -B)
+  field.lineTo(R - B, y1)
+  field.absarc(R, -R, rho + B, Math.atan2(y1 + R, -B), Math.atan2(B, x1 - R), false)
+  field.lineTo(x1, -(R - B))
+  field.lineTo(B, -(R - B))
+  field.closePath()
+  const frame = new THREE.Shape().copy(outline)
+  frame.holes.push(new THREE.Shape().copy(field))
+  const frameGeo = new THREE.ExtrudeGeometry(frame, { depth: T - 12, bevelEnabled: true, bevelThickness: 6, bevelSize: 6, bevelOffset: -6, bevelSegments: 2, curveSegments: 28 })
+  frameGeo.translate(0, 0, -(T - 12) / 2)
+  frameGeo.scale(S, S, S)
+  const fieldGeo = new THREE.ShapeGeometry(field, 28)
+  fieldGeo.scale(S, S, S)
+  const fretMat = new THREE.MeshStandardMaterial({
+    color: 0x7a5636, roughness: 0.7, alphaMap: fretAlpha(), alphaTest: 0.5, side: THREE.DoubleSide,
+  })
+  const bracket = (): THREE.Group => {
+    const b = new THREE.Group()
+    const f = new THREE.Mesh(frameGeo, M.wallWood)
+    f.castShadow = true
+    f.receiveShadow = true
+    b.add(f)
+    // the carving as two faces a little apart, so it reads with some depth
+    for (const z of [-11, 11]) {
+      const m = new THREE.Mesh(fieldGeo, fretMat)
+      m.position.z = z * S
+      m.castShadow = true
+      b.add(m)
+    }
+    return b
+  }
+  for (const w of model.walls) {
+    if (w.kind !== 'threshold') continue
+    for (const op of w.openings) {
+      if (op.type !== 'threshold') continue
+      const len = Math.hypot(op.p2.x - op.p1.x, op.p2.y - op.p1.y)
+      if (len < 2 * R + 300) continue
+      const head = Math.min(op.head ?? ceiling, ceiling)
+      if (head < ceiling - 60) continue                 // only the full-height, open ones
+      const d = { x: (op.p2.x - op.p1.x) / len, y: (op.p2.y - op.p1.y) / len }
+      for (const [p, dir] of [[op.p1, d], [op.p2, { x: -d.x, y: -d.y }]] as const) {
+        const b = bracket()
+        b.position.set(p.x * S, head * S, p.y * S)
+        b.rotation.y = -Math.atan2(dir.y, dir.x)
+        g.add(b)
+      }
+    }
+  }
+  return g
+}
+
 function portalBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   for (const w of model.walls) {
@@ -5909,6 +6054,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
   root.add(homeDressing(M))
   root.add(windowBoxes(M))
   root.add(parapetBeds(M))
+  if (HOME1) root.add(portalBrackets(M))
   // the lamps and set pieces a home lists for itself (homeLamps.ts); Home 1's are below
   const lampPaper = petalPaper()
   root.add(homeLamps(activeHomeId, {

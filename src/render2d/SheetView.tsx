@@ -85,8 +85,11 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
   const drag = useRef<{
     px: number; py: number; x: number; y: number; moved: boolean; slop: number
     kind: 'pan' | 'handle'; handle?: Handle; hold?: number
+    off?: { x: number; y: number }                // handle: the point's screen offset from the pointer, so it slides without a jump
   } | null>(null)
-  const HOLD = 2000
+  // a long press, not a tap: a brush is shorter than this, a deliberate
+  // touch longer (Karan's call: two seconds was far too long)
+  const HOLD = 450
   const [hold, setHold] = useState<Pt | null>(null)            // mm, a finger held, the ring growing
   const liveRef = useRef(live)
   liveRef.current = live
@@ -193,21 +196,32 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
 
   // the measure endpoint (committed or the live chain's) within `tol` screen
   // px of the pointer, nearest first — a handle to drag it by
+  const mmToScreen = useCallback(
+    (p: Pt) => {
+      const r = outerRef.current!.getBoundingClientRect()
+      const q = mmToSheet(p)
+      return { x: r.left + view.x + q.x * view.z, y: r.top + view.y + q.y * view.z }
+    },
+    [view],
+  )
   const handleAt = useCallback(
     (clientX: number, clientY: number, tol: number): Handle | null => {
-      const r = outerRef.current!.getBoundingClientRect()
       let best: Handle | null = null
       let bd = tol
       const probe = (id: string, pts: Pt[]) => pts.forEach((p, idx) => {
-        const q = mmToSheet(p)
-        const d = Math.hypot(r.left + view.x + q.x * view.z - clientX, r.top + view.y + q.y * view.z - clientY)
+        const q = mmToScreen(p)
+        const d = Math.hypot(q.x - clientX, q.y - clientY)
         if (d < bd) { bd = d; best = { id, idx } }
       })
       probe('live', live)
       for (const m of state.measures) probe(m.id, m.points)
       return best
     },
-    [view, live, state.measures],
+    [mmToScreen, live, state.measures],
+  )
+  const pointOf = useCallback(
+    (h: Handle): Pt | undefined => (h.id === 'live' ? liveRef.current[h.idx] : state.measures.find((m) => m.id === h.id)?.points[h.idx]),
+    [state.measures],
   )
   const movePoint = useCallback(
     (h: Handle, mm: Pt) => {
@@ -248,7 +262,11 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
         if (!touch) {
           // a mouse on an endpoint drags it straight away
           const h = handleAt(e.clientX, e.clientY, 8)
-          if (h) { drag.current = { ...base, kind: 'handle', handle: h }; return }
+          if (h) {
+            const q = mmToScreen(pointOf(h)!)
+            drag.current = { ...base, kind: 'handle', handle: h, off: { x: q.x - e.clientX, y: q.y - e.clientY } }
+            return
+          }
         } else {
           // a finger pans until it has held still for HOLD: then it grabs the
           // end under it, or sets the next point of the measure, and keeps
@@ -260,6 +278,12 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             if (drag.current !== d || d.moved) return
             d.hold = undefined
             d.kind = 'handle'
+            // the point keeps its offset from the finger from here on, so the
+            // slide starts where the point is and follows every move
+            const at = h ? pointOf(h)! : mm
+            const q = mmToScreen(at)
+            const f = pointers.current.get(e.pointerId) ?? { x: e.clientX, y: e.clientY }
+            d.off = { x: q.x - f.x, y: q.y - f.y }
             if (h) d.handle = h
             else {
               const pts = liveRef.current
@@ -281,7 +305,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
       }
       drag.current = { ...base, kind: 'pan' }
     },
-    [view, state.tool, handleAt, snapMm, screenToMm, update],
+    [view, state.tool, handleAt, snapMm, screenToMm, update, mmToScreen, pointOf],
   )
   // a hold that is over, one way or another
   const endHold = (d: NonNullable<typeof drag.current> | null) => {
@@ -309,9 +333,12 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
         const dx = e.clientX - d.px
         const dy = e.clientY - d.py
         if (Math.hypot(dx, dy) > d.slop) d.moved = true
-        const touch = e.pointerType !== 'mouse'
         if (d.kind === 'handle') {
-          if (d.moved) movePoint(d.handle!, snapMm(screenToMm(e.clientX, e.clientY), touch))
+          // every move, no dead zone: the point rides with the finger at its
+          // offset, snapping only at the mouse's tight reach so it does not
+          // feel stuck to the last corner
+          const off = d.off ?? { x: 0, y: 0 }
+          movePoint(d.handle!, snapMm(screenToMm(e.clientX + off.x, e.clientY + off.y)))
           return
         }
         if (d.moved) {
@@ -650,7 +677,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             display: 'flex', gap: 8, alignItems: 'center' }}>
             <span>
               {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel or pinch to zoom · tap a room to inspect.'}
-              {state.tool === 'measure' && 'Measure, in feet and inches. Finger: hold still on a point for two seconds to set A, then B; hold on an end to grab and slide it. Mouse: click A then B. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
+              {state.tool === 'measure' && 'Measure, in feet and inches. Finger: press and hold on a point to set A, then B; press and hold an end to grab it and slide. Mouse: click A then B. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
               {state.tool === 'area' && (live.length < 3
                 ? `Area: tap the corners (${live.length} so far), then close.`
                 : `Area: ${live.length} corners — close it, or keep tapping.`)}

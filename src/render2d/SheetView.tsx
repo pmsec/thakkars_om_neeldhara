@@ -58,11 +58,14 @@ export const SHEET_LAYERS: SheetLayer[] = [
 const MIN_Z = 0.2
 const MAX_Z = 10
 
-function fmtLen(mm: number, units: string, roundToInch: boolean): string {
-  if (units === 'ftin') return formatFeetInches(mm, roundToInch ? 1 : 16)
-  if (units === 'm') return `${(mm / 1000).toFixed(2)} m`
-  return `${Math.round(mm)} mm`
+// the measure tool reads in feet and inches whatever the unit toggle says
+// (Karan's call): a tape on the plan, not a millimetre rule
+function fmtLen(mm: number, roundToInch: boolean): string {
+  return formatFeetInches(mm, roundToInch ? 1 : 16)
 }
+
+/** A measure endpoint under the pointer: which chain, which end. */
+interface Handle { id: string; idx: number }
 
 export function SheetView({ compact = false }: { compact?: boolean }): React.ReactElement {
   const { state, set, update } = useStore()
@@ -73,7 +76,14 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
   const [fetching, setFetching] = useState(false)
   const [cursor, setCursor] = useState<Pt | null>(null)          // mm
   const [live, setLive] = useState<Pt[]>([])                     // mm, active chain
-  const drag = useRef<{ px: number; py: number; x: number; y: number; moved: boolean } | null>(null)
+  // one pointer down on the sheet: a pan, a measure being drawn with a
+  // finger, or a measure endpoint being dragged; `slop` is how far it may
+  // wander and still count as a tap (a finger lands far less exactly than
+  // a mouse), `fresh` says the draw started the chain itself
+  const drag = useRef<{
+    px: number; py: number; x: number; y: number; moved: boolean; slop: number
+    kind: 'pan' | 'draw' | 'handle'; handle?: Handle; fresh?: boolean
+  } | null>(null)
   const sheetLayers = state.sheetLayers
   const snaps = useMemo(snapPoints, [])
 
@@ -138,9 +148,9 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
   )
 
   const snapMm = useCallback(
-    (p: Pt): Pt => {
+    (p: Pt, touch = false): Pt => {
       if (!state.snap) return p
-      const tolMm = 14 / (view.z * SC)          // ~14 screen px
+      const tolMm = (touch ? 22 : 14) / (view.z * SC)   // screen px; a finger gets more
       let best: Pt | null = null
       let bd = tolMm
       for (const q of snaps) {
@@ -175,6 +185,36 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
     })
   }, [])
 
+  // the measure endpoint (committed or the live chain's) within `tol` screen
+  // px of the pointer, nearest first — a handle to drag it by
+  const handleAt = useCallback(
+    (clientX: number, clientY: number, tol: number): Handle | null => {
+      const r = outerRef.current!.getBoundingClientRect()
+      let best: Handle | null = null
+      let bd = tol
+      const probe = (id: string, pts: Pt[]) => pts.forEach((p, idx) => {
+        const q = mmToSheet(p)
+        const d = Math.hypot(r.left + view.x + q.x * view.z - clientX, r.top + view.y + q.y * view.z - clientY)
+        if (d < bd) { bd = d; best = { id, idx } }
+      })
+      probe('live', live)
+      for (const m of state.measures) probe(m.id, m.points)
+      return best
+    },
+    [view, live, state.measures],
+  )
+  const movePoint = useCallback(
+    (h: Handle, mm: Pt) => {
+      if (h.id === 'live') setLive((pts) => pts.map((p, i) => (i === h.idx ? mm : p)))
+      else update((s) => ({ ...s, measures: s.measures.map((m) => (m.id === h.id ? { ...m, points: m.points.map((p, i) => (i === h.idx ? mm : p)) } : m)) }))
+    },
+    [update],
+  )
+  const commitMeasure = useCallback(
+    (a: Pt, b: Pt) => update((s) => ({ ...s, measures: [...s.measures, { id: `M${Date.now()}`, points: [a, b], committed: true }] })),
+    [update],
+  )
+
   // two fingers: a pinch zooms about the fingers' midpoint and pans with it
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const pinch = useRef<{ d0: number; z0: number; mx0: number; my0: number; x0: number; y0: number } | null>(null)
@@ -195,9 +235,27 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
         drag.current = null
         return
       }
-      drag.current = { px: e.clientX, py: e.clientY, x: view.x, y: view.y, moved: false }
+      const touch = e.pointerType !== 'mouse'
+      const slop = touch ? 12 : 4
+      const base = { px: e.clientX, py: e.clientY, x: view.x, y: view.y, moved: false, slop }
+      if (state.tool === 'measure') {
+        // on an endpoint: drag it (a finger gets a wide grab, a mouse a tight one)
+        const h = handleAt(e.clientX, e.clientY, touch ? 24 : 8)
+        if (h) { drag.current = { ...base, kind: 'handle', handle: h }; return }
+        // a finger on the sheet draws the measure: down at A, lift at B. Two
+        // fingers pan and zoom, so one finger is free to be the tape
+        if (touch) {
+          const mm = snapMm(screenToMm(e.clientX, e.clientY), true)
+          setCursor(mm)
+          const fresh = live.length === 0
+          if (fresh) setLive([mm])
+          drag.current = { ...base, kind: 'draw', fresh }
+          return
+        }
+      }
+      drag.current = { ...base, kind: 'pan' }
     },
-    [view],
+    [view, state.tool, live, handleAt, snapMm, screenToMm],
   )
 
   const onPointerMove = useCallback(
@@ -219,19 +277,35 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
       if (d) {
         const dx = e.clientX - d.px
         const dy = e.clientY - d.py
-        if (Math.hypot(dx, dy) > 4) d.moved = true
+        if (Math.hypot(dx, dy) > d.slop) d.moved = true
+        const touch = e.pointerType !== 'mouse'
+        if (d.kind === 'handle') {
+          if (d.moved) movePoint(d.handle!, snapMm(screenToMm(e.clientX, e.clientY), touch))
+          return
+        }
+        if (d.kind === 'draw') {
+          setCursor(snapMm(screenToMm(e.clientX, e.clientY), touch))
+          return
+        }
         if (d.moved) setView((v) => ({ ...v, x: d.x + dx, y: d.y + dy }))
         return
       }
-      const mm = snapMm(screenToMm(e.clientX, e.clientY))
+      const mm = snapMm(screenToMm(e.clientX, e.clientY), e.pointerType !== 'mouse')
       setCursor(mm)
       if (state.tool === 'select') {
         const r = roomAt(mm)
         if ((r?.id ?? null) !== state.hoveredRoom) set({ hoveredRoom: r?.id ?? null })
       }
     },
-    [screenToMm, snapMm, state.tool, state.hoveredRoom, roomAt, set],
+    [screenToMm, snapMm, state.tool, state.hoveredRoom, roomAt, set, movePoint],
   )
+
+  // a cancelled touch (the browser took the gesture) ends whatever it was
+  const onPointerCancel = useCallback((e: React.PointerEvent) => {
+    pointers.current.delete(e.pointerId)
+    if (pointers.current.size < 2) pinch.current = null
+    drag.current = null
+  }, [])
 
   const onPointerUp = useCallback(
     (e: React.PointerEvent) => {
@@ -244,8 +318,23 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
       }
       const d = drag.current
       drag.current = null
+      const touch = e.pointerType !== 'mouse'
+      const mm = snapMm(screenToMm(e.clientX, e.clientY), touch)
+      if (d?.kind === 'handle') return           // the endpoint has been moved already
+      if (d?.kind === 'draw') {
+        // a finger's measure: lifted after a pull, B is here; lifted without
+        // moving, it was a tap - the first tap sets A, the second sets B
+        setLive((pts) => {
+          if (d.moved || !d.fresh) {
+            if (pts.length >= 1) commitMeasure(pts[0], mm)
+            setCursor(null)
+            return []
+          }
+          return pts
+        })
+        return
+      }
       if (d?.moved) return                       // it was a pan, not a click
-      const mm = snapMm(screenToMm(e.clientX, e.clientY))
 
       if (state.tool === 'select') {
         const r = roomAt(mm)
@@ -256,13 +345,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
         setLive((pts) => {
           const next = [...pts, mm]
           if (next.length === 2) {
-            update((s) => ({
-              ...s,
-              measures: [
-                ...s.measures,
-                { id: `M${Date.now()}`, points: next, committed: true },
-              ],
-            }))
+            commitMeasure(next[0], next[1])
             return []
           }
           return next
@@ -292,7 +375,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
         }
       }
     },
-    [screenToMm, snapMm, state.tool, roomAt, set, update],
+    [screenToMm, snapMm, state.tool, roomAt, set, update, commitMeasure],
   )
 
   const onDoubleClick = useCallback(() => {
@@ -330,8 +413,15 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
 
   const measureLabel = (a: Pt, b: Pt): { at: Pt; text: string } => ({
     at: mmToSheet({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }),
-    text: fmtLen(Math.hypot(b.x - a.x, b.y - a.y), state.units, state.roundToInch),
+    text: fmtLen(Math.hypot(b.x - a.x, b.y - a.y), state.roundToInch),
   })
+  // an endpoint's handle: a ring a finger can find, on the dot
+  const handleRing = (p: { x: number; y: number }, key: React.Key) => (
+    <g key={key}>
+      <circle cx={p.x} cy={p.y} r={strokeW * 5} fill="rgba(163,61,47,0.12)" stroke="#a33d2f" strokeWidth={strokeW * 0.6} />
+      <circle cx={p.x} cy={p.y} r={strokeW * 2.2} fill="#a33d2f" />
+    </g>
+  )
 
   const strokeW = Math.max(1.2, 2.2 / view.z)
   const fontPx = Math.max(11, 15 / view.z)
@@ -349,6 +439,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
       onDoubleClick={onDoubleClick}
     >
       <div
@@ -384,9 +475,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             return (
               <g key={m.id}>
                 <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke="#a33d2f" strokeWidth={strokeW} />
-                {[A, B].map((p, i) => (
-                  <circle key={i} cx={p.x} cy={p.y} r={strokeW * 2.2} fill="#a33d2f" />
-                ))}
+                {[A, B].map((p, i) => handleRing(p, i))}
                 <text x={L.at.x} y={L.at.y - strokeW * 3} fontSize={fontPx} fill="#a33d2f"
                   textAnchor="middle" fontFamily="Helvetica,Arial,sans-serif" fontWeight={700}
                   paintOrder="stroke" stroke="#faf8f4" strokeWidth={fontPx / 4}>
@@ -414,10 +503,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
 
           {live.length > 0 && (
             <g>
-              {live.map((p, i) => {
-                const P = mmToSheet(p)
-                return <circle key={i} cx={P.x} cy={P.y} r={strokeW * 2.6} fill="#a33d2f" />
-              })}
+              {live.map((p, i) => handleRing(mmToSheet(p), i))}
               {live.length > 1 && (
                 <path
                   d={live.map((p, i) => `${i ? 'L' : 'M'}${mmToSheet(p).x},${mmToSheet(p).y}`).join(' ')}
@@ -518,7 +604,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             display: 'flex', gap: 8, alignItems: 'center' }}>
             <span>
               {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel or pinch to zoom · tap a room to inspect.'}
-              {state.tool === 'measure' && 'Measure: tap point A, then point B. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
+              {state.tool === 'measure' && 'Measure, in feet and inches: tap A then B, or pull a finger from A to B; drag an end to adjust it. Two fingers pan and zoom. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
               {state.tool === 'area' && (live.length < 3
                 ? `Area: tap the corners (${live.length} so far), then close.`
                 : `Area: ${live.length} corners — close it, or keep tapping.`)}

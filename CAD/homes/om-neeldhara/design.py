@@ -197,9 +197,9 @@ SCR_GAP = 795                       # left open at the end-wall end
 # enclosure (a 230 column on the outboard face, 150 walls elsewhere).
 VOID_KEEP = [(7500, 1200, 9115, 2620), (2 * 12240 - 9115, 1200, 2 * 12240 - 7500, 2620)]
 # THE VOIDS ARE OPEN DECK NOW (Karan's word from the builder): floored, their
-# north walls and the north stubs of their inboard walls demolished, the
-# racks gone.  What stands: the outboard column, the pod wall each backed
-# on to, and the south stub of the inboard wall — the great room's jamb.
+# north walls and both stubs of their inboard walls demolished (the south
+# stub, the great room's old jamb, last — Karan's call), the racks gone.
+# What stands: the outboard column and the pod wall each backed on to.
 # See immovables ('reclaimed void', RECLAIM_DEMO).  They were bulk stores
 # with 700 doors before this.
 
@@ -1093,16 +1093,14 @@ _ONCE = [
     #     answer and is NOT drawn, because it is not what was asked for.
     ('grass',    POD_W0, DECK_N + 340, 7500, DECK_S, 'real grass, the whole deck'),
     ('grass',    7500, DECK_N + 340, 9115, 1200, 'real grass, north of the void'),
-    # ...and into the reclaimed void itself, round its column and the jamb stub
-    ('grass',    7730, 1200, 9115, 2270, 'real grass, the reclaimed void'),
-    ('grass',    7730, 2270, 8965, DECK_S, 'real grass, the reclaimed void'),
+    # ...and into the reclaimed void itself, from its column to the great room's corner
+    ('grass',    7730, 1200, 9115, DECK_S, 'real grass, the reclaimed void'),
     # NOTHING BETWEEN THE VOIDS.  X 9115-15365 is the bay the great room walks
     # out on to, and it is boarded, not grassed — the same floor as the room
     # inside, on the same board grid, run through the slider.  See
     # retrofit.wood_floor().  The grass picks up again beyond each void.
     ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
-    ('grass',    15365, 1200, 16750, 2270, 'real grass, the reclaimed void'),
-    ('grass',    15515, 2270, 16750, DECK_S, 'real grass, the reclaimed void'),
+    ('grass',    15365, 1200, 16750, DECK_S, 'real grass, the reclaimed void'),
     ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
     ('gym',      4760, 340, 5960, 2340, 'all-in-one strength trainer  ·  1200 x 2000'),
     ('spa',      17930, 400, 19680, 2150, '4-seat spa'),

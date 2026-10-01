@@ -45,12 +45,16 @@ _WEST = [
 # NORTH wall, the shower apse opening the WC into the den through it (its
 # west and south walls are the WC's and stay).  The east box stops short of
 # the main duct wall so that wall's own lines are untouched.
-# ...and the deck voids' enclosures: each void's north wall and the north
-# stub of its inboard wall.  Its south wall is the pod's own and stays; the
-# south stub of the inboard wall is the great room's jamb and stays; the
-# outboard side is a column.  The east box is the west one mirrored.
+# ...and the deck voids' enclosures: each void's north wall and BOTH stubs
+# of its inboard wall — the north one with the north wall, the south one
+# (the great room's old jamb) too, Karan's call: the void's corner is open
+# to the great room's deck edge.  Its south wall is the pod's own and
+# stays; the outboard side is a column.  The east boxes are the west ones
+# mirrored.  (The south-stub box is narrow, so the pod wall running through
+# it is mostly outside and stands.)
 RECLAIM_DEMO = [(5780, 8560, 7060, 9600), (17540, 8390, 18800, 8560),
-                (7720, 1190, 9125, 1530), (24480 - 9125, 1190, 24480 - 7720, 1530)]
+                (7720, 1190, 9125, 1530), (24480 - 9125, 1190, 24480 - 7720, 1530),
+                (8955, 2260, 9125, 2630), (24480 - 9125, 2260, 24480 - 8955, 2630)]
 
 NAMED = ([(n + ', west', a, b, c, d, k) for n, a, b, c, d, k in _WEST]
          + [mirror((n + ', east', a, b, c, d, k)) for n, a, b, c, d, k in _WEST])

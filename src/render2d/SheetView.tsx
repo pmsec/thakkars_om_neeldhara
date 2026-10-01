@@ -76,14 +76,20 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
   const [fetching, setFetching] = useState(false)
   const [cursor, setCursor] = useState<Pt | null>(null)          // mm
   const [live, setLive] = useState<Pt[]>([])                     // mm, active chain
-  // one pointer down on the sheet: a pan, a measure being drawn with a
-  // finger, or a measure endpoint being dragged; `slop` is how far it may
-  // wander and still count as a tap (a finger lands far less exactly than
-  // a mouse), `fresh` says the draw started the chain itself
+  // one pointer down on the sheet: a pan, or a measure endpoint being
+  // dragged; `slop` is how far it may wander and still count as a tap (a
+  // finger lands far less exactly than a mouse). On a finger the measure
+  // tool arms a HOLD timer: held still that long, the finger sets a point
+  // (or grabs an end) and the pan becomes a handle drag; moved or lifted
+  // sooner, nothing is set (Karan's call: no points from a stray touch)
   const drag = useRef<{
     px: number; py: number; x: number; y: number; moved: boolean; slop: number
-    kind: 'pan' | 'draw' | 'handle'; handle?: Handle; fresh?: boolean
+    kind: 'pan' | 'handle'; handle?: Handle; hold?: number
   } | null>(null)
+  const HOLD = 2000
+  const [hold, setHold] = useState<Pt | null>(null)            // mm, a finger held, the ring growing
+  const liveRef = useRef(live)
+  liveRef.current = live
   const sheetLayers = state.sheetLayers
   const snaps = useMemo(snapPoints, [])
 
@@ -239,24 +245,49 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
       const slop = touch ? 12 : 4
       const base = { px: e.clientX, py: e.clientY, x: view.x, y: view.y, moved: false, slop }
       if (state.tool === 'measure') {
-        // on an endpoint: drag it (a finger gets a wide grab, a mouse a tight one)
-        const h = handleAt(e.clientX, e.clientY, touch ? 24 : 8)
-        if (h) { drag.current = { ...base, kind: 'handle', handle: h }; return }
-        // a finger on the sheet draws the measure: down at A, lift at B. Two
-        // fingers pan and zoom, so one finger is free to be the tape
-        if (touch) {
+        if (!touch) {
+          // a mouse on an endpoint drags it straight away
+          const h = handleAt(e.clientX, e.clientY, 8)
+          if (h) { drag.current = { ...base, kind: 'handle', handle: h }; return }
+        } else {
+          // a finger pans until it has held still for HOLD: then it grabs the
+          // end under it, or sets the next point of the measure, and keeps
+          // hold of that point to slide it while it stays down
           const mm = snapMm(screenToMm(e.clientX, e.clientY), true)
-          setCursor(mm)
-          const fresh = live.length === 0
-          if (fresh) setLive([mm])
-          drag.current = { ...base, kind: 'draw', fresh }
+          const h = handleAt(e.clientX, e.clientY, 24)
+          const d: NonNullable<typeof drag.current> = { ...base, kind: 'pan' }
+          d.hold = window.setTimeout(() => {
+            if (drag.current !== d || d.moved) return
+            d.hold = undefined
+            d.kind = 'handle'
+            if (h) d.handle = h
+            else {
+              const pts = liveRef.current
+              if (pts.length === 0) { setLive([mm]); d.handle = { id: 'live', idx: 0 } }
+              else {
+                const id = `M${Date.now()}`
+                update((s) => ({ ...s, measures: [...s.measures, { id, points: [pts[0], mm], committed: true }] }))
+                setLive([])
+                d.handle = { id, idx: 1 }
+              }
+            }
+            setHold(null)
+            navigator.vibrate?.(30)
+          }, HOLD)
+          setHold(mm)
+          drag.current = d
           return
         }
       }
       drag.current = { ...base, kind: 'pan' }
     },
-    [view, state.tool, live, handleAt, snapMm, screenToMm],
+    [view, state.tool, handleAt, snapMm, screenToMm, update],
   )
+  // a hold that is over, one way or another
+  const endHold = (d: NonNullable<typeof drag.current> | null) => {
+    if (d?.hold) { window.clearTimeout(d.hold); d.hold = undefined }
+    setHold(null)
+  }
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent) => {
@@ -283,11 +314,10 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
           if (d.moved) movePoint(d.handle!, snapMm(screenToMm(e.clientX, e.clientY), touch))
           return
         }
-        if (d.kind === 'draw') {
-          setCursor(snapMm(screenToMm(e.clientX, e.clientY), touch))
-          return
+        if (d.moved) {
+          if (d.hold) endHold(d)               // the finger moved: a pan, not a hold
+          setView((v) => ({ ...v, x: d.x + dx, y: d.y + dy }))
         }
-        if (d.moved) setView((v) => ({ ...v, x: d.x + dx, y: d.y + dy }))
         return
       }
       const mm = snapMm(screenToMm(e.clientX, e.clientY), e.pointerType !== 'mouse')
@@ -304,6 +334,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
   const onPointerCancel = useCallback((e: React.PointerEvent) => {
     pointers.current.delete(e.pointerId)
     if (pointers.current.size < 2) pinch.current = null
+    endHold(drag.current)
     drag.current = null
   }, [])
 
@@ -318,23 +349,16 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
       }
       const d = drag.current
       drag.current = null
+      // a lift with no down of ours (one that began on a toolbar button, say)
+      // is not a tap on the sheet: the Measure button must not set point A
+      if (!d) return
+      if ((e.target as HTMLElement).closest('button, select, input, a, label')) return
+      endHold(d)
       const touch = e.pointerType !== 'mouse'
+      if (d.kind === 'handle') return            // the endpoint has been set or moved already
+      if (d.moved) return                        // it was a pan, not a click
+      if (touch && state.tool === 'measure') return   // a finger sets points by holding, never by a tap
       const mm = snapMm(screenToMm(e.clientX, e.clientY), touch)
-      if (d?.kind === 'handle') return           // the endpoint has been moved already
-      if (d?.kind === 'draw') {
-        // a finger's measure: lifted after a pull, B is here; lifted without
-        // moving, it was a tap - the first tap sets A, the second sets B
-        setLive((pts) => {
-          if (d.moved || !d.fresh) {
-            if (pts.length >= 1) commitMeasure(pts[0], mm)
-            setCursor(null)
-            return []
-          }
-          return pts
-        })
-        return
-      }
-      if (d?.moved) return                       // it was a pan, not a click
 
       if (state.tool === 'select') {
         const r = roomAt(mm)
@@ -402,7 +426,16 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
     return () => window.removeEventListener('keydown', onKey)
   }, [update])
 
-  useEffect(() => setLive([]), [state.tool])
+  // a change of tool drops the live chain, and leaving Pan / select drops
+  // the room selection: the measure tool must not keep lighting rooms up
+  useEffect(() => {
+    setLive([])
+    if (state.tool !== 'select') set({ selectedRoom: null, hoveredRoom: null })
+  }, [state.tool, set])
+  const clearAll = useCallback(() => {
+    setLive([])
+    update((s) => ({ ...s, measures: [], areas: [] }))
+  }, [update])
 
   // ------------------------------------------------------------- overlay
   const hovered = state.hoveredRoom ? model.roomById.get(state.hoveredRoom) : null
@@ -555,6 +588,15 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             )
           })}
 
+          {hold && (() => {
+            // the finger's hold, a ring that grows for the two seconds it takes
+            const P = mmToSheet(hold)
+            return (
+              <circle cx={P.x} cy={P.y} r={strokeW * 2} fill="rgba(163,61,47,0.10)" stroke="#a33d2f" strokeWidth={strokeW * 1.4}>
+                <animate attributeName="r" from={strokeW * 2} to={strokeW * 16} dur={`${HOLD}ms`} fill="freeze" />
+              </circle>
+            )
+          })()}
           {cursor && state.snap && state.tool !== 'select' && (() => {
             const P = mmToSheet(cursor)
             return <circle cx={P.x} cy={P.y} r={strokeW * 3} fill="none" stroke="#a33d2f" strokeWidth={strokeW * 0.8} />
@@ -578,6 +620,10 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
                 {label}
               </button>
             ))}
+            <button onClick={clearAll} disabled={state.measures.length === 0 && state.areas.length === 0 && live.length === 0}
+              title="Clear every measurement and area on the sheet">
+              Clear measures
+            </button>
             <span style={{ width: 1, background: '#d5cdbb', margin: '2px 3px' }} />
             <button onClick={() => void fetchLatest()} disabled={fetching}
               title="Pull the newest sheet straight from the CAD branch, without waiting for a redeploy">
@@ -604,7 +650,7 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
             display: 'flex', gap: 8, alignItems: 'center' }}>
             <span>
               {state.tool === 'select' && 'The CAD sheet, verbatim. Drag to pan · wheel or pinch to zoom · tap a room to inspect.'}
-              {state.tool === 'measure' && 'Measure, in feet and inches: tap A then B, or pull a finger from A to B; drag an end to adjust it. Two fingers pan and zoom. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
+              {state.tool === 'measure' && 'Measure, in feet and inches. Finger: hold still on a point for two seconds to set A, then B; hold on an end to grab and slide it. Mouse: click A then B. Snap is ' + (state.snap ? 'on' : 'off') + '.'}
               {state.tool === 'area' && (live.length < 3
                 ? `Area: tap the corners (${live.length} so far), then close.`
                 : `Area: ${live.length} corners — close it, or keep tapping.`)}
@@ -624,11 +670,6 @@ export function SheetView({ compact = false }: { compact?: boolean }): React.Rea
               </button>
             )}
             {live.length > 0 && <button onClick={() => setLive([])}>Cancel</button>}
-            {(state.measures.length > 0 || state.areas.length > 0) && (
-              <button onClick={() => update((s2) => ({ ...s2, measures: [], areas: [] }))}>
-                Clear all
-              </button>
-            )}
           </div>
         </>
       )}

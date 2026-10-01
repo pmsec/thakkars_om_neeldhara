@@ -39,7 +39,7 @@ export const building: BuildingData = {
     { id: 'W-04', type: 'window', abs: [{ x: 25080, y: 1350 }, { x: 25080, y: 1950 }], head: 2400, nonCirculating: true, sill: 900 },
     { id: 'W-05', type: 'window', abs: [{ x: 25080, y: 5585 }, { x: 25080, y: 9465 }], head: 2400, nonCirculating: true, sill: 900, label: "Karan's suite — the long east light, headboard jamb to jamb" },
     { id: 'W-06', type: 'window', abs: [{ x: 7800, y: 11125 }, { x: 9800, y: 11125 }], head: 2400, nonCirculating: true, sill: 900, label: 'Kitchen south light' },
-    { id: 'F-MAIN', type: 'door', abs: [{ x: 11715, y: 11125 }, { x: 12765, y: 11125 }], head: 2100, hinge: 0, side: 1, label: 'MAIN ENTRANCE' },
+    { id: 'F-MAIN', type: 'door', abs: [{ x: 11715, y: 11125 }, { x: 12765, y: 11125 }], head: 2860.0, hinge: 0, side: 1, label: 'MAIN ENTRANCE' },
   ],
 
   envelopeGlazing: [
@@ -176,7 +176,7 @@ export const building: BuildingData = {
       thickness: 125,
       kind: 'interior',
       openings: [
-        { id: 'D-WC-GREAT', type: 'door', at: [1320, 2120], head: 2100, hinge: 0, side: -1, label: 'Guest WC — from the great room, west of the pod glazing' },
+        { id: 'D-WC-GREAT', type: 'door', at: [1320, 2120], head: 2985.0, hinge: 0, side: -1, label: 'Guest WC — from the great room, west of the pod glazing; full height' },
       ],
     },
     {
@@ -190,7 +190,7 @@ export const building: BuildingData = {
       thickness: 150,
       kind: 'interior',
       openings: [
-        { id: 'D-HELP-PASS', type: 'door', at: [1708.605, 2408.605], head: 2100, hinge: 0, side: 1, label: "Help's room — into the WC passage, hinged west, swings into help's room" },
+        { id: 'D-HELP-PASS', type: 'door', at: [1708.605, 2408.605], head: 3035.0, hinge: 0, side: 1, label: "Help's room — into the WC passage, hinged west, swings into help's room; full height" },
       ],
       notes: "The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall.",
     },
@@ -462,7 +462,7 @@ export const building: BuildingData = {
       thickness: 110,
       kind: 'interior',
       openings: [
-        { id: 'D-WC-FLAT', type: 'door', at: [115, 815], head: 2100, hinge: 1, side: 1, label: "Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage" },
+        { id: 'D-WC-FLAT', type: 'door', at: [115, 815], head: 3035.0, hinge: 1, side: 1, label: "Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage; full height" },
       ],
       label: 'Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den, its den face in walnut slats floor to ceiling: a pillar in the pod, the guitars on it, three spots at its crown',
     },

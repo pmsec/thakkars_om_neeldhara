@@ -124,6 +124,17 @@ def w(id_, points, th, kind, openings=(), label=None, notes=None, pane=None,
             'pane': pane, 'glass': glass}
 
 
+# FULL-HEIGHT DOORS (Karan's call, agreed door by door): the arch's crown sits
+# 120 under the 3505 ceiling and the springing a half-width below that, so
+# the round top is kept and the leaf reaches the slab
+def full_head(width):
+    return 3505 - 120 - width / 2
+
+
+# the exterior doors that go full height, by id
+EXT_FULL = {'F-MAIN': full_head(1050)}
+
+
 def op(id_, type_, a, b, head=2100, sill=None, label=None, extra=''):
     return {'id': id_, 'type': type_, 'at': (a, b), 'head': head,
             'sill': sill, 'label': label, 'extra': extra}
@@ -252,8 +263,8 @@ WALLS += [
     # ...ending on the WC's stub at WC_CX: east of that the duct's north wall
     # is demolished and the WC's floor runs into its shower apse
     w('W-HELP-N', [(13700, 8462.5), (D.WC_CX, 8462.5)], 125, 'interior',
-      [op('D-WC-GREAT', 'door', 1320, 2120,
-          label='Guest WC — from the great room, west of the pod glazing')]),
+      [op('D-WC-GREAT', 'door', 1320, 2120, head=full_head(800),
+          label='Guest WC — from the great room, west of the pod glazing; full height')]),
     # THE GUEST / SERVICE WC IS ON THE MAIN DUCT NOW (Karan's call): its
     # passage's west wall on the great-room door's west jamb, its south wall
     # on the builder's block line, running to the block
@@ -262,8 +273,8 @@ WALLS += [
     # two are ONE polyline, joined by the rounded south-west corner (Karan's
     # call), 300 on the centreline
     w('W-WC-PASS', _pass_line, 150, 'interior',
-      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16550),
-          label="Help's room — into the WC passage, hinged west, swings into help's room")],
+      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16550), head=full_head(700),
+          label="Help's room — into the WC passage, hinged west, swings into help's room; full height")],
       notes="The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall."),
 ]
 
@@ -451,8 +462,8 @@ WALLS += [
 _sh = [(D.WC_CX, D.WC_PASS_S), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
 WALLS += [
     w('W-WC-APSE', _sh, D.T_WC, 'interior',
-      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=2100,
-          label="Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage")],
+      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=full_head(700),
+          label="Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage; full height")],
       label="Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den, its den face in walnut slats floor to ceiling: a pillar in the pod, the guitars on it, three spots at its crown"),
 ]
 
@@ -767,7 +778,7 @@ def emit_building():
         extra = ", hinge: 0, side: 1" if typ == 'door' else ''
         labs = f', label: {lab!r}' if lab else ''
         nonc = ", nonCirculating: true, sill: 900" if typ == 'window' else ''
-        head = 2400 if typ == 'window' else 2100
+        head = 2400 if typ == 'window' else EXT_FULL.get(oid, 2100)
         A(f'    {{ id: {oid!r}, type: {typ!r}, abs: [{pt(*p1)}, {pt(*p2)}], '
           f'head: {head}{nonc}{extra}{labs} }},')
     A('  ],')

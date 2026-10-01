@@ -550,13 +550,13 @@ CHORDS = [
     ('GAL-W', seg_pts[0][-1], seg_pts[1][0], 'door',
      'Service door — west, to the kitchen, above the 2725 column; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery'),
     ('GAL-N', seg_pts[1][-1], seg_pts[2][0], 'arch',
-     'Arched portal to the great room — curved doors slide on the arc'),
+     'Arched portal to the great room — curved doors slide on the arc, round on top under a walnut spandrel'),
     ('GAL-E', seg_pts[2][-1], (13965, 9325), 'door',
      "Service door — east, to help's side; a curved walnut leaf flush with the arch, hinged on the column top, swings into the gallery"),
 ]
 for gid, a0, a1, typ, lab in CHORDS:
     L = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
-    head = CEIL if typ == 'arch' else full_head(L)   # the arch runs to the ceiling; its doors too
+    head = full_head(L)   # every one full height, round on top: the crown 120 under the slab
     # the service doors' leaves are curved to the drum, flush with its inner face
     curve = f'curve: {{ x: {gx}, y: {gy}, r: {gr} }}' if typ == 'door' else ''
     WALLS.append(w(f'T-{gid}', [a0, a1], 0, 'threshold',

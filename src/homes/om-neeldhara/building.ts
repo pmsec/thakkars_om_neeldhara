@@ -700,7 +700,7 @@ export const building: BuildingData = {
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'D-GAL-N', type: 'arch', at: [0, 1053.215], head: 3505, label: 'Arched portal to the great room — curved doors slide on the arc' },
+        { id: 'D-GAL-N', type: 'arch', at: [0, 1053.215], head: 2858.3922914283266, label: 'Arched portal to the great room — curved doors slide on the arc, round on top under a walnut spandrel' },
       ],
     },
     {

@@ -5487,8 +5487,15 @@ function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | nul
   // The leaves slide just inside the drum's inner face.
   const R = Rwall - wallT / 2 - 40
   const LEAF_T = 45
-  // the leaves run the full height of the drum: wall head to floor, less a clearance
-  const H = model.data.levels.ceiling - 20
+  // ROUND ON TOP (Karan's call): the pair runs to the portal's head and rises
+  // from there as one arch across both leaves, the crown 120 under the slab;
+  // a fixed walnut spandrel on the drum fills the arch to the ceiling
+  const ceiling = model.data.levels.ceiling
+  const portalOp = model.data.walls.flatMap((w) => w.openings ?? []).find((o) => o.id === 'D-GAL-N')
+  const head = Math.min(portalOp?.head ?? ceiling, ceiling)
+  const L = (a1 - a0) * R                       // the pair's run along the leaves' arc
+  const rise = archRise(L, head, ceiling)
+  const H = head - 20                           // the leaves' springing, less a clearance
   const STILE = 90
   const RAIL_BOT = 300
   const RAIL_TOP = 150
@@ -5518,22 +5525,60 @@ function curvedDoors(M: Mats, mode: 'open' | 'shut' = 'shut'): THREE.Group | nul
   const mid = (a0 + a1) / 2
   // open: each leaf slides its own width along the arc, past its jamb
   const slide = mode === 'open' ? (a1 - a0) / 2 : 0
-  for (const [s0, s1] of [[a0 - slide, mid - slide], [mid + slide, a1 + slide]] as const) {
+  // the arch over the pair, in the leaves' SHUT frame: the top of a leaf at
+  // angle a once it has slid by `shift` is the arch at where it stood shut
+  const topAt = (a: number, shift: number) => H + archY((a - shift - a0) * R, L, rise)
+  // a piece whose top follows the arch: short slices, each flat at its own
+  // height, `dep` deep under the arch (0 means from `base`)
+  const SLICE = ang(24)
+  const arched = (from: number, to: number, shift: number, base: number, dep: number, mat: THREE.Material, t = LEAF_T) => {
+    const n = Math.max(1, Math.ceil((to - from) / SLICE))
+    for (let i = 0; i < n; i++) {
+      const u0 = from + ((to - from) * i) / n, u1 = from + ((to - from) * (i + 1)) / n
+      const top = topAt((u0 + u1) / 2, shift)
+      piece(u0, u1 + ang(1), dep > 0 ? top - dep : base, top, mat, t)
+    }
+  }
+  for (const [s0, s1, shift] of [[a0 - slide, mid - slide, -slide], [mid + slide, a1 + slide, slide]] as const) {
     // frame
-    piece(s0, s0 + ang(STILE), 0, H, M.wallWood)
-    piece(s1 - ang(STILE), s1, 0, H, M.wallWood)
+    piece(s0, s0 + ang(STILE), 0, topAt(s0 + ang(STILE / 2), shift) - RAIL_TOP + 2, M.wallWood)
+    piece(s1 - ang(STILE), s1, 0, topAt(s1 - ang(STILE / 2), shift) - RAIL_TOP + 2, M.wallWood)
     piece(s0, s1, 0, RAIL_BOT, M.wallWood)
-    piece(s0, s1, H - RAIL_TOP, H, M.wallWood)
+    arched(s0, s1, shift, 0, RAIL_TOP, M.wallWood)          // the top rail, curved to the arch
     piece(s0, s1, MID_AT, MID_AT + RAIL_MID, M.wallWood)
     // two lights per leaf, each with a chamfered edge read as a brighter border
     const l0 = s0 + ang(STILE)
     const l1 = s1 - ang(STILE)
-    for (const [b, t] of [[RAIL_BOT, MID_AT], [MID_AT + RAIL_MID, H - RAIL_TOP]] as const) {
-      piece(l0, l1, b, t, M.glass, 8)
-      piece(l0, l1, b, b + BEVEL, M.bevel, 14)
-      piece(l0, l1, t - BEVEL, t, M.bevel, 14)
-      piece(l0, l0 + ang(BEVEL), b, t, M.bevel, 14)
-      piece(l1 - ang(BEVEL), l1, b, t, M.bevel, 14)
+    // the lower light, square
+    piece(l0, l1, RAIL_BOT, MID_AT, M.glass, 8)
+    piece(l0, l1, RAIL_BOT, RAIL_BOT + BEVEL, M.bevel, 14)
+    piece(l0, l1, MID_AT - BEVEL, MID_AT, M.bevel, 14)
+    piece(l0, l0 + ang(BEVEL), RAIL_BOT, MID_AT, M.bevel, 14)
+    piece(l1 - ang(BEVEL), l1, RAIL_BOT, MID_AT, M.bevel, 14)
+    // the upper light, its head on the arch under the rail
+    const b = MID_AT + RAIL_MID
+    arched(l0, l1, shift, b, 0, M.glass, 8)
+    for (const [u0, u1] of [[l0, l1]] as const) {
+      const n = Math.max(1, Math.ceil((u1 - u0) / SLICE))
+      for (let i = 0; i < n; i++) {
+        const v0 = u0 + ((u1 - u0) * i) / n, v1 = u0 + ((u1 - u0) * (i + 1)) / n
+        const top = topAt((v0 + v1) / 2, shift) - RAIL_TOP
+        piece(v0, v1 + ang(1), top - BEVEL, top, M.bevel, 14)
+      }
+    }
+    piece(l0, l1, b, b + BEVEL, M.bevel, 14)
+    piece(l0, l0 + ang(BEVEL), b, topAt(l0 + ang(BEVEL / 2), shift) - RAIL_TOP, M.bevel, 14)
+    piece(l1 - ang(BEVEL), l1, b, topAt(l1 - ang(BEVEL / 2), shift) - RAIL_TOP, M.bevel, 14)
+  }
+  // the fixed walnut spandrel over the arch, the drum's own thickness on its
+  // line, from just over the leaves' crown line to the ceiling: shut, the
+  // arch reads as one sweep; open, the leaves slide across in front of it
+  if (rise > 2 && ceiling - head > 40) {
+    const n = Math.ceil((a1 - a0) / SLICE)
+    for (let i = 0; i < n; i++) {
+      const u0 = a0 + ((a1 - a0) * i) / n, u1 = a0 + ((a1 - a0) * (i + 1)) / n
+      const base = topAt((u0 + u1) / 2, 0) + 12
+      if (ceiling - base > 2) piece(u0, u1 + ang(1), base, ceiling, M.wallWood, wallT, Rwall)
     }
   }
   // pull handles either side of the meeting stiles

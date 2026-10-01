@@ -256,14 +256,7 @@ export const building: BuildingData = {
       points: [{ x: 7615, y: 2620 }, { x: 9115, y: 2620 }],
       thickness: 150,
       kind: 'interior',
-      notes: 'The pod wall the void backed on to, from the column.',
-    },
-    {
-      id: 'W-VOID-W-JAMB',
-      points: [{ x: 9040, y: 2270 }, { x: 9040, y: 2620 }],
-      thickness: 150,
-      kind: 'interior',
-      notes: 'The south stub of the void’s inboard wall: the great room opening’s jamb.',
+      notes: 'The pod wall the void backed on to, from the column to the pod’s corner.',
     },
     {
       id: 'W-VOID-E-COL',
@@ -277,14 +270,7 @@ export const building: BuildingData = {
       points: [{ x: 15365, y: 2620 }, { x: 16865, y: 2620 }],
       thickness: 150,
       kind: 'interior',
-      notes: 'The pod wall the void backed on to, from the column.',
-    },
-    {
-      id: 'W-VOID-E-JAMB',
-      points: [{ x: 15440, y: 2270 }, { x: 15440, y: 2620 }],
-      thickness: 150,
-      kind: 'interior',
-      notes: 'The south stub of the void’s inboard wall: the great room opening’s jamb.',
+      notes: 'The pod wall the void backed on to, from the column to the pod’s corner.',
     },
     {
       id: 'T-P-TERRACE',
@@ -328,11 +314,11 @@ export const building: BuildingData = {
     },
     {
       id: 'T-GREAT-DECK',
-      points: [{ x: 9040, y: 2545 }, { x: 15440, y: 2545 }],
+      points: [{ x: 9115, y: 2620 }, { x: 15365, y: 2620 }],
       thickness: 0,
       kind: 'threshold',
       openings: [
-        { id: 'O-GREAT-DECK', type: 'threshold', at: [75, 6325], head: 3505, label: 'Great room open to the deck — 6250 clear, no doors, floor to ceiling' },
+        { id: 'O-GREAT-DECK', type: 'threshold', at: [0, 6250], head: 3505, label: 'Great room open to the deck — 6250 clear, pod corner to pod corner, no doors, floor to ceiling' },
       ],
     },
     {

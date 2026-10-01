@@ -301,18 +301,16 @@ WALLS += [
 
 # --- the two retained deck voids (between deck and pods): RECLAIMED into
 # the deck (Karan's word from the builder). What stands of each enclosure:
-# the outboard column (230 x 1500), the pod wall it backed on to, and the
-# south stub of its inboard wall, which is the great room's jamb.
+# the outboard column (230 x 1500) and the pod wall it backed on to. The
+# south stub of its inboard wall, the great room's old jamb, is gone too
+# (Karan's call): the void's corner is open to the great room's deck edge.
 for vid, (a, b, c, d) in (('W', D.VOID_KEEP[0]), ('E', D.VOID_KEEP[1])):
     col_x = a + 115 if vid == 'W' else c - 115
-    jamb_x = c - 75 if vid == 'W' else a + 75
     WALLS += [
         w(f'W-VOID-{vid}-COL', [(col_x, b), (col_x, d)], 230, 'interior',
           notes='The retained void’s outboard column, 230 x 1500 — it stands; the void round it is deck.'),
         w(f'W-VOID-{vid}-S', [(col_x, d), (c, d)] if vid == 'W' else [(a, d), (col_x, d)], 150, 'interior',
-          notes='The pod wall the void backed on to, from the column.'),
-        w(f'W-VOID-{vid}-JAMB', [(jamb_x, 2270), (jamb_x, d)], 150, 'interior',
-          notes='The south stub of the void’s inboard wall: the great room opening’s jamb.'),
+          notes='The pod wall the void backed on to, from the column to the pod’s corner.'),
     ]
 
 # The ceiling. The sheet carries no clear-height figure (the DWG is a bare
@@ -347,11 +345,12 @@ WALLS += [
     w('T-FAMILY-DECK', [(4650, 2545), (7615, 2545)], 0, 'threshold',
       [op('O-FAM-DECK', 'threshold', 0, 2965, head=CEIL,
           label='Family room open to the deck — no doors, floor to ceiling')]),
-    # (the line runs into the two jamb stubs' centrelines, 75 each side, so the
-    # graph closes on them; the 6250 opening itself is between their faces)
-    w('T-GREAT-DECK', [(9040, 2545), (15440, 2545)], 0, 'threshold',
-      [op('O-GREAT-DECK', 'threshold', 75, 6325, head=CEIL,
-          label='Great room open to the deck — 6250 clear, no doors, floor to ceiling')]),
+    # (with the jamb stubs gone the line is the pod corners' own: on the pod
+    # walls' line, from the end of one void's pod wall to the other's, where
+    # the curved screens spring — so the graph closes on those two nodes)
+    w('T-GREAT-DECK', [(9115, 2620), (15365, 2620)], 0, 'threshold',
+      [op('O-GREAT-DECK', 'threshold', 0, 6250, head=CEIL,
+          label='Great room open to the deck — 6250 clear, pod corner to pod corner, no doors, floor to ceiling')]),
     w('T-DEN-DECK', [(16865, 2545), (19830, 2545)], 0, 'threshold',
       [op('O-DEN-DECK', 'threshold', 0, 2965, head=CEIL,
           label='Den open to the deck — no doors, floor to ceiling')]),

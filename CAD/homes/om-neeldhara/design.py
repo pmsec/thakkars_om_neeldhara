@@ -400,7 +400,7 @@ WC_A, WC_B = 770, 770              # (the old arc's radius; wc_pt still speaks i
 T_WC = 110                         # the shower apse's wall
 WC_SPRING = WC_CX - WC_A           # 16660 (the old arc's foot; the planter line still uses it)
 WC_DIE = WC_CY - WC_B              # 8550, on the den's wall
-WC_DOOR_Y = (8580, 9280)           # the flat door: the den-wall jamb (hinge) to the block jamb
+WC_DOOR_Y = (8530, 9280)           # the flat door, 750: the den-wall jamb (hinge) to the block jamb
 WC_PASS_W = 14945                  # the passage's west wall, on the great-room door's west jamb
 WC_PASS_S = 9395                   # its south wall, on the block's line
 PASS_R = 300                       # its south-west corner, rounded (Karan's call): on the centreline,
@@ -519,16 +519,16 @@ NEW_WALLS = [
     # north wall is the den's
     # (both stop short of the corner, which retrofit.pass_corner rounds)
     (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S - PASS_R, T_INT, []),
-    # ...with HELP'S ROOM'S DOOR in it (Karan's call): 700 at X 15850-16550,
+    # ...with HELP'S ROOM'S DOOR in it (Karan's call): 750 at X 15850-16600,
     # east of the basin console, swinging south
     # into help's room — help reaches the WC through the passage, not the
     # great room.  (The WC's other sides are the duct, the structural block
     # and the shower apse: the passage is the only way in.)
     (WC_PASS_W + PASS_R, WC_PASS_S, WC_CX, WC_PASS_S, T_INT,
-     [(15850 - (WC_PASS_W + PASS_R), 16550 - (WC_PASS_W + PASS_R))]),
+     [(15850 - (WC_PASS_W + PASS_R), 16600 - (WC_PASS_W + PASS_R))]),
     # the WC's west wall, on x = WC_CX from the den's face to the block, the
     # shower apse springing off its north end; its FLAT DOOR in it, the whole
-    # 770 of the strip bar the jambs.  (The duct wall east of it is demolished.)
+    # 770 of the strip bar the jambs, 750 clear.  (The duct wall east of it is demolished.)
     (WC_CX, BODY_S, WC_CX, WC_CY, T_INT, [(WC_DOOR_Y[0] - BODY_S, WC_DOOR_Y[1] - BODY_S)]),
     # THE WALL BETWEEN HELP'S ROOM AND THE STORE IS GONE.  With it up, help's
     # room was a 4.4 m2 triangle with a 1025 west leg, and the 1900 bunk sat on
@@ -1102,8 +1102,12 @@ _ONCE = [
     ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
     ('grass',    15365, 1200, 16750, DECK_S, 'real grass, the reclaimed void'),
     ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
-    ('gym',      4760, 340, 5960, 2340, 'all-in-one strength trainer  ·  1200 x 2000'),
-    ('spa',      17930, 400, 19680, 2150, '4-seat spa'),
+    # (Karan's call, from the livability audit: the trainer turned to run
+    # along the parapet so a metre of deck lies between it and the family
+    # room's portal; the spa to the east end of its bed so the den's portal
+    # opens on to grass, not the tub's side)
+    ('gym',      4760, 340, 6760, 1540, 'all-in-one strength trainer  ·  2000 x 1200, along the parapet'),
+    ('spa',      18030, 300, 19780, 2050, '4-seat spa'),
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room
     # ------------------------- parents' pod: the sitting group
@@ -1423,8 +1427,9 @@ _ONCE = [
     # the service door up the arch above the 2725 column.  They stand on the
     # hob counter's leg up the column's kitchen face instead — 380 deep
     # against the column, one above the other, on the stretch the leg gained.
-    ('under',    10020, 8650, 10400, 9100, 'microwave'),
-    ('under',    10020, 9200, 10400, 9580, 'air fryer'),
+    # (the leg's north end is at 9100 now, so they sit 500 further down it)
+    ('under',    10020, 9150, 10400, 9600, 'microwave'),
+    ('under',    10020, 9700, 10400, 10080, 'air fryer'),
     # The two pod corner units — mandir and coffee / pantry — are behind the
     # retained deck void, in the corner between its back wall and the pod
     # glazing.  Their shape follows the curve, so they are built in

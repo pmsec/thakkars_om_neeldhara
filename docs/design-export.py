@@ -273,7 +273,7 @@ WALLS += [
     # two are ONE polyline, joined by the rounded south-west corner (Karan's
     # call), 300 on the centreline
     w('W-WC-PASS', _pass_line, 150, 'interior',
-      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16550), head=full_head(700),
+      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16600), head=full_head(750),
           label="Help's room — into the WC passage, hinged west, swings into help's room; full height")],
       notes="The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall."),
 ]
@@ -461,7 +461,7 @@ WALLS += [
 _sh = [(D.WC_CX, D.WC_PASS_S), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
 WALLS += [
     w('W-WC-APSE', _sh, D.T_WC, 'interior',
-      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=full_head(700),
+      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=full_head(750),
           label="Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage; full height")],
       label="Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den, its den face in walnut slats floor to ceiling: a pillar in the pod, the guitars on it, three spots at its crown"),
 ]
@@ -1094,7 +1094,7 @@ def emit_fixtures():
         a, b, c, d = bbox_of(R.wc_console())
         # in the PASSAGE, along its south wall, the bowl in front of the door
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-WC-PASS', 'STK-GUEST', 'Console on the south wall, 300 bowl in front of the door, mirror over it', poly=van,
+            'R-WC-PASS', 'STK-GUEST', 'Slim console on the south wall, 200 deep, 240 bowl in front of the door, mirror over it', poly=van,
             bowl=bowl_of(R.wc_console()))
 
     # the bath wall cabinet at the west end of each sweep — same face as the

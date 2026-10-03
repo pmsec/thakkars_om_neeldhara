@@ -1518,11 +1518,6 @@ def emit_furniture():
     add_outline(lofts[:1], 'shelves', 'R-GUEST-BATH', 'Loft, 2520 up', 985,
                 styles=('dash',), lift=2520)
 
-    # the lawn's tongues through each opening into the rooms (retrofit
-    # .GRASS_TONGUES): real grass, 25 over the floor, each in its room
-    for (name, x0, x1, yl, yb, room, depths), p in zip(R.GRASS_TONGUES, R.grass_tongues()):
-        add_outline([p], 'grass', room, f'real grass, {name}', 25, styles=('green',))
-
     # the curved full-height rack on the outside of the guest WC's apse
     add_outline(R.help_rack(), 'shelves', 'R-HELP',
                 'Full-height rack on the apse, 300 deep', 3300)
@@ -1649,7 +1644,6 @@ def audit_coverage():
     for kind, a, b, c, d, lab in D.FURNITURE:
         take(f'symbol:{kind}', SY.symbol(kind, a, b, c, d))
     take('wc_console', R.wc_console())
-    take('grass_tongues', R.grass_tongues())
     for fn in (R.mb_console, R.mb_cabinet, R.mb_shelves):
         take(fn.__name__, fn())
         with R.karan():

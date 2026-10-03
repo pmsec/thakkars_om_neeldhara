@@ -8,9 +8,10 @@ FEET AND INCHES only — length x width x height — and nothing in any other un
 
 The drawing is the CAD sheet itself (draw_design.main), captured before it is
 saved: the same walls, glass, joinery and furniture outlines. Its own text is
-taken off wholesale — room areas in m2, dimension chains in mm, the title and
-the keep-clear sizes — and so are the lobby beyond the flat and the chains.
-What goes back on is only this script's labels, every one in feet and inches.
+taken off wholesale — room areas in m2, the title and the keep-clear sizes —
+and so is the lobby beyond the flat. The sheet's dimension chains stay, with
+every figure on them converted from millimetres to feet and inches. What
+goes back on is only this script's labels, every one in feet and inches.
 
 Spaces come from the app's derived room polygons (every face of the plan,
 ducts and shafts included), furniture and fixtures from the app's exported
@@ -188,7 +189,7 @@ def main():
     # the sheet, framed on the home (no lobby, no title strip), same line weights
     captured = []
     base_init = DD.Sheet.__init__
-    FRAME = (-900, -700, 25900, 12100)
+    FRAME = (-2600, -2400, 26500, 12700)      # wide enough for the chains outside the plan, and the scale bar under the south chain
     sc0 = (4200 - 180) / (26600 + 3200)
 
     def init(self, *_a, **_k):
@@ -198,9 +199,14 @@ def main():
     DD.main()
     s = captured[0]
 
-    # strip the sheet's own words: whole layers, then any text left anywhere
-    drop = {'<g id="L-labels">', '<g id="L-dims">', '<g id="L-title">', '<g id="L-ref">'}
-    body, skipping = [], False
+    # strip the sheet's own words: whole layers, then any text left anywhere.
+    # The dimension chains are the exception: they stay, every millimetre
+    # figure on them turned into feet and inches
+    drop = {'<g id="L-labels">', '<g id="L-title">', '<g id="L-ref">'}
+    body, skipping, in_dims = [], False, False
+
+    def to_feet(m):
+        return ftin(float(m.group(0).replace(' ', '')))
     for item in s.o:
         if item in drop:
             skipping = True
@@ -208,6 +214,21 @@ def main():
         if skipping:
             if item == '</g>':
                 skipping = False
+            continue
+        if item == '<g id="L-dims">':
+            in_dims = True
+            body.append(item)
+            continue
+        if in_dims:
+            if item == '</g>':
+                in_dims = False
+                body.append(item)
+                continue
+            # the text's figure: "OVERALL  25 680" -> "OVERALL  84'-3\"" (its halo
+            # rect was sized for the mm figure, near enough the same length)
+            item = re.sub(r'(?<=>)([^<]*?)(\d[\d ]*\d|\d)(?=</text>)',
+                          lambda m: m.group(1) + to_feet(re.match(r'[\d ]+', m.group(2))), item)
+            body.append(item)
             continue
         # (a <text data-keep="1"> is the sheet's own minimal note — the
         # reclaimed ducts' — and stays)

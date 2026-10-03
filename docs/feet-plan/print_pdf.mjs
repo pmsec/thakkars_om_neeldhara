@@ -15,7 +15,10 @@ const [wPx, hPx] = [Number(m[1]), Number(m[2])]
 const [fx0, , fx1] = m[3].split(' ').map(Number)
 const pad = Number(m[4])
 const pxPerMm = (wPx - 2 * pad) / (fx1 - fx0)          // sheet px per model mm
-const SCALE = 35                                        // fills A1's width; the feet scale bar is on the sheet
+// the largest scale (smallest denominator, 35 at least) at which the sheet fits
+// A1's width inside the page margins; the feet scale bar on the sheet is what
+// a reader measures against, so the denominator need not be a round one
+const SCALE = Math.max(35, Math.ceil(wPx / pxPerMm / 805))
 const wMm = wPx / pxPerMm / SCALE
 const hMm = hPx / pxPerMm / SCALE
 

@@ -810,37 +810,28 @@ def clip_y(poly, y, north):
     return out
 
 
-def suite_screen():
-    """Karan's dressing screen — brown tinted glass, in the EAST frame.
+def suite_screen(amp=45, wave=160, n=200):
+    """Karan's dressing CURTAIN (Karan's call, after a tinted-glass screen
+    with a wood dado): a full-height curtain on a motorised ceiling track,
+    on the line of his bath door's north jamb, the bath wall to the end
+    wall.  Drawn across it closes the south strip of the suite - the
+    wardrobes, the way into the bath - off the bed; tucked back to the
+    bath-wall end it opens the whole width.  Nothing stands on the floor:
+    the bed's head backs on to the curtain line.
 
-    It runs on the line of his bath door's north jamb, from the bath wall to
-    the end wall, and it turns the south strip of his suite into one private
-    place: the wardrobes, the 1070 you need in front of them to open a door and
-    stand, and the way into the bath, all behind glass you cannot see through
-    from the bed.
-
-    Tinted rather than clear because the point is privacy, and glass rather than
-    solid because the strip has no window of its own — every bit of its light
-    comes through this pane.  But not glass all the way down: the bed's head
-    backs on to it, so the bottom is a wood dado and only above the headboard
-    does it become glass.  Both are drawn, the glass as an inset band inside
-    the wood one: one line on plan, two materials up it.
-
-    One fixed pane, stopping SCR_GAP short of the end wall.  The gap is the way
-    in — no leaf, no track — and it is also the aperture that throws the end
-    wall's window light across the strip onto the dresser mirror square opposite
-    it, 1615 away."""
-    y1, t, g = D.SCR_Y, D.T_SCR, D.SCR_GAP      # y1 is the SOUTH face
+    On plan: the track as a dashed band on the old screen's line, the
+    curtain as a wave drawn along it, full length - a curtain is its own
+    way through, so the old gap at the end wall is gone."""
+    y1, t = D.SCR_Y, D.T_SCR                    # y1 is the SOUTH face
     y0 = y1 - t
-    w, e = D.M(D.MB_XW_K - D.T_MB), D.END_E - 150      # Karan's bath wall, not the parents'
-
-    def band(a, b, lo, hi, style):
-        return ('poly', [(a, lo), (b, lo), (b, hi), (a, hi)], style)
-
-    # the wood dado at full thickness, and the tinted glass over it drawn as an
-    # inset band — one line on plan, two materials up it
-    return [band(w, e - g, y0, y1, 'wood'),
-            band(w, e - g, y0 + t / 3, y1 - t / 3, 'tint')]
+    w, e = D.M(D.MB_XW_K - D.T_MB), D.END_E - 150      # Karan's bath wall, the end wall
+    ym = (y0 + y1) / 2
+    out = [('poly', [(w, y0), (e, y0), (e, y1), (w, y1)], 'dash')]
+    xs = np.linspace(w + 30, e - 30, n)
+    pts = [(float(x), ym + amp * math.sin(2 * math.pi * (x - w) / wave)) for x in xs]
+    for (xa, ya), (xb, yb) in zip(pts, pts[1:]):
+        out.append(('line', xa, ya, xb, yb, 'light'))
+    return out
 
 
 def bath_poly():

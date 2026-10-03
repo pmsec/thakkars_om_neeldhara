@@ -264,18 +264,10 @@ WALLS += [
     # is demolished and the WC's floor runs into its shower apse
     w('W-HELP-N', [(13700, 8462.5), (D.WC_CX, 8462.5)], 125, 'interior',
       [op('D-WC-GREAT', 'door', 1320, 2120, head=full_head(800),
-          label='Guest WC — from the great room, west of the pod glazing; full height')]),
-    # THE GUEST / SERVICE WC IS ON THE MAIN DUCT NOW (Karan's call): its
-    # passage's west wall on the great-room door's west jamb, its south wall
-    # on the builder's block line, running to the block
-    # ...and its south wall on the builder's block line, running to the WC's
-    # west wall, carrying help's room's door east of the basin console; the
-    # two are ONE polyline, joined by the rounded south-west corner (Karan's
-    # call), 300 on the centreline
-    w('W-WC-PASS', _pass_line, 150, 'interior',
-      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16600), head=full_head(750),
-          label="Help's room — into the WC passage, hinged west, swings into help's room; full height")],
-      notes="The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall."),
+          label="Help's room and the guest WC — from the great room, west of the pod glazing, into help's open north end; full height")]),
+    # (the WC passage's west and south walls are gone - Karan's call: the
+    # strip between the great-room door and the WC's flat door is the open
+    # north end of help's room)
 ]
 
 # --- the entry gallery's two straight legs (230 thick, on the columns)
@@ -458,11 +450,14 @@ WALLS += [
 # two touch at a node and never run along one line)
 # (the apse's foot is 60 east of the wall's line, within its thickness: a
 # short jog along the den's face joins the two)
-_sh = [(D.WC_CX, D.WC_PASS_S), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
+# (with the passage's walls gone, the west wall starts on the block's
+# centreline at 9435, the node the block wall ends on, so the WC closes)
+_BLOCK_C = 9435
+_sh = [(D.WC_CX, _BLOCK_C), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
 WALLS += [
     w('W-WC-APSE', _sh, D.T_WC, 'interior',
-      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=2100,   # under the WC's loft: crown 2475, loft at 2520
-          label="Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage; full height")],
+      [op('D-WC-FLAT', 'door', _BLOCK_C - D.WC_DOOR_Y[1], _BLOCK_C - D.WC_DOOR_Y[0], head=2100,   # under the WC's loft: crown 2475, loft at 2520
+          label="Guest WC — its flat door off help's room's north end, hinged on the block-side jamb, swings out into help's room and lies open along the WC's wall")],
       label="Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den, its den face in walnut slats floor to ceiling: a pillar in the pod, the guitars on it, three spots at its crown"),
 ]
 
@@ -621,10 +616,9 @@ ROOMS = [
      'Vinyl', 'Live-in, with the store as its east end: one room. Bunk under the '
      'duct, racks floor to ceiling on the gallery leg and the south wall, shelves to the ceiling at the bunk’s head, no loft, '
      'its own door off the gallery and a door into the WC passage.'),
-    ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
-     'Stone', 'From the great room’s door straight east to the WC’s flat door, the basin in a corner console curving round the south-west corner; help’s room’s door in the south wall east of it; the WC’s flat door at its east end. No loft: its three doors’ arches would all look into one.'),
+    # (R-WC-PASS is gone: its strip is help's room's north end)
     ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
-     'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2520, clear of the door’s crown.'),
+     'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside on help’s room’s north wall; a loft over it at 2520, clear of the door’s crown.'),
 ]
 
 # The sheet publishes the parents' suite as ONE figure, bed zone and dressing
@@ -838,9 +832,12 @@ def emit_building():
     A('  cages: [],')
     A('')
     A('  rooms: [')
-    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-K-SUITE': 350, 'R-P-BATH': PUB_P_BATH, 'R-G-BATH': PUB_G_BATH, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': PUB_K_DEN, 'R-GREAT': 407, 'R-KITCHEN': PUB_KITCHEN, 'R-ENTRY': 101, 'R-HELP': 77}
-    # (the guest WC and its passage have no Rev 4 figure: the builder's 29 was
-    # his own toilet on this spot, not ours)
+    PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-K-SUITE': 350, 'R-P-BATH': PUB_P_BATH, 'R-G-BATH': PUB_G_BATH, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': PUB_K_DEN, 'R-GREAT': 407, 'R-KITCHEN': PUB_KITCHEN, 'R-ENTRY': 101}
+    # (help's room has no Rev 4 figure any more: with the passage's walls gone it
+    # spans Rev 4's help's room AND the strip of the builder's toilet spot, so
+    # his 77 is not the same room)
+    # (the guest WC has no Rev 4 figure: the builder's 29 was his own toilet on
+    # this spot, not ours)
     # (The deck used to follow the great room's floor out through the glass;
     # it is grass end to end now, so nothing follows anything.)
     FOLLOWS = {}
@@ -1094,7 +1091,7 @@ def emit_fixtures():
         a, b, c, d = bbox_of(R.wc_console())
         # in the PASSAGE, along its south wall, the bowl in front of the door
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-WC-PASS', 'STK-GUEST', 'Corner console in the south-west corner, a quarter-ellipse curving round the corner, 300 bowl on the diagonal, mirror over it', poly=van,
+            'R-HELP', 'STK-GUEST', 'Basin console on the north wall between the great-room door and the WC, 450 deep, 340 bowl, mirror over it', poly=van,
             bowl=bowl_of(R.wc_console()))
 
     # the bath wall cabinet at the west end of each sweep — same face as the
@@ -1185,14 +1182,14 @@ HEIGHTS = {'sofa': 780, 'lounger': 800, 'armchair': 780, 'table': 480,
            'screen': 2100, 'tv': 1300}
 
 
-HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH', 'D-WC-FLAT'}
+HINGE_AT_END = {'D-GAL-E', 'D-P-BATH', 'D-G-BATH'}   # (the WC's flat door hinges on its first jamb now, the block side)
 # which way a leaf swings off its hinge: +1 is the chord's left-hand side,
 # -1 its right.  Both service doors swing into the gallery, so nothing is
 # listed; the map stays for the day a door has to go the other way
 # the guest WC's great-room door opens OUT into the great room (Karan's call,
 # and the sheet draws it so): -1 is the north side of a west-to-east wall;
 # help's door in the passage's south wall swings south into help's room
-SWING_SIDE = {'D-WC-GREAT': -1, 'D-HELP-PASS': 1}
+SWING_SIDE = {'D-WC-GREAT': -1}
 # the two west-frame bath doors hinge at the SOUTH jamb and swing INTO the bath
 # (retrofit.mb_door, hinge='S'), so the grandmother's wardrobe can run to the jamb;
 # hinge 1 is the wall's second point, the south end of W-P-BATH-W
@@ -1239,8 +1236,6 @@ def room_for(cx, cy):
     # help's room wrapping both
     if cx >= D.WC_CX and 8400 <= cy < D.WC_PASS_S:
         return 'R-GUEST-BATH'
-    if D.WC_PASS_W <= cx < D.WC_CX and 8400 <= cy < D.WC_PASS_S:
-        return 'R-WC-PASS'
     if cx > 13965 and cy >= 8400:
         return 'R-HELP'
     return 'R-GREAT'

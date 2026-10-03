@@ -1399,28 +1399,16 @@ def floor_island(n=400):
 
 
 def wood_floor(board=190, island=False):
-    """One wooden floor for the great room and the deck bay in front of it.
+    """The great room's wooden floor, to the glass line.
 
-    The great room and the deck between the two voids are one room with a
-    glass line across the middle of it — that has been the working assumption
-    since the seating was laid out, and the floor is what makes it true.  Two
-    finishes meeting at the slider would read as inside and outside no matter
-    what the seating did.
-
-    THE BOARDS ARE ON ONE GRID, and that is the whole of the detail.  They run
-    NORTH-SOUTH, across the slider rather than along it, so every board starts
-    on the deck and finishes in the great room; and every board line in both
-    halves comes off the same set-out, centred on X 12240, so a board on the
-    deck is the SAME board on the other side of the glass.  Boards laid to two
-    separate grids and butted at a threshold read as two floors joined, which
-    is exactly the thing this is meant to stop.
+    For several rounds it ran on out across the deck bay between the voids,
+    on one board grid, so the room and the deck read as one floor.  THE DECK
+    IS ALL GRASS NOW (Karan's call): the boards stop at the glass line and
+    the lawn runs the whole 15 420, end to end, with the fountain standing in
+    it.  The boards still run NORTH-SOUTH, toward the glass, on a set-out
+    centred on X 12240.
 
     190 is a normal engineered-oak width, and 12240 falls on a board centre.
-
-    What stays grass: everything on the deck beyond the voids, west of 9115
-    and east of 15365, and the 340 planted strip along the parapet.  The lawn
-    was never the point of the deck bay in front of the great room — the point
-    of that bay is that the room walks out on to it.
 
     The great room's outline is not a rectangle — its sides are the pod
     Beziers and its south end is the apse and the kitchen's bump — so each
@@ -1431,9 +1419,6 @@ def wood_floor(board=190, island=False):
     _f, _d, great = pod_polys()
     timber = floor_island() if island else great
     room = Path(timber)
-
-    N_DECK, S_DECK = D.DECK_N + 340, D.DECK_S
-    W_DECK, E_DECK = 9115, 15365                  # between the two voids
 
     out = []
     if island:                                     # stone under the whole
@@ -1450,16 +1435,12 @@ def wood_floor(board=190, island=False):
                         out.append(('line', run, y, x, y, 'joint'))
                     run = None
     out.append(('poly', timber, 'plank'))
-    out.append(('poly', [(W_DECK, N_DECK), (E_DECK, N_DECK),
-                         (E_DECK, S_DECK), (W_DECK, S_DECK)], 'plank'))
 
     xs = [x for x in np.arange(D.MID - board / 2, D.END_W, -board) if x > 8500]
     xs += [x for x in np.arange(D.MID + board / 2, D.END_E, board) if x < 16000]
     for x in sorted(xs):
-        if W_DECK < x < E_DECK:                    # the deck half of the board
-            out.append(('line', x, N_DECK, x, S_DECK, 'board'))
-        ys = np.arange(D.BODY_N, D.BODY_S, 40.0)   # and the great room half,
-        inside = room.contains_points([(x, y) for y in ys])   # clipped to it
+        ys = np.arange(D.BODY_N, D.BODY_S, 40.0)   # each board clipped to the room
+        inside = room.contains_points([(x, y) for y in ys])
         run = None
         for y, ok in zip(list(ys) + [ys[-1]], list(inside) + [False]):
             if ok and run is None:

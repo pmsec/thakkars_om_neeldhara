@@ -1097,10 +1097,11 @@ _ONCE = [
     ('grass',    7500, DECK_N + 340, 9115, 1200, 'real grass, north of the void'),
     # ...and into the reclaimed void itself, from its column to the great room's corner
     ('grass',    7730, 1200, 9115, DECK_S, 'real grass, the reclaimed void'),
-    # NOTHING BETWEEN THE VOIDS.  X 9115-15365 is the bay the great room walks
-    # out on to, and it is boarded, not grassed — the same floor as the room
-    # inside, on the same board grid, run through the slider.  See
-    # retrofit.wood_floor().  The grass picks up again beyond each void.
+    # ...AND THE BAY BETWEEN THE VOIDS TOO (Karan's call): the whole deck is
+    # grass now, the fountain standing in it.  X 9115-15365 was boarded on the
+    # great room's grid for several rounds; retrofit.wood_floor() stops at
+    # the glass line.
+    ('grass',    9115, DECK_N + 340, 15365, DECK_S, 'real grass, the bay in front of the great room'),
     ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
     ('grass',    15365, 1200, 16750, DECK_S, 'real grass, the reclaimed void'),
     ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
@@ -1227,13 +1228,18 @@ _ONCE = [
     # void is behind, the fountain in front, the parapet planter beyond.  The
     # tables came north with the seats and lost 50 of depth to keep a foot of
     # planted strip showing north of them: 450 square on Y 495-945.
-    ('recliner-w', 9115, 945, 10015, 2545,
-     "2-seat recliner  ·  1600 x 900, back on the void, facing the fountain"),
+    # ...AND THEN INTO THE VOIDS (Karan's call, once the voids were open deck):
+    # each slides out along the glass line until its back touches its void
+    # column - 7730 on the west, 16750 on the east - so the seat sits in the
+    # reclaimed bay with the column at its shoulder and the whole 6250 bay in
+    # front of the great room is clear grass.
+    ('recliner-w', 7730, 945, 8630, 2545,
+     "2-seat recliner  ·  1600 x 900, back to the void column, facing the fountain"),
     # THE DECK SIDE TABLES ARE GONE (Karan's call): a table north of each
     # recliner left 305 past the void and the deck read as three bays; without
     # them it is one walk, 1010 clear north of each void.
-    ('recliner-e', 14465, 945, 15365, 2545,
-     "2-seat recliner  ·  1600 x 900, back on the void, facing the fountain"),
+    ('recliner-e', 15850, 945, 16750, 2545,
+     "2-seat recliner  ·  1600 x 900, back to the void column, facing the fountain"),
 
     # ------------------------------------------------- the great room: living
     # The great room was 407 sq ft of empty floor.  It gets the reference

@@ -715,7 +715,7 @@ export const building: BuildingData = {
   stacks: [
     { id: 'STK-P-BATH', name: "Parents' bath stack", at: { x: 3745.92, y: 2811.949 }, room: 'R-P-BATH', provenance: 'At the centroid of this bath’s plumbed fixtures; the stack is in the builder’s toilet void north of the bath, reached through his 750 opening — confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-K-BATH', name: "Karan's bath stack", at: { x: 20775.969, y: 7795.301 }, room: 'R-K-BATH', provenance: 'At the centroid of his bath’s plumbed fixtures, on the east main duct.' },
-    { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 17810.833, y: 8570 }, room: 'R-GUEST-BATH', provenance: 'On the main service duct, the WC’s east wall — the pan and the floor trap drain straight into the shaft.' },
+    { id: 'STK-GUEST', name: 'Guest WC stack', at: { x: 17778.743, y: 8570 }, room: 'R-GUEST-BATH', provenance: 'On the main service duct, the WC’s east wall — the pan and the floor trap drain straight into the shaft.' },
     { id: 'STK-G-BATH', name: "Grandmother's bath stack", at: { x: 3696.667, y: 7964 }, room: 'R-G-BATH', provenance: 'On the main duct, at the centroid of her fixtures; confirm against the sanctioned plumbing drawings.' },
     { id: 'STK-KITCHEN', name: 'Kitchen stack', at: { x: 7988.333, y: 9825 }, room: 'R-KITCHEN', provenance: 'At the sink and dishwasher run.' },
   ],

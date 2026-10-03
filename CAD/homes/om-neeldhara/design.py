@@ -101,20 +101,23 @@ MB_CX = MB_XW - T_MB / 2 + MB_RW    # 3565 — the crown's X, on the centreline
 MB_AE = 1050                        # east flank semi-axis: 840 to the pod wall at the same 0.8 as before
 MB_SGN = -1                         # the parents' arch is at the SOUTH end
 # THE ARCH STAYS NORTH OF THE POD SLIDER (Karan's call): its outer face at
-# the crown lands on the slider's north jamb at 4100, so from the pod the
-# way into the suite is not blocked by the drum.  That takes 520 off the
-# builder's rectangle: the straight part is 1350-3260 now, the arch beyond.
-MB_YW = 3260                        # where the flank has turned vertical
-MB_CY = MB_YW + MB_RW               # 4025 — the crown, southmost; outer face 4100
-MB_YE = MB_CY - 600                 # 3945 — where the centreline meets the pod wall
+# the crown lands on the slider's north jamb, so from the pod the way into
+# the suite is not blocked by the drum.  NINE FEET LONG, NOT EIGHT AND A
+# HALF (Karan's call, as the grandmother's): the straight part runs
+# 1350-3450 and the arch beyond it, the crown's outer face at 4290, so the
+# bath is 9'-0" inside from the duct wall to the crown; the slider north
+# of the glass line is 190 shorter for it.
+MB_YW = 3450                        # where the flank has turned vertical
+MB_CY = MB_YW + MB_RW               # 4215 — the crown, southmost; outer face 4290
+MB_YE = MB_CY - 600                 # 4135 — where the centreline meets the pod wall
 MB_BE = 600 / (1 - _m.sqrt(1 - ((MB_XE - MB_CX) / MB_AE) ** 2))
 MB_FAR = 1350                       # the far end: the builder's duct wall
-BATH_N = MB_YE - 100                # 3845 — the sweep's foot on the pod wall, for the app
+BATH_N = MB_YE - 100                # 4035 — the sweep's foot on the pod wall, for the app
 MB_SHELF_END = None                 # no linen shelves: the shower stands on the pod wall
 # The parents' door: on the straight tail, hard against the arch's foot —
 # 800, Y 2950-3750, from the bed zone.  Offsets run from MB_YW AWAY from the
 # crown, so they are the same shape as the others.
-MB_DOOR_P = (60, 860)               # Y 2400-3200, 50 clear of the shower
+MB_DOOR_P = (60, 860)               # Y 2590-3390, clear of the shower
 # The grandmother's: toilet 02, the usual way up.  Crown at 6350, meets the
 # pod wall at 6950, turns vertical at 7115 on the builder's north face; her
 # door where it always was, 800 at Y 7300-8100, from her zone.
@@ -145,7 +148,7 @@ G_BATH_W = MB_XE - MB_XW            # 1530
 # north of the glass line, the dressing zone's south.  The pod slider sits on
 # this stretch of the pod wall, from the parents' arch cupboard to the glass.
 MB_MID = 5450
-SL_P = (3575, 5875)                 # the parents' pod slider, Y: from where the arch's outer face lands on this wall (3575) to the glass line — no stub of wall between (Karan's call)
+SL_P = (3765, 5875)                 # the parents' pod slider, Y: from where the arch's outer face lands on this wall (3765, the 9 ft bath's) to the glass line — no stub of wall between (Karan's call)
 # Karan's sweep, as first drawn: crown 5950 at X 3165, west face 2475,
 # meets the pod wall at 6550, turns vertical at 6715, east wall from 6650,
 # shelves to 7500.

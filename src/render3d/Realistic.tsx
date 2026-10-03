@@ -2220,6 +2220,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // (slidingGlass), in both states; the static sheet pieces would stand
       // shut across an open partition
       if (/sliding screen/i.test(f.label)) return null
+      if (/curtain/i.test(f.label)) return null               // dressingCurtain(), in both states
       // a drawn screen is thin and SEE-THROUGH — rendering it as an opaque
       // slab once put a phantom wall in Karan's suite. Only a screen the sheet
       // labels with a dado gets one; the rest are tinted glass floor to head.
@@ -3326,6 +3327,63 @@ function portalBrackets(M: Mats): THREE.Group {
       }
     }
   }
+  return g
+}
+
+/**
+ * KARAN'S DRESSING CURTAIN (Karan's call, in place of the tinted screen): a
+ * full-height curtain on a motorised ceiling track across the suite on the
+ * bath door's jamb line. Shut, it is drawn the whole width in deep pleats;
+ * open, it is tucked back to the bath-wall end in tight pleats. The track
+ * is a slim channel under the ceiling with the motor housing at its end.
+ */
+function dressingCurtain(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  const f = furniture.find((q) => q.kind === 'screen' && /curtain/i.test(q.label))
+  if (!f) return g
+  const ceiling = model.data.levels.ceiling
+  const alongX = f.w >= f.d
+  const L = alongX ? f.w : f.d
+  const x0 = alongX ? f.x : f.x + f.w / 2
+  const y0 = alongX ? f.y + f.d / 2 : f.y
+  const ux = alongX ? 1 : 0, uy = alongX ? 0 : 1
+  const H = ceiling - 70                                    // the track's underside
+  const at = (t: number, h: number, o: THREE.Object3D) => {
+    o.position.set((x0 + ux * t) * S, h * S, (y0 + uy * t) * S)
+    o.rotation.y = alongX ? 0 : -Math.PI / 2
+    g.add(o)
+  }
+  // the track: a 40 x 30 channel the whole length, flush under the ceiling
+  at(L / 2, H + 15, box(L, 30, 40, M.metal))
+  // the motor housing, at the bath-wall end (the gathering end)
+  at(120, H - 20, box(220, 70, 60, M.metal))
+  // the curtain: pleats as thin slabs set alternately in and out of the line.
+  // Shut they run the whole length at a 110 pitch; open they bunch over the
+  // first 14 % of the length at a 28 pitch
+  const run = mode === 'shut' ? L : L * 0.14
+  const pitch = mode === 'shut' ? 110 : 28
+  const depth = mode === 'shut' ? 70 : 110
+  const CH = H - 40                                         // hem 40 off the floor... from the rail
+  const tex = M.curtain
+  for (let t = pitch / 2, k = 0; t < run; t += pitch, k++) {
+    const sgn = k % 2 ? 1 : -1
+    const pleat = box(pitch + 6, CH - 60, 14, tex)
+    pleat.castShadow = false
+    pleat.position.set((x0 + ux * t + (alongX ? 0 : sgn * depth / 2)) * S, (60 + (CH - 60) / 2) * S, (y0 + uy * t + (alongX ? sgn * depth / 2 : 0)) * S)
+    pleat.rotation.y = alongX ? 0 : -Math.PI / 2
+    g.add(pleat)
+    // the fold between this pleat and the next, bridging the two depths
+    const bridge = box(16, CH - 60, depth + 14, tex)
+    bridge.castShadow = false
+    bridge.position.set((x0 + ux * (t + pitch / 2)) * S, (60 + (CH - 60) / 2) * S, (y0 + uy * (t + pitch / 2)) * S)
+    bridge.rotation.y = alongX ? 0 : -Math.PI / 2
+    g.add(bridge)
+    // a brass runner on the track for every second pleat
+    if (k % 2 === 0) at(t, H - 8, new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, 10 * S, 10), M.brass))
+  }
+  const cx = x0 + ux * L / 2, cy = y0 + uy * L / 2
+  const nx = alongX ? 0 : 1, ny = alongX ? 1 : 0
+  tagItem(g, `curtain:${f.id}`, mode, [{ x: cx + nx * 500, y: cy + ny * 500, h: 1400 }, { x: cx - nx * 500, y: cy - ny * 500, h: 1400 }])
   return g
 }
 
@@ -6038,6 +6096,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(timberBlinds(M, mode))
     set.add(curvedBlinds(M, mode))
     set.add(portalBlinds(M, mode))
+    set.add(dressingCurtain(M, mode))
     set.add(awningWindows(M, mode))
     set.add(meshScreens(M, mode))
     set.add(foldingDoors(M, mode))
@@ -7728,6 +7787,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
             kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
             : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
             : kind === 'blind' ? (open ? 'Lower the blind' : 'Raise the blind')
+            : kind === 'curtain' ? (open ? 'Draw the curtain' : 'Open the curtain')
             : kind === 'liftbed' ? (open ? 'Lower the bed' : 'Lift the bed to the storage')
             : kind === 'mesh' ? (open ? 'Draw the mosquito mesh' : 'Pleat the mesh back')
             : kind === 'fan' ? (open ? 'Turn the fan off' : 'Turn the fan on')

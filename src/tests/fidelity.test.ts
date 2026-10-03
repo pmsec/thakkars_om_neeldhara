@@ -96,7 +96,7 @@ describe('2D↔3D fidelity', () => {
     expect(furniture.find((f) => f.label.includes('rug'))?.poly, 'rug outline').toBeDefined()
     expect(byLabel('arch console'), "Karan's arch console and the parents' flank console").toBe(2)
     expect(byLabel('arch cupboard'), "the parents' arch cupboard is gone (Karan's call)").toBe(0)
-    expect(byLabel('dressing screen'), "Karan's dressing screen").toBe(1)
+    expect(byLabel('dressing curtain'), "Karan's dressing curtain (the screen it replaced, Karan's call)").toBe(1)
     expect(byLabel('jhoola'), 'both jhoolas').toBe(2)
     expect(byLabel('footrest'), 'deployed recliner footrests').toBeGreaterThanOrEqual(4)
     expect(furniture.filter((f) => f.kind === 'grass').length, 'grass fields').toBeGreaterThanOrEqual(4)
@@ -112,14 +112,14 @@ describe('2D↔3D fidelity', () => {
   it('drawn semantics survive: screens are screens, not walls', () => {
     // The dressing screen once rendered as an opaque full-height slab — a
     // phantom wall in Karan's suite. Thin see-through pieces must carry the
-    // 'screen' kind (wood dado + tinted glass in both renderers), the
-    // monitor must be a 'tv' panel, and a headboard is a board, not a
-    // wardrobe-height slab.
+    // 'screen' kind (the curtain that replaced the screen included: it is
+    // drawn in both states by the 3D, never as a slab), the monitor must be
+    // a 'tv' panel, and a headboard is a board, not a wardrobe-height slab.
     const screens = furniture.filter((f) => f.kind === 'screen')
-    expect(screens.length, 'sliding leaf + mirror + dressing screen').toBeGreaterThanOrEqual(3)
+    expect(screens.length, 'sliding leaf + mirror + dressing curtain').toBeGreaterThanOrEqual(3)
     expect(
-      screens.some((f) => f.label.toLowerCase().includes('dressing screen')),
-      'the dressing screen is a screen',
+      screens.some((f) => f.label.toLowerCase().includes('dressing curtain')),
+      'the dressing curtain is a screen, not a wall',
     ).toBe(true)
     expect(furniture.some((f) => f.kind === 'tv' && f.label.includes('monitor'))).toBe(true)
     for (const f of furniture) {

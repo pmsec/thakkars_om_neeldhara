@@ -1555,10 +1555,11 @@ def emit_furniture():
     with R.karan():
         add_outline(R.arch_console(), 'console', 'R-K-SUITE',
                     'Arch console', 800, mirror=True)
-    # Karan's dressing screen — wood below, tinted glass above
+    # Karan's dressing curtain: full height on a motorised ceiling track, on
+    # the old screen's line (Karan's call); the 3D draws it in both states
     add_outline(R.suite_screen(), 'screen', 'R-K-SUITE',
-                'Dressing screen — wood dado, tinted glass over', 2100,
-                styles=('wood',))
+                'Dressing curtain — full height, motorised, on a ceiling track from the bath wall to the end wall', 3505,
+                styles=('dash',))
     # the great room's planter, answering the kitchen bump across the room
     add_outline(R.great_room_planter(), 'planter', 'R-GREAT',
                 'Great-room planter', 340, styles=('green',))

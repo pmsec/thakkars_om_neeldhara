@@ -968,18 +968,26 @@ def _pass_corner_unused():
     return [_pass_corner(D.PASS_R + h) + list(reversed(_pass_corner(D.PASS_R - h)))]
 
 
-def wc_console(dep=450, bowl_r=170):
+def wc_console(dep=450, bowl_r=170, clear=40, n=18):
     """The basin console on the NORTH WALL of help's room's open north end
-    (Karan's call, after a run along the passage's south wall and then a
-    corner console): the great room's wall, between the great-room door's
-    east jamb and the WC's west wall, 450 deep with a 340 bowl at its
-    middle and the mirror over it.  The passage's own walls are gone, so a
-    guest steps in from the great room and the basin is on their left."""
+    (Karan's call): the great room's wall, between the great-room door's
+    east jamb and the WC's west wall, 450 deep, the mirror over it.
+
+    ITS EAST END IS CUT TO THE WC DOOR'S SWING (Karan's call): that door,
+    hinged on the block-side jamb, sweeps a 750 quarter circle west into
+    help's room, and a square-ended console sat in the sweep.  So the end
+    is a concave curve on the sweep's circle, `clear` outside it - 1240
+    long at the wall, tapering to 740 at the front - and the 340 bowl sits
+    in the clear middle of what is left, so the door opens past it."""
     x0 = 15820 + 60                                     # the great-room door's east jamb, 60 clear
-    x1 = D.WC_CX - D.T_INT / 2 - 40                     # the WC's west wall face, 40 clear
     y0, y1 = D.BAY_N, D.BAY_N + dep                     # the wall's south face, the front
-    band = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-    return [('poly', band, 'solid'), ('circle', (x0 + x1) / 2, (y0 + y1) / 2, bowl_r, 'light')]
+    hx, hy = D.WC_CX - D.T_INT / 2, D.WC_DOOR_Y[1]      # the WC door's hinge: the wall's face, the block-side jamb
+    R = (D.WC_DOOR_Y[1] - D.WC_DOOR_Y[0]) + clear       # the leaf's reach, plus the clearance
+    ys = np.linspace(y0, y1, n)
+    end = [(hx - math.sqrt(max(0.0, R * R - (hy - y) ** 2)), float(y)) for y in ys]
+    band = [(x0, y0)] + end + [(x0, y1)]
+    bx = (x0 + end[-1][0]) / 2                          # the bowl: centred on the front's clear run
+    return [('poly', band, 'solid'), ('circle', bx, (y0 + y1) / 2, bowl_r, 'light')]
 
 
 def wc_out_door(hinge=15020, jamb=15820, y=8400):

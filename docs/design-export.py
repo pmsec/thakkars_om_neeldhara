@@ -1272,6 +1272,14 @@ def emit_furniture():
                 'Loft, 2300 up', 1100,
                 poly=[(a, b), (c, b), (c, d), (a, d)], lift=2300)
             continue
+        m_up = re.search(r'(\d{3,4}) up', lab or '')
+        if base == 'under' and m_up:
+            # any wall-hung piece sized in its label: "<name> · ..., N high, M up"
+            m_hi = re.search(r'(\d{3,4}) high', lab)
+            add('shelves', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
+                (lab.split('·')[0].strip()), int(m_hi.group(1)) if m_hi else 600,
+                poly=[(a, b), (c, b), (c, d), (a, d)], lift=int(m_up.group(1)))
+            continue
         if base == 'under' and 'over' in (lab or '').lower():
             add('shelves', a, b, c - a, d - b, room_for((a + c) / 2, (b + d) / 2),
                 'Wall cabinets, 350 deep', 700,
@@ -1315,6 +1323,8 @@ def emit_furniture():
                 face='E' if east else 'W', poly=outline_of(sprims))
             continue
         mapped = KIND_MAP.get(base)
+        if base == 'basket' and 'umbrella' in (lab or '').lower():
+            mapped = 'basket'          # the 3D's umbrella stand hangs off this kind
         if not mapped:
             continue
         cx, cy = (a + c) / 2, (b + d) / 2

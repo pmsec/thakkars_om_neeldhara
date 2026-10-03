@@ -2253,6 +2253,38 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return g
     }
     case 'basket': {
+      if (/umbrella/i.test(f.label)) {
+        // an umbrella stand: a dark stone base, a brass ring on three brass
+        // rods, and three umbrellas standing in it with hooked handles
+        const g = new THREE.Group()
+        const r = Math.min(w, d) / 2 - 10
+        const H = f.height || 600
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(r * S, r * S, 40 * S, 24), M.stone)
+        base.position.y = 20 * S
+        g.add(base)
+        const ring = new THREE.Mesh(new THREE.TorusGeometry((r - 14) * S, 6 * S, 8, 32), M.brass)
+        ring.rotation.x = Math.PI / 2
+        ring.position.y = H * S
+        g.add(ring)
+        for (let k = 0; k < 3; k++) {
+          const a = (k / 3) * Math.PI * 2 + 0.4
+          const rod = new THREE.Mesh(new THREE.CylinderGeometry(4 * S, 4 * S, (H - 40) * S, 8), M.brass)
+          rod.position.set(Math.cos(a) * (r - 14) * S, (40 + (H - 40) / 2) * S, Math.sin(a) * (r - 14) * S)
+          g.add(rod)
+          // an umbrella: a slim dark cane leaning in the ring, a hooked handle on top
+          const ua = a + 1.1
+          const cane = new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 11 * S, 820 * S, 8), M.fabricDark)
+          cane.position.set(Math.cos(ua) * (r - 50) * S, (40 + 410) * S, Math.sin(ua) * (r - 50) * S)
+          cane.rotation.z = 0.06 * Math.cos(ua)
+          cane.rotation.x = -0.06 * Math.sin(ua)
+          g.add(cane)
+          const hook = new THREE.Mesh(new THREE.TorusGeometry(38 * S, 7 * S, 8, 16, Math.PI), M.walnut)
+          hook.position.set(Math.cos(ua) * (r - 50) * S + 38 * S, (40 + 820 + 10) * S, Math.sin(ua) * (r - 50) * S)
+          g.add(hook)
+        }
+        place(g, cx, cy, 0)
+        return g
+      }
       // a woven laundry basket: a jute drum with a rolled rim, two rope handles
       // and a folded linen towel over the edge
       const r = Math.min(w, d) / 2 - 10

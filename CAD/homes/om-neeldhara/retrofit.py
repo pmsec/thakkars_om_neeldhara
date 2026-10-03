@@ -229,7 +229,6 @@ def poly_rooms():
          (3640, 8330)),
         ("KARAN'S BATH", '', mirror_poly(bath_k), bath_note, (D.M(3140), 7750)),
         ('GUEST / SERVICE WC', '', wc, '', (18100, 8935)),
-        ('WC PASSAGE', '', passage, '', (15900, 8935)),
         ('FAMILY ROOM', '', fam, pod_note, (6550, 6250)),
         # not the mirror of the family room's anchor: that point is on the
         # drummer's throne, and the open north half is the sofa's now.  What is
@@ -958,6 +957,10 @@ def _pass_corner(r, n=24, a0=180, a1=90):
 
 
 def pass_corner():
+    return []   # the passage's walls are gone (Karan's call); see design.NEW_WALLS
+
+
+def _pass_corner_unused():
     """The passage's south-west corner as one filled band, rounded (Karan's
     call): the west and south walls stop short of it and this quarter ring
     joins them, 375 on the face help's room sees, 225 inside."""
@@ -965,29 +968,18 @@ def pass_corner():
     return [_pass_corner(D.PASS_R + h) + list(reversed(_pass_corner(D.PASS_R - h)))]
 
 
-def wc_console(a=750, b=430, bowl_r=150, bowl_out=290):
-    """The basin console in the PASSAGE, in its SOUTH-WEST CORNER (Karan's
-    call, after a straight run along the south wall): a quarter-ellipse
-    struck from the corner, `a` along the south wall and `b` up the west
-    wall, so it curves and tapers round the passage's rounded corner and
-    dies into each wall.  Its back follows that rounded corner; the bowl
-    sits on the corner's diagonal, `bowl_out` off the wall, 300 round.
-
-    Of good depth where it matters - 515 on the diagonal - and nothing
-    where it does not: the walk from the great-room door east to the WC's
-    door has the passage's full 770 once past the console's tips."""
-    xw = D.WC_PASS_W + D.T_INT / 2                      # the west wall's inner face
-    ys = D.WC_PASS_S - D.T_INT / 2                      # the south wall's face
-    rc = D.PASS_R - D.T_INT / 2                         # the rounded corner, inside
-    corner = _pass_corner(rc)                           # west wall down and round to the south wall
-    front = [(xw + a * math.cos(math.radians(t)), ys - b * math.sin(math.radians(t)))
-             for t in np.linspace(0, 90, 24)]          # south-wall tip round to the west-wall tip
-    band = [(xw, ys - b), (xw, D.WC_PASS_S - D.PASS_R)] + corner + [(xw + a, ys)] + front[1:-1]
-    # the bowl on the corner's diagonal, out from the rounded wall
-    cx, cy = D.WC_PASS_W + D.PASS_R, D.WC_PASS_S - D.PASS_R
-    k = math.sqrt(0.5)
-    bx, by = cx - rc * k + bowl_out * k, cy + rc * k - bowl_out * k
-    return [('poly', band, 'solid'), ('circle', bx, by, bowl_r, 'light')]
+def wc_console(dep=450, bowl_r=170):
+    """The basin console on the NORTH WALL of help's room's open north end
+    (Karan's call, after a run along the passage's south wall and then a
+    corner console): the great room's wall, between the great-room door's
+    east jamb and the WC's west wall, 450 deep with a 340 bowl at its
+    middle and the mirror over it.  The passage's own walls are gone, so a
+    guest steps in from the great room and the basin is on their left."""
+    x0 = 15820 + 60                                     # the great-room door's east jamb, 60 clear
+    x1 = D.WC_CX - D.T_INT / 2 - 40                     # the WC's west wall face, 40 clear
+    y0, y1 = D.BAY_N, D.BAY_N + dep                     # the wall's south face, the front
+    band = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+    return [('poly', band, 'solid'), ('circle', (x0 + x1) / 2, (y0 + y1) / 2, bowl_r, 'light')]
 
 
 def wc_out_door(hinge=15020, jamb=15820, y=8400):
@@ -1011,20 +1003,26 @@ def wc_door():
 
 
 def wc_flat_door():
-    """The guest WC's flat door at the passage's east end, in the WC's west
-    wall: hinged on the den-wall jamb, swinging OUT into the passage, drawn
-    open against the passage's north wall — the strip inside is 770 deep and
-    a leaf swinging in would clip the pan."""
-    hy, jy = D.WC_DOOR_Y
-    w = jy - hy
-    hx = D.WC_CX - D.T_INT / 2                          # the wall's passage face
-    arc = [(hx - w * math.sin(math.radians(a)), hy + w * math.cos(math.radians(a)))
+    """The guest WC's flat door off help's room's open north end, in the WC's
+    west wall: hinged on the BLOCK-SIDE jamb now (Karan's call moved the
+    basin console on to the north wall, where the leaf used to lie open),
+    swinging OUT into help's room and drawn open along the WC's own west
+    wall toward the bunk end — the strip inside is 770 deep and a leaf
+    swinging in would clip the pan."""
+    jy, hy = D.WC_DOOR_Y                                # the den-wall jamb, the block-side hinge
+    w = hy - jy
+    hx = D.WC_CX - D.T_INT / 2                          # the wall's help's-room face
+    arc = [(hx - w * math.sin(math.radians(a)), hy - w * math.cos(math.radians(a)))
            for a in np.linspace(0, 90, 24)]
     return [('poly', [(hx, hy)] + arc, 'light'),
-            ('line', hx, hy, hx - w, hy, 'solid')]
+            ('line', hx, hy, hx, hy + w, 'solid')]
 
 
 def help_pass_door(hinge=15850, jamb=16600):
+    return []   # the passage's south wall, and the door in it, are gone
+
+
+def _help_pass_door_unused(hinge=15850, jamb=16600):
     """Help's room's door into the WC passage, in the passage's south wall:
     hinged west, swinging SOUTH into help's room, drawn open against the
     wall's help's-room face so the passage (and the basin console beside the
@@ -1987,22 +1985,21 @@ def lobby_polys():
     # Help's room wraps the WC's passage now as it wrapped the apse: the nook
     # west of the passage (its door from the gallery lands there), the band
     # south of it, and the bunk end under the block, one room.
-    pw, ps = D.WC_PASS_W - t, D.WC_PASS_S + t
-    helps = ([(pw, D.BAY_N)] + _gal_arc(ro, D._BN1, D._A1)
+    # (the passage's walls are gone: help's room runs to the WC's west wall
+    # along the whole of the great room's wall)
+    pw = D.WC_PASS_W - t
+    xe = D.WC_CX - D.T_INT / 2
+    helps = ([(xe, D.BAY_N), (pw, D.BAY_N)] + _gal_arc(ro, D._BN1, D._A1)
              + [(D.GAL_E, COL_N), (D.GAL_E, D.BAY_S), (18825, D.BAY_S),
-                (18825, 9550), (D.WC_CX, 9550), (D.WC_CX, ps)]
-             + _pass_corner(D.PASS_R + t, a0=90, a1=180))       # the rounded corner
+                (18825, 9550), (xe, 9550)])
     # the WC: the strip on the main duct, from its west wall's inner face
     # (to the main duct wall's west face, 18775: the wall is 18775-18925)
     # ...and the shower apse north of the strip, inside the ellipse's inner face
     xs = D.WC_CX + D.T_INT / 2
     wc = ([(18775, D.SH_CY - D.SH_B + D.T_WC / 2), (18775, D.WC_CY), (xs, D.WC_CY), (xs, D.SH_CY)]
           + [q for q in sh_pts(-D.T_WC / 2) if q[0] >= xs])
-    # the passage: a straight run, the great-room door's west jamb to the
-    # WC's west wall, the den's wall to the block's line
-    xe = D.WC_CX - D.T_INT / 2
-    passage = ([(D.WC_PASS_W + t, D.WC_DIE), (xe, D.WC_DIE), (xe, D.WC_PASS_S - t)]
-               + _pass_corner(D.PASS_R - t, a0=90, a1=180))     # the rounded corner
+    # (no passage any more: its strip is help's room's north end)
+    passage = []
     return kitchen, helps, gallery, wc, passage
 
 

@@ -520,17 +520,12 @@ NEW_WALLS = [
     # bunk lies under it and past it without touching it.  Below that the room
     # runs straight through to the east wall.
     # the WC's passage: its west wall on the great-room door's west jamb, its
-    # south wall on the block's line, running to the WC's west wall; its
-    # north wall is the den's
-    # (both stop short of the corner, which retrofit.pass_corner rounds)
-    (WC_PASS_W, BAY_N, WC_PASS_W, WC_PASS_S - PASS_R, T_INT, []),
-    # ...with HELP'S ROOM'S DOOR in it (Karan's call): 750 at X 15850-16600,
-    # east of the basin console, swinging south
-    # into help's room — help reaches the WC through the passage, not the
-    # great room.  (The WC's other sides are the duct, the structural block
-    # and the shower apse: the passage is the only way in.)
-    (WC_PASS_W + PASS_R, WC_PASS_S, WC_CX, WC_PASS_S, T_INT,
-     [(15850 - (WC_PASS_W + PASS_R), 16600 - (WC_PASS_W + PASS_R))]),
+    # THE PASSAGE'S WALLS ARE GONE (Karan's call): its west wall, the rounded
+    # corner and its south wall with help's door all came down, so the strip
+    # between the great-room door and the WC's flat door is the north end
+    # of help's room, open to it.  The great-room door opens into help's
+    # room now, and the WC's flat door opens off it.  (WC_PASS_W, WC_PASS_S
+    # and PASS_R remain as the lines they were, for the record.)
     # the WC's west wall, on x = WC_CX from the den's face to the block, the
     # shower apse springing off its north end; its FLAT DOOR in it, the whole
     # 770 of the strip bar the jambs, 750 clear.  (The duct wall east of it is demolished.)

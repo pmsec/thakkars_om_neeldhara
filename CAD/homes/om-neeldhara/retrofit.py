@@ -1396,6 +1396,54 @@ def floor_island(n=400):
     return out
 
 
+# Each tongue: the opening's two jambs, the glass line it crosses, the grass
+# edge it grows from (the deck's or the terrace's), the room it runs into, and
+# a few depths past the line along the opening - smoothed into a wave.  The
+# depths keep off the room's furniture (checked against every piece).
+GRASS_TONGUES = [
+    ("Karan's terrace into his suite",  21730, 24830, 1275, 1200, 'R-K-SUITE',
+     [0, 900, 1400, 1100, 1500, 700, 0]),
+    ("the parents' terrace into their suite", -350, 2750, 1275, 1200, 'R-P-SUITE',
+     [0, 300, 450, 650, 800, 1150, 0]),
+    ("the deck into the family room",   4650, 7615, 2545, 2470, 'R-P-FAMILY',
+     [0, 900, 1400, 1100, 1500, 800, 0]),
+    ("the deck into the great room",    9115, 15365, 2620, 2470, 'R-GREAT',
+     [0, 250, 380, 300, 390, 280, 380, 240, 0]),
+    ("the deck into the den",           16865, 19830, 2545, 2470, 'R-K-DEN',
+     [0, 60, 400, 450, 850, 470, 380, 450, 0]),
+]
+
+
+def grass_tongue(x0, x1, y_line, y_base, depths, n=72, ripple=0.06, wave=650.0):
+    """One tongue's outline: from the grass edge at y_base, across the line
+    at y_line, into the room to a wavy edge and back.  The depths are the
+    stations along the opening; a cosine ease between neighbours gives a
+    soft scallop, and a fine ripple on top of it keeps the edge from
+    reading as drawn with a compass."""
+    xs = np.linspace(x0, x1, n)
+    st = np.linspace(x0, x1, len(depths))
+    d = np.zeros_like(xs)
+    for i in range(len(st) - 1):
+        m = (xs >= st[i]) & (xs <= st[i + 1])
+        t = (xs[m] - st[i]) / (st[i + 1] - st[i])
+        mu = (1 - np.cos(np.pi * t)) / 2
+        d[m] = depths[i] * (1 - mu) + depths[i + 1] * mu
+    d = d * (1 + ripple * np.sin(2 * np.pi * (xs - x0) / wave + 0.7))
+    edge = [(float(x), float(y_line + max(0.0, dd))) for x, dd in zip(xs, d)]
+    return [(x0, y_base)] + edge + [(x1, y_base)]
+
+
+def grass_tongues():
+    """THE LAWN COMES INDOORS (Karan's call): from each terrace and each of
+    the deck's three openings a tongue of real grass runs on into the room
+    behind it, its edge a soft wave that dies into the floor, so the grass
+    and the room are not two things meeting at a line.  Each is set out
+    from its opening's jambs (GRASS_TONGUES), and none touches a piece of
+    furniture.  Drawn on the floor layer, under everything."""
+    return [('poly', grass_tongue(x0, x1, yl, yb, depths), 'green')
+            for _name, x0, x1, yl, yb, _room, depths in GRASS_TONGUES]
+
+
 def wood_floor(board=190, island=False):
     """The great room's wooden floor, to the glass line.
 

@@ -407,6 +407,8 @@ def main():
     s.begin_layer('floor')
     for p in R.wood_floor(island=ISLAND):  # great room + deck bay, one board grid
         prim(p)
+    for p in R.grass_tongues():        # the lawn running in through each opening
+        prim(p)
     for p in R.great_room_rug():       # full width, under everything else
         prim(p)
     s.end_layer()

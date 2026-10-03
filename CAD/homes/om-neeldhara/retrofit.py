@@ -782,20 +782,18 @@ def lofts():
     """The lofts over the service bay's small rooms, drawn dashed because
     they are over and not in plan.
 
-    Help's room: the whole room, at 2520 — not 2300, because the bunk's top
-    berth is at about 1550 and whoever sits up on it wants 950 of headroom,
-    and because the room's two doors are arched to 2487: a loft must clear
-    a door's crown or it shows in the arch (Karan's call).  985 of loft
-    under the 3505 ceiling.  The guest WC: the strip and its shower apse,
-    at 2520 for the same reason, its flat door's crown at 2475.  The
-    passage has NO loft: it is 1.9 m2 with three doors in it, and a loft
-    there sat in every one of their arches.  (The utility strip's lofts
-    are plain rectangles and live in design.FURNITURE as 'under' rows.)
-    A loft over a wet room is a real deck — a thin slab or steel framing,
-    not a false ceiling — and the WC's exhaust duct has to be routed round
-    it."""
-    _kitchen, helps, _gallery, wc, _passage = lobby_polys()
-    return [('poly', helps, 'dash'), ('poly', wc, 'dash')]
+    Help's room has NO loft any more (Karan's call): a loft over a room
+    with a bunk in it has no floor to open its doors from.  Its racks run
+    to the ceiling instead (design.FURNITURE).  The guest WC: the strip
+    and its shower apse, at 2520 so the loft clears its flat door's crown
+    at 2475 — a loft must clear a door's crown or it shows in the arch.
+    The passage has none: it is 1.9 m2 with three doors in it.  (The
+    utility strip's lofts are plain rectangles and live in design.FURNITURE
+    as 'under' rows.)  A loft over a wet room is a real deck — a thin slab
+    or steel framing, not a false ceiling — and the WC's exhaust duct has
+    to be routed round it."""
+    _kitchen, _helps, _gallery, wc, _passage = lobby_polys()
+    return [('poly', wc, 'dash')]
 
 
 def clip_y(poly, y, north):

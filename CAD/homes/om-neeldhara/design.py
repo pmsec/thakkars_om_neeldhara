@@ -1467,18 +1467,19 @@ _ONCE = [
     # band instead, in the corner against the gallery's leg, where a person
     # stands in front of it on the room's main floor.
     ('bunk',     16925, 10075, 18825, 10975, 'bunk'),
-    ('shelves',  17580, 9550, 18825, 10005, 'shelves at the bunk head'),
-    # FULL-HEIGHT RACKS, floor to ceiling: down the gallery leg, along the
-    # south wall to the bunk's foot, and round the outside of the apse to the
-    # WC door (retrofit.help_rack, 200 deep).  The 600 cupboard is gone — the
-    # racks carry more and take less floor.  The leg rack starts at 9700, not
+    ('shelves',  17580, 9550, 18825, 10005, 'shelves at the bunk head  ·  3505 high, to the ceiling, reached from the berths'),
+    # FULL-HEIGHT RACKS, floor to the 3505 ceiling with no cove held back
+    # (Karan's call: the loft over the room is gone — there was no floor to
+    # open its doors from — and the racks take its share): down the gallery
+    # leg and along the south wall to the bunk's foot.  The 600 cupboard is
+    # gone — the racks carry more and take less floor.  The leg rack starts at 9700, not
     # at the entry door's jamb: the neck between the gallery arc and the apse
     # is only a metre wide, and with the rack higher a 700 body could not get
     # from the door to the room.  The band in front of the south rack is 600
     # deep, the bunk's approach.  As drawn a 700 body reaches every door; an
     # 800 body does not reach the entry door.
-    ('shelves',  14080, 9700, 14380, 10675, 'full-height rack  ·  300 deep, on the gallery leg'),
-    ('shelves',  14080, 10675, 16925, 10975, 'full-height rack  ·  300 deep, on the south wall'),
+    ('shelves',  14080, 9700, 14380, 10675, 'full-height rack  ·  300 deep, on the gallery leg, 3505 high'),
+    ('shelves',  14080, 10675, 16925, 10975, 'full-height rack  ·  300 deep, on the south wall, 3505 high'),
     # ------------------------------------------------- guest / service WC
     # One WC, one small basin, one very small shower — and nothing else, which
     # is what an apse this size will take.  The shower is flush into the corner

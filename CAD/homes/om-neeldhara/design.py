@@ -1316,9 +1316,10 @@ _ONCE = [
     ('recliner-w', 9673, 3532, 10573, 4332,
      'recliner  ·  900 x 800, single, standing 305 off the planter\'s north '
      'face  ·  the L\'s west leg, facing east across the group'),
-    ('counter-e', 10878, 5537, 12478, 5887,
-     "console  ·  1600 x 350, four corners eased 90, on the sofa's back line  ·  "
-     "two lamps, books and a bowl on it"),
+    # (THE CONSOLE ON THE SOFA'S BACK LINE IS GONE - Karan's call: the 1600 x
+    # 350 shelf with the lamp, plants, books and bowl came out, and the floor
+    # behind the sofa is open to the gallery arch.  retrofit.console_top
+    # draws nothing now.)
 
     # ---------------------------------------- Karan's pod: the music + work den
     # The den was empty floor.  It gets the two things it is named for: a work

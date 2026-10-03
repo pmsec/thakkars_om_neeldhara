@@ -1755,7 +1755,11 @@ def great_room_rug(shape='cloud', cx=12240, cy=4287, W=5622, H=2500, n=360):
 
 
 def console_top(a=10878, b=5537, c=12478, d=5887):
-    """What stands on the console behind the sofa.
+    return []   # the console behind the sofa is gone (Karan's call)
+
+
+def _console_top_unused(a=10878, b=5537, c=12478, d=5887):
+    """What stood on the console behind the sofa, while there was one.
 
     ONE LAMP, not two.  A pair at the ends made the console read as a mantel —
     symmetrical, formal, and with the middle left to be filled.  One lamp at

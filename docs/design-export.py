@@ -273,7 +273,7 @@ WALLS += [
     # two are ONE polyline, joined by the rounded south-west corner (Karan's
     # call), 300 on the centreline
     w('W-WC-PASS', _pass_line, 150, 'interior',
-      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16600), head=full_head(750),
+      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16600), head=2100,   # under help's loft: crown 2475, loft at 2520
           label="Help's room — into the WC passage, hinged west, swings into help's room; full height")],
       notes="The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall."),
 ]
@@ -461,7 +461,7 @@ WALLS += [
 _sh = [(D.WC_CX, D.WC_PASS_S), (D.WC_CX, D.SH_CY)] + [(x, y) for x, y in R.sh_pts(0.0, 60)] + [(18850, D.SH_CY - D.SH_B)]
 WALLS += [
     w('W-WC-APSE', _sh, D.T_WC, 'interior',
-      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=full_head(750),
+      [op('D-WC-FLAT', 'door', D.WC_PASS_S - D.WC_DOOR_Y[1], D.WC_PASS_S - D.WC_DOOR_Y[0], head=2100,   # under the WC's loft: crown 2475, loft at 2520
           label="Guest WC — its flat door at the passage's end, hinged on the den-wall jamb, swings out into the passage; full height")],
       label="Guest WC — its west wall with the flat door, then the shower apse, a quarter ellipse into the den, its den face in walnut slats floor to ceiling: a pillar in the pod, the guitars on it, three spots at its crown"),
 ]
@@ -555,7 +555,10 @@ CHORDS = [
 ]
 for gid, a0, a1, typ, lab in CHORDS:
     L = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
-    head = full_head(L)   # every one full height, round on top: the crown 120 under the slab
+    # every one full height, round on top, the crown 120 under the slab -
+    # except help's door, whose arch must stay under the room's loft at 2520:
+    # a 2100 head puts its crown at 2487
+    head = 2100 if gid == 'GAL-E' else full_head(L)
     # the service doors' leaves are curved to the drum, flush with its inner face
     curve = f'curve: {{ x: {gx}, y: {gy}, r: {gr} }}' if typ == 'door' else ''
     WALLS.append(w(f'T-{gid}', [a0, a1], 0, 'threshold',
@@ -618,12 +621,12 @@ ROOMS = [
      'the arc, console and two chairs, sconces at the arc centres.'),
     ('R-HELP', "Help's room", (14700, 9200), 'habitable', 'service', True,
      'Vinyl', 'Live-in, with the store as its east end: one room. Bunk under the '
-     'duct, full-height racks on three walls, a loft over the whole room at 2500, '
+     'duct, full-height racks on three walls, a loft over the whole room at 2520, '
      'its own door off the gallery and a door into the WC passage.'),
     ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
-     'Stone', 'From the great room’s door straight east to the WC’s flat door, the basin in a corner console curving round the south-west corner; help’s room’s door in the south wall east of it; the WC’s flat door at its east end. A loft over it at 2300.'),
+     'Stone', 'From the great room’s door straight east to the WC’s flat door, the basin in a corner console curving round the south-west corner; help’s room’s door in the south wall east of it; the WC’s flat door at its east end. No loft: its three doors’ arches would all look into one.'),
     ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
-     'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.'),
+     'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2520, clear of the door’s crown.'),
 ]
 
 # The sheet publishes the parents' suite as ONE figure, bed zone and dressing
@@ -1511,15 +1514,14 @@ def emit_furniture():
         add(kind, min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys),
             room, label, h, poly=p, lift=lift)
 
-    # the lofts over help's room (2500 up, the bunk's top berth keeps its
-    # headroom) and the guest WC (2300 up): the rooms' own outlines, hung
+    # the lofts over help's room and the guest WC, both 2520 up so they clear
+    # the crowns of the doors into those rooms (2487 and 2475): the rooms'
+    # own outlines, hung. The passage has none any more.
     lofts = R.lofts()
-    add_outline(lofts[:1], 'shelves', 'R-HELP', 'Loft, 2500 up', 900,
-                styles=('dash',), lift=2500)
-    add_outline(lofts[1:2], 'shelves', 'R-GUEST-BATH', 'Loft, 2300 up', 1100,
-                styles=('dash',), lift=2300)
-    add_outline(lofts[2:], 'shelves', 'R-WC-PASS', 'Loft, 2300 up', 1100,
-                styles=('dash',), lift=2300)
+    add_outline(lofts[:1], 'shelves', 'R-HELP', 'Loft, 2520 up', 985,
+                styles=('dash',), lift=2520)
+    add_outline(lofts[1:2], 'shelves', 'R-GUEST-BATH', 'Loft, 2520 up', 985,
+                styles=('dash',), lift=2520)
 
     # the curved full-height rack on the outside of the guest WC's apse
     add_outline(R.help_rack(), 'shelves', 'R-HELP',

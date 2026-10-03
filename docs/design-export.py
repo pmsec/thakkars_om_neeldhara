@@ -1325,6 +1325,8 @@ def emit_furniture():
         mapped = KIND_MAP.get(base)
         if base == 'basket' and 'umbrella' in (lab or '').lower():
             mapped = 'basket'          # the 3D's umbrella stand hangs off this kind
+        if base == 'sofa' and (lab or '').lower().startswith('bench'):
+            mapped = 'bench'           # a long seat, not a cushioned sofa
         if not mapped:
             continue
         cx, cy = (a + c) / 2, (b + d) / 2

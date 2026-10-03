@@ -1517,24 +1517,27 @@ _ONCE = [
     ('console-w', 10630, 9525, 11080, 10925,
      'console  ·  1400 x 450, against the U\'s west leg, corners eased 110  ·  '
      'painting over, picture light'),
-    # THE HALL'S WORKING WALL (Karan's call): the north chair goes, and the
-    # east leg's stretch between the help's-room door and the remaining
-    # chair takes what a front hall needs - a parcel drop box with a slot at
-    # 1000 and a door below it for whoever the parcel is for, the car keys
-    # in a small box on the wall above it, a letter and document rack beside
-    # that, and an umbrella stand on the floor at its foot.  Nothing touches
+    # THE HALL'S WORKING WALL (Karan's call, moved to the WEST side): the
+    # stretch between the console's north end and the kitchen door, where
+    # the leg turns into the arc, takes what a front hall needs - a parcel
+    # drop box with a slot at 1000 and a door below it for whoever the
+    # parcel is for, the car keys in a small box and a letter and document
+    # rack side by side on the wall above it, and an umbrella stand on the
+    # floor at its foot, short of the kitchen door's swing.  Nothing touches
     # a door: the great room's portal, the kitchen door and help's door are
     # all on the arc, and the front door is on the south wall.
-    ('joinery',   13500, 9450, 13850, 10050,
+    ('joinery',   10630, 8925, 10980, 9525,
      'parcel drop box  ·  350 deep x 600, slot at 1000, door below, 1300 high'),
-    ('under',     13750, 9500, 13850, 9800,
+    ('under',     10630, 8950, 10730, 9250,
      'car key box  ·  wall-hung, 100 deep x 300, 300 high, 1450 up'),
-    ('basket',    13630, 10090, 13850, 10310,
+    ('under',     10630, 9260, 10750, 9510,
+     'letter and document rack  ·  wall-hung, 120 deep x 250, 500 high, 1450 up'),
+    ('basket',    10740, 8650, 10960, 8870,
      'umbrella stand  ·  220 round, brass ring on a stone base, 600 high'),
-    ('under',     13730, 10080, 13850, 10480,
-     'letter and document rack  ·  wall-hung, 120 deep x 400, 500 high, 1150 up'),
-    ('sofa-e',    13100, 10325, 13850, 11025,
-     'chair  ·  700 x 750, against the U\'s east leg, facing west'),
+    # ...and the east leg is ONE LONG BENCH (Karan's call): the two chairs
+    # become a single seat from the south wall to help's door, 500 deep.
+    ('sofa-e',    13350, 9350, 13850, 11000,
+     'bench  ·  1650 x 500, one long seat against the U\'s east leg, the south wall to help\'s door'),
 
 ]
 

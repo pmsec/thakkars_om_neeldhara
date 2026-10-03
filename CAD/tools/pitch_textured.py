@@ -268,8 +268,6 @@ def main():
 
     for p in R.wood_floor():
         prim(p, shadow=False)
-    for p in R.grass_tongues():
-        prim(p, shadow=False)
     for p in R.terrace_pieces():
         prim(p)
     for p in R.great_room_rug():

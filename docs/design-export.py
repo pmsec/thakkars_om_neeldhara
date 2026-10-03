@@ -571,8 +571,9 @@ ROOMS = [
     ('R-K-TERRACE', "Karan's terrace", (23280, 600), 'outdoor', 'outdoor', False,
      'Real grass', 'Mirror of the parents’ terrace: grass, tree, jhoola under high glass.'),
     ('R-DECK', 'All-weather deck', (12240, 1800), 'outdoor', 'shared', False,
-     'Oak plank', 'Glazed, cooled, retractable roof. The fountain on the home’s centre; '
-     'spa in the east grass bed, gym in the west one.'),
+     'Real grass', 'Glazed, cooled, retractable roof. Real grass end to end, the fountain '
+     'standing in it on the home’s centre; spa at the east end, gym at the west; a recliner '
+     'in each reclaimed void, its back to the column.'),
     ('R-SHAFT-W', 'Sealed shaft (west)', (3700, 600), 'void', 'core', False,
      'Sealed', 'Builder shaft, sealed. 1480 × 1200.'),
     ('R-SHAFT-E', 'Sealed shaft (east)', (20800, 600), 'void', 'core', False,
@@ -843,10 +844,9 @@ def emit_building():
     PUB = {'R-P-TERRACE': 40, 'R-K-TERRACE': 40, 'R-DECK': 385, 'R-P-SUITE': PUB_P_SUITE_N, 'R-P-DRESSING': PUB_P_SUITE_S, 'R-K-SUITE': 350, 'R-P-BATH': PUB_P_BATH, 'R-G-BATH': PUB_G_BATH, 'R-K-BATH': 69, 'R-P-FAMILY': 230, 'R-K-DEN': PUB_K_DEN, 'R-GREAT': 407, 'R-KITCHEN': PUB_KITCHEN, 'R-ENTRY': 101, 'R-HELP': 77}
     # (the guest WC and its passage have no Rev 4 figure: the builder's 29 was
     # his own toilet on this spot, not ours)
-    # One floor runs out through the sliding glass: the deck is finished as the
-    # great room is, and whatever the great room's floor is dressed as, the
-    # deck follows.
-    FOLLOWS = {'R-DECK': 'R-GREAT'}
+    # (The deck used to follow the great room's floor out through the glass;
+    # it is grass end to end now, so nothing follows anything.)
+    FOLLOWS = {}
     for rid, name, anchor, cat, zone, carpet, finish, notes in ROOMS:
         pub = f', publishedSqFt: {PUB[rid]}' if rid in PUB else ''
         fol = f', finishFollows: {FOLLOWS[rid]!r}' if rid in FOLLOWS else ''

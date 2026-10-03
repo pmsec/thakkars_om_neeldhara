@@ -273,7 +273,7 @@ WALLS += [
     # two are ONE polyline, joined by the rounded south-west corner (Karan's
     # call), 300 on the centreline
     w('W-WC-PASS', _pass_line, 150, 'interior',
-      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16600), head=2100,   # under help's loft: crown 2475, loft at 2520
+      [op('D-HELP-PASS', 'door', _pass_at(15850), _pass_at(16600), head=full_head(750),
           label="Help's room — into the WC passage, hinged west, swings into help's room; full height")],
       notes="The WC passage's west and south walls: the great-room door's west jamb, round the soft corner, along the block's line to the WC's west wall."),
 ]
@@ -555,10 +555,7 @@ CHORDS = [
 ]
 for gid, a0, a1, typ, lab in CHORDS:
     L = math.hypot(a1[0] - a0[0], a1[1] - a0[1])
-    # every one full height, round on top, the crown 120 under the slab -
-    # except help's door, whose arch must stay under the room's loft at 2520:
-    # a 2100 head puts its crown at 2487
-    head = 2100 if gid == 'GAL-E' else full_head(L)
+    head = full_head(L)   # every one full height, round on top, the crown 120 under the slab
     # the service doors' leaves are curved to the drum, flush with its inner face
     curve = f'curve: {{ x: {gx}, y: {gy}, r: {gr} }}' if typ == 'door' else ''
     WALLS.append(w(f'T-{gid}', [a0, a1], 0, 'threshold',
@@ -622,7 +619,7 @@ ROOMS = [
      'the arc, console and two chairs, sconces at the arc centres.'),
     ('R-HELP', "Help's room", (14700, 9200), 'habitable', 'service', True,
      'Vinyl', 'Live-in, with the store as its east end: one room. Bunk under the '
-     'duct, full-height racks on three walls, a loft over the whole room at 2520, '
+     'duct, racks floor to ceiling on the gallery leg and the south wall, shelves to the ceiling at the bunk’s head, no loft, '
      'its own door off the gallery and a door into the WC passage.'),
     ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
      'Stone', 'From the great room’s door straight east to the WC’s flat door, the basin in a corner console curving round the south-west corner; help’s room’s door in the south wall east of it; the WC’s flat door at its east end. No loft: its three doors’ arches would all look into one.'),
@@ -1514,13 +1511,11 @@ def emit_furniture():
         add(kind, min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys),
             room, label, h, poly=p, lift=lift)
 
-    # the lofts over help's room and the guest WC, both 2520 up so they clear
-    # the crowns of the doors into those rooms (2487 and 2475): the rooms'
-    # own outlines, hung. The passage has none any more.
+    # the loft over the guest WC, 2520 up so it clears the crown of its flat
+    # door (2475): the room's own outline, hung. Help's room and the passage
+    # have none: help's racks run to the ceiling instead.
     lofts = R.lofts()
-    add_outline(lofts[:1], 'shelves', 'R-HELP', 'Loft, 2520 up', 985,
-                styles=('dash',), lift=2520)
-    add_outline(lofts[1:2], 'shelves', 'R-GUEST-BATH', 'Loft, 2520 up', 985,
+    add_outline(lofts[:1], 'shelves', 'R-GUEST-BATH', 'Loft, 2520 up', 985,
                 styles=('dash',), lift=2520)
 
     # the curved full-height rack on the outside of the guest WC's apse

@@ -383,10 +383,12 @@ _BRK_K = gal_cross(KIT_N) or GAL_DOOR_W
 # strip's west corner and the main duct, and a quarter-ellipse wall struck
 # from the den's corner — 1345 along the den wall, 1000 up the duct wall —
 # closes the shower off the den, the rose on the duct wall.  The basin is
-# NOT inside: it is in the passage, in a console along the passage's south
-# wall with the bowl square in front of the great-room door, so a guest
-# washes their hands without going into the wet room.  Help's room has its
-# own door into the passage, in that same south wall east of the console.
+# NOT inside: it is in the passage, in a corner console tucked into the
+# passage's south-west corner (Karan's call): a quarter-ellipse of good
+# depth curving and tapering round the rounded corner, the bowl on the
+# diagonal, so a guest washes their hands without going into the wet room
+# and the walk to the WC's door is the passage's full depth.  Help's room
+# has its own door into the passage, in the south wall east of it.
 #
 # THE ARC AT ITS WEST END IS GONE (Karan's call): it carried a curved door,
 # and he wants a FLAT door.  The WC's west wall is straight now, on the line
@@ -1102,11 +1104,9 @@ _ONCE = [
     ('grass',    15365, DECK_N + 340, 16980, 1200, 'real grass, north of the void'),
     ('grass',    15365, 1200, 16750, DECK_S, 'real grass, the reclaimed void'),
     ('grass',    16980, DECK_N + 340, M(POD_W0), DECK_S, 'real grass, the whole deck'),
-    # (Karan's call, from the livability audit: the trainer turned to run
-    # along the parapet so a metre of deck lies between it and the family
-    # room's portal; the spa to the east end of its bed so the den's portal
-    # opens on to grass, not the tub's side)
-    ('gym',      4760, 340, 6760, 1540, 'all-in-one strength trainer  ·  2000 x 1200, along the parapet'),
+    # (Karan's call: the trainer stays as it was, up the shaft wall; the spa
+    # at the east end of its bed so the den's portal opens on to grass)
+    ('gym',      4760, 340, 5960, 2340, 'all-in-one strength trainer  ·  1200 x 2000'),
     ('spa',      18030, 300, 19780, 2050, '4-seat spa'),
     ('fountain', 11640, 560, 12840, 1760, 'marble fountain, centre of the deck'),
     # ---------------------------------------------------------- great room

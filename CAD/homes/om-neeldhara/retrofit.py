@@ -962,34 +962,29 @@ def pass_corner():
     return [_pass_corner(D.PASS_R + h) + list(reversed(_pass_corner(D.PASS_R - h)))]
 
 
-def wc_console(dep=200, x_end=15800, bowl_x=None):
-    """The basin console in the PASSAGE (Karan's sketch): a straight run along
-    the passage's south wall from its west wall, the bowl at the west end,
-    square in front of the great-room door, so a guest steps in and the
-    basin is the first thing there.
+def wc_console(a=750, b=430, bowl_r=150, bowl_out=290):
+    """The basin console in the PASSAGE, in its SOUTH-WEST CORNER (Karan's
+    call, after a straight run along the south wall): a quarter-ellipse
+    struck from the corner, `a` along the south wall and `b` up the west
+    wall, so it curves and tapers round the passage's rounded corner and
+    dies into each wall.  Its back follows that rounded corner; the bowl
+    sits on the corner's diagonal, `bowl_out` off the wall, 300 round.
 
-    200 deep — a slimline cloakroom bowl's depth (Karan's call, from the
-    livability audit: it was 300) — which leaves 570 of the 770 passage to
-    pass along it to the WC's door.  It stops at 15800, 780 long:
-    east of it the same wall carries help's room's door into the passage
-    (design.NEW_WALLS), which is how help reaches the WC without crossing
-    the great room; the WC's own flat door is at the passage's east end."""
+    Of good depth where it matters - 515 on the diagonal - and nothing
+    where it does not: the walk from the great-room door east to the WC's
+    door has the passage's full 770 once past the console's tips."""
     xw = D.WC_PASS_W + D.T_INT / 2                      # the west wall's inner face
-    ys, yf = D.WC_PASS_S - D.T_INT / 2, D.WC_PASS_S - D.T_INT / 2 - dep   # the south wall's face, the front
-    # its back corner follows the passage's rounded inside corner; a console
-    # shallower than the corner's radius starts where its front meets the arc
-    rc = D.PASS_R - D.T_INT / 2
-    corner = _pass_corner(rc)
-    if dep < rc:
-        cx, cy = D.WC_PASS_W + D.PASS_R, D.WC_PASS_S - D.PASS_R
-        xi = cx - math.sqrt(max(0.0, rc * rc - (yf - cy) ** 2))
-        band = [(xi, yf)] + [q for q in corner if q[1] >= yf] + [(x_end, ys), (x_end, yf)]
-    else:
-        band = ([(xw, yf), (xw, D.WC_PASS_S - D.PASS_R)] + corner
-                + [(x_end, ys), (x_end, yf)])
-    if bowl_x is None:
-        bowl_x = (15020 + 15820) / 2                     # the great-room door's centre
-    return [('poly', band, 'solid'), ('circle', bowl_x, (ys + yf) / 2, 120, 'light')]
+    ys = D.WC_PASS_S - D.T_INT / 2                      # the south wall's face
+    rc = D.PASS_R - D.T_INT / 2                         # the rounded corner, inside
+    corner = _pass_corner(rc)                           # west wall down and round to the south wall
+    front = [(xw + a * math.cos(math.radians(t)), ys - b * math.sin(math.radians(t)))
+             for t in np.linspace(0, 90, 24)]          # south-wall tip round to the west-wall tip
+    band = [(xw, ys - b), (xw, D.WC_PASS_S - D.PASS_R)] + corner + [(xw + a, ys)] + front[1:-1]
+    # the bowl on the corner's diagonal, out from the rounded wall
+    cx, cy = D.WC_PASS_W + D.PASS_R, D.WC_PASS_S - D.PASS_R
+    k = math.sqrt(0.5)
+    bx, by = cx - rc * k + bowl_out * k, cy + rc * k - bowl_out * k
+    return [('poly', band, 'solid'), ('circle', bx, by, bowl_r, 'light')]
 
 
 def wc_out_door(hinge=15020, jamb=15820, y=8400):

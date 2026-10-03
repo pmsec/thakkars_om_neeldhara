@@ -63,7 +63,7 @@ export const furniture: FurnitureItem[] = [
   { id: 'FN-GRASS-4', kind: 'grass', x: 15365, y: 190, w: 1615, d: 1010, room: 'R-DECK', label: 'real grass, north of the void', height: 25 },
   { id: 'FN-GRASS-5', kind: 'grass', x: 15365, y: 1200, w: 1385, d: 1270, room: 'R-DECK', label: 'real grass, the reclaimed void', height: 25 },
   { id: 'FN-GRASS-6', kind: 'grass', x: 16980, y: 190, w: 2970, d: 2280, room: 'R-DECK', label: 'real grass, the whole deck', height: 25 },
-  { id: 'FN-SHELVES-2', kind: 'shelves', x: 4760, y: 340, w: 2000, d: 1200, room: 'R-DECK', label: 'All-in-one strength trainer', height: 2150, poly: [{ x: 4760, y: 340 }, { x: 6760, y: 340 }, { x: 6760, y: 1540 }, { x: 4760, y: 1540 }] },
+  { id: 'FN-SHELVES-2', kind: 'shelves', x: 4760, y: 340, w: 1200, d: 2000, room: 'R-DECK', label: 'All-in-one strength trainer', height: 2150, poly: [{ x: 4760, y: 340 }, { x: 5960, y: 340 }, { x: 5960, y: 2340 }, { x: 4760, y: 2340 }] },
   { id: 'FN-TABLE-1', kind: 'table', x: 18030, y: 300, w: 1750, d: 1750, room: 'R-DECK', label: '4-seat spa', height: 880, poly: [{ x: 18030, y: 300 }, { x: 19780, y: 300 }, { x: 19780, y: 2050 }, { x: 18030, y: 2050 }] },
   { id: 'FN-PLANT-2', kind: 'plant', x: 11640, y: 560, w: 1200, d: 1200, room: 'R-DECK', label: 'Marble fountain', height: 420 },
   { id: 'FN-WARDROBE-7', kind: 'wardrobe', x: -450, y: 4750, w: 600, d: 1100, room: 'R-P-SUITE', label: 'wardrobe', height: 2300, poly: [{ x: -450, y: 4750 }, { x: 150, y: 4750 }, { x: 150, y: 5850 }, { x: -450, y: 5850 }] },

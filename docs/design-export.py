@@ -621,7 +621,7 @@ ROOMS = [
      'duct, full-height racks on three walls, a loft over the whole room at 2500, '
      'its own door off the gallery and a door into the WC passage.'),
     ('R-WC-PASS', 'WC passage', (15900, 8935), 'circulation', 'shared', True,
-     'Stone', 'From the great room’s door straight east to the WC’s flat door, the basin in a console along its south wall, square in front of the door; help’s room’s door in that wall east of it; the WC’s flat door at its east end. A loft over it at 2300.'),
+     'Stone', 'From the great room’s door straight east to the WC’s flat door, the basin in a corner console curving round the south-west corner; help’s room’s door in the south wall east of it; the WC’s flat door at its east end. A loft over it at 2300.'),
     ('R-GUEST-BATH', 'Guest / service WC', (18200, 8935), 'wet', 'shared', True,
      'Stone', 'On the builder’s toilet spot against the main duct: WC on the duct wall, the shower in a quarter-ellipse apse into the den north of it, the basin outside in the passage; a loft over it at 2300.'),
 ]
@@ -1094,7 +1094,7 @@ def emit_fixtures():
         a, b, c, d = bbox_of(R.wc_console())
         # in the PASSAGE, along its south wall, the bowl in front of the door
         add('FX-G-VAN', 'basin', (a + c) / 2, (b + d) / 2, c - a, d - b,
-            'R-WC-PASS', 'STK-GUEST', 'Slim console on the south wall, 200 deep, 240 bowl in front of the door, mirror over it', poly=van,
+            'R-WC-PASS', 'STK-GUEST', 'Corner console in the south-west corner, a quarter-ellipse curving round the corner, 300 bowl on the diagonal, mirror over it', poly=van,
             bowl=bowl_of(R.wc_console()))
 
     # the bath wall cabinet at the west end of each sweep — same face as the

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="3448" viewBox="0 0 3000 3448"><rect x="0" y="0" width="3000" height="3448" fill="#f7f5f0"/>
+<g id="L-floor">
+<polygon points="-3083.9,204.6 -1414.7,204.6 -1414.7,513.5 1123.8,513.5 1123.8,204.6 2780.5,204.6 2780.5,4516.9 1123.8,4516.9 1123.8,4212.9 453.7,4212.9 453.7,6492.4 -1190.5,6492.4 -1190.5,5794.9 -2782.4,5794.9 -2782.4,5037.5 -1940.4,5037.5 -1940.4,2406.8 -3083.9,2406.8" fill="#2b2825" stroke="#3b3833" stroke-width="2.0"/>
+<polygon points="-3009.1,279.3 -1489.5,279.3 -1489.5,588.2 1198.6,588.2 1198.6,279.3 2705.8,279.3 2705.8,4442.1 1198.6,4442.1 1198.6,4138.2 378.9,4138.2 378.9,5794.9 378.9,6417.7 -1115.8,6417.7 -1115.8,5794.9 -1115.8,5720.1 -2707.7,5720.1 -2707.7,5112.3 -1865.6,5112.3 -1865.6,2332.1 -3009.1,2332.1" fill="#efece5" stroke="none" stroke-width="1.0"/>
+</g>
+<g id="L-ref">
+<rect x="1123.8" y="513.5" width="114.6" height="597.9" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="-3083.9" y="662.9" width="114.6" height="597.9" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="-1489.5" y="662.9" width="114.6" height="448.4" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="1123.8" y="3615.1" width="114.6" height="597.9" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="339.1" y="4212.9" width="114.6" height="612.8" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+</g>
+<g id="L-furniture">
+</g>
+<g id="L-floor-walls">
+<polygon points="-1483.2,241.9 -1483.2,2369.4 -1421.0,2369.4 -1421.0,241.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="-1903.0,2400.6 -1878.1,2400.6 -1878.1,2338.3 -1903.0,2338.3" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="-1479.5,2400.6 -1452.1,2400.6 -1452.1,2338.3 -1479.5,2338.3" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="-1878.1" y1="2369.4" x2="-1878.1" y2="2768.0" stroke="#8a8378" stroke-width="1.4"/>
+<line x1="-1878.1" y1="2768.0" x2="-1826.1" y2="2764.6" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1826.1" y1="2764.6" x2="-1774.9" y2="2754.5" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1774.9" y1="2754.5" x2="-1725.6" y2="2737.7" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1725.6" y1="2737.7" x2="-1678.8" y2="2714.6" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1678.8" y1="2714.6" x2="-1635.5" y2="2685.7" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1635.5" y1="2685.7" x2="-1596.3" y2="2651.3" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1596.3" y1="2651.3" x2="-1561.9" y2="2612.1" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1561.9" y1="2612.1" x2="-1532.9" y2="2568.7" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1532.9" y1="2568.7" x2="-1509.9" y2="2522.0" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1509.9" y1="2522.0" x2="-1493.1" y2="2472.6" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1493.1" y1="2472.6" x2="-1482.9" y2="2421.5" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="-1482.9" y1="2421.5" x2="-1479.5" y2="2369.4" stroke="#c3bcae" stroke-width="1.0"/>
+<polygon points="385.2,550.8 385.2,2369.4 447.5,2369.4 447.5,550.8" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="-1452.1,2400.6 -1066.0,2400.6 -1066.0,2338.3 -1452.1,2338.3" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="80.0,2400.6 416.3,2400.6 416.3,2338.3 80.0,2338.3" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="-1066.0" y1="2369.4" x2="80.0" y2="2369.4" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
+<polygon points="416.3,2400.6 1161.2,2400.6 1161.2,2338.3 416.3,2338.3" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="385.2,2369.4 385.2,2496.5 447.5,2496.5 447.5,2369.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="385.2,2944.9 385.2,3069.5 447.5,3069.5 447.5,2944.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="416.3" y1="2496.5" x2="416.3" y2="2944.9" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
+<polygon points="1130.1,2369.4 1130.1,2496.5 1192.3,2496.5 1192.3,2369.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="1130.1,2944.9 1130.1,3069.5 1192.3,3069.5 1192.3,2944.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="1161.2" y1="2496.5" x2="1161.2" y2="2944.9" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
+<polygon points="416.3,3100.6 1161.2,3100.6 1161.2,3038.3 416.3,3038.3" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="385.2,3069.5 385.2,4175.6 447.5,4175.6 447.5,3069.5" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="1130.1,3069.5 1130.1,3318.6 1192.3,3318.6 1192.3,3069.5" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="1130.1,3717.2 1130.1,4175.6 1192.3,4175.6 1192.3,3717.2" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="1161.2" y1="3318.6" x2="1559.8" y2="3318.6" stroke="#8a8378" stroke-width="1.4"/>
+<line x1="1559.8" y1="3318.6" x2="1556.4" y2="3370.6" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1556.4" y1="3370.6" x2="1546.2" y2="3421.8" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1546.2" y1="3421.8" x2="1529.4" y2="3471.1" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1529.4" y1="3471.1" x2="1506.4" y2="3517.9" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1506.4" y1="3517.9" x2="1477.4" y2="3561.2" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1477.4" y1="3561.2" x2="1443.0" y2="3600.4" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1443.0" y1="3600.4" x2="1403.8" y2="3634.8" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1403.8" y1="3634.8" x2="1360.5" y2="3663.8" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1360.5" y1="3663.8" x2="1313.7" y2="3686.9" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1313.7" y1="3686.9" x2="1264.4" y2="3703.6" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1264.4" y1="3703.6" x2="1213.2" y2="3713.8" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1213.2" y1="3713.8" x2="1161.2" y2="3717.2" stroke="#c3bcae" stroke-width="1.0"/>
+<polygon points="-1934.2,5074.9 -1934.2,5199.5 -1871.9,5199.5 -1871.9,5074.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="-1934.2,5623.0 -1934.2,5757.5 -1871.9,5757.5 -1871.9,5623.0" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="-1903.0" y1="5199.5" x2="-1903.0" y2="5623.0" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
+<line x1="-1153.2" y1="5757.5" x2="416.3" y2="5757.5" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
+<polygon points="1574.7,2391.9 2743.1,2391.9 2743.1,2347.0 1574.7,2347.0" fill="#6f6a61" stroke="none" stroke-width="1.0"/>
+<line x1="-2969.3" y1="204.6" x2="-1489.5" y2="204.6" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1198.6" y1="204.6" x2="2705.8" y2="204.6" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-2969.3" y1="234.5" x2="-1489.5" y2="234.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1198.6" y1="234.5" x2="2705.8" y2="234.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-2969.3" y1="249.4" x2="-1489.5" y2="249.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1198.6" y1="249.4" x2="2705.8" y2="249.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-2969.3" y1="279.3" x2="-1489.5" y2="279.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1198.6" y1="279.3" x2="2705.8" y2="279.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1272.7" y1="513.5" x2="-899.1" y2="513.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-500.5" y1="513.5" x2="197.1" y2="513.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="595.7" y1="513.5" x2="969.4" y2="513.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1272.7" y1="543.4" x2="-899.1" y2="543.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-500.5" y1="543.4" x2="197.1" y2="543.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="595.7" y1="543.4" x2="969.4" y2="543.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1272.7" y1="558.3" x2="-899.1" y2="558.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-500.5" y1="558.3" x2="197.1" y2="558.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="595.7" y1="558.3" x2="969.4" y2="558.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1272.7" y1="588.2" x2="-899.1" y2="588.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-500.5" y1="588.2" x2="197.1" y2="588.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="595.7" y1="588.2" x2="969.4" y2="588.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="595.7" y1="4138.2" x2="969.4" y2="4138.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="595.7" y1="4168.1" x2="969.4" y2="4168.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="595.7" y1="4183.1" x2="969.4" y2="4183.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1238.4" y1="4442.1" x2="2705.8" y2="4442.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1238.4" y1="4472.0" x2="2705.8" y2="4472.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1238.4" y1="4487.0" x2="2705.8" y2="4487.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1865.6" y1="5720.1" x2="-1267.8" y2="5720.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1073.4" y1="5720.1" x2="339.1" y2="5720.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1865.6" y1="5750.0" x2="-1267.8" y2="5750.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1073.4" y1="5750.0" x2="339.1" y2="5750.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1865.6" y1="5765.0" x2="-1267.8" y2="5765.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1073.4" y1="5765.0" x2="339.1" y2="5765.0" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-1073.4" y1="5794.9" x2="339.1" y2="5794.9" stroke="#2e8b9a" stroke-width="3.0"/>
+</g>
+<g id="L-labels">
+<text x="-2261.8" y="1230.9" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">GUEST / STUDY</text>
+<text x="-2261.8" y="1430.2" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the one spare room: a desk under the north window, a bed for visitors</text>
+<text x="-517.9" y="1380.4" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">KITCHEN</text>
+<text x="-517.9" y="1579.7" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the whole north band, two windows, open to the dining across a bowed c</text>
+<text x="1948.4" y="1330.6" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">FAMILY BEDROOM</text>
+<text x="1948.4" y="1529.9" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">one room for all three: the adults south, the child's end north behind</text>
+<text x="787.5" y="2675.9" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">VESTIBULE</text>
+<text x="787.5" y="2875.2" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the arched threshold into the family wing, and the way to the common b</text>
+<text x="787.5" y="3572.7" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">BATH</text>
+<text x="787.5" y="3657.4" font-family="Helvetica,Arial" font-size="17.5611" fill="#2c5c61" font-weight="normal" letter-spacing="3.51221" text-anchor="middle">FAMILY</text>
+<text x="787.5" y="3811.9" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">on the south-east shaft, entered from the bedroom</text>
+<text x="-816.8" y="3971.3" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">LIVING / DINING</text>
+<text x="-816.8" y="4170.6" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">one room from the front door to the balcony, read through three arches</text>
+<text x="-2324.0" y="5366.4" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">FOYER</text>
+<text x="-2324.0" y="5565.7" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the way in</text>
+<text x="-368.4" y="6063.9" font-family="Helvetica,Arial" font-size="26.3416" fill="#1d1b18" font-weight="bold" letter-spacing="1.93172" text-anchor="middle">BALCONY</text>
+<text x="-368.4" y="6263.2" font-family="Helvetica,Arial" font-size="15.805" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">off the living room</text>
+</g>
+<g id="L-title">
+</g></svg>

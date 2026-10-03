@@ -1,0 +1,5 @@
+__pycache__/
+source/floor14.dxf
+out/pitch/
+homes/*/source/*.dxf
+homes/*/source/builder-geometry.json

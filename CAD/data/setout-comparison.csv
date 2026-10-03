@@ -1,0 +1,22 @@
+item,builder_mm,a101_mm,error_mm,note
+"Overall length, outer face to outer face",25680,24720,-960,"A-101 note reads OVERALL 24 480, which is a centreline figure; the matching builder centreline figure is 25 530."
+"Overall length, wall centreline to centreline",25530,24480,-1050,
+Continuous deck length,15420,15020,-400,Builder chain 3050 + 1535 + 3050 | 150 party wall | 3050 + 1535 + 3050.
+"Deck set-out, wing wall to centre (per half)",7635,7510,-125,A-101 note says 2875 + 1585 + 3050; builder is 3050 + 1535 + 3050.
+"Deck bay, wing wall to void",3050,2875,-175,
+"Retained void, width along the deck",1535,1585,50,
+"Deck bay, void to centreline",3050,3050,0,Correct.
+Great room across the party wall,7840,7690,-150,3845 + 150 party wall + 3845.  A-101 adds the two 3845s and drops the wall.
+Living room bay,3845,3845,0,Correct.
+Family room / music den bay,3665,3665,0,Correct.
+"Master suite depth, two bedrooms merged",8195,8070,-125,4110 + 125 wall + 3960.  A-101 adds the two bedrooms and drops the wall.
+Master bedroom width,3200,3200,0,Correct.
+Terrace / shaft strip width,1530,1530,0,Correct.
+"Total depth, deck face to east-bay face",11125,10850,-275,Builder 2620 + 150 + 5780 + 125 + 2450.  A-101 adds 2620 + 5780 + 2450.
+Deck depth,2620,2620,0,Correct.
+Main body depth,5780,5780,0,Correct.
+East bay depth,2450,2450,0,Correct.
+"Wing depth, centreline to centreline",9570,9170,-400,Builder: terrace parapet CL 50 to wing outer wall CL 9620.
+Kitchen,3350,3350,0,Correct; A-101 then widens it to 3900 by choice.
+"Lift lobby, clear width between columns",3220,4125,905,"A-101 uses the lobby 13'-6"" figure, which in the DWG is the lobby DEPTH."
+Sealed shaft depth at the wing end,1050,1350,300,

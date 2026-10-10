@@ -227,6 +227,18 @@ export const KNOWN_2D_CLASHES: Array<{
   note: string
 }> = [
   {
+    item: 'FN-SCREEN-7',
+    wallId: 'W-WC-APSE',
+    maxArea: 60000,
+    note: "Help's privacy curtain: its track runs east along 9600, past the end of the WC's west wall (which stops at the block at 9435), to die into the shelves at the bunk's head. The band straddles the wall's extended line, not the wall.",
+  },
+  {
+    item: 'FN-SCREEN-7',
+    wallId: 'W-BAY-BLOCK',
+    maxArea: 60000,
+    note: "Help's privacy curtain: the same 150 past the block's west end, 50 south of its face.",
+  },
+  {
     item: 'Shower',
     wallId: 'W-HELP-N',
     maxArea: 60000,

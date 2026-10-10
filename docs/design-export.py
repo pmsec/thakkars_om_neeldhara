@@ -1560,6 +1560,11 @@ def emit_furniture():
     add_outline(R.suite_screen(), 'screen', 'R-K-SUITE',
                 'Dressing curtain — full height, motorised, on a ceiling track from the bath wall to the end wall', 3505,
                 styles=('dash',))
+    # help's room's privacy curtain: the same, on a track that turns a corner
+    # (Karan's call); it gathers at the far end, at the shelves by the bunk
+    add_outline(R.help_curtain(), 'screen', 'R-HELP',
+                'Privacy curtain — full height, motorised, on a ceiling track from the great-room door round a soft corner to the shelves at the bunk’s head; gathers at the far end', 3505,
+                styles=('dash',))
     # the great room's planter, answering the kitchen bump across the room
     add_outline(R.great_room_planter(), 'planter', 'R-GREAT',
                 'Great-room planter', 340, styles=('green',))
@@ -1665,6 +1670,7 @@ def audit_coverage():
     with R.karan():
         take('arch_console', R.arch_console(), mirror=True)
     take('suite_screen', R.suite_screen())
+    take('help_curtain', R.help_curtain())
     take('corner_units', R.corner_units())
     take('mandir_console', R.mandir_console())
     take('great_room_planter', R.great_room_planter())

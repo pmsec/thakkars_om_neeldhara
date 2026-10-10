@@ -3331,59 +3331,82 @@ function portalBrackets(M: Mats): THREE.Group {
 }
 
 /**
- * KARAN'S DRESSING CURTAIN (Karan's call, in place of the tinted screen): a
- * full-height curtain on a motorised ceiling track across the suite on the
- * bath door's jamb line. Shut, it is drawn the whole width in deep pleats;
- * open, it is tucked back to the bath-wall end in tight pleats. The track
- * is a slim channel under the ceiling with the motor housing at its end.
+ * THE MOTORISED CURTAINS (Karan's call): Karan's dressing curtain in place of
+ * the tinted screen, and help's room's privacy curtain closing its open north
+ * end off. Each is a full-height curtain on a ceiling track along the
+ * centreline of the band the sheet draws - straight or turning a corner.
+ * Shut, it is drawn the whole way in deep pleats; open, it is tucked back in
+ * tight pleats at its gathering end (the start, or the far end where the
+ * label says so). The track is a slim channel under the ceiling, with the
+ * motor housing at the gathering end.
  */
 function dressingCurtain(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
-  const f = furniture.find((q) => q.kind === 'screen' && /curtain/i.test(q.label))
-  if (!f) return g
   const ceiling = model.data.levels.ceiling
-  const alongX = f.w >= f.d
-  const L = alongX ? f.w : f.d
-  const x0 = alongX ? f.x : f.x + f.w / 2
-  const y0 = alongX ? f.y + f.d / 2 : f.y
-  const ux = alongX ? 1 : 0, uy = alongX ? 0 : 1
-  const H = ceiling - 70                                    // the track's underside
-  const at = (t: number, h: number, o: THREE.Object3D) => {
-    o.position.set((x0 + ux * t) * S, h * S, (y0 + uy * t) * S)
-    o.rotation.y = alongX ? 0 : -Math.PI / 2
-    g.add(o)
+  for (const f of furniture) {
+    if (f.kind !== 'screen' || !/curtain/i.test(f.label)) continue
+    // the band's centreline: point i pairs with point n-1-i across the band
+    const poly = f.poly ?? [{ x: f.x, y: f.y }, { x: f.x + f.w, y: f.y }, { x: f.x + f.w, y: f.y + f.d }, { x: f.x, y: f.y + f.d }]
+    const n = poly.length
+    const path: { x: number; y: number }[] = []
+    for (let i = 0; i < n / 2; i++) path.push({ x: (poly[i].x + poly[n - 1 - i].x) / 2, y: (poly[i].y + poly[n - 1 - i].y) / 2 })
+    const segs: { a: { x: number; y: number }; b: { x: number; y: number }; L: number; ux: number; uy: number }[] = []
+    let total = 0
+    for (let i = 1; i < path.length; i++) {
+      const a = path[i - 1], b = path[i]
+      const L = Math.hypot(b.x - a.x, b.y - a.y)
+      if (L < 1) continue
+      segs.push({ a, b, L, ux: (b.x - a.x) / L, uy: (b.y - a.y) / L })
+      total += L
+    }
+    if (!segs.length) continue
+    const at = (t: number) => {
+      let acc = 0
+      for (const s of segs) {
+        if (t <= acc + s.L || s === segs[segs.length - 1]) {
+          const k = Math.max(0, Math.min(1, (t - acc) / s.L))
+          return { x: s.a.x + s.ux * k * s.L, y: s.a.y + s.uy * k * s.L, ux: s.ux, uy: s.uy }
+        }
+        acc += s.L
+      }
+      return { x: segs[0].a.x, y: segs[0].a.y, ux: segs[0].ux, uy: segs[0].uy }
+    }
+    const item = new THREE.Group()
+    const put = (o: THREE.Object3D, t: number, h: number, off = 0) => {
+      const q = at(t)
+      o.position.set((q.x - q.uy * off) * S, h * S, (q.y + q.ux * off) * S)
+      o.rotation.y = -Math.atan2(q.uy, q.ux)
+      item.add(o)
+    }
+    const H = ceiling - 70                                    // the track's underside
+    // the track: a 40 x 30 channel along every segment, flush under the ceiling
+    let acc = 0
+    for (const s of segs) { put(box(s.L + 2, 30, 40, M.metal), acc + s.L / 2, H + 15); acc += s.L }
+    const atEnd = /gathers at the far end/i.test(f.label)
+    // the motor housing at the gathering end
+    put(box(220, 70, 60, M.metal), atEnd ? total - 120 : 120, H - 20)
+    // the curtain: pleats as thin slabs set alternately in and out of the
+    // line. Shut they run the whole length at a 110 pitch; open they bunch
+    // over the first (or last) 14 % at a 28 pitch
+    const run = mode === 'shut' ? total : total * 0.14
+    const t0 = atEnd ? total - run : 0
+    const pitch = mode === 'shut' ? 110 : 28
+    const depth = mode === 'shut' ? 70 : 110
+    const CH = H - 40
+    for (let t = t0 + pitch / 2, k = 0; t < t0 + run; t += pitch, k++) {
+      const sgn = k % 2 ? 1 : -1
+      const pleat = box(pitch + 6, CH - 60, 14, M.curtain)
+      pleat.castShadow = false
+      put(pleat, t, 60 + (CH - 60) / 2, sgn * depth / 2)
+      const bridge = box(16, CH - 60, depth + 14, M.curtain)
+      bridge.castShadow = false
+      put(bridge, t + pitch / 2, 60 + (CH - 60) / 2)
+      if (k % 2 === 0) put(new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, 10 * S, 10), M.brass), t, H - 8)
+    }
+    const m = at(total / 2)
+    tagItem(item, `curtain:${f.id}`, mode, [{ x: m.x - m.uy * 500, y: m.y + m.ux * 500, h: 1400 }, { x: m.x + m.uy * 500, y: m.y - m.ux * 500, h: 1400 }])
+    g.add(item)
   }
-  // the track: a 40 x 30 channel the whole length, flush under the ceiling
-  at(L / 2, H + 15, box(L, 30, 40, M.metal))
-  // the motor housing, at the bath-wall end (the gathering end)
-  at(120, H - 20, box(220, 70, 60, M.metal))
-  // the curtain: pleats as thin slabs set alternately in and out of the line.
-  // Shut they run the whole length at a 110 pitch; open they bunch over the
-  // first 14 % of the length at a 28 pitch
-  const run = mode === 'shut' ? L : L * 0.14
-  const pitch = mode === 'shut' ? 110 : 28
-  const depth = mode === 'shut' ? 70 : 110
-  const CH = H - 40                                         // hem 40 off the floor... from the rail
-  const tex = M.curtain
-  for (let t = pitch / 2, k = 0; t < run; t += pitch, k++) {
-    const sgn = k % 2 ? 1 : -1
-    const pleat = box(pitch + 6, CH - 60, 14, tex)
-    pleat.castShadow = false
-    pleat.position.set((x0 + ux * t + (alongX ? 0 : sgn * depth / 2)) * S, (60 + (CH - 60) / 2) * S, (y0 + uy * t + (alongX ? sgn * depth / 2 : 0)) * S)
-    pleat.rotation.y = alongX ? 0 : -Math.PI / 2
-    g.add(pleat)
-    // the fold between this pleat and the next, bridging the two depths
-    const bridge = box(16, CH - 60, depth + 14, tex)
-    bridge.castShadow = false
-    bridge.position.set((x0 + ux * (t + pitch / 2)) * S, (60 + (CH - 60) / 2) * S, (y0 + uy * (t + pitch / 2)) * S)
-    bridge.rotation.y = alongX ? 0 : -Math.PI / 2
-    g.add(bridge)
-    // a brass runner on the track for every second pleat
-    if (k % 2 === 0) at(t, H - 8, new THREE.Mesh(new THREE.CylinderGeometry(9 * S, 9 * S, 10 * S, 10), M.brass))
-  }
-  const cx = x0 + ux * L / 2, cy = y0 + uy * L / 2
-  const nx = alongX ? 0 : 1, ny = alongX ? 1 : 0
-  tagItem(g, `curtain:${f.id}`, mode, [{ x: cx + nx * 500, y: cy + ny * 500, h: 1400 }, { x: cx - nx * 500, y: cy - ny * 500, h: 1400 }])
   return g
 }
 

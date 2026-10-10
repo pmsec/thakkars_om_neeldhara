@@ -810,6 +810,77 @@ def clip_y(poly, y, north):
     return out
 
 
+def _offset_band(pts, h):
+    """A thin band `2h` wide along a polyline: the left side, then the right
+    side reversed, so point i and point n-1-i straddle the same centre point
+    (the 3D reads the centreline back off that pairing)."""
+    n = len(pts)
+    nx, ny = [], []
+    for i in range(n):
+        a = pts[max(i - 1, 0)]
+        b = pts[min(i + 1, n - 1)]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        L = math.hypot(dx, dy) or 1.0
+        nx.append(-dy / L)
+        ny.append(dx / L)
+    left = [(x + nx[i] * h, y + ny[i] * h) for i, (x, y) in enumerate(pts)]
+    right = [(x - nx[i] * h, y - ny[i] * h) for i, (x, y) in enumerate(pts)]
+    return left + list(reversed(right))
+
+
+def help_curtain_path(x0=14945, y_turn=9300, r=300, y_run=9600, x_end=17580, n_arc=12):
+    """The track: down from the north wall on the great-room door's west jamb
+    line, a soft quarter turn, then east along y_run to the shelves at the
+    bunk's head."""
+    pts = [(x0, D.BAY_N), (x0, y_turn)]
+    cx, cy = x0 + r, y_turn
+    pts += [(cx - r * math.cos(math.radians(t)), cy + r * math.sin(math.radians(t)))
+            for t in np.linspace(0, 90, n_arc + 1)[1:]]
+    pts += [(x_end, y_run)]
+    return pts
+
+
+def help_curtain(amp=40, wave=150, t=60):
+    """HELP'S ROOM'S PRIVACY CURTAIN (Karan's call): a full-height curtain on
+    a motorised ceiling track that closes help's room off from its open
+    north end - the basin strip and the WC's door - so a guest stepping in
+    from the great room sees the basin and the WC and nothing of the room.
+    It runs from the great-room door's west jamb line down 775, turns a
+    300 corner, and runs east 2335 along 9600 to die into the shelves at
+    the bunk's head, 1075 off the north wall: 625 clear in front of the 450
+    console, and 320 south of the WC door's swing (which lies at 9280 open).
+    Drawn across it is 3745 of curtain; tucked back it gathers at the
+    shelves' end.  On plan: the track as a dashed band, the curtain as a
+    wave along it."""
+    pts = help_curtain_path()
+    out = [('poly', _offset_band(pts, t / 2), 'dash')]
+    # the wave, by arc length along the path
+    seg = []
+    total = 0.0
+    for a, b in zip(pts, pts[1:]):
+        L = math.hypot(b[0] - a[0], b[1] - a[1])
+        seg.append((a, b, L))
+        total += L
+    def at(u):
+        acc = 0.0
+        for a, b, L in seg:
+            if u <= acc + L or (a, b, L) is seg[-1]:
+                k = (u - acc) / L
+                return (a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k,
+                        (b[0] - a[0]) / L, (b[1] - a[1]) / L)
+            acc += L
+    us = np.linspace(30, total - 30, 220)
+    prev = None
+    for u in us:
+        x, y, ux, uy = at(float(u))
+        o = amp * math.sin(2 * math.pi * u / wave)
+        p = (x - uy * o, y + ux * o)
+        if prev is not None:
+            out.append(('line', prev[0], prev[1], p[0], p[1], 'light'))
+        prev = p
+    return out
+
+
 def suite_screen(amp=45, wave=160, n=200):
     """Karan's dressing CURTAIN (Karan's call, after a tinted-glass screen
     with a wood dado): a full-height curtain on a motorised ceiling track,

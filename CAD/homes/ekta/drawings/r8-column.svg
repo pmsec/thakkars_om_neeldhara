@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="4644" viewBox="0 0 3000 4644"><rect x="0" y="0" width="3000" height="4644" fill="#f7f5f0"/>
+<g id="L-floor">
+<polygon points="-1078.4,416.3 1425.3,416.3 1425.3,879.7 5233.1,879.7 5233.1,416.3 7718.1,416.3 7718.1,6884.8 5233.1,6884.8 5233.1,6428.9 4227.9,6428.9 4227.9,9848.1 1761.6,9848.1 1761.6,8801.8 -626.3,8801.8 -626.3,7665.8 636.8,7665.8 636.8,3719.7 -1078.4,3719.7" fill="#2b2825" stroke="#3b3833" stroke-width="2.0"/>
+<polygon points="-966.3,528.4 1313.2,528.4 1313.2,991.8 5345.2,991.8 5345.2,528.4 7606.0,528.4 7606.0,6772.7 5345.2,6772.7 5345.2,6316.8 4115.8,6316.8 4115.8,8801.8 4115.8,9736.0 1873.7,9736.0 1873.7,8801.8 1873.7,8689.7 -514.2,8689.7 -514.2,7777.9 748.9,7777.9 748.9,3607.6 -966.3,3607.6" fill="#efece5" stroke="none" stroke-width="1.0"/>
+</g>
+<g id="L-ref">
+<rect x="5233.1" y="879.7" width="171.9" height="896.8" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="-1078.4" y="1103.9" width="171.9" height="896.8" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="1313.2" y="1103.9" width="171.9" height="672.6" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="5233.1" y="5532.1" width="171.9" height="896.8" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+<rect x="4056.0" y="6428.9" width="171.9" height="919.3" fill="#b5342c" stroke="#7c1610" stroke-width="0.8"/>
+</g>
+<g id="L-furniture">
+</g>
+<g id="L-floor-walls">
+<polygon points="1322.5,472.4 1322.5,1776.5 1415.9,1776.5 1415.9,472.4" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="692.8,3710.3 730.2,3710.3 730.2,3616.9 692.8,3616.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="1328.1,3710.3 1369.2,3710.3 1369.2,3616.9 1328.1,3616.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="730.2" y1="3663.6" x2="730.2" y2="4261.5" stroke="#8a8378" stroke-width="1.4"/>
+<line x1="730.2" y1="4261.5" x2="808.3" y2="4256.4" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="808.3" y1="4256.4" x2="885.0" y2="4241.2" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="885.0" y1="4241.2" x2="959.0" y2="4216.0" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="959.0" y1="4216.0" x2="1029.2" y2="4181.4" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1029.2" y1="4181.4" x2="1094.2" y2="4138.0" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1094.2" y1="4138.0" x2="1153.0" y2="4086.4" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1153.0" y1="4086.4" x2="1204.6" y2="4027.6" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1204.6" y1="4027.6" x2="1248.0" y2="3962.6" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1248.0" y1="3962.6" x2="1282.6" y2="3892.4" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1282.6" y1="3892.4" x2="1307.7" y2="3818.4" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1307.7" y1="3818.4" x2="1323.0" y2="3741.7" stroke="#c3bcae" stroke-width="1.0"/>
+<line x1="1323.0" y1="3741.7" x2="1328.1" y2="3663.6" stroke="#c3bcae" stroke-width="1.0"/>
+<polygon points="646.1,7721.8 646.1,7908.7 739.6,7908.7 739.6,7721.8" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<polygon points="646.1,8543.9 646.1,8745.7 739.6,8745.7 739.6,8543.9" fill="#2b2825" stroke="none" stroke-width="1.0"/>
+<line x1="692.8" y1="7908.7" x2="692.8" y2="8543.9" stroke="#b0a897" stroke-width="1.4" stroke-dasharray="7 9"/>
+<line x1="1817.6" y1="8745.7" x2="4171.8" y2="8745.7" stroke="#b9b2a4" stroke-width="1.2" stroke-dasharray="10 12"/>
+<line x1="-906.5" y1="416.3" x2="1313.2" y2="416.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="5345.2" y1="416.3" x2="7606.0" y2="416.3" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-906.5" y1="461.2" x2="1313.2" y2="461.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="5345.2" y1="461.2" x2="7606.0" y2="461.2" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-906.5" y1="483.6" x2="1313.2" y2="483.6" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="5345.2" y1="483.6" x2="7606.0" y2="483.6" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="-906.5" y1="528.4" x2="1313.2" y2="528.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="5345.2" y1="528.4" x2="7606.0" y2="528.4" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1638.3" y1="879.7" x2="2198.8" y2="879.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="2796.7" y1="879.7" x2="3843.0" y2="879.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="4440.9" y1="879.7" x2="5001.4" y2="879.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1638.3" y1="924.5" x2="2198.8" y2="924.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="2796.7" y1="924.5" x2="3843.0" y2="924.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="4440.9" y1="924.5" x2="5001.4" y2="924.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1638.3" y1="946.9" x2="2198.8" y2="946.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="2796.7" y1="946.9" x2="3843.0" y2="946.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="4440.9" y1="946.9" x2="5001.4" y2="946.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1638.3" y1="991.8" x2="2198.8" y2="991.8" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="2796.7" y1="991.8" x2="3843.0" y2="991.8" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="4440.9" y1="991.8" x2="5001.4" y2="991.8" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="4440.9" y1="6316.8" x2="5001.4" y2="6316.8" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="4440.9" y1="6361.6" x2="5001.4" y2="6361.6" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="4440.9" y1="6384.1" x2="5001.4" y2="6384.1" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="5405.0" y1="6772.7" x2="7606.0" y2="6772.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="5405.0" y1="6817.5" x2="7606.0" y2="6817.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="5405.0" y1="6839.9" x2="7606.0" y2="6839.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="748.9" y1="8689.7" x2="1645.7" y2="8689.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1937.2" y1="8689.7" x2="4056.0" y2="8689.7" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="748.9" y1="8734.5" x2="1645.7" y2="8734.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1937.2" y1="8734.5" x2="4056.0" y2="8734.5" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="748.9" y1="8756.9" x2="1645.7" y2="8756.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1937.2" y1="8756.9" x2="4056.0" y2="8756.9" stroke="#2e8b9a" stroke-width="3.0"/>
+<line x1="1937.2" y1="8801.8" x2="4056.0" y2="8801.8" stroke="#2e8b9a" stroke-width="3.0"/>
+</g>
+<g id="L-labels">
+<text x="2322.1" y="6066.4" font-family="Helvetica,Arial" font-size="33.5967" fill="#1d1b18" font-weight="bold" letter-spacing="2.46376" text-anchor="middle">LIVING / DINING</text>
+<text x="2322.1" y="6365.4" font-family="Helvetica,Arial" font-size="20.158" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">THE WHOLE FLOOR BAR THE FOYER AND THE BALCONY. The guest room went the</text>
+<text x="61.3" y="8159.1" font-family="Helvetica,Arial" font-size="33.5967" fill="#1d1b18" font-weight="bold" letter-spacing="2.46376" text-anchor="middle">FOYER</text>
+<text x="61.3" y="8458.0" font-family="Helvetica,Arial" font-size="20.158" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">the way in</text>
+<text x="2994.7" y="9205.4" font-family="Helvetica,Arial" font-size="33.5967" fill="#1d1b18" font-weight="bold" letter-spacing="2.46376" text-anchor="middle">BALCONY</text>
+<text x="2994.7" y="9504.3" font-family="Helvetica,Arial" font-size="20.158" fill="#6f6a61" font-weight="normal" letter-spacing="0" text-anchor="middle">off the living room</text>
+</g>
+<g id="L-title">
+</g></svg>

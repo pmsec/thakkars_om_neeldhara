@@ -53,6 +53,7 @@ STYLE = {'solid': ('#fdfaf3', '#a89b88', 1.1),
          'glass': ('#d3e4e8', GLAS, 1.0),
          'green': ('#b5c9a2', '#87a072', 1.0),
          'putt': ('#94c47c', '#4f8a40', 1.2),
+         'sand': ('#e4d0a0', '#b89a5c', 1.0),
          'water': ('#cfe6ec', '#7fabb9', 1.1),
          'tint': ('#dbc394', '#7d5a33', 1.0),
          'wood': ('#a97e48', '#5f3d20', 1.2),
@@ -274,6 +275,8 @@ def main():
     for p in R.great_room_rug():
         prim(p, shadow=False)
     for p in R.putting_green():        # Karan's den: the putting green and its cups
+        prim(p)
+    for p in R.golf_hazards():         # epoxy water and bunkers, flush in the green
         prim(p)
     for p in R.hitting_mat():          # the den's hitting mat, on the green
         prim(p, shadow=False)

@@ -2416,7 +2416,7 @@ def putting_green():
     putting turf on a shock pad, wall to wall from the screen line back to
     the drum mat, round the desk and the coffee unit.  About 3 m x 4.5 m of
     putting with three cups at the screen end, flush lids for golf and
-    cinema.  The hitting mat lies on it for golf.  The strip of floor at the
+    cinema, and no flags.  The hitting mat lies on it for golf.  The strip of floor at the
     portal stays oak: the threshold into the great room.  Flat, so the desk,
     the chairs and the drums stand level."""
     wing = D.M(D.POD_W0)                 # 19950, the wing wall's face
@@ -2425,9 +2425,9 @@ def putting_green():
            (16220, 7050), (16620, 7050), (16620, 4750), (16100, 4750),
            (16100, 3240), (GOLF_X0, 3240)]
     out = [('poly', pts, 'putt')]
-    for x, y in GOLF_CUPS:            # the cups, each with its flag flying east
+    # the cups, no flags (Karan's call): they would stand in the ball's flight
+    for x, y in GOLF_CUPS:
         out.append(('circle', x, y, 54, 'solid'))
-        out.append(('poly', [(x + 60, y - 45), (x + 210, y), (x + 60, y + 45)], 'light'))
     return out
 
 
@@ -2460,4 +2460,31 @@ def hitting_mat():
         ('circle', bx, by, 60, 'solid'),
         ('poly', [(fx - 140, by - 330), (fx + 140, by - 330), (fx + 140, by - 210), (fx - 140, by - 210)], 'light'),
         ('poly', [(fx - 140, by + 210), (fx + 140, by + 210), (fx + 140, by + 330), (fx - 140, by + 330)], 'light'),
+    ]
+
+
+def _blob(cx, cy, ax, ay, k3=0.08, k5=0.05, ph=0.0, n=72):
+    """An organic closed outline: an ellipse with two slow wobbles on it."""
+    pts = []
+    for i in range(n):
+        t = 2 * math.pi * i / n
+        r = 1 + k3 * math.sin(3 * t + ph) + k5 * math.cos(5 * t + 2 * ph)
+        pts.append((round(cx + ax * r * math.cos(t)), round(cy + ay * r * math.sin(t))))
+    return pts
+
+
+def golf_hazards():
+    """FOR DRAMA (Karan's call): a water hazard and two bunkers set FLUSH into
+    the putting green as epoxy inlays, so they read as hazards and the ball
+    still rolls across them.  The water is clear tinted resin poured deep over
+    a dark base; the bunkers are real sand locked under clear resin.  Placed
+    off the hitting mat and clear of every cup:
+      water         by the coffee unit, on the green's west side
+      greenside     east of the cups, along the wing wall
+      fairway       beside the tee, on the toe side along the wing wall
+    In this order, the water first."""
+    return [
+        ('poly', _blob(16560, 4000, 360, 590, ph=0.6), 'water'),
+        ('poly', _blob(19450, 4050, 370, 480, ph=1.7), 'sand'),
+        ('poly', _blob(19480, 5480, 290, 520, k3=0.06, ph=3.1), 'sand'),
     ]

@@ -937,6 +937,11 @@ export function furnitureObject(f: FurnitureItem, clip: THREE.Plane[]): THREE.Ob
       box(w, f.height, d, MAT.furniture, 0, f.height / 2, 0)
       break
     case 'screen': {
+      if (/impact screen|golf (backstop|side) net/i.test(f.label)) {
+        // the den's golf screen and nets: shown rolled up, the cassette only
+        box(w, 140, d, MAT.furniture, 0, f.height - 70, 0)
+        break
+      }
       // thin, see-through above the dado — never an opaque wall
       const dado = Math.min(900, f.height * 0.42)
       box(w, dado, d, MAT.wood, 0, dado / 2, 0)

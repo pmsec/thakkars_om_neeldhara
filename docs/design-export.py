@@ -595,8 +595,9 @@ ROOMS = [
      'Oak plank', 'The west pod: six-seat dining behind the curved glass screen, serving '
      'hatch straight from the kitchen.'),
     ('R-K-DEN', 'Music + work den', (18000, 5000), 'habitable', 'karan', True,
-     'Oak plank', 'The east pod: Karan’s work console on the screen, e-drums on their '
-     'mat in the south-west pocket beside the guest WC’s shower apse, two recliners facing the deck.'),
+     'Oak plank, putting turf laid over', 'The east pod: a golf simulator and a putting green. Right-handed, hitting '
+     'north at the deck opening; the impact screen rolls down there and doubles as the cinema screen. '
+     'Karan’s work console on the pod screen, e-drums on their mat in the south-west pocket.'),
     ('R-GREAT', 'Great room', (12240, 5000), 'habitable', 'shared', True,
      'Oak plank', 'The heart. Party wall gone; one floor with the deck through a 6250 '
      'opening with no doors; the apse and its two sconces at the south.'),
@@ -1565,6 +1566,28 @@ def emit_furniture():
     add_outline(R.help_curtain(), 'screen', 'R-HELP',
                 'Privacy curtain — full height, motorised, on a ceiling track from the great-room door round a soft corner to the shelves at the bunk’s head; gathers at the far end', 3505,
                 styles=('dash',))
+    # KARAN'S DEN: GOLF + PUTTING (Karan's call). The floor is a putting
+    # green with three cups; the hitting mat lies on it; the impact screen,
+    # its backstop and two side nets roll down from one ceiling pocket at the
+    # deck opening — the 3D draws them in both states (golfScreen)
+    green = R.putting_green()
+    add_outline(green[:1], 'grass', 'R-K-DEN',
+                'Putting green — sand-filled nylon turf on a shock pad, three cups', 25,
+                styles=('putt',))
+    for p in green:
+        if p[0] == 'circle':
+            _, ccx, ccy, r, _ = p
+            add('grass', ccx - r, ccy - r, 2 * r + 156, 2 * r, 'R-K-DEN',
+                'Putting cup — 108 round, flush lid, flag in', 25)
+    add_outline(R.hitting_mat()[:1], 'rug', 'R-K-DEN',
+                'Hitting mat — 1720 x 1360, on the green; the ball 2750 from the screen', 25,
+                styles=('soft',))
+    for prim, lab in zip(R.golf_screen(), (
+            'Golf backstop net — behind the impact screen, on its own motorised roller',
+            'Impact screen — motorised, rolls up into the ceiling; doubles as the cinema screen',
+            'Golf side net — west, covering the coffee unit; rolls up',
+            'Golf side net — east, along the wing wall; rolls up')):
+        add_outline([prim], 'screen', 'R-K-DEN', lab, 3505, styles=('dash',))
     # the great room's planter, answering the kitchen bump across the room
     add_outline(R.great_room_planter(), 'planter', 'R-GREAT',
                 'Great-room planter', 340, styles=('green',))
@@ -1671,6 +1694,9 @@ def audit_coverage():
         take('arch_console', R.arch_console(), mirror=True)
     take('suite_screen', R.suite_screen())
     take('help_curtain', R.help_curtain())
+    take('putting_green', R.putting_green())
+    take('hitting_mat', R.hitting_mat())
+    take('golf_screen', R.golf_screen())
     take('corner_units', R.corner_units())
     take('mandir_console', R.mandir_console())
     take('great_room_planter', R.great_room_planter())
@@ -1680,7 +1706,7 @@ def audit_coverage():
     take('armchair', R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)))
     take('console_top', R.console_top())
 
-    COUNTED = ('solid', 'wood', 'soft', 'green', 'water')
+    COUNTED = ('solid', 'wood', 'soft', 'green', 'putt', 'water')
     MIN_AREA = 0.02e6                      # mm²
     fails = []
     for name, p in drawn:

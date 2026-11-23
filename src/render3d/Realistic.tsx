@@ -168,6 +168,59 @@ function grassTexture(): THREE.CanvasTexture {
   }, 0.9)
 }
 
+/** Putting turf: short, dense and mown in bands — a green, not a lawn. */
+function puttingTexture(): THREE.CanvasTexture {
+  return canvasTexture(512, (g, s) => {
+    g.fillStyle = '#4d8a37'
+    g.fillRect(0, 0, s, s)
+    for (let x = 0; x < s; x += 128) {
+      g.fillStyle = 'rgba(255,255,255,0.07)'
+      g.fillRect(x, 0, 64, s)
+    }
+    for (let k = 0; k < 26000; k++) {
+      const x = (k * 97) % s
+      const y = (k * 61 + ((k * k) % 23)) % s
+      const v = 110 + ((k * 13) % 50)
+      g.fillStyle = `rgba(${v - 75}, ${v + 15}, ${v - 85}, 0.35)`
+      g.fillRect(x, y, 1, 1)
+    }
+  }, 0.9)
+}
+
+/** What the impact screen shows when it is down: a hole, from the tee. */
+function golfShotTexture(): THREE.CanvasTexture {
+  const c = document.createElement('canvas')
+  c.width = 1024
+  c.height = 576
+  const g = c.getContext('2d')!
+  const sky = g.createLinearGradient(0, 0, 0, 330)
+  sky.addColorStop(0, '#7fb3e6'); sky.addColorStop(1, '#d9ecf7')
+  g.fillStyle = sky; g.fillRect(0, 0, 1024, 340)
+  g.fillStyle = '#6f8f6a'
+  g.beginPath(); g.moveTo(0, 330)
+  for (let x = 0; x <= 1024; x += 32) g.lineTo(x, 300 - 26 * Math.sin(x / 150) - 12 * Math.sin(x / 47))
+  g.lineTo(1024, 340); g.lineTo(0, 340); g.fill()
+  g.fillStyle = '#3e7a34'; g.fillRect(0, 330, 1024, 246)
+  g.fillStyle = '#5da24a'
+  g.beginPath(); g.moveTo(330, 576); g.lineTo(470, 340); g.lineTo(560, 340); g.lineTo(760, 576); g.fill()
+  g.fillStyle = '#7cc463'
+  g.beginPath(); g.ellipse(515, 342, 46, 9, 0, 0, Math.PI * 2); g.fill()
+  g.fillStyle = '#e8dcb0'
+  g.beginPath(); g.ellipse(600, 380, 34, 8, 0, 0, Math.PI * 2); g.fill()
+  for (const [x, y, r] of [[120, 318, 34], [190, 322, 26], [860, 316, 38], [930, 320, 30], [400, 330, 18], [640, 332, 16]]) {
+    g.fillStyle = '#2f5a2c'; g.beginPath(); g.arc(x, y - r, r, 0, Math.PI * 2); g.fill()
+  }
+  g.strokeStyle = '#ffffff'; g.lineWidth = 2
+  g.beginPath(); g.moveTo(518, 342); g.lineTo(518, 312); g.stroke()
+  g.fillStyle = '#d33'; g.beginPath(); g.moveTo(518, 312); g.lineTo(532, 317); g.lineTo(518, 322); g.fill()
+  g.fillStyle = 'rgba(0,0,0,0.45)'; g.fillRect(24, 24, 230, 64)
+  g.fillStyle = '#fff'; g.font = 'bold 22px sans-serif'; g.fillText('HOLE 7   PAR 4', 40, 52)
+  g.font = '18px sans-serif'; g.fillText('362 m to the pin', 40, 76)
+  const t = new THREE.CanvasTexture(c)
+  t.colorSpace = THREE.SRGBColorSpace
+  return t
+}
+
 function plasterTexture(): THREE.CanvasTexture {
   return canvasTexture(256, (g, s) => {
     g.fillStyle = '#f3ecdd'
@@ -441,6 +494,8 @@ export function makeMaterials() {
   const oak = oakTexture()
   const stone = stoneTexture()
   const grass = grassTexture()
+  const putting = puttingTexture()
+  const golfShot = golfShotTexture()
   const plaster = plasterTexture()
   const wood = woodTexture()
   const teak = teakTexture()
@@ -454,6 +509,13 @@ export function makeMaterials() {
     oak: new THREE.MeshStandardMaterial({ map: oak, roughness: 0.6, metalness: 0.02, side: THREE.DoubleSide }),
     stone: new THREE.MeshStandardMaterial({ map: stone, roughness: 0.8, side: THREE.DoubleSide }),
     grass: new THREE.MeshStandardMaterial({ map: grass, roughness: 1.0, side: THREE.DoubleSide }),
+    // the den's golf room: putting turf, the hitting mat, the screen and its nets
+    putting: new THREE.MeshStandardMaterial({ map: putting, roughness: 0.95, side: THREE.DoubleSide }),
+    golfMat: new THREE.MeshStandardMaterial({ color: 0x2c4429, roughness: 0.95 }),
+    golfScreen: new THREE.MeshStandardMaterial({ map: golfShot, emissiveMap: golfShot, emissive: 0xffffff, emissiveIntensity: 0.6, roughness: 1 }),
+    golfNet: new THREE.MeshStandardMaterial({ color: 0x161616, transparent: true, opacity: 0.32, roughness: 1, side: THREE.DoubleSide, depthWrite: false }),
+    golfKit: new THREE.MeshStandardMaterial({ color: 0x222326, roughness: 0.5, metalness: 0.3 }),
+    flag: new THREE.MeshStandardMaterial({ color: 0xc8302c, roughness: 0.8, side: THREE.DoubleSide }),
     deckBoard: new THREE.MeshStandardMaterial({ map: oak, roughness: 0.75 }),
     plaster: new THREE.MeshStandardMaterial({ map: plaster, roughness: 0.92, side: THREE.DoubleSide }),
     // a loft's soffit: plaster that reads lit from below, because the room's
@@ -1399,6 +1461,21 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       }
       return g
     }
+    if (lift > 0 && /projector|launch monitor/i.test(f.label)) {
+      // the den's golf kit on the ceiling: a dark body on a short drop rod;
+      // the projector's lens looks north at the screen
+      const top = model.data.levels.ceiling
+      g.add(box(w, h, d, M.golfKit, 0, lift + h / 2, 0))
+      if (top - lift - h > 5) g.add(box(40, top - lift - h, 40, M.metal, 0, (top + lift + h) / 2, 0))
+      if (/projector/i.test(f.label)) {
+        const lens = new THREE.Mesh(new THREE.CylinderGeometry(45 * S, 45 * S, 30 * S, 20), M.mirror)
+        lens.rotation.x = Math.PI / 2
+        lens.position.set(-w / 4 * S, (lift + h / 2) * S, (-d / 2 - 15) * S)
+        g.add(lens)
+      }
+      place(g, cx, cy)
+      return g
+    }
     if (/clothes dryer/i.test(f.label)) return null      // drawn by clothesDryer(), in both states
     if (lift > 0 && f.kind === 'shelves') {
       // wall cabinets: a carcass hung at `lift`, door joints read as shadow lines.
@@ -1624,6 +1701,20 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
 
   switch (f.kind) {
     case 'rug': {
+      if (/hitting mat/i.test(f.label)) {
+        // the hitting mat on the green: a dark base, the hitting strip under
+        // the ball (its east third), the ball on a rubber tee
+        g.add(box(w, 22, d, M.golfMat, 0, 11 + 25, 0))
+        const bx = w / 2 - 550
+        g.add(box(600, 6, 900, M.putting, bx, 25 + 25, 0))
+        g.add(box(40, 30, 40, M.golfKit, bx, 25 + 25 + 15, 20))
+        const ball = new THREE.Mesh(new THREE.SphereGeometry(21 * S, 16, 12), M.plaster)
+        ball.position.set(bx * S, (25 + 25 + 30 + 21) * S, 20 * S)
+        g.add(ball)
+        g.traverse((o) => { o.castShadow = false })
+        place(g, cx, cy)
+        return g
+      }
       if (f.poly) {
         const m = polyPiece(f.poly, 2, 14, M.rug, f.room)
         if (m) m.traverse((o) => { o.castShadow = false })
@@ -1636,9 +1727,28 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       return m
     }
     case 'grass': {
-      // a drawn field of real grass (deck, terraces) laid over the slab
-      const m = f.poly ? polyPiece(f.poly, 0, 25, M.grass, f.room)
-        : box(w, 25, d, M.grass)
+      if (/putting cup/i.test(f.label)) {
+        // a cup in the putting green: the hole, its white liner rim, and the
+        // flag flying east — the footprint is the cup and its flag, as drawn
+        const ox = -w / 2 + d / 2
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(60 * S, 60 * S, 3 * S, 24), M.plaster)
+        rim.position.set(ox * S, 26 * S, 0)
+        g.add(rim)
+        const hole = new THREE.Mesh(new THREE.CylinderGeometry(54 * S, 54 * S, 4 * S, 24), M.golfKit)
+        hole.position.set(ox * S, 27.5 * S, 0)
+        g.add(hole)
+        const pin = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, 1200 * S, 8), M.plaster)
+        pin.position.set(ox * S, (25 + 600) * S, 0)
+        g.add(pin)
+        g.add(box(150, 110, 4, M.flag, ox + 6 + 75, 1150, 0))
+        place(g, cx, cy)
+        return g
+      }
+      // a drawn field of real grass (deck, terraces) laid over the slab; the
+      // den's putting green is turf, short and mown in bands
+      const gmat = /putting green/i.test(f.label) ? M.putting : M.grass
+      const m = f.poly ? polyPiece(f.poly, 0, 25, gmat, f.room)
+        : box(w, 25, d, gmat)
       if (!m) return null
       if (!f.poly) place(m, cx, cy, 12.5)
       m.traverse((o) => { o.castShadow = false })
@@ -2221,6 +2331,7 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
       // shut across an open partition
       if (/sliding screen/i.test(f.label)) return null
       if (/curtain/i.test(f.label)) return null               // dressingCurtain(), in both states
+      if (/impact screen|golf (backstop|side) net/i.test(f.label)) return null   // golfScreen(), in both states
       // a drawn screen is thin and SEE-THROUGH — rendering it as an opaque
       // slab once put a phantom wall in Karan's suite. Only a screen the sheet
       // labels with a dado gets one; the rest are tinted glass floor to head.
@@ -3410,6 +3521,50 @@ function dressingCurtain(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   return g
 }
 
+/**
+ * KARAN'S GOLF SCREEN (Karan's call): the impact screen at the den's deck
+ * opening, the backstop net behind it and the two side nets, each on its own
+ * motorised roller in one ceiling pocket. Open: rolled up, only the cassettes
+ * show and the den is a den. Shut: down — the screen shows a hole, and it is
+ * the cinema screen too. One toggle moves the four together.
+ */
+function golfScreen(M: Mats, mode: 'open' | 'shut'): THREE.Group {
+  const g = new THREE.Group()
+  const ceiling = model.data.levels.ceiling
+  const pieces = furniture.filter((f) => f.kind === 'screen' && /impact screen|golf (backstop|side) net/i.test(f.label))
+  if (!pieces.length) return g
+  const item = new THREE.Group()
+  let sx = 0, sy = 0, sw = 0
+  for (const f of pieces) {
+    const alongX = f.w >= f.d
+    const L = alongX ? f.w : f.d
+    const cx = f.x + f.w / 2, cy = f.y + f.d / 2
+    const screen = /impact screen/i.test(f.label)
+    if (screen) { sx = cx; sy = cy; sw = L }
+    const part = new THREE.Group()
+    // the cassette, flush under the ceiling
+    part.add(alongX ? box(L, 140, 160, M.golfKit, 0, ceiling - 70, 0) : box(120, 120, L, M.golfKit, 0, ceiling - 60, 0))
+    const drop = ceiling - 150
+    if (mode === 'shut') {
+      const H = drop - 20
+      const mat = screen ? M.golfScreen : M.golfNet
+      const t = screen ? 8 : 4
+      const panel = alongX ? box(L - 20, H, t, mat, 0, 20 + H / 2, 0) : box(t, H, L - 20, mat, 0, 20 + H / 2, 0)
+      panel.castShadow = false
+      part.add(panel)
+      // the weighted bottom bar
+      part.add(alongX ? box(L - 20, 30, 30, M.metal, 0, 35, 0) : box(24, 24, L - 20, M.metal, 0, 32, 0))
+    } else {
+      part.add(alongX ? box(L - 20, 25, 25, M.metal, 0, drop - 12, 0) : box(20, 20, L - 20, M.metal, 0, drop - 10, 0))
+    }
+    part.position.set(cx * S, 0, cy * S)
+    item.add(part)
+  }
+  tagItem(item, 'golf:den', mode, [{ x: sx - sw / 4, y: sy + 700, h: 1400 }, { x: sx + sw / 4, y: sy + 700, h: 1400 }])
+  g.add(item)
+  return g
+}
+
 function portalBlinds(M: Mats, mode: 'open' | 'shut'): THREE.Group {
   const g = new THREE.Group()
   for (const w of model.walls) {
@@ -3738,6 +3893,7 @@ function startsShut(id: string): boolean {
 function defaultOpen(id: string, doorsShut: boolean): boolean {
   if (startsShut(id)) return false
   if (id.startsWith('blind:W-CURVE')) return true
+  if (id.startsWith('golf:')) return true             // the golf screen starts rolled up
   return !doorsShut
 }
 
@@ -6120,6 +6276,7 @@ export function buildScene(M: Mats, opts: { roofs?: boolean } = {}): THREE.Group
     set.add(curvedBlinds(M, mode))
     set.add(portalBlinds(M, mode))
     set.add(dressingCurtain(M, mode))
+    set.add(golfScreen(M, mode))
     set.add(awningWindows(M, mode))
     set.add(meshScreens(M, mode))
     set.add(foldingDoors(M, mode))
@@ -7805,7 +7962,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
           const noun =
             kind === 'door' ? 'door' : kind === 'slider' ? 'slider' : kind === 'hatch' ? 'hatch'
             : kind === 'divider' ? 'divider' : kind === 'portal' ? 'portal' : kind === 'pod' ? 'pod door'
-            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : kind === 'mesh' ? 'mesh' : kind === 'fan' ? 'wall fan' : kind === 'roof' ? 'glass roof' : 'door'
+            : kind === 'entry' ? 'entry door' : kind === 'wallbed' ? 'wall bed' : kind === 'dryer' ? 'dryer' : kind === 'blind' ? 'blind' : kind === 'fold' ? 'folding door' : kind === 'liftbed' ? 'bed' : kind === 'window' ? 'window' : kind === 'mesh' ? 'mesh' : kind === 'fan' ? 'wall fan' : kind === 'roof' ? 'glass roof' : kind === 'golf' ? 'golf screen' : 'door'
           const verb =
             kind === 'wallbed' ? (open ? 'Fold the wall bed up' : 'Fold the wall bed down')
             : kind === 'dryer' ? (open ? 'Raise the dryer' : 'Lower the dryer')
@@ -7815,6 +7972,7 @@ export function Realistic({ compact = false }: { compact?: boolean }): React.Rea
             : kind === 'mesh' ? (open ? 'Draw the mosquito mesh' : 'Pleat the mesh back')
             : kind === 'fan' ? (open ? 'Turn the fan off' : 'Turn the fan on')
             : kind === 'roof' ? (open ? 'Close the glass roof' : 'Open the glass roof')
+            : kind === 'golf' ? (open ? 'Lower the golf screen' : 'Roll the golf screen up')
             : `${open ? 'Shut' : 'Open'} this ${noun}`
           return { noun, verb }
         }

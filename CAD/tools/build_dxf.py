@@ -271,6 +271,10 @@ def main():
         prim(p)
     for p in R.great_room_rug():       # full width, under everything else
         prim(p)
+    for p in R.putting_green():        # Karan's den: the putting green and its cups
+        prim(p)
+    for p in R.hitting_mat():          # the den's hitting mat, on the green
+        prim(p)
     for p in R.kitchen_counter():      # run B, turning the corner of the bump
         prim(p)
     for p in R.hob_counter():          # the hob run + the appliance corner, one L
@@ -309,6 +313,8 @@ def main():
     for p in R.suite_screen():                  # Karan's dressing screen
         prim(p)
     for p in R.help_curtain():                  # help's room's privacy curtain
+        prim(p)
+    for p in R.golf_screen():          # the den's impact screen and nets, rolled up
         prim(p)
     for p in R.wc_out_door() + R.wc_flat_door() + R.help_pass_door():
         prim(p)

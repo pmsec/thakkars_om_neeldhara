@@ -233,7 +233,8 @@ def poly_rooms():
         # not the mirror of the family room's anchor: that point is on the
         # drummer's throne, and the open north half is the sofa's now.  What is
         # left is the band between the sofa's back and the kit.
-        ('MUSIC + WORK DEN', '', den, pod_note, (18600, 5100)),
+        ('MUSIC + WORK DEN', '', den, 'golf simulator  ·  putting green  ·  drums',
+         (17700, 6650)),
         ('GREAT ROOM', '', great,
          'party wall removed  ·  6250 at the deck, 8220 at the waist, 7280 at the pods',
          (D.MID, 3000)),
@@ -2391,3 +2392,72 @@ def design_masks():
     for q in wc_wall() + sh_wall() + pass_corner() + mb_wall() + east_polys(mb_wall) + gm_wall():
         C.put_poly(wl, q)
     return fl, wl, keep_wall_mask()
+
+
+# ------------------------------------------------ Karan's den: golf + putting
+# THE DEN TAKES A GOLF SIMULATOR (Karan's call), right-handed, hitting NORTH at
+# the deck opening.  The south end was tried and fails: past the duct corner
+# the den is 2.9 m between the desk and the duct wall, and the WC's curved
+# wall pinches the south wall to 1.3 m, while his own bay was 3.24 wide.
+# North, the lane between the desk's face (16580) and the wing wall (19950)
+# is 3.37: the ball sits 1.84 off the desk and 1.53 off the wall, 2.75 from
+# the screen, and the low part of the swing passes the duct corner with 170
+# to spare.  The screen hangs just SOUTH of the reclaimed void's outboard
+# column (to 2689), from the coffee unit's end to the wing wall: 2950 wide.
+GOLF_SCREEN_Y = 2740                  # the screen's line, hanging
+GOLF_X0, GOLF_X1 = 16990, 19940       # coffee unit's end to the wing wall
+GOLF_BALL = (18420, 5490)             # 2750 from the screen
+GOLF_NET_Y1 = 4650                    # the side nets run back to here
+GOLF_CUPS = ((17550, 3400), (19300, 3150), (18800, 3550))
+
+
+def putting_green():
+    """A PUTTING GREEN OVER THE DEN FLOOR (Karan's call): sand-filled nylon
+    putting turf on a shock pad, wall to wall from the screen line back to
+    the drum mat, round the desk and the coffee unit.  About 3 m x 4.5 m of
+    putting with three cups at the screen end, flush lids for golf and
+    cinema.  The hitting mat lies on it for golf.  The strip of floor at the
+    portal stays oak: the threshold into the great room.  Flat, so the desk,
+    the chairs and the drums stand level."""
+    wing = D.M(D.POD_W0)                 # 19950, the wing wall's face
+    pts = [(GOLF_X0, D.BODY_N), (wing, D.BODY_N),
+           (wing, 6150), (18750, 6150), (18750, 7300), (16220, 7300),
+           (16220, 7050), (16620, 7050), (16620, 4750), (16100, 4750),
+           (16100, 3240), (GOLF_X0, 3240)]
+    out = [('poly', pts, 'putt')]
+    for x, y in GOLF_CUPS:            # the cups, each with its flag flying east
+        out.append(('circle', x, y, 54, 'solid'))
+        out.append(('poly', [(x + 60, y - 45), (x + 210, y), (x + 60, y + 45)], 'light'))
+    return out
+
+
+def golf_screen():
+    """The impact screen and its nets, all on motorised ceiling rollers in one
+    pocket over the deck opening, so the den is a den again when nobody is
+    playing.  In this order: the backstop net behind the screen, the impact
+    screen (it doubles as the cinema screen), and the two side nets that run
+    back to the tee, the west one covering the coffee unit.  Dashed: drawn
+    rolled up, overhead."""
+    y = GOLF_SCREEN_Y
+    return [
+        ('poly', [(GOLF_X0, y - 140), (GOLF_X1, y - 140), (GOLF_X1, y - 110), (GOLF_X0, y - 110)], 'dash'),
+        ('poly', [(GOLF_X0, y - 20), (GOLF_X1, y - 20), (GOLF_X1, y + 20), (GOLF_X0, y + 20)], 'dash'),
+        ('poly', [(GOLF_X0 + 10, y + 20), (GOLF_X0 + 40, y + 20), (GOLF_X0 + 40, GOLF_NET_Y1), (GOLF_X0 + 10, GOLF_NET_Y1)], 'dash'),
+        ('poly', [(GOLF_X1 - 40, y + 20), (GOLF_X1 - 10, y + 20), (GOLF_X1 - 10, GOLF_NET_Y1), (GOLF_X1 - 40, GOLF_NET_Y1)], 'dash'),
+    ]
+
+
+def hitting_mat():
+    """The hitting mat, lying on the green for golf: 1720 x 1360, a strip of
+    hitting turf through it under the ball, the ball 2750 from the screen,
+    and where the golfer's feet go — west of the ball, facing east, back to
+    the desk (right-handed)."""
+    bx, by = GOLF_BALL
+    fx = bx - 760                              # the stance: 760 off the ball
+    return [
+        ('poly', [(17250, 4790), (18970, 4790), (18970, 6150), (17250, 6150)], 'soft'),
+        ('poly', [(bx - 300, 5040), (bx + 300, 5040), (bx + 300, 5940), (bx - 300, 5940)], 'putt'),
+        ('circle', bx, by, 60, 'solid'),
+        ('poly', [(fx - 140, by - 330), (fx + 140, by - 330), (fx + 140, by - 210), (fx - 140, by - 210)], 'light'),
+        ('poly', [(fx - 140, by + 210), (fx + 140, by + 210), (fx + 140, by + 330), (fx - 140, by + 330)], 'light'),
+    ]

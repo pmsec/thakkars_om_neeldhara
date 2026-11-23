@@ -52,6 +52,7 @@ STYLE = {'solid': ('#fdfaf3', '#a89b88', 1.1),
          'dash': ('none', '#b4a98f', 1.0),
          'glass': ('#d3e4e8', GLAS, 1.0),
          'green': ('#b5c9a2', '#87a072', 1.0),
+         'putt': ('#94c47c', '#4f8a40', 1.2),
          'water': ('#cfe6ec', '#7fabb9', 1.1),
          'tint': ('#dbc394', '#7d5a33', 1.0),
          'wood': ('#a97e48', '#5f3d20', 1.2),
@@ -272,6 +273,10 @@ def main():
         prim(p)
     for p in R.great_room_rug():
         prim(p, shadow=False)
+    for p in R.putting_green():        # Karan's den: the putting green and its cups
+        prim(p)
+    for p in R.hitting_mat():          # the den's hitting mat, on the green
+        prim(p, shadow=False)
     for p in R.kitchen_counter():
         prim(p)
     for p in R.hob_counter():
@@ -313,6 +318,8 @@ def main():
     for p in R.suite_screen():
         prim(p, shadow=False)
     for p in R.help_curtain():
+        prim(p, shadow=False)
+    for p in R.golf_screen():          # the den's impact screen and nets, rolled up
         prim(p, shadow=False)
     for p in R.wc_out_door() + R.wc_flat_door() + R.help_pass_door():
         prim(p, shadow=False)

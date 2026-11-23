@@ -274,7 +274,7 @@ ROOMS = [
     # gap between the bench and the bed instead, and loses its note to fit.
     ("TERRACE", "KARAN", [(M(SUITE_W_E), 0, M(-350), 1200)], "", (23280, 2480)),
     ("FAMILY ROOM", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay", None),
-    ("MUSIC + WORK DEN", "", [], "one pod  ·  glass roof over the 3665 × 2280 bay",
+    ("MUSIC + WORK DEN", "", [], "golf simulator  ·  putting green  ·  drums",
      None),
     ("GREAT ROOM", "", [], "living + dining  ·  opens to the deck", None),
     ("ALL-WEATHER DECK", "", [(POD_W0, DECK_N, M(POD_W0), DECK_S)],
@@ -1357,26 +1357,34 @@ _ONCE = [
     ('screen-w', 15990, 5150, 16290, 5830, "monitor  ·  27 inch, facing east"),
     ('swivel',   16620, 5190, 17220, 5790, "desk chair  ·  600, swivel"),
 
-    # ------------------------------- Karan's pod: the two recliners
-    # NOT the parents' group after all.  It was mirrored in as a sofa and a
-    # recliner in an L; it is TWO RECLINERS side by side instead, both facing
-    # north through the deck slider, with a small table between them.
+    # ------------------------------- Karan's pod: golf, putting and cinema
+    # THE TWO RECLINERS ARE GONE (Karan's call): the den takes a golf
+    # simulator, and they stood in the ball's flight.  Right-handed, hitting
+    # north at the deck opening; the screen, its backstop and the two side
+    # nets roll up into one ceiling pocket — see retrofit.golf_screen() — and
+    # the floor is a putting green, retrofit.putting_green().  The screen is
+    # the cinema screen too, so what replaces the recliners is two light
+    # swivel lounge chairs: parked on the deck between the void column and
+    # the spa for golf, rolled in to the tee spot, 3.2 m off the screen, for
+    # a film.
     #
-    # The two pods stop being a mirrored pair, and that is the point: this one
-    # is a den for one or two people looking at the deck, not a room to receive
-    # in.  An L wants somebody to sit in the return and talk across the corner,
-    # which is what the parents' pod is for.
-    #
-    # 800 + 450 + 800 = 2050, centred on Karan's deck slider at X 18405 — so
-    # the pair sits square on the opening it faces rather than square on the
-    # room, which is what you notice from the chairs.
-    #
-    # The table is 450 x 600, its back on the chairs' own back line at Y 4570,
-    # because that is where your elbow is when you are actually reclined.  A
-    # table centred on the seat would be level with your knees.
-    ('recliner-s', 17380, 3670, 18180, 4570, "recliner  ·  800 x 900, facing the deck"),
-    ('sidetable',  18180, 3970, 18630, 4570, "side table  ·  450 x 600, between the two"),
-    ('recliner-s', 18630, 3670, 19430, 4570, "recliner  ·  800 x 900, facing the deck"),
+    # The hitting mat, on the green: the ball at 18420, 5490 — 1840 off the
+    # desk's face, 1530 off the wing wall, 2750 from the screen.  The golfer
+    # stands on its west half facing east, back to the desk.
+    # The mat itself is drawn in retrofit.hitting_mat(), over the green.
+    # On the ceiling, both out of the club's reach.  The projector is 1400
+    # off the screen, not over the golfer: at the top of the swing the club
+    # points at the target, and its head is 0.5-1 m ahead of the head.  A
+    # 0.5 throw ratio fills the 2950 picture from there.
+    ('under',    18170, 3950, 18670, 4250,
+     'projector  ·  short throw, 500 x 300, 250 high, 3255 up'),
+    ('under',    18220, 5390, 18620, 5590,
+     'launch monitor  ·  ceiling-hung, right above the ball, 400 x 200, 120 high, 3385 up'),
+    # the two lounge chairs, parked on the deck for golf
+    ('swivel',   17130, 450, 17830, 1150,
+     'lounge chair  ·  700, light swivel, parked for golf, rolls in for a film'),
+    ('swivel',   17130, 1450, 17830, 2150,
+     'lounge chair  ·  700, light swivel, parked for golf, rolls in for a film'),
     # The kit itself is circles struck off one centre — see retrofit.drum_kit().
     # 255 from its westernmost cymbal to the console's front edge, 150 to the
     # duct wall, 140 to the great-room wall, and open pod behind the drummer.

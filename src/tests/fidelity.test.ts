@@ -102,6 +102,7 @@ describe('2D↔3D fidelity', () => {
     expect(byLabel('footrest'), 'deployed recliner footrests').toBeGreaterThanOrEqual(3)
     expect(byLabel('doubles as the cinema screen'), "the den's golf impact screen").toBe(1)
     expect(byLabel('putting cup'), "the den's three putting cups").toBe(3)
+    expect(byLabel('epoxy'), "the den's epoxy water hazard and two bunkers").toBe(3)
     expect(furniture.filter((f) => f.kind === 'grass').length, 'grass fields').toBeGreaterThanOrEqual(4)
     expect(furniture.filter((f) => f.kind === 'planter').length, 'planters').toBeGreaterThanOrEqual(2)
     expect(furniture.find((f) => f.label.includes('drum kit')), 'the drum kit').toBeDefined()

@@ -187,6 +187,39 @@ function puttingTexture(): THREE.CanvasTexture {
   }, 0.9)
 }
 
+/** Epoxy water: deep teal resin with lighter caustic ripples through it. */
+function epoxyWaterTexture(): THREE.CanvasTexture {
+  return canvasTexture(512, (g, s) => {
+    const grd = g.createLinearGradient(0, 0, s, s)
+    grd.addColorStop(0, '#0f4f63'); grd.addColorStop(0.5, '#17708a'); grd.addColorStop(1, '#0f4f63')
+    g.fillStyle = grd
+    g.fillRect(0, 0, s, s)
+    g.strokeStyle = 'rgba(170, 235, 245, 0.28)'
+    g.lineWidth = 2
+    for (let k = 0; k < 60; k++) {
+      const y0 = (k * 53) % s
+      g.beginPath()
+      for (let x = 0; x <= s; x += 16) g.lineTo(x, y0 + 9 * Math.sin(x / 37 + k) + 5 * Math.sin(x / 13 + 2 * k))
+      g.stroke()
+    }
+  }, 1.4)
+}
+
+/** Epoxy bunker: real sand locked under clear resin. */
+function epoxySandTexture(): THREE.CanvasTexture {
+  return canvasTexture(256, (g, s) => {
+    g.fillStyle = '#d8c393'
+    g.fillRect(0, 0, s, s)
+    for (let k = 0; k < 9000; k++) {
+      const x = (k * 97) % s
+      const y = (k * 61 + ((k * k) % 29)) % s
+      const v = 170 + ((k * 13) % 70)
+      g.fillStyle = `rgba(${v}, ${v - 20}, ${v - 70}, 0.6)`
+      g.fillRect(x, y, 1, 1)
+    }
+  }, 0.5)
+}
+
 /** What the impact screen shows when it is down: a hole, from the tee. */
 function golfShotTexture(): THREE.CanvasTexture {
   const c = document.createElement('canvas')
@@ -496,6 +529,8 @@ export function makeMaterials() {
   const grass = grassTexture()
   const putting = puttingTexture()
   const golfShot = golfShotTexture()
+  const epoxyWater = epoxyWaterTexture()
+  const epoxySand = epoxySandTexture()
   const plaster = plasterTexture()
   const wood = woodTexture()
   const teak = teakTexture()
@@ -515,7 +550,8 @@ export function makeMaterials() {
     golfScreen: new THREE.MeshStandardMaterial({ map: golfShot, emissiveMap: golfShot, emissive: 0xffffff, emissiveIntensity: 0.6, roughness: 1 }),
     golfNet: new THREE.MeshStandardMaterial({ color: 0x161616, transparent: true, opacity: 0.32, roughness: 1, side: THREE.DoubleSide, depthWrite: false }),
     golfKit: new THREE.MeshStandardMaterial({ color: 0x222326, roughness: 0.5, metalness: 0.3 }),
-    flag: new THREE.MeshStandardMaterial({ color: 0xc8302c, roughness: 0.8, side: THREE.DoubleSide }),
+    epoxyWater: new THREE.MeshPhysicalMaterial({ map: epoxyWater, color: 0xffffff, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }),
+    epoxySand: new THREE.MeshPhysicalMaterial({ map: epoxySand, roughness: 0.35, clearcoat: 0.9, clearcoatRoughness: 0.05, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }),
     deckBoard: new THREE.MeshStandardMaterial({ map: oak, roughness: 0.75 }),
     plaster: new THREE.MeshStandardMaterial({ map: plaster, roughness: 0.92, side: THREE.DoubleSide }),
     // a loft's soffit: plaster that reads lit from below, because the room's
@@ -1728,27 +1764,26 @@ export function furnitureMesh(f: FurnitureItem, M: Mats): THREE.Object3D | null 
     }
     case 'grass': {
       if (/putting cup/i.test(f.label)) {
-        // a cup in the putting green: the hole, its white liner rim, and the
-        // flag flying east — the footprint is the cup and its flag, as drawn
-        const ox = -w / 2 + d / 2
-        const rim = new THREE.Mesh(new THREE.CylinderGeometry(60 * S, 60 * S, 3 * S, 24), M.plaster)
-        rim.position.set(ox * S, 26 * S, 0)
+        // a cup in the putting green: the hole and its white liner rim; no
+        // flag (Karan's call) — it would stand in the ball's flight
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(54 * S, 54 * S, 3 * S, 24), M.plaster)
+        rim.position.y = 26 * S
         g.add(rim)
-        const hole = new THREE.Mesh(new THREE.CylinderGeometry(54 * S, 54 * S, 4 * S, 24), M.golfKit)
-        hole.position.set(ox * S, 27.5 * S, 0)
+        const hole = new THREE.Mesh(new THREE.CylinderGeometry(47 * S, 47 * S, 4 * S, 24), M.golfKit)
+        hole.position.y = 27.5 * S
         g.add(hole)
-        const pin = new THREE.Mesh(new THREE.CylinderGeometry(6 * S, 6 * S, 1200 * S, 8), M.plaster)
-        pin.position.set(ox * S, (25 + 600) * S, 0)
-        g.add(pin)
-        g.add(box(150, 110, 4, M.flag, ox + 6 + 75, 1150, 0))
         place(g, cx, cy)
         return g
       }
       // a drawn field of real grass (deck, terraces) laid over the slab; the
       // den's putting green is turf, short and mown in bands
-      const gmat = /putting green/i.test(f.label) ? M.putting : M.grass
-      const m = f.poly ? polyPiece(f.poly, 0, 25, gmat, f.room)
-        : box(w, 25, d, gmat)
+      // and its hazards are epoxy inlays, a hair proud so they read over it
+      const gmat = /putting green/i.test(f.label) ? M.putting
+        : /water hazard/i.test(f.label) ? M.epoxyWater
+        : /bunker/i.test(f.label) ? M.epoxySand : M.grass
+      const gtop = /water hazard|bunker/i.test(f.label) ? 32 : 25
+      const m = f.poly ? polyPiece(f.poly, 0, gtop, gmat, f.room)
+        : box(w, gtop, d, gmat)
       if (!m) return null
       if (!f.poly) place(m, cx, cy, 12.5)
       m.traverse((o) => { o.castShadow = false })

@@ -1572,13 +1572,19 @@ def emit_furniture():
     # deck opening — the 3D draws them in both states (golfScreen)
     green = R.putting_green()
     add_outline(green[:1], 'grass', 'R-K-DEN',
-                'Putting green — sand-filled nylon turf on a shock pad, three cups', 25,
+                'Putting green — sand-filled nylon turf on a shock pad, three cups, a water hazard and bunkers inlaid', 25,
                 styles=('putt',))
     for p in green:
         if p[0] == 'circle':
             _, ccx, ccy, r, _ = p
-            add('grass', ccx - r, ccy - r, 2 * r + 156, 2 * r, 'R-K-DEN',
-                'Putting cup — 108 round, flush lid, flag in', 25)
+            add('grass', ccx - r, ccy - r, 2 * r, 2 * r, 'R-K-DEN',
+                'Putting cup — 108 round, flush lid, no flag', 25)
+    # the hazards, flush epoxy inlays in the green: the water, then two bunkers
+    for prim, lab in zip(R.golf_hazards(), (
+            'Epoxy water hazard — tinted resin poured deep, flush with the green',
+            'Epoxy bunker — real sand under clear resin, greenside, flush',
+            'Epoxy bunker — real sand under clear resin, beside the tee, flush')):
+        add_outline([prim], 'grass', 'R-K-DEN', lab, 32, styles=(prim[-1],))
     add_outline(R.hitting_mat()[:1], 'rug', 'R-K-DEN',
                 'Hitting mat — 1720 x 1360, on the green; the ball 2750 from the screen', 25,
                 styles=('soft',))
@@ -1695,6 +1701,7 @@ def audit_coverage():
     take('suite_screen', R.suite_screen())
     take('help_curtain', R.help_curtain())
     take('putting_green', R.putting_green())
+    take('golf_hazards', R.golf_hazards())
     take('hitting_mat', R.hitting_mat())
     take('golf_screen', R.golf_screen())
     take('corner_units', R.corner_units())
@@ -1706,7 +1713,7 @@ def audit_coverage():
     take('armchair', R.armchair(13800, 5050, (11640 - 13800, 4400 - 5050)))
     take('console_top', R.console_top())
 
-    COUNTED = ('solid', 'wood', 'soft', 'green', 'putt', 'water')
+    COUNTED = ('solid', 'wood', 'soft', 'green', 'putt', 'sand', 'water')
     MIN_AREA = 0.02e6                      # mm²
     fails = []
     for name, p in drawn:
